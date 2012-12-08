@@ -1,0 +1,15 @@
+<h3>Novo Endereço</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'enderecos','action'=>'new')));
+
+$form->prepare();
+echo $this->form()->openTag($form);
+require 'formEnderecoInc.php';
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+?>

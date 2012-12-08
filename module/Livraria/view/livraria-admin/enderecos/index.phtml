@@ -1,0 +1,45 @@
+<h1>Endereços</h1>
+<br />
+
+<p>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'enderecos','action'=>'new')); ?>">Novo</a>
+</p>
+
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Rua</th>
+        <th>Numero</th>
+        <th>Compl</th>
+        <th>CEP</th>
+        <th>Bairro</th>
+        <th>Cidade</th>
+        <th>Estado</th>
+        <th>Pais</th>
+        <th>Ação</th>
+    </tr>
+    
+    <?php foreach($this->data as $entity): ?>
+    <tr>
+        <td><?php echo $entity->getId(); ?></td>
+        <td><?php echo $entity->getRua(); ?></td>
+        <td><?php echo $entity->getNumero(); ?></td>
+        <td><?php echo $entity->getCompl(); ?></td>
+        <td><?php echo $entity->getCep(); ?></td>
+        <td><?php echo $entity->getBairro(); ?></td>
+        <td><?php echo $entity->getCidade(); ?></td>
+        <td><?php echo $entity->getEstado(); ?></td>
+        <td><?php echo $entity->getPais(); ?></td>
+        <td>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'enderecos','action'=>'edit','id'=>$entity->getId())); ?>">Editar</a>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'enderecos','action'=>'delete','id'=>$entity->getId())); ?>">Deletar</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    
+</table>
+<br />
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

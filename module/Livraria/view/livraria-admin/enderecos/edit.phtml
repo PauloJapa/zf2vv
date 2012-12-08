@@ -1,0 +1,15 @@
+<h3>Editando Endereço</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'enderecos','action'=>'edit')));
+
+$form->prepare();
+echo $this->form()->openTag($form);
+require_once 'formEnderecoInc.php';
+echo $this->formSubmit($form->get('submit'));
+echo $this->form()->closeTag();
+?>

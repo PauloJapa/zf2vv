@@ -1,0 +1,41 @@
+<h1>Administradoras</h1>
+<br />
+
+<p>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'administradoras','action'=>'new')); ?>">Novo</a>
+</p>
+
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Apelido</th>
+        <th>CNPJ</th>
+        <th>Tel</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Ação</th>
+    </tr>
+    
+    <?php foreach($this->data as $entity): ?>
+    <tr>
+        <td><?php echo $entity->getId(); ?></td>
+        <td><?php echo $entity->getNome(); ?></td>
+        <td><?php echo $entity->getApelido(); ?></td>
+        <td><?php echo $entity->getCnpj(); ?></td>
+        <td><?php echo $entity->getTel(); ?></td>
+        <td><?php echo $entity->getEmail(); ?></td>
+        <td><?php echo $entity->getStatus(); ?></td>
+        <td>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'administradoras','action'=>'edit','id'=>$entity->getId())); ?>">Editar</a>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'administradoras','action'=>'delete','id'=>$entity->getId())); ?>">Deletar</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    
+</table>
+<br />
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>
