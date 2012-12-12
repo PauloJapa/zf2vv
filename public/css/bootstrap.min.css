@@ -491,6 +491,51 @@ button.btn.small,input[type="submit"].btn.small{*padding-top:3px;*padding-bottom
 .navbar .nav>li{display:block;float:left;}
 .navbar .nav>li>a{float:none;padding:10px 10px 11px;line-height:19px;color:#999999;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);}
 .navbar .nav>li>a:hover{background-color:transparent;color:#ffffff;text-decoration:none;}
+
+.navbar .nav li ul li a{
+    padding:10px 10px 11px;
+    line-height:19px;
+    color:#999999;
+    text-decoration:none;
+    text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.navbar .nav li ul li a:hover{
+    background-color:transparent;
+    color:#ffffff;
+    text-decoration:none;
+}
+
+.navbar .nav> li ul li{
+    position:relative;
+}
+.navbar .nav li ul,
+.navbar .nav li ul li ul
+{
+	list-style: none;
+        position: absolute;
+        display : none ;
+}
+.navbar .nav li ul li,
+.navbar .nav li ul li ul li
+{
+	line-height:37px;
+        background-color : black ;
+        padding: 0;
+        margin: 0 ;
+}
+.navbar .nav> li> ul> li> ul{
+        position:absolute; top:0px; left:75%;
+}
+.navbar .nav li:hover > ul,
+.navbar .nav li > ul li:hover > ul
+{
+        display : block ;  /* Aqui a magica */
+}
+.navbar .nav li:hover 
+{
+        background-color : green ;
+}
+
 .navbar .nav .active>a,.navbar .nav .active>a:hover{color:#ffffff;text-decoration:none;background-color:#222222;background-color:rgba(0, 0, 0, 0.5);}
 .navbar .divider-vertical{height:40px;width:1px;margin:0 9px;overflow:hidden;background-color:#222222;border-right:1px solid #333333;}
 .navbar .nav.pull-right{margin-left:10px;margin-right:0;}

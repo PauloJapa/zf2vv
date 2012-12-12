@@ -12,12 +12,6 @@ return array(
             'Login' => array(
                 'label' => 'Login',
                 'route' => 'livraria-admin-auth',
-               // 'pages' => array(
-               //     'home' => array(
-               //         'label' => 'Home',
-               //         'route' => 'livraria-home',
-               //     ),
-               // ),
             ),
         ),
         'admin' => array(
@@ -26,40 +20,100 @@ return array(
                 'label' => 'Home',
                 'route' => 'livraria-home',
             ),
-            'administradora' => array(
-                'label' => 'Administradoras',
+            'cadastros' => array(
+                'label' => 'Cadastro',
                 'route' => 'livraria-admin',
-                'controller' => 'administradoras',
+                'controller' => '',
+                'pages' => array(
+                    'administradora' => array(
+                        'label' => 'Administradoras',
+                        'route' => 'livraria-admin',
+                        'controller' => 'administradoras',
+                        'pages' => array(
+                            'home' => array(
+                                'label' => 'Menu1',
+                                'route' => 'livraria-admin',
+                                'controller' => '1',
+                            ),
+                            'home2' => array(
+                                'label' => 'Menu22',
+                                'route' => 'livraria-admin',
+                                'controller' => '2',
+                            ),
+                            'home3' => array(
+                                'label' => 'Menu333',
+                                'route' => 'livraria-admin',
+                                'controller' => '3',
+                            ),
+                            'home4' => array(
+                                'label' => 'Menu4444',
+                                'route' => 'livraria-admin',
+                                'controller' => '4',
+                            ),
+                        ),
+                    ),
+                    'users' => array(
+                        'label' => 'Users',
+                        'route' => 'livraria-admin',
+                        'controller' => 'users',
+                    ),
+                    'endereco' => array(
+                        'label' => 'Endereço',
+                        'route' => 'livraria-admin',
+                        'controller' => 'enderecos',
+                    ),
+                    'bairro' => array(
+                        'label' => 'Bairros',
+                        'route' => 'livraria-admin',
+                        'controller' => 'bairros',
+                    ),
+                    'cidade' => array(
+                        'label' => 'Cidade',
+                        'route' => 'livraria-admin',
+                        'controller' => 'cidades',
+                    ),
+                    'estado' => array(
+                        'label' => 'Estado',
+                        'route' => 'livraria-admin',
+                        'controller' => 'estados',
+                    ),
+                    'pais' => array(
+                        'label' => 'Pais',
+                        'route' => 'livraria-admin',
+                        'controller' => 'paises',
+                    ),
+                    'categoria' => array(
+                        'label' => 'Categoria',
+                        'route' => 'livraria-admin',
+                        'controller' => 'categorias',
+                    ),
+                    'livros' => array(
+                        'label' => 'Livro',
+                        'route' => 'livraria-admin',
+                        'controller' => 'livros',
+                    ),
+                ),                
+                
             ),
-            'endereco' => array(
-                'label' => 'Endereço',
+            'contratos' => array(
+                'label' => 'Contratos',
                 'route' => 'livraria-admin',
-                'controller' => 'enderecos',
+                'controller' => 'contratos',
             ),
-            'bairro' => array(
-                'label' => 'Bairros',
+            'relatorios' => array(
+                'label' => 'Relatórios',
                 'route' => 'livraria-admin',
-                'controller' => 'bairros',
+                'controller' => 'relatorios',
             ),
-            'cidade' => array(
-                'label' => 'Cidade',
+            'auditoria' => array(
+                'label' => 'Auditoria',
                 'route' => 'livraria-admin',
-                'controller' => 'cidades',
+                'controller' => 'auditorias',
             ),
-            'estado' => array(
-                'label' => 'Estado',
+            'exportar' => array(
+                'label' => 'Exportar',
                 'route' => 'livraria-admin',
-                'controller' => 'estados',
-            ),
-            'pais' => array(
-                'label' => 'Pais',
-                'route' => 'livraria-admin',
-                'controller' => 'paises',
-            ),
-            'users' => array(
-                'label' => 'Users',
-                'route' => 'livraria-admin',
-                'controller' => 'users',
+                'controller' => 'exportar',
             ),
             'logout' => array(
                 'label' => 'Logout',
@@ -67,7 +121,6 @@ return array(
             ),
         ),
         'user' => array(
-            // And finally, here is where we define our page hierarchy
             'home' => array(
                 'label' => 'Home',
                 'route' => 'livraria-home',
