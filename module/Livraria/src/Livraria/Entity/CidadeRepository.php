@@ -21,4 +21,17 @@ class CidadeRepository extends EntityRepository {
         return $array;
     }
     
+    public function autoComp($cidade){
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\Cidade', 'u')
+                ->where("u.nome LIKE :cidade")
+                ->setParameter('cidade', $cidade)
+                ->setMaxResults(20)
+                ->getQuery()
+                ;
+        return $query->getResult();
+    }
+    
 }

@@ -15,7 +15,9 @@ echo $this->formRow($form->get('numero'));
 echo "</tr><tr>";
 echo "<td>";
 echo $this->formRow($form->get('compl'));
-echo $this->formRow($form->get('cidade'));
+echo $this->formRow($form->get('cidadeDesc'));
+echo $this->formHidden($form->get('cidade'));
+echo "<br /><span id='popCidades' style='position:absolute'></span>";
 echo "</td><td>";
 echo $this->formRow($form->get('cep'));
 echo $this->formRow($form->get('estado'));
@@ -36,6 +38,15 @@ echo " </fieldset>";
         var returns = Array('bairro','bairroDesc');
         var functionCall = '';
         autoComp2(filtros,servico,'popBairros',returns,'2',functionCall);
+        
+    }
+
+    function autoCompCidade(){
+        var filtros = 'cidadeDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'cidades','action'=>'autoComp')); ?>";
+        var returns = Array('cidade','cidadeDesc');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popCidades',returns,'2',functionCall);
         
     }
 </script>

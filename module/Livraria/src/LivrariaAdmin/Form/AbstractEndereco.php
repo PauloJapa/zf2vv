@@ -12,8 +12,6 @@ abstract class AbstractEndereco extends Form {
      * @var EntityManager
      */
     protected $em;    
-    protected $bairros;
-    protected $cidades;
     protected $estados;
     protected $paises;
     
@@ -22,8 +20,6 @@ abstract class AbstractEndereco extends Form {
     }
     
     public function getEnderecoElements($em)    {
-      //  $this->bairros = $em->getRepository('Livraria\Entity\Bairro')->fetchPairs();
-        $this->cidades = $em->getRepository('Livraria\Entity\Cidade')->fetchPairs();
         $this->estados = $em->getRepository('Livraria\Entity\Estado')->fetchPairs();
         $this->paises  = $em->getRepository('Livraria\Entity\Pais')->fetchPairs();
         
@@ -105,23 +101,27 @@ abstract class AbstractEndereco extends Form {
                 'type'  => 'hidden'
             )
         ));
-        
-/*        
-        $bairro = new Select();
-        $bairro->setLabel("Bairro")
-                ->setName("bairro")
-                ->setOptions(array('value_options' => $this->bairros)
-        );
-        $this->add($bairro);
-*/
-        
-        $cidade = new Select();
-        $cidade->setLabel("Cidade")
-                ->setName("cidade")
-                ->setOptions(array('value_options' => $this->cidades)
-        );
-        $this->add($cidade);
 
+        $this->add(array(
+            'name' => 'cidadeDesc',
+            'options' => array(
+                'type' => 'text',
+                'label' => 'Cidade'
+            ),
+            'attributes' => array(
+                'id' => 'cidadeDesc',
+                'placeholder' => 'Pesquise digitando a Cidade aqui!',
+                'onKeyUp' => 'autoCompCidade();'
+            )
+        ));
+        
+        $this->add(array(
+            'name'      => 'cidade',
+            'attributes' => array(
+                'id'    => 'cidade',
+                'type'  => 'hidden'
+            )
+        ));
         
         $estado = new Select();
         $estado->setLabel("Estado")

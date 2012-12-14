@@ -269,8 +269,11 @@ class Endereco {
             'bairro'     => $this->getBairro()->getId(),
             'bairroDesc' => $this->getBairro()->getNome(),
             'cidade'     => $this->getCidade()->getId(),
+            'cidadeDesc' => $this->getCidade()->getNome(),
             'estado'     => $this->getEstado()->getId(),
-            'pais'       => $this->getPais()->getId()
+            'estadoDesc' => $this->getEstado()->getNome(),
+            'pais'       => $this->getPais()->getId(),
+            'paisDesc'   => $this->getPais()->getNome()
         );
     }
 
