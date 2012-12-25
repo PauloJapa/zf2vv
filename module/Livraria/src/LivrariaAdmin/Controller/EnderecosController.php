@@ -54,5 +54,20 @@ class EnderecosController extends CrudController {
 
         return new ViewModel(array('form' => $form));
     }
+    
+    public function buscaCepAction(){
+        $cep = $this->getRequest()->getPost('cep');         
+        $retorno = @file_get_contents('http://republicavirtual.com.br/web_cep.php?cep='.urlencode($cep).'&formato=json'); 
+        if(!$retorno){ 
+            $retorno = '{"resultado":"0","resultado_txt":"erro ao buscar cep"}'; 
+        }
+        $resultado = json_decode($retorno, true);
+        $resultado['cep'] = $cep;
+        $resultado['pais'] = 'Brasil';        
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('resultado' => $resultado,'cep'=> $cep));
+        $viewModel->setTerminal(true);
+        return $viewModel;
+    }
 
 }

@@ -35,7 +35,7 @@ abstract class AbstractEndereco extends Form {
             'name'      => 'rua',
             'options'   => array(
                 'type'  => 'text',
-                'label' => 'Rua',
+                'label' => '*Rua',
             ),
             'attributes'      => array(
                 'id'          => 'rua',
@@ -48,11 +48,12 @@ abstract class AbstractEndereco extends Form {
             'name' => 'numero',
             'options' => array(
                 'type' => 'text',
-                'label' => 'Numero'
+                'label' => '*Numero'
             ),
             'attributes' => array(
                 'id' => 'numero',
-                'placeholder' => ''
+                'placeholder' => '',
+                'class'       => 'input-mini'
             )
         ));
 
@@ -72,11 +73,12 @@ abstract class AbstractEndereco extends Form {
             'name' => 'cep',
             'options' => array(
                 'type' => 'text',
-                'label' => 'CEP'
+                'label' => '*CEP'
             ),
             'attributes' => array(
                 'id' => 'cep',
-                'placeholder' => ''
+                'placeholder' => '',
+                'onKeyPress' => 'return submitenter(this,event)'
             )
         ));
        
@@ -85,7 +87,7 @@ abstract class AbstractEndereco extends Form {
             'name' => 'bairroDesc',
             'options' => array(
                 'type' => 'text',
-                'label' => 'Bairro'
+                'label' => '*Bairro'
             ),
             'attributes' => array(
                 'id' => 'bairroDesc',
@@ -106,7 +108,7 @@ abstract class AbstractEndereco extends Form {
             'name' => 'cidadeDesc',
             'options' => array(
                 'type' => 'text',
-                'label' => 'Cidade'
+                'label' => '*Cidade'
             ),
             'attributes' => array(
                 'id' => 'cidadeDesc',
@@ -124,16 +126,18 @@ abstract class AbstractEndereco extends Form {
         ));
         
         $estado = new Select();
-        $estado->setLabel("Estado")
+        $estado->setLabel("*Estado")
                 ->setName("estado")
+                ->setAttribute("id","estado")
                 ->setOptions(array('value_options' => $this->estados)
         );
         $this->add($estado);
 
         
         $pais = new Select();
-        $pais->setLabel("País")
+        $pais->setLabel("*País")
                 ->setName("pais")
+                ->setAttribute("id","pais")
                 ->setOptions(array('value_options' => $this->paises)
         );
         $this->add($pais);

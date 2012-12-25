@@ -40,9 +40,9 @@ class EnderecoFilter extends InputFilter {
                 ),
             ),
         ));
-
+        
         $this->add(array(
-            'name' => 'compl',
+            'name' => 'bairroDesc',
             'required' => true,
             'filters' => array(
                 array('name' => 'StripTags'),
@@ -59,41 +59,7 @@ class EnderecoFilter extends InputFilter {
         ));
 
         $this->add(array(
-            'name' => 'compl',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'name' => 'cep',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'name' => 'cidade',
+            'name' => 'cidadeDesc',
             'required' => true,
             'filters' => array(
                 array('name' => 'StripTags'),
