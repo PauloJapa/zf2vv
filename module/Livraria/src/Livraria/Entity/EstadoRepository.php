@@ -12,7 +12,7 @@ class EstadoRepository extends EntityRepository {
         $array = array();
         
         foreach($entities as $entity) {
-            $array[$entity->getId()] = $entity->getNome();
+            $array[$entity->getId()] = $entity->getSigla();
         }
         
         if(empty($array))$array[' ']= '';

@@ -39,14 +39,14 @@ function popula_cep(resul){
         $('#'+campo[0]).val(getAbevLog(dados[0].tipo_logradouro) + ' ' + dados[0].logradouro);
         $('#'+campo[1]).val(dados[0].bairro);
         $('#'+campo[2]).val(dados[0].cidade);
-        $('#'+campo[3]).val(dados[0].estado);
+        setSelect(campo[3],dados[0].uf);
         setSelect(campo[4],dados[0].pais);
         carregando_cep('checar','Encontrado com Sucesso!!');
         break;
     case '2':
         $('#'+campo[2]).val(dados[0].cidade);
-        $('#'+campo[3]).val(dados[0].estado);
-        $('#'+campo[4]).val(dados[0].pais);
+        setSelect(campo[3],dados[0].uf);
+        setSelect(campo[4],dados[0].pais);
         carregando_cep('checar','Cep de Cidade com logradouro único');
         break;
     default:
