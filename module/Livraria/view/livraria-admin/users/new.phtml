@@ -9,11 +9,79 @@ $form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'u
 
 $form->prepare();
 echo $this->form()->openTag($form);
+echo "<fieldset>";
+echo "  <legend>Usuario:</legend>";
 echo $this->formHidden($form->get('id'));
+echo "<table style='width : 100% ;'>";
+echo "<tr>";
+echo "<td>";
 echo $this->formRow($form->get('nome'));
+echo "</td>";
+echo "<td>";
 echo $this->formRow($form->get('email'));
+echo "</td>";
+echo "<td>";
 echo $this->formRow($form->get('tipo'));
-echo $this->formRow($form->get('password'))."<br>";
+echo "</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>";
+echo $this->formRow($form->get('password'));
+echo "</td>";
+echo "<td>";
+echo $this->formRow($form->get('administradoraDesc'));
+echo $this->formHidden($form->get('administradora'));
+echo "<br /><span id='popAdminis' style='position:absolute'></span>";
+echo "</td>";
+echo "<td>";
+echo $this->formRow($form->get('isAdmin'));
+echo "</td>";
+echo "</tr>";
+echo "<tr>";
+echo "<td>";
+echo '<label><span>Repetir Senha</span><input name="password2" type="password" value=""></label>';
+echo "</td>";
+echo "<td>";
+echo "</td>";
+echo "<td>";
+echo "</td>";
+echo "</tr>";
+echo "</table>";
+echo "</fieldset>";
+
+echo "<div align='center'>";
 echo $this->formSubmit($form->get('submit'));
+echo "</div>";
+
+require "/var/www/zf2vv/module/Livraria/view/livraria-admin/enderecos/formEnderecoInc.php";
+
+echo "<div align='center'>";
+echo $this->formSubmit($form->get('submit'));
+echo "</div>";
 echo $this->form()->closeTag();
 ?>
+<script language="javascript">
+    function autoCompAdminis(){
+        var filtros = 'administradoraDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'Administradoras','action'=>'autoComp')); ?>";
+        var returns = Array('administradora','administradoraDesc');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popAdminis',returns,'2',functionCall);
+        
+    }
+    function submitvalida(obj,event){
+        var keycode;
+        if (window.event) 
+            keycode = window.event.keyCode;
+        else if (e) 
+            keycode = e.which;
+        else 
+            return true;
+        if (keycode == 13){
+            valida();
+            return false;
+        }
+        return true;
+        
+    }
+</script>

@@ -20,6 +20,7 @@ use Livraria\Service\User as UserService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
 use LivrariaAdmin\Form\Administradora as AdministradoraFrm;
+use LivrariaAdmin\Form\User as UserFrm;
 use Livraria\Auth\Adapter as AuthAdapter;
 
 class Module {
@@ -115,6 +116,10 @@ class Module {
                 'LivrariaAdmin\Form\Administradora' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');
                     return new AdministradoraFrm(null, $em);
+                },
+                'LivrariaAdmin\Form\User' => function($service) {
+                    $em = $service->get('Doctrine\ORM\EntityManager');
+                    return new UserFrm(null, $em);
                 },
                 'Livraria\Auth\Adapter' => function($service) {
                     return new AuthAdapter($service->get('Doctrine\ORM\EntityManager'));

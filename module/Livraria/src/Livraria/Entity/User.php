@@ -48,6 +48,24 @@ class User {
      * @var string
      */
     protected $salt;
+    
+    /**
+     * @ORM\Column(name="is_admin", type="boolean")
+     * @var boolean
+     */
+    protected $isAdmin;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
+     * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
+     */
+    protected $endereco;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Livraria\Entity\Administradora")
+     * @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
+     */
+    private $administradora;    
 
     public function __construct($options = null) {
         Configurator::configure($this, $options);
@@ -113,15 +131,42 @@ class User {
         return $hashSenha;
     }
 
+    public function getIsAdmin() {
+        return $this->isAdmin;
+    }
+
+    public function setIsAdmin($isAdmin) {
+        $this->isAdmin = $isAdmin;
+        return $this;
+    }
+
+    public function getEndereco() {
+        return $this->endereco;
+    }
+
+    public function setEndereco($endereco) {
+        $this->endereco = $endereco;
+        return $this;
+    }
+
+    public function getAdministradora() {
+        return $this->administradora;
+    }
+
+    public function setAdministradora($administradora) {
+        $this->administradora = $administradora;
+        return $this;
+    }
+
     public function toArray() {
-        return array(
-            'id'        => $this->getId(),
-            'nome'      => $this->getNome(),
-            'email'     => $this->getEmail(),
-            'tipo'      => $this->getTipo(),
-            'password'  => $this->getPassword(),
-            'salt'      => $this->salt
-        );
+        $data = $this->getEndereco()->toArray();
+        $data['id']             = $this->getId();
+        $data['nome']           = $this->getNome();
+        $data['email']          = $this->getEmail();
+        $data['tipo']           = $this->getTipo();
+        $data['password']       = $this->getPassword();
+        $data['salt']           = $this->getSalt();
+        return $data ;
     }
 
 }

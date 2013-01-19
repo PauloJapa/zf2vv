@@ -5,12 +5,13 @@ namespace LivrariaAdmin\Form;
 use Zend\Form\Form,
     Zend\Form\Element\Select;
 
-class User extends Form {
+class User  extends AbstractEndereco {
     
-    public function __construct($name = null) {
+    public function __construct($name = null, $em = null) {
         parent::__construct('user');
         
         $this->setAttribute('method', 'post');
+        $this->setAttribute('onKeyPress', 'return submitvalida(this,event)');
         #$this->setInputFilter(new CategoriaFilter);
         
         $this->add(array(
@@ -50,6 +51,35 @@ class User extends Form {
         );
         $this->add($tipo);
         
+        $isAdmin = new Select();
+        $isAdmin->setLabel("Administrador")
+             ->setName("isAdmin")
+              ->setOptions(array('value_options' => array('false'=>'não é admin','true'=>'é sim admin'))
+        );
+        $this->add($isAdmin);
+
+
+        $this->add(array(
+            'name' => 'administradoraDesc',
+            'options' => array(
+                'type' => 'text',
+                'label' => 'Pertence a administradora'
+            ),
+            'attributes' => array(
+                'id' => 'administradoraDesc',
+                'placeholder' => 'Pesquise digitando a administradora aqui!',
+                'onKeyUp' => 'autoCompAdminis();'
+            )
+        ));
+        
+        $this->add(array(
+            'name'      => 'administradora',
+            'attributes' => array(
+                'id'    => 'administradora',
+                'type'  => 'hidden'
+            )
+        ));        
+        
         $this->add(array(
            'name' => 'password',
             'options' => array(
@@ -60,6 +90,8 @@ class User extends Form {
                 'type' => 'password'
             )
         ));
+        
+        $this->getEnderecoElements($em);
         
         $this->add(array(
            'name' => 'submit',

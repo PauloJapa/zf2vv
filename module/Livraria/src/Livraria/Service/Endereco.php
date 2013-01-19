@@ -56,8 +56,14 @@ class Endereco extends AbstractService {
         
     }
     
-    public function update(array $data) {
-        $entity = $this->em->getReference($this->entity, $data['idEnde']);
+    public function update(array $data2) {
+        //Converter idEnde para apenas id para configurar(hidratar) a classe
+        $data = $data2;
+        $data['id'] = $data['idEnde'];
+        unset($data['idEnde']);
+        //Pega referencia do registro 
+        $entity = $this->em->getReference($this->entity, $data['id']);
+        //Faz todos os sets de endereco
         $entity = Configurator::configure($entity,$data);
                 
         //Caso a bairro não foi escolhido da lista procura o id pelo nome 

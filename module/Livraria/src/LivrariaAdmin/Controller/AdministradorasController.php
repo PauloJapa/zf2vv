@@ -54,5 +54,17 @@ class AdministradorasController extends CrudController {
 
         return new ViewModel(array('form' => $form));
     }
+    
+    public function autoCompAction(){
+        $administradora = $this->getRequest()->getPost('administradoraDesc');
+        $repository = $this->getEm()->getRepository($this->entity);
+        $resultSet = $repository->autoComp($administradora .'%');
+        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%'. $administradora .'%');
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('resultSet' => $resultSet));
+        $viewModel->setTerminal(true);
+        return $viewModel;
+    }
 
 }
