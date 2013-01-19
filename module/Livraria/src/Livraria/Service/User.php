@@ -29,6 +29,7 @@ class User extends AbstractService {
         if (empty($data['password']))
             unset($data['password']);
 
+        unset($data['administradora']);
         $entity = Configurator::configure($entity, $data);
 
         $this->em->persist($entity);

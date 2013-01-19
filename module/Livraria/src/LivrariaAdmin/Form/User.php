@@ -11,12 +11,13 @@ class User  extends AbstractEndereco {
         parent::__construct('user');
         
         $this->setAttribute('method', 'post');
-        $this->setAttribute('onKeyPress', 'return submitvalida(this,event)');
+        $this->setAttribute('onSubmit', 'return submitvalida(this)');
         #$this->setInputFilter(new CategoriaFilter);
         
         $this->add(array(
            'name' =>'id',
             'attibutes' => array(
+                'id' => 'id',
                 'type' => 'hidden'
             )
         ));
@@ -28,6 +29,7 @@ class User  extends AbstractEndereco {
                 'label' => 'Nome'
             ),
             'attributes' => array(
+                'id' => 'nome',
                 'placeholder' => 'Entre com o nome'
             )
         ));
@@ -39,6 +41,7 @@ class User  extends AbstractEndereco {
                 'label' => 'Email'
             ),
             'attributes' => array(
+                'id' => 'email',
                 'placeholder' => 'Entre com o email'
             )
         ));
@@ -54,7 +57,7 @@ class User  extends AbstractEndereco {
         $isAdmin = new Select();
         $isAdmin->setLabel("Administrador")
              ->setName("isAdmin")
-              ->setOptions(array('value_options' => array('false'=>'não é admin','true'=>'é sim admin'))
+              ->setOptions(array('value_options' => array('0'=>'não é admin','1'=>'é sim admin'))
         );
         $this->add($isAdmin);
 
@@ -87,6 +90,7 @@ class User  extends AbstractEndereco {
                 'label' => 'Senha'
             ),
             'attributes' => array(
+                'id' => 'password',
                 'type' => 'password'
             )
         ));

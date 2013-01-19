@@ -10,7 +10,7 @@ echo "<table style='width : 100% ;'>";
 echo "<tr>";
 echo "<td colspan='4'>";
 echo $this->formRow($form->get('cep'));
-echo "<a href='javascript:buscar_cep();'>Buscar</a>";
+echo "<a href='javascript:buscarEndCep();'>Buscar</a>";
 echo "<span id='checar'></span></font>";
 echo "</td>";
 echo "</tr>";
@@ -84,9 +84,14 @@ echo "</fieldset>";
         else 
             return true;
         if (keycode == 13){
-            buscar_cep();
+            buscarEndCep();
             return false;
         }
         return true;
+    }
+    function buscarEndCep(){
+        cleanInputAll('bairro');
+        cleanInputAll('cidade');
+        buscar_cep();
     }
 </script>

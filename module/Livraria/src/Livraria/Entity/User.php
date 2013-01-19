@@ -166,6 +166,9 @@ class User {
         $data['tipo']           = $this->getTipo();
         $data['password']       = $this->getPassword();
         $data['salt']           = $this->getSalt();
+        $data['isAdmin']        = $this->getIsAdmin();
+        $data['administradora'] = $this->getAdministradora()->getId();
+        $data['administradoraDesc'] = $this->getAdministradora()->getNome();
         return $data ;
     }
 

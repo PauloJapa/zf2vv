@@ -84,9 +84,16 @@ class Administradora {
 
     /**
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
+     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
     protected $endereco;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Livraria\Entity\Seguradora")
+     * @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
+     */
+    protected $seguradora;
     
 
     
@@ -243,6 +250,15 @@ class Administradora {
         $this->endereco = $endereco;
         return $this;
     }
+    
+    public function getSeguradora() {
+        return $this->seguradora;
+    }
+
+    public function setSeguradora($seguradora) {
+        $this->seguradora = $seguradora;
+        return $this;
+    }
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -256,6 +272,7 @@ class Administradora {
         $data['userIdCriado']   = $this->getUserIdCriado();
         $data['CreatedAt']      = $this->getCreatedAt();
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 
+        $data['$seguradora']    = $this->getSeguradora()->getId(); 
         return $data ;
     }
 

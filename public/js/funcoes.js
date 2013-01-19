@@ -46,6 +46,26 @@ function cleanInput(obj){
             break;
     }   
 }
+
+function cleanInputAll(obj){
+    if(!isObject(obj)) obj = document.getElementById(obj) ;
+    switch (obj.type) {
+        case "radio":
+        case "checkbox":
+            obj.checked = false ;
+            break;
+        case "select":
+            obj.selectedIndex = 0 ;            
+        break;
+        case "hidden":
+        case "button":
+            obj.value = "";
+            break;
+        default :
+            obj.value = "" ;
+            break;
+    }   
+}
 //Função para saber se o parametro é objeto
 function isObject( what ){
     return (typeof what == 'object');
@@ -69,4 +89,17 @@ function in_Array(array,vlr){
         }
     }
     return false ;
+}
+
+// Valida Campos do form passados em uma lista de Array
+function valida(ids){
+    for(i=0; i<ids.length; i++){
+        var obj = document.getElementById(ids[i]);
+        if(obj.value == ""){
+            alert("O campo " + ids[i] + " não pode ficar vazio!!");
+            obj.focus();
+            return false;
+        }
+    }
+    return true;
 }
