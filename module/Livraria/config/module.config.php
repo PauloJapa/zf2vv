@@ -66,6 +66,7 @@ return array(
             'paises' => 'LivrariaAdmin\Controller\PaisesController',
             'enderecos' => 'LivrariaAdmin\Controller\EnderecosController',
             'administradoras' => 'LivrariaAdmin\Controller\AdministradorasController',
+            'seguradoras' => 'LivrariaAdmin\Controller\SeguradorasController',
             'livros' => 'LivrariaAdmin\Controller\LivrosController',
             'users' => 'LivrariaAdmin\Controller\UsersController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',

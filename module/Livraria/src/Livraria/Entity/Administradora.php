@@ -272,7 +272,7 @@ class Administradora {
         $data['userIdCriado']   = $this->getUserIdCriado();
         $data['CreatedAt']      = $this->getCreatedAt();
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 
-        $data['$seguradora']    = $this->getSeguradora()->getId(); 
+        $data['seguradora']     = $this->getSeguradora()->getId(); 
         return $data ;
     }
 

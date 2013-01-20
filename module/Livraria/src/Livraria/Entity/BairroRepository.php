@@ -9,13 +9,11 @@ class BairroRepository extends EntityRepository {
     public function fetchPairs() {
         $entities = $this->findAll();
         
-        $array = array();
+        $array = array(' ' => 'Selecione na lista');
         
         foreach($entities as $entity) {
             $array[$entity->getId()] = $entity->getNome();
         }
-        
-        if(empty($array))$array[' ']= '';
         
         return $array;
     }

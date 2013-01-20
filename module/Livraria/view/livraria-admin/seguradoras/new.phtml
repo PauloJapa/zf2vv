@@ -1,0 +1,12 @@
+<h3>Nova seguradora</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'seguradoras','action'=>'new')));
+
+include 'formSeguradora.php';
+
+?>

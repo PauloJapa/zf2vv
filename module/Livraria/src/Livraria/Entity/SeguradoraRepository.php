@@ -1,11 +1,10 @@
-<?php 
-
+<?php
 
 namespace Livraria\Entity;
 
 use Doctrine\ORM\EntityRepository;
 
-class CidadeRepository extends EntityRepository {
+class SeguradoraRepository extends EntityRepository {
 
     public function fetchPairs() {
         $entities = $this->findAll();
@@ -19,13 +18,13 @@ class CidadeRepository extends EntityRepository {
         return $array;
     }
     
-    public function autoComp($cidade){
+    public function autoComp($seguradora){
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('u')
-                ->from('Livraria\Entity\Cidade', 'u')
-                ->where("u.nome LIKE :cidade")
-                ->setParameter('cidade', $cidade)
+                ->from('Livraria\Entity\Seguradora', 'u')
+                ->where("u.nome LIKE :seguradora")
+                ->setParameter('seguradora', $seguradora)
                 ->setMaxResults(20)
                 ->getQuery()
                 ;
@@ -33,3 +32,4 @@ class CidadeRepository extends EntityRepository {
     }
     
 }
+

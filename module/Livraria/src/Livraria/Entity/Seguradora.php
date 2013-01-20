@@ -269,7 +269,7 @@ class Seguradora
     }
 
     public function toArray() {
-        $data = $this->getEndereco()->toArray();
+        $data = $this->getEnderecos()->toArray();
         $data['id']             = $this->getId();            
         $data['nome']           = $this->getNome();          
         $data['apelido']        = $this->getApelido();       

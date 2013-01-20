@@ -1,50 +1,49 @@
 <?php
 
+
 namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form,
     Zend\Form\Element\Select;
 
-class Administradora extends AbstractEndereco {
+class Seguradora extends AbstractEndereco {
     
-    protected $seguradoras;    
 
     public function __construct($name = null, $em = null) {
-        parent::__construct('administradora');
+        parent::__construct('seguradora');
         
-        $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
-
         $this->setAttribute('method', 'post');
-        $this->setInputFilter(new AdministradoraFilter);
-              
-
+        $this->setInputFilter(new SeguradoraFilter);
+        
         $this->add(array(
-            'name' => 'id',
+           'name' =>'id',
             'attibutes' => array(
+                'id' => 'id',
                 'type' => 'hidden'
             )
         ));
+        
         $this->add(array(
-            'name' => 'nome',
+           'name' => 'nome',
             'options' => array(
                 'type' => 'text',
                 'label' => 'Nome'
             ),
             'attributes' => array(
                 'id' => 'nome',
-                'placeholder' => 'Entre com o nome'
+                'placeholder' => 'Entre com o nome do seguradora'
             )
         ));
-
+        
         $this->add(array(
-            'name' => 'apelido',
+           'name' => 'apelido',
             'options' => array(
                 'type' => 'text',
                 'label' => 'Apelido'
             ),
             'attributes' => array(
                 'id' => 'apelido',
-                'placeholder' => 'Nome fantasia'
+                'placeholder' => 'Entre com o apelido da seguradora'
             )
         ));
 
@@ -84,31 +83,36 @@ class Administradora extends AbstractEndereco {
             )
         ));
 
+        $this->add(array(
+            'name' => 'site',
+            'options' => array(
+                'type' => 'text',
+                'label' => 'Site'
+            ),
+            'attributes' => array(
+                'id' => 'site',
+                'placeholder' => 'Site da empresa'
+            )
+        ));
+
         $status = new Select();
         $status->setLabel("Situação")
                 ->setName("status")
                 ->setOptions(array('value_options' => array('A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'))
         );
         $this->add($status);
-        
-        $seguradora = new Select();
-        $seguradora->setLabel("*Seguradora")
-                ->setName("seguradora")
-                ->setAttribute("id","seguradora")
-                ->setOptions(array('value_options' => $this->seguradoras)
-        );
-        $this->add($seguradora);
      
         $this->getEnderecoElements($em);
         
         $this->add(array(
-            'name' => 'submit',
+           'name' => 'submit',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
                 'value' => 'Salvar',
                 'class' => 'btn-success'
             )
         ));
-    }
-
+    }   
+    
+    
 }
