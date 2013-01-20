@@ -23,32 +23,61 @@ return array(
             'cadastros' => array(
                 'label' => 'Cadastro',
                 'route' => 'livraria-admin',
-                'controller' => '',
+                'controller' => 'seguradoras',
                 'pages' => array(
+                    'seguradoras' => array(
+                        'label' => 'Seguradora',
+                        'route' => 'livraria-admin',
+                        'controller' => 'seguradoras',
+                        'pages' => array(
+                            'seguradora1' => array(
+                                'label' => 'Nova',
+                                'route' => 'livraria-admin',
+                                'controller' => 'seguradoras',
+                                'action' => 'new',
+                            ),
+                            'seguradora2' => array(
+                                'label' => 'Alterar',
+                                'route' => 'livraria-admin',
+                                'controller' => 'seguradoras',
+                                'action' => 'index',
+                            ),
+                            'seguradora3' => array(
+                                'label' => 'Listar_Taxas',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'index',
+                            ),
+                            'seguradora4' => array(
+                                'label' => 'Nova_Taxa',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'new',
+                            ),
+                        ),
+                    ),
                     'administradora' => array(
                         'label' => 'Administradoras',
                         'route' => 'livraria-admin',
                         'controller' => 'administradoras',
                         'pages' => array(
-                            'home' => array(
-                                'label' => 'Menu1',
+                            'administradora1' => array(
+                                'label' => 'Nova_Administradora',
                                 'route' => 'livraria-admin',
-                                'controller' => '1',
+                                'controller' => 'administradoras',
+                                'action' => 'new',
                             ),
-                            'home2' => array(
-                                'label' => 'Menu22',
+                            'administradora2' => array(
+                                'label' => 'Lista_Administradora',
                                 'route' => 'livraria-admin',
-                                'controller' => '2',
+                                'controller' => 'administradoras',
+                                'action' => 'index',
                             ),
-                            'home3' => array(
-                                'label' => 'Menu333',
+                            'administradora3' => array(
+                                'label' => 'Pesquisar',
                                 'route' => 'livraria-admin',
-                                'controller' => '3',
-                            ),
-                            'home4' => array(
-                                'label' => 'Menu4444',
-                                'route' => 'livraria-admin',
-                                'controller' => '4',
+                                'controller' => 'administradoras',
+                                'action' => 'busca',
                             ),
                         ),
                     ),

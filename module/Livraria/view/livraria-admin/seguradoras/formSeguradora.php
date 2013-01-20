@@ -22,6 +22,10 @@ echo "</td></tr>";
 echo "</table>";
 echo " </fieldset>";
 
+echo "<div align='center'>";
+echo $this->formSubmit($form->get('submit'));
+echo "</div>";
+
 require "/var/www/zf2vv/module/Livraria/view/livraria-admin/enderecos/formEnderecoInc.php";
 
 echo "<div align='center'>";
