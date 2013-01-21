@@ -1,0 +1,12 @@
+<h3>Nova classes</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'classes','action'=>'new')));
+
+include 'formClasse.php';
+
+?>

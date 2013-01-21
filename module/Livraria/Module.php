@@ -16,11 +16,13 @@ use Livraria\Service\Pais as PaisService;
 use Livraria\Service\Livro as LivroService;
 use Livraria\Service\Endereco as EnderecoService;
 use Livraria\Service\Administradora as AdministradoraService;
+use Livraria\Service\Classe as ClasseService;
 use Livraria\Service\Seguradora as SeguradoraService;
 use Livraria\Service\User as UserService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
 use LivrariaAdmin\Form\Administradora as AdministradoraFrm;
+use LivrariaAdmin\Form\Classe as ClasseFrm;
 use LivrariaAdmin\Form\Seguradora as SeguradoraFrm;
 use LivrariaAdmin\Form\User as UserFrm;
 use Livraria\Auth\Adapter as AuthAdapter;
@@ -103,6 +105,9 @@ class Module {
                 'Livraria\Service\Administradora' => function($service) {
                     return new AdministradoraService($service->get('Doctrine\ORM\EntityManager'));
                 },
+                'Livraria\Service\Classe' => function($service) {
+                    return new ClasseService($service->get('Doctrine\ORM\EntityManager'));
+                },
                 'Livraria\Service\Seguradora' => function($service) {
                     return new SeguradoraService($service->get('Doctrine\ORM\EntityManager'));
                 },
@@ -121,6 +126,10 @@ class Module {
                 'LivrariaAdmin\Form\Administradora' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');
                     return new AdministradoraFrm(null, $em);
+                },
+                'LivrariaAdmin\Form\Classe' => function($service) {
+                    $em = $service->get('Doctrine\ORM\EntityManager');
+                    return new ClasseFrm(null, $em);
                 },
                 'LivrariaAdmin\Form\Seguradora' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');

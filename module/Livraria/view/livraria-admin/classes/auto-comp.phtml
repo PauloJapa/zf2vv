@@ -1,0 +1,14 @@
+<?php 
+if($this->resultSet){
+    echo "ok|s|";
+    $cont = 0;
+    foreach($this->resultSet as $entity){
+        if($cont > 0)echo "|s|";
+        $cont++;
+        echo $entity->getId(), "|c|"; 
+        echo $entity->getNome(), "|c|"; 
+        echo $entity->getId(), "|c|"; 
+        echo $entity->getNome(), "|c|"; 
+    }
+}else
+    echo "vazio|s|";

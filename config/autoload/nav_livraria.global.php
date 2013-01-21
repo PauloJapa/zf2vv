@@ -49,6 +49,12 @@ return array(
                                 'action' => 'index',
                             ),
                             'seguradora4' => array(
+                                'label' => 'Listar_Classes',
+                                'route' => 'livraria-admin',
+                                'controller' => 'classes',
+                                'action' => 'index',
+                            ),
+                            'seguradora5' => array(
                                 'label' => 'Nova_Taxa',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',

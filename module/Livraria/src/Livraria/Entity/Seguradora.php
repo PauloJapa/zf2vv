@@ -143,6 +143,10 @@ class Seguradora
         return $this;
     }
 
+    public function __toString() {
+        return $this->nome;
+    }
+
     public function getApelido() {
         return $this->apelido;
     }
