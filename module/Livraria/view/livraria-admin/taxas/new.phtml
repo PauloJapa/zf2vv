@@ -1,0 +1,12 @@
+<h3>Nova taxas</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'taxas','action'=>'new')));
+
+include 'formTaxa.php';
+
+?>

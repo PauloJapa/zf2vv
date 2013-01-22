@@ -1,0 +1,49 @@
+<h1>Taxas</h1>
+<br />
+
+<p>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'taxas','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Taxa</a>
+</p>
+
+<table class="table table-striped table-bordered table-hover table-condensed">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Inicio</th>
+        <th>Fim</th>
+        <th>Incendio</th>
+        <th>Incendio<br>Conteudo</th>
+        <th>Aluguel</th>
+        <th>Eletrico</th>
+        <th>Desastres</th>
+        <th>Status</th>
+        <th>Classe</th>
+        <th>Ação</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach($this->data as $entity): ?>
+    <tr>
+        <td><?php echo $entity->getId(); ?></td>
+        <td><?php echo $entity->getInicio()->format('d-m-Y'); ?></td>
+        <td><?php echo $entity->getFim()->format('d-m-Y'); ?></td>
+        <td><?php echo number_format($entity->getIncendio(), 2, ',','.'); ?></td>
+        <td><?php echo number_format($entity->getIncendioConteudo(), 2, ',','.'); ?></td>
+        <td><?php echo number_format($entity->getAluguel(), 2, ',','.'); ?></td>
+        <td><?php echo number_format($entity->getEletrico(), 2, ',','.'); ?></td>
+        <td><?php echo number_format($entity->getDesastres(), 2, ',','.'); ?></td>
+        <td><?php echo $entity->getStatus(); ?></td>
+        <td><?php echo $entity->getClasse(); ?></td>
+        <td>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'taxas','action'=>'edit','id'=>$entity->getId())); ?>"><i class="icon-pencil"></i>Editar</a>
+            <a href="<?php echo $this->url('livraria-admin-interna',
+                    array('controller'=>'taxas','action'=>'delete','id'=>$entity->getId())); ?>"><i class="icon-remove"></i>Deletar</a>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+<br />
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

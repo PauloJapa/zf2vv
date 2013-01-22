@@ -139,6 +139,11 @@ class Classe
         return $this->descricao;
     }
 
+    public function __toString() {
+        return $this->descricao;
+    }
+
+
     /** 
      * Setar o descricao da Classe do registro
      * @param String $descricao

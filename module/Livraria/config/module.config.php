@@ -70,6 +70,7 @@ return array(
             'seguradoras' => 'LivrariaAdmin\Controller\SeguradorasController',
             'livros' => 'LivrariaAdmin\Controller\LivrosController',
             'users' => 'LivrariaAdmin\Controller\UsersController',
+            'taxas' => 'LivrariaAdmin\Controller\TaxasController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),
