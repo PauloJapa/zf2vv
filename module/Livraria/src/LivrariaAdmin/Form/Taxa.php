@@ -33,7 +33,8 @@ class Taxa extends Form {
             ),
             'attributes' => array(
                 'id' => 'inicio',
-                'placeholder' => 'dd/mm/yyyy'
+                'placeholder' => 'dd/mm/yyyy',
+                'onClick' => "displayCalendar(this,dateFormat,this)"
             )
         ));
         
@@ -45,7 +46,8 @@ class Taxa extends Form {
             ),
             'attributes' => array(
                 'id' => 'fim',
-                'placeholder' => 'dd/mm/yyyy'
+                'placeholder' => 'dd/mm/yyyy',
+                'onClick' => "displayCalendar(this,dateFormat,this)"
             )
         ));
 

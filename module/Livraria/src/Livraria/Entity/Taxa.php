@@ -214,7 +214,7 @@ class Taxa
      * @return this 
      */ 
     public function setIncendio($incendio) {
-        $this->incendio = $incendio;
+        $this->incendio = $this->strToFloat($incendio);
         return $this;
     }
 
@@ -228,7 +228,7 @@ class Taxa
      * @return this 
      */ 
     public function setIncendioConteudo($incendioConteudo) {
-        $this->incendioConteudo = $incendioConteudo;
+        $this->incendioConteudo = $this->strToFloat($incendioConteudo);
         return $this;
     }
 
@@ -242,7 +242,7 @@ class Taxa
      * @return this 
      */ 
     public function setAluguel($aluguel) {
-        $this->aluguel = $aluguel;
+        $this->aluguel = $this->strToFloat($aluguel);
         return $this;
     }
 
@@ -256,7 +256,7 @@ class Taxa
      * @return this 
      */ 
     public function setEletrico($eletrico) {
-        $this->eletrico = $eletrico;
+        $this->eletrico = $this->strToFloat($eletrico);
         return $this;
     }
 
@@ -270,7 +270,7 @@ class Taxa
      * @return this 
      */
     public function setDesastres($desastres) {
-        $this->desastres = $desastres;
+        $this->desastres = $this->strToFloat($desastres);
         return $this;
     }
 
@@ -346,20 +346,51 @@ class Taxa
 
     public function toArray() {
         $data['id']               = $this->getId();
-        $data['inicio']           = $this->getInicio()->format('d-m-Y');
-        $data['fim']              = $this->getFim()->format('d-m-Y');
+        $data['inicio']           = $this->getInicio()->format('d/m/Y');
+        $data['fim']              = $this->getFim()->format('d/m/Y');
         $data['status']           = $this->getStatus();
-        $data['incendio']         = $this->getIncendio();
-        $data['incendioConteudo'] = $this->getIncendioConteudo();
-        $data['aluguel']          = $this->getAluguel();
-        $data['eletrico']         = $this->getEletrico();
-        $data['desastres']        = $this->getDesastres();
+        $data['incendio']         = $this->floatToStr('Incendio');
+        $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo');
+        $data['aluguel']          = $this->floatToStr('Aluguel');
+        $data['eletrico']         = $this->floatToStr('Eletrico');
+        $data['desastres']        = $this->floatToStr('Desastres');
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();
         $data['alteradoEm']       = $this->getAlteradoEm();
         $data['classe']           = $this->getClasse()->getId(); 
         return $data ;
+    }
+ 
+    /** 
+     * Converte a variavel do tipo float para string para exibição
+     * @param String $get com nome do metodo a ser convertido
+     * @param Int $dec quantidade de casas decimais
+     * @return String do numero no formato brasileiro padrão com 2 casas decimais
+     */    
+    public function floatToStr($get,$dec = 2){
+        if($get == ""){
+            return "vazio!!";
+        }
+        $getter  = 'get' . ucwords($get);
+        if(!method_exists($this,$getter)){
+            return "Erro no metodo!!";
+        }
+        $float = call_user_func(array($this,$getter));
+        return number_format($float, $dec, ',','.');
+    }
+ 
+    /** 
+     * Faz tratamento na variavel string se necessario antes de converte em float
+     * @param String $check variavel a ser convertida se tratada se necessario
+     * @return Float da variavel de entrada convertido
+     */    
+    public function strToFloat($check){
+        if(is_string($check)){
+            $check = preg_replace("/[^0-9,]/", "", $check);
+            $check = str_replace(",", ".", $check);
+        }
+        return floatval($check);
     }
 
 }

@@ -103,3 +103,12 @@ function valida(ids){
     }
     return true;
 }
+
+function envia(action,opc){
+    var form = document.getElementsByTagName('FORM')[0];
+    if((action === null)||(action === ""))action = "/admin/seguradoras";
+    if(opc === null)opc = "";
+    form.subOpcao = opc;
+    form.action = action ;
+    form.submit() ;
+}

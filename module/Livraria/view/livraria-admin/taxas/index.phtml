@@ -12,7 +12,7 @@
         <th>Inicio</th>
         <th>Fim</th>
         <th>Incendio</th>
-        <th>Incendio<br>Conteudo</th>
+        <th>Incêndio<br>Conteúdo</th>
         <th>Aluguel</th>
         <th>Eletrico</th>
         <th>Desastres</th>
@@ -22,28 +22,41 @@
     </tr>
     </thead>
     <tbody>
-    <?php foreach($this->data as $entity): ?>
+<?php foreach($this->data as $entity): ?>
     <tr>
         <td><?php echo $entity->getId(); ?></td>
         <td><?php echo $entity->getInicio()->format('d-m-Y'); ?></td>
         <td><?php echo $entity->getFim()->format('d-m-Y'); ?></td>
-        <td><?php echo number_format($entity->getIncendio(), 2, ',','.'); ?></td>
-        <td><?php echo number_format($entity->getIncendioConteudo(), 2, ',','.'); ?></td>
-        <td><?php echo number_format($entity->getAluguel(), 2, ',','.'); ?></td>
-        <td><?php echo number_format($entity->getEletrico(), 2, ',','.'); ?></td>
-        <td><?php echo number_format($entity->getDesastres(), 2, ',','.'); ?></td>
+        <td><?php echo $entity->floatToStr('incendio'); ?></td>
+        <td><?php echo $entity->floatToStr('IncendioConteudo'); ?></td>
+        <td><?php echo $entity->floatToStr('Aluguel'); ?></td>
+        <td><?php echo $entity->floatToStr('Eletrico'); ?></td>
+        <td><?php echo $entity->floatToStr('Desastres'); ?></td>
         <td><?php echo $entity->getStatus(); ?></td>
         <td><?php echo $entity->getClasse(); ?></td>
         <td>
-            <a href="<?php echo $this->url('livraria-admin-interna',
-                    array('controller'=>'taxas','action'=>'edit','id'=>$entity->getId())); ?>"><i class="icon-pencil"></i>Editar</a>
-            <a href="<?php echo $this->url('livraria-admin-interna',
-                    array('controller'=>'taxas','action'=>'delete','id'=>$entity->getId())); ?>"><i class="icon-remove"></i>Deletar</a>
+            <a href="javascript:edit('<?php echo $entity->getId(); ?>')"><i class="icon-pencil"></i>Editar</a>
+            <a href="javascript:del('<?php echo $entity->getId(); ?>')"><i class="icon-remove"></i>Deletar</a>
         </td>
     </tr>
-    <?php endforeach; ?>
+<?php endforeach; ?>
     </tbody>
 </table>
 <br />
+<form name="form" id="form">
+    <input type="hidden" name="subOpcao" id="subOpcao">
+</form>
+<script language="javascript">
+    function edit(id){
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'taxas','action'=>'edit','id'=>'')); ?>";
+        envia(tar + id);
+    }    
+    function del(id){
+        var msg = "Deseja realmente excluir este registro?";
+        if(!confirm(msg))return;
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'taxas','action'=>'delete','id'=>'')); ?>";
+        envia(tar + id);        
+    }
+</script>
 
 <?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

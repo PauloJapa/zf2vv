@@ -30,3 +30,6 @@ echo "</div>";
 
 echo $this->form()->closeTag();
 ?>
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+</script>
