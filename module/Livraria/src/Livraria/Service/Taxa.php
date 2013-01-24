@@ -29,6 +29,8 @@ class Taxa extends AbstractService {
         unset($data['classe']);
         unset($data['inicio']);
         unset($data['fim']);
+        if ($user = $this->getIdentidade())
+            $data['userIdCriado'] = $user->getId();
         // Criar nova entidade classe
         $entity = new $this->entity($data);
         
@@ -55,6 +57,8 @@ class Taxa extends AbstractService {
         unset($data['classe']);
         unset($data['inicio']);
         unset($data['fim']);
+        if ($user = $this->getIdentidade())
+            $data['userIdAlterado'] = $user->getId();
         
         $entity = $this->em->getReference($this->entity, $data['id']);
         $entity = Configurator::configure($entity,$data);

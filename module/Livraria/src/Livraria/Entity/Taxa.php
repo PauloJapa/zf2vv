@@ -49,35 +49,35 @@ class Taxa
     /**
      * @var float $incendio
      *
-     * @ORM\Column(name="incendio", type="decimal", nullable=true)
+     * @ORM\Column(name="incendio", type="decimal", precision=10, scale=8, options={"default" = 0})
      */
     private $incendio;
 
     /**
      * @var float $incendioConteudo
      *
-     * @ORM\Column(name="incendio_conteudo", type="decimal", nullable=true)
+     * @ORM\Column(name="incendio_conteudo", precision=10, scale=8, options={"default" = 0})
      */
     private $incendioConteudo;
 
     /**
      * @var float $aluguel
      *
-     * @ORM\Column(name="aluguel", type="decimal", nullable=true)
+     * @ORM\Column(name="aluguel", type="decimal", precision=10, scale=8, options={"default" = 0})
      */
     private $aluguel;
 
     /**
      * @var float $eletrico
      *
-     * @ORM\Column(name="eletrico", type="decimal", nullable=true)
+     * @ORM\Column(name="eletrico", type="decimal", precision=10, scale=8, options={"default" = 0})
      */
     private $eletrico;
 
     /**
      * @var float $desastres
      *
-     * @ORM\Column(name="desastres", type="decimal", nullable=true)
+     * @ORM\Column(name="desastres", type="decimal", precision=10, scale=8, options={"default" = 0})
      */
     private $desastres;
 
@@ -368,7 +368,7 @@ class Taxa
      * @param Int $dec quantidade de casas decimais
      * @return String do numero no formato brasileiro padrão com 2 casas decimais
      */    
-    public function floatToStr($get,$dec = 2){
+    public function floatToStr($get,$dec = 4){
         if($get == ""){
             return "vazio!!";
         }
@@ -383,14 +383,14 @@ class Taxa
     /** 
      * Faz tratamento na variavel string se necessario antes de converte em float
      * @param String $check variavel a ser convertida se tratada se necessario
-     * @return Float da variavel de entrada convertido
+     * @return String $check no formato float para gravação pelo doctrine
      */    
     public function strToFloat($check){
         if(is_string($check)){
             $check = preg_replace("/[^0-9,]/", "", $check);
             $check = str_replace(",", ".", $check);
         }
-        return floatval($check);
+        return $check;
     }
 
 }

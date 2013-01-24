@@ -52,7 +52,7 @@ class TaxasController extends CrudController {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->update($request->getPost()->toArray());
 
-                //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
 
