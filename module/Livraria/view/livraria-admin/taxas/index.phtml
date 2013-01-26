@@ -9,6 +9,7 @@
     <thead>
     <tr>
         <th>ID</th>
+        <th>Classe</th>
         <th>Inicio</th>
         <th>Fim</th>
         <th>Incendio</th>
@@ -17,7 +18,6 @@
         <th>Eletrico</th>
         <th>Desastres</th>
         <th>Status</th>
-        <th>Classe</th>
         <th>Ação</th>
     </tr>
     </thead>
@@ -25,18 +25,18 @@
 <?php foreach($this->data as $entity): ?>
     <tr>
         <td><?php echo $entity->getId(); ?></td>
-        <td><?php echo $entity->getInicio()->format('d-m-Y'); ?></td>
-        <td><?php echo $entity->getFim()->format('d-m-Y'); ?></td>
-        <td><?php echo $entity->floatToStr('incendio'); ?></td>
-        <td><?php echo $entity->floatToStr('IncendioConteudo'); ?></td>
-        <td><?php echo $entity->floatToStr('Aluguel'); ?></td>
-        <td><?php echo $entity->floatToStr('Eletrico'); ?></td>
-        <td><?php echo $entity->floatToStr('Desastres'); ?></td>
-        <td><?php echo $entity->getStatus(); ?></td>
         <td><?php echo $entity->getClasse(); ?></td>
+        <td><?php echo $entity->getInicio(); ?></td>
+        <td><?php echo $entity->getFim(); ?></td>
+        <td class="r"><?php echo $entity->floatToStr('incendio'); ?></td>
+        <td class="r"><?php echo $entity->floatToStr('IncendioConteudo'); ?></td>
+        <td class="r"><?php echo $entity->floatToStr('Aluguel'); ?></td>
+        <td class="r"><?php echo $entity->floatToStr('Eletrico'); ?></td>
+        <td class="r"><?php echo $entity->floatToStr('Desastres'); ?></td>
+        <td><?php echo $entity->getStatus(); ?></td>
         <td>
             <a href="javascript:edit('<?php echo $entity->getId(); ?>')"><i class="icon-pencil"></i>Editar</a>
-            <a href="javascript:del('<?php echo $entity->getId(); ?>')"><i class="icon-remove"></i>Deletar</a>
+            <a href="javascript:del('<?php echo $entity->getId(); ?>')"><i class="icon-trash"></i>Deletar</a>
         </td>
     </tr>
 <?php endforeach; ?>

@@ -25,6 +25,9 @@ class Classe extends AbstractService {
         //Pegar um referencia da seguradora para classe
         $seguradora = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
         unset($data['seguradora']);
+        
+        if ($user = $this->getIdentidade())
+            $data['userIdCriado'] = $user->getId();
         // Criar nova entidade classe
         $entity = new $this->entity($data);
         
@@ -42,12 +45,18 @@ class Classe extends AbstractService {
      * @return entidade 
      */    
     public function update(array $data) {
+        //Pegar um referencia da seguradora para classe
+        $seguradora = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
+        unset($data['seguradora']);
+        
+        if ($user = $this->getIdentidade())
+            $data['userIdAlterado'] = $user->getId();
+        
         $entity = $this->em->getReference($this->entity, $data['id']);
         $entity = Configurator::configure($entity,$data);
         
-        //Pegar um referencia da seguradora para classe
-        $seguradora = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
         $entity->setSeguradora($seguradora);
+        
         
         $this->em->persist($entity);
         $this->em->flush();

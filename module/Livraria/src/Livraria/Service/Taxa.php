@@ -22,26 +22,18 @@ class Taxa extends AbstractService {
      * @return entidade 
      */     
     public function insert(array $data) { 
+        //Pega uma referencia do registro da tabela classe
+        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
+        $date = explode("/", $data['inicio']);
+        $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        if(!empty($data['fim'])){
+            $date = explode("/", $data['fim']);
+            $data['fim']    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }else{
+            $data['fim']    = new \DateTime("00/00/0000");
+        }
         //Pegar um referencia da classe para classe
-        $classe = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
-        $inicio = new \DateTime($data['inicio']);
-        $fim    = new \DateTime($data['fim']);
-        unset($data['classe']);
-        unset($data['inicio']);
-        unset($data['fim']);
-        if ($user = $this->getIdentidade())
-            $data['userIdCriado'] = $user->getId();
-        // Criar nova entidade classe
-        $entity = new $this->entity($data);
-        
-        $entity->setClasse($classe);
-        $entity->setInicio($inicio);
-        $entity->setFim($fim);
-        
-        $this->em->persist($entity);
-        $this->em->flush();
-        
-        return $entity;        
+        return parent::insert($data);       
     }
  
     /** 
@@ -50,25 +42,17 @@ class Taxa extends AbstractService {
      * @return entidade 
      */    
     public function update(array $data) {
-        //Pegar um referencia da classe para classe
-        $classe = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
-        $inicio = new \DateTime($data['inicio']);
-        $fim    = new \DateTime($data['fim']);
-        unset($data['classe']);
-        unset($data['inicio']);
-        unset($data['fim']);
-        if ($user = $this->getIdentidade())
-            $data['userIdAlterado'] = $user->getId();
+        //Pega uma referencia do registro da tabela classe
+        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
+        $date = explode("/", $data['inicio']);
+        $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        if(!empty($data['fim'])){
+            $date = explode("/", $data['fim']);
+            $data['fim']    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }else{
+            $data['fim']    = new \DateTime("00/00/0000");
+        }
         
-        $entity = $this->em->getReference($this->entity, $data['id']);
-        $entity = Configurator::configure($entity,$data);
-        $entity->setClasse($classe);
-        $entity->setInicio($inicio);
-        $entity->setFim($fim);
-        
-        $this->em->persist($entity);
-        $this->em->flush();
-        
-        return $entity;
+        return parent::update($data);
     }
 }

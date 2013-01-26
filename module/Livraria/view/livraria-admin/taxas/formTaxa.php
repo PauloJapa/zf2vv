@@ -1,34 +1,15 @@
 <?php
-
 $form->prepare();
-echo $this->form()->openTag($form);
-
-echo "<fieldset>";
-echo "  <legend>Dados da Taxa:</legend>";
-echo $this->formHidden($form->get('id')),"\r";
-echo "<table style='width : 100% ;'>";
-echo "<tr valign='top'>";
-echo "<td>";
-echo $this->formRow($form->get('inicio')),"\r";
-echo $this->formRow($form->get('status')),"\r";
-echo $this->formRow($form->get('aluguel')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('fim')),"\r";
-echo $this->formRow($form->get('incendio')),"\r";
-echo $this->formRow($form->get('eletrico')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('classe')),"\r";
-echo $this->formRow($form->get('incendioConteudo')),"\r";
-echo $this->formRow($form->get('desastres')),"\r";
-echo "</td></tr>";
-echo "</table>";
-echo " </fieldset>";
-
-echo "<div align='center'>";
-echo $this->formSubmit($form->get('submit'));
-echo "</div>";
-
-echo $this->form()->closeTag();
+echo 
+$this->FormDefault($this, $form,['legend' => 'Dados da Taxa', 'hidden' => 'id'],'inicio'),
+    "<td>\r",
+        $this->FormDefault($this, $form,['inicio' => 'calend', 'status' => 'select', 'aluguel' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['fim' => 'calend', 'incendio' => 'text', 'eletrico' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['classe' => 'select', 'incendioConteudo' => 'text', 'desastres' => 'text']),
+    "</td>\r",
+$this->FormDefault($this, $form,['submit' => 'submit'],'fim');
 ?>
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';

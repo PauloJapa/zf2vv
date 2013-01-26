@@ -160,11 +160,18 @@ class Taxa
         return $this;
     }
 
-    public function getInicio() {
+    /** 
+     * Retorna o inicio da vigência da taxa
+     * @param String $op para retornar o objeto data
+     * @return Sring da data ou objeto data 
+     */ 
+    public function getInicio($op = null) {
+        if(is_null($op)){
+            return $this->inicio->format('d/m/Y');
+        }
         return $this->inicio;
     }
-
-
+    
     /** 
      * Setar o inicio da vigência da taxa
      * @param \DateTime $inicio
@@ -175,8 +182,21 @@ class Taxa
         return $this;
     }
 
-    public function getFim() {
-        return $this->fim;
+    /** 
+     * Retorna o fim da vigência da taxa
+     * @param String $op para retornar o objeto data
+     * @return Sring da data ou vigente se zerada ou objeto data 
+     */ 
+    public function getFim($op = null) {
+        if($op == 'obj'){
+            return $this->fim;
+        }
+        $check = $this->fim->format('d/m/Y');
+        if($check == '30/11/-0001'){
+            return "vigente";
+        }else{
+            return $check;
+        }
     }
 
 
@@ -346,8 +366,8 @@ class Taxa
 
     public function toArray() {
         $data['id']               = $this->getId();
-        $data['inicio']           = $this->getInicio()->format('d/m/Y');
-        $data['fim']              = $this->getFim()->format('d/m/Y');
+        $data['inicio']           = $this->getInicio();
+        $data['fim']              = $this->getFim();
         $data['status']           = $this->getStatus();
         $data['incendio']         = $this->floatToStr('Incendio');
         $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo');
@@ -368,7 +388,7 @@ class Taxa
      * @param Int $dec quantidade de casas decimais
      * @return String do numero no formato brasileiro padrão com 2 casas decimais
      */    
-    public function floatToStr($get,$dec = 4){
+    public function floatToStr($get,$dec = 2){
         if($get == ""){
             return "vazio!!";
         }

@@ -15,6 +15,7 @@ use Zend\Authentication\AuthenticationService,
 abstract class AbstractService {
 
     /**
+     * Objeto para efetuar operações no banco
      * @var Doctrine\ORM\EntityManager
      */
     protected $em;
@@ -24,6 +25,7 @@ abstract class AbstractService {
      */
     protected $entity;
     /**
+     * Objeto que pega os dados do usuario armazenado
      * @var Zend\Authentication\AuthenticationService
      */
     protected $authService;

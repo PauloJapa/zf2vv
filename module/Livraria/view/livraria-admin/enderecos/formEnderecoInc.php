@@ -1,59 +1,32 @@
 <?php
-
-/*
- * campos do formulario endereço para ser reaproveitado
- */
-echo "<fieldset>";
-echo "  <legend>Endereço:</legend>";
-echo $this->formHidden($form->get('idEnde'));
-echo "<table style='width : 100% ;'>";
-echo "<tr>";
-echo "<td colspan='4'>";
-echo $this->formRow($form->get('cep'));
-echo "<a href='javascript:buscarEndCep();'>Buscar</a>";
-echo "<span id='checar'></span></font>";
-echo "</td>";
-echo "</tr>";
-echo "<td colspan='2'>";
-echo $this->formRow($form->get('rua'));
-echo "</td><td>";
-echo $this->formRow($form->get('numero'));
-echo "</td><td>";
-echo $this->formRow($form->get('compl'));
-echo "</td></tr>";
-echo "<tr>";
-echo "<td>";
-echo $this->formRow($form->get('bairroDesc'));
-echo $this->formHidden($form->get('bairro'));
-echo "<br /><span id='popBairros' style='position:absolute'></span>";
-echo "</td>";
-echo "<td>";
-echo $this->formRow($form->get('cidadeDesc'));
-echo $this->formHidden($form->get('cidade'));
-echo "<br /><span id='popCidades' style='position:absolute'></span>";
-echo "</td>";
-echo "<td>";
-echo "</td>";
-echo "<td>";
-echo $this->formRow($form->get('estado'));
-echo "</td>";
-echo "</tr>";
-echo "<tr>";
-echo "<td>";
-echo $this->formRow($form->get('pais'));
-echo "</td>";
-echo "<td>";
-
-echo "</td>";
-echo "<td>";
-
-echo "</td>";
-echo "<td>";
-
-echo "</td>";
-echo "</tr>";
-echo "</table>";
-echo "</fieldset>";
+echo 
+$this->FormDefault($this, $form,['legend' => 'Endereço:', 'hidden' => 'idEnde'],'fieldIni'),
+    "<td colspan='4'>\r",
+        $this->FormDefault($this, $form,['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
+    "</td>",
+"</tr>\r",        
+"<tr>\r",        
+    "<td colspan='2'>\r",
+        $this->FormDefault($this, $form,['rua' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['numero' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['compl' => 'text']),
+    "</td>\r",
+"</tr>\r",        
+"<tr>\r",        
+    "<td>\r",
+        $this->FormDefault($this, $form,['bairro' => 'hidden', 'bairroDesc' => 'text']),
+        "<br /><span id='popBairro' style='position:absolute'></span>",
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['cidade' => 'hidden', 'cidadeDesc' => 'text']),
+        "<br /><span id='popCidade' style='position:absolute'></span>",
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['estado' => 'select']),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['pais' => 'select']),
+    "</td>\r",
+$this->FormDefault($this, $form,[],'fieldFim');
 ?>
 <input name="ajaxStatus" id="ajaxStatus" type="hidden" />
 <script language="javascript">
@@ -62,8 +35,7 @@ echo "</fieldset>";
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'bairros','action'=>'autoComp')); ?>";
         var returns = Array('bairro','bairroDesc');
         var functionCall = '';
-        autoComp2(filtros,servico,'popBairros',returns,'2',functionCall);
-        
+        autoComp2(filtros,servico,'popBairro',returns,'2',functionCall);
     }
 
     function autoCompCidade(){
@@ -71,8 +43,7 @@ echo "</fieldset>";
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'cidades','action'=>'autoComp')); ?>";
         var returns = Array('cidade','cidadeDesc');
         var functionCall = '';
-        autoComp2(filtros,servico,'popCidades',returns,'2',functionCall);
-        
+        autoComp2(filtros,servico,'popCidade',returns,'2',functionCall);
     }
 
     function submitenter(obj,e){

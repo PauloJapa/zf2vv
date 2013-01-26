@@ -16,12 +16,11 @@ class Taxa extends Form {
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new TaxaFilter);
-              
 
         $this->add(array(
             'name' => 'id',
-            'attibutes' => array(
-                'type' => 'hidden'
+            'attributes' => array(
+                'id' => 'id',
             )
         ));
         

@@ -1,36 +1,21 @@
 <?php
-
 $form->prepare();
-echo $this->form()->openTag($form);
+echo 
+$this->FormDefault($this, $form,['legend' => 'Dados Basicos da Seguradora:', 'hidden' => 'id'],'inicio'),
+    "<td>\r",
+        $this->FormDefault($this, $form,['nome', 'tel', 'site'],'text'),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['apelido', 'email'],'text'),
+    "</td><td>\r",
+        $this->FormDefault($this, $form,['cnpj' => 'text', 'status' => 'select']),
+    "</td>\r",
+$this->FormDefault($this, $form,['submit' => 'submit'],'fieldFim');
 
-echo "<fieldset>";
-echo "  <legend>Dados Basicos:</legend>";
-echo $this->formHidden($form->get('id')),"\r";
-echo "<table style='width : 100% ;'>";
-echo "<tr valign='top'>";
-echo "<td>";
-echo $this->formRow($form->get('nome')),"\r";
-echo $this->formRow($form->get('tel')),"\r";
-echo $this->formRow($form->get('site')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('apelido')),"\r";
-echo $this->formRow($form->get('email')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('cnpj')),"\r";
-echo $this->formRow($form->get('status')),"\r";
-echo "</td></tr>";
-echo "</table>";
-echo " </fieldset>";
+$pastas = explode(DIRECTORY_SEPARATOR, __DIR__);
+$pastas[count($pastas) - 1] = "enderecos";
+$pastas[] = "formEnderecoInc.php";
+$enderecoFormPath = implode(DIRECTORY_SEPARATOR, $pastas);
+require $enderecoFormPath;
 
-echo "<div align='center'>";
-echo $this->formSubmit($form->get('submit'));
-echo "</div>";
-
-require "/var/www/zf2vv/module/Livraria/view/livraria-admin/enderecos/formEnderecoInc.php";
-
-echo "<div align='center'>";
-echo $this->formSubmit($form->get('submit'));
-echo "</div>";
-
-echo $this->form()->closeTag();
+$this->FormDefault($this, $form,['submit' => 'submit','noField' => true],'fim');
 ?>

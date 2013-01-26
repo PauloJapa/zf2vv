@@ -2,8 +2,7 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
+use Zend\Form\Form;
 
 abstract class AbstractEndereco extends Form {
 
@@ -125,22 +124,31 @@ abstract class AbstractEndereco extends Form {
             )
         ));
         
-        $estado = new Select();
-        $estado->setLabel("*Estado")
-                ->setName("estado")
-                ->setAttribute("id","estado")
-                ->setOptions(array('value_options' => $this->estados)
-        );
-        $this->add($estado);
-
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'estado',
+            'attributes' => array(
+                'id' => 'estado'
+            ),
+            'options' => array(
+                'label' => '*Estado',
+                'empty_option' => 'Escolha o estado!',
+                'value_options' => $this->estados
+            )
+        ));
         
-        $pais = new Select();
-        $pais->setLabel("*País")
-                ->setName("pais")
-                ->setAttribute("id","pais")
-                ->setOptions(array('value_options' => $this->paises)
-        );
-        $this->add($pais);
+        $this->add(array(
+            'type' => 'Zend\Form\Element\Select',
+            'name' => 'pais',
+            'attributes' => array(
+                'id' => 'pais'
+            ),
+            'options' => array(
+                'label' => '*País',
+                'empty_option' => 'Escolha o pais!',
+                'value_options' => $this->paises
+            )
+        ));
         
     }
 

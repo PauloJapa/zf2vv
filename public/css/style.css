@@ -35,3 +35,17 @@ div.container a.brand {
     margin-left: 0;
     padding: 8px 20px 12px 40px;
 }
+
+table td.r {
+    text-align: right;
+}
+table td.l {
+    text-align: left;
+}
+table td.c {
+    text-align: center;
+}
+
+.hand{
+    cursor:pointer;
+}

@@ -3,8 +3,7 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
+use Zend\Form\Form;
 
 class Seguradora extends AbstractEndereco {
     
@@ -95,13 +94,35 @@ class Seguradora extends AbstractEndereco {
             )
         ));
 
-        $status = new Select();
-        $status->setLabel("Situação")
-                ->setName("status")
-                ->setOptions(array('value_options' => array('A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'))
-        );
-        $this->add($status);
-     
+        $this->add(array(
+            'name' => 'site',
+            'options' => array(
+                'type' => 'text',
+                'label' => 'Site'
+            ),
+            'attributes' => array(
+                'id' => 'site',
+                'placeholder' => 'Site da empresa'
+            )
+        ));
+        
+        $this->add(array(
+                'type' => 'Zend\Form\Element\Select',
+                'name' => 'status',
+                'attributes' => array(
+                    'id' => 'status'
+                ),
+                'options' => array(
+                    'label' => 'Situação',
+                    'empty_option' => 'Escolha a situação do cadastro!',
+                    'value_options' => array(
+                        'A'=>'Ativo',
+                        'B'=>'Bloqueado',
+                        'C'=>'Cancelado',
+                ),
+            )
+        ));
+
         $this->getEnderecoElements($em);
         
         $this->add(array(
