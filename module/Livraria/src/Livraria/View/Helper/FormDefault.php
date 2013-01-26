@@ -36,9 +36,9 @@ class FormDefault extends AbstractHelper {
      * @param array $options
      * @param array $acao
      */
-    public function __invoke($formView, $form, array $options, $acao = null) {
-        $this->formView = $formView;
-        $this->form     = $form;
+    public function __invoke(array $options, $acao = null, $formView = null, $form = null) {
+        if(!is_null($formView)) $this->formView = $formView;
+        if(!is_null($form))     $this->form     = $form;
         
         switch ($acao) {
             case 'inicio':

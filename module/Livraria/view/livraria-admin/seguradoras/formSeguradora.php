@@ -1,15 +1,15 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault($this, $form,['legend' => 'Dados Basicos da Seguradora:', 'hidden' => 'id'],'inicio'),
+$this->FormDefault(['legend' => 'Dados Basicos da Seguradora:', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
-        $this->FormDefault($this, $form,['nome', 'tel', 'site'],'text'),
+        $this->FormDefault(['nome', 'tel', 'site'],'text'),
     "</td><td>\r",
-        $this->FormDefault($this, $form,['apelido', 'email'],'text'),
+        $this->FormDefault(['apelido', 'email'],'text'),
     "</td><td>\r",
-        $this->FormDefault($this, $form,['cnpj' => 'text', 'status' => 'select']),
+        $this->FormDefault(['cnpj' => 'text', 'status' => 'select']),
     "</td>\r",
-$this->FormDefault($this, $form,['submit' => 'submit'],'fieldFim');
+$this->FormDefault(['submit' => 'submit'],'fieldFim');
 
 $pastas = explode(DIRECTORY_SEPARATOR, __DIR__);
 $pastas[count($pastas) - 1] = "enderecos";
@@ -17,5 +17,5 @@ $pastas[] = "formEnderecoInc.php";
 $enderecoFormPath = implode(DIRECTORY_SEPARATOR, $pastas);
 require $enderecoFormPath;
 
-$this->FormDefault($this, $form,['submit' => 'submit','noField' => true],'fim');
+$this->FormDefault(['submit' => 'submit','noField' => true],'fim');
 ?>
