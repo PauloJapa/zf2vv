@@ -159,7 +159,8 @@ class Module {
         return array(
             'invokables' => array(
                 'UserIdentity' => new View\Helper\UserIdentity(),
-                'FormDefault' => new View\Helper\FormDefault()
+                'FormDefault' => new View\Helper\FormDefault(),
+                'ViewIndex' => new View\Helper\ViewIndex(),
             )
         );
     }

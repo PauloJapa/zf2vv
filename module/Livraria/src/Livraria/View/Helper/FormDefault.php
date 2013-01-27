@@ -221,6 +221,11 @@ class FormDefault extends AbstractHelper {
         $this->checkError();
     }
 
+    /**
+     * Renderiza um input com botão de limpar e outro botão passado por parametro 
+     * Caso exista o parametro span renderiza sua tag
+     * @param array $options
+     */
     public function renderInpuIcone($options) {
         $element = $this->form->get($options['name']);
         $this->checkError($element);
