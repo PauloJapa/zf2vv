@@ -1,0 +1,44 @@
+<h1>Atividades</h1>
+<br />
+
+<p>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Atividade</a>
+</p>
+<?php
+$coluns = array('ID','Descrição','Ref Seguradora','Ocupação','Criado Em','Alterado Em','Ação');
+$td     = array();
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     
+foreach($this->data as $entity){ 
+    $linha = array(
+        $entity->getId(),
+        $entity->getDescricao(),
+        $entity->getCodSeguradora(),
+        $entity->getOcupacao(),
+        $entity->getCriadoEm(),
+        $entity->getAlteradoEm(),
+        $entity->getId(),
+    );
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="GET">
+    <input type="hidden" name="subOpcao" id="subOpcao">
+</form>
+<script language="javascript">
+    function edit(id){
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'atividades','action'=>'edit','id'=>'')); ?>";
+        envia(tar + id);
+    }    
+    function del(id){
+        var msg = "Deseja realmente excluir este registro?";
+        if(!confirm(msg))return;
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'atividades','action'=>'delete','id'=>'')); ?>";
+        envia(tar + id);        
+    }
+</script>
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

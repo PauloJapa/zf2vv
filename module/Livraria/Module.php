@@ -20,6 +20,7 @@ use Livraria\Service\Classe as ClasseService;
 use Livraria\Service\Seguradora as SeguradoraService;
 use Livraria\Service\User as UserService;
 use Livraria\Service\Taxa as TaxaService;
+use Livraria\Service\Atividade as AtividadeService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
 use LivrariaAdmin\Form\Administradora as AdministradoraFrm;
@@ -118,6 +119,9 @@ class Module {
                 },
                 'Livraria\Service\Taxa' => function($service) {
                     return new TaxaService($service->get('Doctrine\ORM\EntityManager'));
+                },
+                'Livraria\Service\Atividade' => function($service) {
+                    return new AtividadeService($service->get('Doctrine\ORM\EntityManager'));
                 },
                 'LivrariaAdmin\Form\Livro' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');

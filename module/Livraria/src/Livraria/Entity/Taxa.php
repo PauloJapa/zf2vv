@@ -145,6 +145,10 @@ class Taxa
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
     }
     
+    /**
+     * 
+     * @return int $id do registro
+     */
     public function getId() {
         return $this->id;
     }
@@ -153,7 +157,7 @@ class Taxa
     /** 
      * Setar o id do registro
      * @param Int $id
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setId($id) {
         $this->id = $id;
@@ -175,7 +179,7 @@ class Taxa
     /** 
      * Setar o inicio da vigência da taxa
      * @param \DateTime $inicio
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setInicio(\DateTime $inicio) {
         $this->inicio = $inicio;
@@ -203,7 +207,7 @@ class Taxa
     /** 
      * Setar terminino da vigência da taxa para manter historico
      * @param \DateTime $fim
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setFim(\DateTime $fim) {
         $this->fim = $fim;
@@ -217,7 +221,7 @@ class Taxa
     /** 
      * Setar o status do registro ativo bloqueado inativo
      * @param String $status
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setStatus($status) {
         $this->status = $status;
@@ -231,7 +235,7 @@ class Taxa
     /** 
      * Setar a taxa cobrada para seguro incendio
      * @param Float $incendio
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setIncendio($incendio) {
         $this->incendio = $this->strToFloat($incendio);
@@ -245,7 +249,7 @@ class Taxa
     /** 
      * Setar a taxa cobrada para seguro incendio + conteudo
      * @param Float $incendioConteudo
-     * @return this 
+     * @return /Taxa 
      */ 
     public function setIncendioConteudo($incendioConteudo) {
         $this->incendioConteudo = $this->strToFloat($incendioConteudo);
@@ -294,6 +298,10 @@ class Taxa
         return $this;
     }
 
+    /**
+     * 
+     * @return int Id do usuario que cadastrou o registro
+     */
     public function getUserIdCriado() {
         return $this->userIdCriado;
     }
@@ -308,7 +316,16 @@ class Taxa
         return $this;
     }
 
-    public function getCriadoEm() {
+    /**
+     * 
+     * @param Boolean $op
+     * @return String data formatada em dia/mes/ano
+     * @return \DateTime data em que foi incluido no BD
+     */
+    public function getCriadoEm($op = null) {
+        if(is_null($op)){
+            return $this->criadoEm->format('d/m/Y');
+        }
         return $this->criadoEm;
     }
 
@@ -322,6 +339,10 @@ class Taxa
         return $this;
     }
 
+    /**
+     * 
+     * @return int Id do usuario que alterou o registro
+     */
     public function getUserIdAlterado() {
         return $this->userIdAlterado;
     }
@@ -336,7 +357,16 @@ class Taxa
         return $this;
     }
 
-    public function getAlteradoEm() {
+    /**
+     * 
+     * @param Boolean $op
+     * @return String data formatada em dia/mes/ano
+     * @return \DateTime data da ultima alteração
+     */
+    public function getAlteradoEm($op = null) {
+        if(is_null($op)){
+            return $this->alteradoEm->format('d/m/Y');
+        }
         return $this->alteradoEm;
     }
 
@@ -364,6 +394,10 @@ class Taxa
         return $this;
     }
 
+    /**
+     * 
+     * @return array com todos os campos formatados para o form
+     */
     public function toArray() {
         $data['id']               = $this->getId();
         $data['inicio']           = $this->getInicio();
