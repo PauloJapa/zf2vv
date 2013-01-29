@@ -87,6 +87,31 @@ return array(
                             ),
                         ),
                     ),
+                    'atividades' => array(
+                        'label' => 'Atividades',
+                        'route' => 'livraria-admin',
+                        'controller' => 'atividades',
+                        'pages' => array(
+                            'atividades1' => array(
+                                'label' => 'Nova_Atividade',
+                                'route' => 'livraria-admin',
+                                'controller' => 'atividades',
+                                'action' => 'new',
+                            ),
+                            'atividades2' => array(
+                                'label' => 'Lista_Atividade',
+                                'route' => 'livraria-admin',
+                                'controller' => 'atividades',
+                                'action' => 'index',
+                            ),
+                            'atividades3' => array(
+                                'label' => 'Pesquisar',
+                                'route' => 'livraria-admin',
+                                'controller' => 'atividades',
+                                'action' => 'busca',
+                            ),
+                        ),
+                    ),
                     'users' => array(
                         'label' => 'Users',
                         'route' => 'livraria-admin',

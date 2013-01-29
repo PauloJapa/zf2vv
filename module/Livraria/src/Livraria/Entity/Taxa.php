@@ -157,7 +157,7 @@ class Taxa
     /** 
      * Setar o id do registro
      * @param Int $id
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setId($id) {
         $this->id = $id;
@@ -167,7 +167,8 @@ class Taxa
     /** 
      * Retorna o inicio da vigência da taxa
      * @param String $op para retornar o objeto data
-     * @return Sring da data ou objeto data 
+     * @return Sring da data no formato dd/mm/aaaa
+     * @return \DateTime Objeto  
      */ 
     public function getInicio($op = null) {
         if(is_null($op)){
@@ -179,7 +180,7 @@ class Taxa
     /** 
      * Setar o inicio da vigência da taxa
      * @param \DateTime $inicio
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setInicio(\DateTime $inicio) {
         $this->inicio = $inicio;
@@ -189,7 +190,8 @@ class Taxa
     /** 
      * Retorna o fim da vigência da taxa
      * @param String $op para retornar o objeto data
-     * @return Sring da data ou vigente se zerada ou objeto data 
+     * @return Sring da data no formato dd/mm/aaaa
+     * @return \DateTime Objeto  
      */ 
     public function getFim($op = null) {
         if($op == 'obj'){
@@ -207,7 +209,7 @@ class Taxa
     /** 
      * Setar terminino da vigência da taxa para manter historico
      * @param \DateTime $fim
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setFim(\DateTime $fim) {
         $this->fim = $fim;
@@ -221,7 +223,7 @@ class Taxa
     /** 
      * Setar o status do registro ativo bloqueado inativo
      * @param String $status
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setStatus($status) {
         $this->status = $status;
@@ -235,7 +237,7 @@ class Taxa
     /** 
      * Setar a taxa cobrada para seguro incendio
      * @param Float $incendio
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setIncendio($incendio) {
         $this->incendio = $this->strToFloat($incendio);
@@ -249,7 +251,7 @@ class Taxa
     /** 
      * Setar a taxa cobrada para seguro incendio + conteudo
      * @param Float $incendioConteudo
-     * @return /Taxa 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setIncendioConteudo($incendioConteudo) {
         $this->incendioConteudo = $this->strToFloat($incendioConteudo);
@@ -380,6 +382,10 @@ class Taxa
         return $this;
     }
 
+    /**
+     * 
+     * @return entity $classe
+     */
     public function getClasse() {
         return $this->classe;
     }

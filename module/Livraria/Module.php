@@ -20,6 +20,7 @@ use Livraria\Service\Classe as ClasseService;
 use Livraria\Service\Seguradora as SeguradoraService;
 use Livraria\Service\User as UserService;
 use Livraria\Service\Taxa as TaxaService;
+use Livraria\Service\ClasseAtividade as ClasseAtividadeService;
 use Livraria\Service\Atividade as AtividadeService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
@@ -28,6 +29,7 @@ use LivrariaAdmin\Form\Classe as ClasseFrm;
 use LivrariaAdmin\Form\Seguradora as SeguradoraFrm;
 use LivrariaAdmin\Form\User as UserFrm;
 use LivrariaAdmin\Form\Taxa as TaxaFrm;
+use LivrariaAdmin\Form\ClasseAtividade as ClasseAtividadeFrm;
 use Livraria\Auth\Adapter as AuthAdapter;
 
 class Module {
@@ -120,6 +122,9 @@ class Module {
                 'Livraria\Service\Taxa' => function($service) {
                     return new TaxaService($service->get('Doctrine\ORM\EntityManager'));
                 },
+                'Livraria\Service\ClasseAtividade' => function($service) {
+                    return new ClasseAtividadeService($service->get('Doctrine\ORM\EntityManager'));
+                },
                 'Livraria\Service\Atividade' => function($service) {
                     return new AtividadeService($service->get('Doctrine\ORM\EntityManager'));
                 },
@@ -151,6 +156,10 @@ class Module {
                 'LivrariaAdmin\Form\Taxa' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');
                     return new TaxaFrm(null, $em);
+                },
+                'LivrariaAdmin\Form\ClasseAtividade' => function($service) {
+                    $em = $service->get('Doctrine\ORM\EntityManager');
+                    return new ClasseAtividadeFrm(null, $em);
                 },
                 'Livraria\Auth\Adapter' => function($service) {
                     return new AuthAdapter($service->get('Doctrine\ORM\EntityManager'));

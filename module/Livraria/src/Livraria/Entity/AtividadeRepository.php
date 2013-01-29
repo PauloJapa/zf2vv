@@ -10,6 +10,21 @@ use Doctrine\ORM\EntityRepository;
  */
 class AtividadeRepository extends EntityRepository {
 
+    /** 
+     * Buscar no banco todos registros para colocar no select do form
+     * @return Array com a lista de registro  
+     */ 
+    public function fetchPairs() {
+        $entities = $this->findAll();
+        
+        $array = array('' => 'Selecione na lista');
+        
+        foreach($entities as $entity) {
+            $array[$entity->getId()] = $entity->getDescricao();
+        }
+        
+        return $array;
+    }
     
 }
 

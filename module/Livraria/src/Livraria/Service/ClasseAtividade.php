@@ -5,15 +5,15 @@ namespace Livraria\Service;
 use Doctrine\ORM\EntityManager;
 use Livraria\Entity\Configurator;
 /**
- * Taxa
- * Faz o CRUD da tabela Taxa no banco de dados
+ * ClasseAtividade
+ * Faz o CRUD da tabela ClasseAtividade no banco de dados
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class Taxa extends AbstractService {
+class ClasseAtividade extends AbstractService {
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
-        $this->entity = "Livraria\Entity\Taxa";
+        $this->entity = "Livraria\Entity\ClasseAtividade";
     }
 
     /** 
@@ -23,7 +23,9 @@ class Taxa extends AbstractService {
      */     
     public function insert(array $data) { 
         //Pega uma referencia do registro da tabela classe
-        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
+        $data['classeTaxas'] = $this->em->getReference("Livraria\Entity\Classe", $data['classeTaxas']);
+        //Pega uma referencia do registro da tabela atividade
+        $data['atividade'] = $this->em->getReference("Livraria\Entity\Atividade", $data['atividade']);
         $date = explode("/", $data['inicio']);
         $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
         if(!empty($data['fim'])){
@@ -43,7 +45,9 @@ class Taxa extends AbstractService {
      */    
     public function update(array $data) {
         //Pega uma referencia do registro da tabela classe
-        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
+        $data['classeTaxas'] = $this->em->getReference("Livraria\Entity\Classe", $data['classeTaxas']);
+        //Pega uma referencia do registro da tabela atividade
+        $data['atividade'] = $this->em->getReference("Livraria\Entity\Atividade", $data['atividade']);
         $date = explode("/", $data['inicio']);
         $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
         if((!empty($data['fim'])) && ($data['fim'] != "vigente")){

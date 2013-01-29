@@ -1,0 +1,44 @@
+<h1>Classe Atividades</h1>
+<br />
+
+<p>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'classeAtividades','action'=>'new')); ?>"><i class="icon-plus"></i>Nova ClasseAtividade</a>
+</p>
+<?php
+$coluns = array('ID','Inicio','Fim','Status','Classe','Atividade','Ação');
+$td     = array();
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     
+foreach($this->data as $entity){ 
+    $linha = array(
+        $entity->getId(),
+        $entity->getInicio(),
+        $entity->getFim(),
+        $entity->getStatus(),
+        $entity->getClasseTaxas()->getDescricao(),
+        $entity->getAtividade()->getDescricao(),
+        $entity->getId(),
+    );
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="GET">
+    <input type="hidden" name="subOpcao" id="subOpcao">
+</form>
+<script language="javascript">
+    function edit(id){
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classeAtividades','action'=>'edit','id'=>'')); ?>";
+        envia(tar + id);
+    }    
+    function del(id){
+        var msg = "Deseja realmente excluir este registro?";
+        if(!confirm(msg))return;
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classeAtividades','action'=>'delete','id'=>'')); ?>";
+        envia(tar + id);        
+    }
+</script>
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>
