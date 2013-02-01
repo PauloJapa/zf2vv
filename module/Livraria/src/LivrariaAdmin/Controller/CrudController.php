@@ -34,7 +34,7 @@ abstract class CrudController extends AbstractActionController {
         }else{
             $list = $this->getEm()
                     ->getRepository($this->entity)
-                    ->findBySeguradora($filtro);
+                    ->findBy($filtro);
         }
 
         $this->page = $this->params()->fromRoute('page');
@@ -46,7 +46,7 @@ abstract class CrudController extends AbstractActionController {
         $this->paginator->setDefaultItemCountPerPage(20);
         $this->paginator->setPageRange(15);
         if($this->render)
-            return new ViewModel(array('data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
+            return new ViewModel($this->getParamsForView());
     }
 
     public function newAction() {
@@ -120,9 +120,11 @@ abstract class CrudController extends AbstractActionController {
      * Junta os paramentros basicos para as actions new ou edit
      * @return array 
      */
-    public function getParamsForNewOrEdit() {
-        $viewData['form'] = $this->formData;
-        $viewData['formName'] = $this->formData->getName();
+    public function getParamsForView() {
+        if($this->formData){
+            $viewData['form'] = $this->formData;
+            $viewData['formName'] = $this->formData->getName();
+        }
         $viewData['data'] = $this->paginator ;
         $viewData['page'] = $this->page;
         $viewData['route'] = $this->route2;

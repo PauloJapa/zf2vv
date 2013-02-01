@@ -6,16 +6,37 @@ use Zend\Form\Form,
     Zend\Form\Element\Select;
 
 class Taxa extends Form {
+    /**
+     * Registros para preencher o input select
+     * @var array 
+     */
+    protected $classes;  
+    /**
+     * Registros para preencher o input select
+     * @var array 
+     */  
+    protected $seguradoras;  
     
-    protected $classes;    
+    /**
+     * Objeto para manipular dados do BD
+     * @var Doctrine\ORM\EntityManager
+     */
+    protected $em;
 
     public function __construct($name = null, $em = null) {
         parent::__construct('taxa');
-        
-        $this->classes = $em->getRepository('Livraria\Entity\Classe')->fetchPairs();
+        $this->em = $em;
+        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
-        $this->setInputFilter(new TaxaFilter);
+        $this->setInputFilter(new TaxaFilter);    
+
+        $this->add(array(
+            'name' => 'subOpcao',
+            'attributes' => array(
+                'id' => 'subOpcao'
+            )
+        ));
 
         $this->add(array(
             'name' => 'id',
@@ -121,18 +142,40 @@ class Taxa extends Form {
         $classe->setLabel("*Classe")
                 ->setName("classe")
                 ->setAttribute("id","classe")
-                ->setOptions(array('value_options' => $this->classes)
-        );
+                ->setAttribute("onChange","buscaClasse()");
         $this->add($classe);
+
+        $seguradora = new Select();
+        $seguradora->setLabel("*Seguradora")
+                ->setName("seguradora")
+                ->setAttribute("id","seguradora")
+                ->setAttribute("onChange","buscaSeguradora()")
+                ->setOptions(array('value_options' => $this->seguradoras)
+        );
+        $this->add($seguradora);
      
         $this->add(array(
-            'name' => 'submit',
+            'name' => 'enviar',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
                 'value' => 'Salvar',
-                'class' => 'btn-success'
+                'class' => 'btn-success',
+                'onClick' => 'salvar()'
             )
         ));
+    }
+    
+    public function reloadSelectClasse(array $filtro){
+        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro['filtro']);
+        $classe = new Select();
+        $classe->setLabel("*Classe")
+                ->setName("classe")
+                ->setAttribute("id","classe")
+                ->setAttribute("onChange","buscaClasse()")
+                ->setOptions(array('value_options' => $this->classes)
+        );
+        $this->add($classe);
+        $this->setData($filtro['data']);
     }
 
 }

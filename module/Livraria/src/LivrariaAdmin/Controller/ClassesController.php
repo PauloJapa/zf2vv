@@ -23,12 +23,12 @@ class ClassesController extends CrudController {
         $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
 
-        $filtro = '';
+        $filtro = null;
         
         if ($request->isPost()) {
             $this->formData->setData($request->getPost());
             $data   = $request->getPost()->toArray();
-            $filtro = $data['seguradora'];
+            $filtro['seguradora'] = $data['seguradora'];
             if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->insert($data);
@@ -39,30 +39,31 @@ class ClassesController extends CrudController {
         $this->setRender(FALSE);
         parent::indexAction($filtro);
         
-        return new ViewModel($this->getParamsForNewOrEdit()); 
+        return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
         $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
-
         $repository = $this->getEm()->getRepository($this->entity);
-        $entity = $repository->find($this->params()->fromRoute('id', 0));
 
         if ($this->params()->fromRoute('id', 0))
-            $this->formData->setData($entity->toArray());
+            $entity = $repository->find($this->params()->fromRoute('id', 0));
         else{            
             $data   = $request->getPost()->toArray();
             $entity = $repository->find($data['id']);
-            $this->formData->setData($entity->toArray());
         }
+        
+        $this->formData->setData($entity->toArray());
+
+        $filtro = null;
 
         if ($request->isPost()) {
             $this->formData->setData($request->getPost());
             if(isset($data['seguradora']))
-                $filtro = $data['seguradora'];
+                $filtro['seguradora'] = $data['seguradora'];
             else
-                $filtro = $entity->getSeguradora()->getId();
+                $filtro['seguradora'] = $entity->getSeguradora()->getId();
             if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->update($request->getPost()->toArray());
@@ -74,7 +75,7 @@ class ClassesController extends CrudController {
         $this->setRender(FALSE);
         parent::indexAction($filtro);
 
-        return new ViewModel($this->getParamsForNewOrEdit()); 
+        return new ViewModel($this->getParamsForView()); 
     }
 
 }

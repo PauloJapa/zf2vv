@@ -66,7 +66,7 @@ class Classe extends Form {
         $this->add($seguradora);
      
         $this->add(array(
-            'name' => 'submit1',
+            'name' => 'enviar',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
                 'value' => 'Salvar',

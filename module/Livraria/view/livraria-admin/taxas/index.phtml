@@ -5,7 +5,7 @@
     <a href="<?php echo $this->url('livraria-admin',array('controller'=>'taxas','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Taxa</a>
 </p>
 <?php
-$coluns = array('ID','Classe','Inicio','Fim','Incêndio','Incêndio<br>Conteúdo','Aluguel','Eletrico','Desastres','Status','Ação');
+$coluns = array('ID','Seguradora','Classe','Inicio','Fim','Incêndio','Incêndio<br>Conteúdo','Aluguel','Eletrico','Desastres','Status','Ação');
 $td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','','');
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
@@ -13,6 +13,7 @@ echo $this->ViewIndex('table'),
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),
+        $entity->getSeguradora(),
         $entity->getClasse(),
         $entity->getInicio(),
         $entity->getFim(),
@@ -29,18 +30,32 @@ foreach($this->data as $entity){
 echo $this->ViewIndex('close');
 ?>
 <br />
-<form name="form" id="form" method="GET">
-    <input type="hidden" name="subOpcao" id="subOpcao">
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
     function edit(id){
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'taxas','action'=>'edit','id'=>'')); ?>";
-        envia(tar + id);
+        try{
+            var vlr = document.getElementById('seguradora').value;
+            var ele = document.createElement("input");
+            var frm = document.getElementById('form');
+            ele.setAttribute("type","hidden");
+            ele.setAttribute("name","seguradora");
+            ele.setAttribute("id","seguradora2");
+            ele.setAttribute("value",vlr);
+            frm.appendChild(ele);    
+        }catch(e){
+            var vlr = e ;
+        }        
+        document.getElementById('id2').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
+        envia(tar,'busca');
     }    
     function del(id){
         var msg = "Deseja realmente excluir este registro?";
         if(!confirm(msg))return;
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'taxas','action'=>'delete','id'=>'')); ?>";
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete','id'=>'')); ?>";
         envia(tar + id);        
     }
 </script>

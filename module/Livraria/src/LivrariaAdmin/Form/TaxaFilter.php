@@ -57,6 +57,40 @@ class TaxaFilter extends InputFilter {
                 )
             )
         ));
+        
+        $this->add(array(
+           'name' => 'classe',
+            'required' => true,
+            'filters' => array(
+                array('name'=>'StripTags'),
+                array('name'=>'StringTrim')
+            ),
+            'validators' => array(
+                array(
+                    'name' => 'NotEmpty',
+                    'options'=>array(
+                        'messages' => array('isEmpty'=>'Campo não pode estar em branco'),
+                    )
+                )
+            )
+        ));
+        
+        $this->add(array(
+           'name' => 'seguradora',
+            'required' => true,
+            'filters' => array(
+                array('name'=>'StripTags'),
+                array('name'=>'StringTrim')
+            ),
+            'validators' => array(
+                array(
+                    'name' => 'NotEmpty',
+                    'options'=>array(
+                        'messages' => array('isEmpty'=>'Campo não pode estar em branco'),
+                    )
+                )
+            )
+        ));
     }    
     
 }

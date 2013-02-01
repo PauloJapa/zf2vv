@@ -18,7 +18,7 @@ class ClasseFilter extends InputFilter {
                 array(
                     'name' => 'NotEmpty',
                     'options'=>array(
-                        'messages' => array('isEmpty'=>'Nome não pode estar em branco'),
+                        'messages' => array('isEmpty'=>'Campo não pode estar em branco'),
                     )
                 )
             )
@@ -35,7 +35,7 @@ class ClasseFilter extends InputFilter {
                 array(
                     'name' => 'NotEmpty',
                     'options'=>array(
-                        'messages' => array('isEmpty'=>'Nome não pode estar em branco'),
+                        'messages' => array('isEmpty'=>'Campo não pode estar em branco'),
                     )
                 )
             )
@@ -52,7 +52,7 @@ class ClasseFilter extends InputFilter {
                 array(
                     'name' => 'NotEmpty',
                     'options'=>array(
-                        'messages' => array('isEmpty'=>'Nome não pode estar em branco'),
+                        'messages' => array('isEmpty'=>'Campo não pode estar em branco'),
                     )
                 )
             )

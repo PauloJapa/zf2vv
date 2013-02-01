@@ -120,6 +120,17 @@ class Taxa
     private $classe;
 
 
+    /**
+     * @var Seguradora
+     *
+     * @ORM\ManyToOne(targetEntity="Seguradora")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
+     * })
+     */
+    private $seguradora;
+
+
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -384,7 +395,7 @@ class Taxa
 
     /**
      * 
-     * @return entity $classe
+     * @return \Livraria\Entity\Classe
      */
     public function getClasse() {
         return $this->classe;
@@ -393,10 +404,28 @@ class Taxa
     /** 
      * Setar a qual entidade classe que pertence esta taxa
      * @param \Livraria\Entity\Classe $classe
-     * @return this 
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setClasse(Classe $classe) {
         $this->classe = $classe;
+        return $this;
+    }
+    
+    /**
+     * 
+     * @return \Livraria\Entity\Seguradora
+     */
+    public function getSeguradora() {
+        return $this->seguradora;
+    }
+
+    /**
+     * 
+     * @param \Livraria\Entity\Seguradora $seguradora
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setSeguradora(Seguradora $seguradora) {
+        $this->seguradora = $seguradora;
         return $this;
     }
 
@@ -419,6 +448,7 @@ class Taxa
         $data['userIdAlterado']   = $this->getUserIdAlterado();
         $data['alteradoEm']       = $this->getAlteradoEm();
         $data['classe']           = $this->getClasse()->getId(); 
+        $data['seguradora']       = $this->getSeguradora()->getId(); 
         return $data ;
     }
  

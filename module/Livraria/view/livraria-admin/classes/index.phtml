@@ -2,7 +2,7 @@
 <br />
 
 <p>
-    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'classes','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Classe</a>
+    <a href="<?php echo $this->url($this->matchedRouteName,array('controller'=>$this->params['controller'],'action'=>'new')); ?>"><i class="icon-plus"></i>Nova Classe</a>
 </p>
 <?php
 $coluns = array('ID','Seguradora','Codigo','Descrição','Ação');
@@ -42,13 +42,13 @@ echo $this->ViewIndex('close');
             var vlr = e ;
         }        
         document.getElementById('id2').value = id ;
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classes','action'=>'edit')); ?>";
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
         envia(tar,'busca');
     }    
     function del(id){
         var msg = "Deseja realmente excluir este registro?";
         if(!confirm(msg))return;
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classes','action'=>'delete','id'=>'')); ?>";
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete','id'=>'')); ?>";
         envia(tar + id);        
     }
 </script>

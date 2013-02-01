@@ -20,43 +20,77 @@ class TaxasController extends CrudController {
     }
     
     public function newAction() {
-        $form = $this->getServiceLocator()->get($this->form);
+        $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
 
+        $filtro = null;
+        
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            $data   = $request->getPost()->toArray();
+            if(!empty($data['seguradora']))$filtro['seguradora'] = $data['seguradora'];
+            if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
+            if(isset($filtro['seguradora']))
+                $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora'])) ;
+            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($request->getPost()->toArray());
+                $service->insert($data);
 
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
-
-        return new ViewModel(array('form' => $form));
+        
+        $this->setRender(FALSE);
+        parent::indexAction($filtro);
+        
+        return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
-        $form = $this->getServiceLocator()->get($this->form);
+        $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
-
         $repository = $this->getEm()->getRepository($this->entity);
-        $entity = $repository->find($this->params()->fromRoute('id', 0));
 
         if ($this->params()->fromRoute('id', 0))
-            $form->setData($entity->toArray());
+            $entity = $repository->find($this->params()->fromRoute('id', 0));
+        else{            
+            $data   = $request->getPost()->toArray();
+            $entity = $repository->find($data['id']);
+        }
+        
+        $this->formData->setData($entity->toArray());
+
+        $filtro = null;
 
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            if(isset($data['seguradora'])){
+                if(!empty($data['seguradora']))$filtro['seguradora'] = $data['seguradora'];
+                if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
+            }else{
+                $filtro['seguradora'] = $entity->getSeguradora()->getId();
+                $filtro['classe']     = $entity->getClasse()->getId();
+            }
+            //Filtrar classes a serem exibidas conforme seguradora selecionada
+            if(isset($filtro['seguradora'])){
+                $this->formData->reloadSelectClasse(
+                    array('filtro' => array('seguradora' => $filtro['seguradora']),
+                          'data'   => array('classe'     => $filtro['classe']),
+                    )
+                );
+            }
+            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->update($request->getPost()->toArray());
+                $service->update($data);
 
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
+        
+        $this->setRender(FALSE);
+        parent::indexAction($filtro);
 
-        return new ViewModel(array('form' => $form));
+        return new ViewModel($this->getParamsForView()); 
     }
 
 }

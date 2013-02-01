@@ -14,8 +14,12 @@ class ClasseRepository extends EntityRepository {
      * Buscar no banco todos registros para colocar no select do form
      * @return Array com a lista de registro  
      */ 
-    public function fetchPairs() {
-        $entities = $this->findAll();
+    public function fetchPairs($filtros = null) {
+        if(isset($filtros)){
+            $entities = $this->findBy($filtros);
+        }else{
+            $entities = $this->findAll();
+        }
         
         $array = array('' => 'Selecione na lista');
         
