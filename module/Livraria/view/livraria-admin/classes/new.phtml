@@ -1,11 +1,11 @@
-<h3>Nova classes</h3>
+<h3>Nova classe</h3>
 
 <br />
 
 <?php
 $form = $this->form; 
 
-$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'classes','action'=>'new')));
+$form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
 
 include 'formClasse.php';
 

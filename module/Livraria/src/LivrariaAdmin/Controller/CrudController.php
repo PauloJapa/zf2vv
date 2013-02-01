@@ -17,33 +17,46 @@ abstract class CrudController extends AbstractActionController {
     protected $service;
     protected $entity;
     protected $form;
+    protected $formData;
     protected $route;
     protected $controller;
+    protected $paginator;
+    protected $page;
+    protected $route2;
+    protected $autoCompParams;
+    protected $render = TRUE;
 
-    public function indexAction() {
-        $list = $this->getEm()
-                ->getRepository($this->entity)
-                ->findAll();
+    public function indexAction($filtro = null) {
+        if(is_null($filtro)){
+            $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->findAll();
+        }else{
+            $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->findBySeguradora($filtro);
+        }
 
-        $page = $this->params()->fromRoute('page');
+        $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler
-        $route = $this->getEvent()->getRouteMatch();
+        $this->route2 = $this->getEvent()->getRouteMatch();
 
-        $paginator = new Paginator(new ArrayAdapter($list));
-        $paginator->setCurrentPageNumber($page);
-        $paginator->setDefaultItemCountPerPage(20);
-        $paginator->setPageRange(15);
-        return new ViewModel(array('data' => $paginator, 'page' => $page, 'route' => $route));
+        $this->paginator = new Paginator(new ArrayAdapter($list));
+        $this->paginator->setCurrentPageNumber($this->page);
+        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setPageRange(15);
+        if($this->render)
+            return new ViewModel(array('data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
     }
 
     public function newAction() {
-        $form = new $this->form();
+        $this->formData = new $this->form();
 
         $request = $this->getRequest();
 
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->insert($request->getPost()->toArray());
 
@@ -51,22 +64,23 @@ abstract class CrudController extends AbstractActionController {
             }
         }
 
-        return new ViewModel(array('form' => $form));
+        if($this->render)
+            return new ViewModel(array('form' => $this->formData));
     }
 
     public function editAction() {
-        $form = new $this->form();
+        $this->formData = new $this->form();
         $request = $this->getRequest();
 
         $repository = $this->getEm()->getRepository($this->entity);
         $entity = $repository->find($this->params()->fromRoute('id', 0));
 
         if ($this->params()->fromRoute('id', 0))
-            $form->setData($entity->toArray());
+            $this->formData->setData($entity->toArray());
 
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->update($request->getPost()->toArray());
 
@@ -74,7 +88,8 @@ abstract class CrudController extends AbstractActionController {
             }
         }
 
-        return new ViewModel(array('form' => $form));
+        if($this->render)
+            return new ViewModel(array('form' => $this->formData));
     }
 
     public function deleteAction() {
@@ -83,15 +98,57 @@ abstract class CrudController extends AbstractActionController {
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
     }
 
-    /*
+    /**
      * @return EntityManager
      */
-
     protected function getEm() {
         if (null === $this->em)
             $this->em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         return $this->em;
+    }
+    
+    /**
+     * Setar o controller para retorna ou não um view para tela
+     * @param boolean $render default TRUE
+     */
+    public function setRender($render) {
+        $this->render = $render;
+    }
+
+    /**
+     * Junta os paramentros basicos para as actions new ou edit
+     * @return array 
+     */
+    public function getParamsForNewOrEdit() {
+        $viewData['form'] = $this->formData;
+        $viewData['formName'] = $this->formData->getName();
+        $viewData['data'] = $this->paginator ;
+        $viewData['page'] = $this->page;
+        $viewData['route'] = $this->route2;
+        $viewData['params'] = $this->route2->getParams();
+        $viewData['matchedRouteName'] = $this->route2->getMatchedRouteName();
+        return $viewData;    
+    }
+    
+    /**
+     * 
+     * Configura um chamada para o repositorio que
+     * Faz uma busca no BD pela requisição Ajax com parametro de busca
+     * Na view retorna os dados no formato texto para o js exibir para o usuario
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function autoCompAction(){
+        $classe = $this->getRequest()->getPost($this->autoCompParams['input']);
+        $repository = $this->getEm()->getRepository($this->entity);
+        $resultSet = $repository->autoComp($classe .'%');
+        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%'. $classe .'%');
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('resultSet' => $resultSet));
+        $viewModel->setTerminal(true);
+        return $viewModel;
     }
 
 }

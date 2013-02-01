@@ -19,4 +19,18 @@ class AdministradoraRepository extends EntityRepository {
                 ;
         return $query->getResult();
     }
+    
+    
+    public function fetchPairs() {
+        $entities = $this->findAll();
+        
+        $array = array();
+        
+        foreach($entities as $entity) {
+            $array[$entity->getId()] = $entity->getNome();
+        }
+        
+        return $array;
+    }
+    
 }

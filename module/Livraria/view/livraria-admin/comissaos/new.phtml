@@ -1,0 +1,12 @@
+<h3>Nova comissao</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'comissaos','action'=>'new')));
+
+include 'formComissao.php';
+
+?>

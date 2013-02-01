@@ -3,20 +3,18 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
-use Zend\Paginator\Paginator,
-    Zend\Paginator\Adapter\ArrayAdapter;
 /**
- * ClasseAtividade
+ * Comissao
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class ClasseAtividadesController extends CrudController {
+class ComissaosController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\ClasseAtividade";
-        $this->form = "LivrariaAdmin\Form\ClasseAtividade";
-        $this->service = "Livraria\Service\ClasseAtividade";
-        $this->controller = "classeAtividades";
+        $this->entity = "Livraria\Entity\Comissao";
+        $this->form = "LivrariaAdmin\Form\Comissao";
+        $this->service = "Livraria\Service\Comissao";
+        $this->controller = "comissaos";
         $this->route = "livraria-admin";
         
     }
@@ -24,6 +22,7 @@ class ClasseAtividadesController extends CrudController {
     public function newAction() {
         $form = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
+
         if ($request->isPost()) {
             $form->setData($request->getPost());
             if ($form->isValid()) {
@@ -33,11 +32,8 @@ class ClasseAtividadesController extends CrudController {
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
-        
-        $this->setRender(FALSE);
-        parent::indexAction();
 
-        return new ViewModel(array('form' => $form,'data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
+        return new ViewModel(array('form' => $form));
     }
 
     public function editAction() {
@@ -58,14 +54,9 @@ class ClasseAtividadesController extends CrudController {
 
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
-        } 
-        
-        
-        $this->setRender(FALSE);
-        parent::indexAction();
-        
-        return new ViewModel(array('form' => $form,'data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
+        }
 
+        return new ViewModel(array('form' => $form));
     }
 
 }

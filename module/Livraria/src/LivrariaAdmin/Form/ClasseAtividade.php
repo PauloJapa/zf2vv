@@ -20,13 +20,20 @@ class ClasseAtividade extends Form {
      *
      * @var \Livraria\Entity\Atividade 
      */
-    protected $atividades;    
+    protected $atividades;  
+    
+    /**
+     * Todos os registros de \Livraria\Entity\Seguradora
+     * @var array  
+     */
+    protected $seguradoras;
 
     public function __construct($name = null, $em = null) {
         parent::__construct('classeAtividade');
         
         $this->classeTaxas = $em->getRepository('Livraria\Entity\Classe')->fetchPairs();
         $this->atividades = $em->getRepository('Livraria\Entity\Atividade')->fetchPairs();
+        $this->$seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ClasseAtividadeFilter);
@@ -86,6 +93,14 @@ class ClasseAtividade extends Form {
                 ->setOptions(array('value_options' => $this->atividades)
         );
         $this->add($classe);
+
+        $seguradora = new Select();
+        $seguradora->setLabel("Seguradora")
+                ->setName("seguradora")
+                ->setAttribute("id","seguradora")
+                ->setOptions(array('value_options' => $this->seguradoras)
+        );
+        $this->add($seguradora);
      
         $this->add(array(
             'name' => 'submit',

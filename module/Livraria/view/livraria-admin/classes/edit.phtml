@@ -5,7 +5,7 @@
 <?php
 $form = $this->form; 
 
-$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'classes','action'=>'edit')));
+$form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
 
 include 'formClasse.php';
 

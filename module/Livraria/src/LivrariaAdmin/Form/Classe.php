@@ -19,11 +19,19 @@ class Classe extends Form {
               
 
         $this->add(array(
-            'name' => 'id',
-            'attibutes' => array(
-                'type' => 'hidden'
+            'name' => 'subOpcao',
+            'attributes' => array(
+                'id' => 'subOpcao'
             )
         ));
+        
+        $this->add(array(
+            'name' => 'id',
+            'attributes' => array(
+                'id' => 'id'
+            )
+        ));
+        
         $this->add(array(
             'name' => 'cod',
             'options' => array(
@@ -52,16 +60,18 @@ class Classe extends Form {
         $seguradora->setLabel("*Seguradora")
                 ->setName("seguradora")
                 ->setAttribute("id","seguradora")
+                ->setAttribute("onChange","buscaSeguradora()")
                 ->setOptions(array('value_options' => $this->seguradoras)
         );
         $this->add($seguradora);
      
         $this->add(array(
-            'name' => 'submit',
+            'name' => 'submit1',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
                 'value' => 'Salvar',
-                'class' => 'btn-success'
+                'class' => 'btn-success',
+                'onClick' => 'salvar()'
             )
         ));
     }

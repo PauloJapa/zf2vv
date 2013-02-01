@@ -104,11 +104,11 @@ function valida(ids){
     return true;
 }
 
-function envia(action,opc){
-    var form = document.getElementsByTagName('FORM')[0];
+function envia(action,opc,frm){
+    if(frm == null)frm = document.getElementById('form'); else frm = document.getElementById(frm);
     if((action === null)||(action === ""))action = "/admin/seguradoras";
     if(opc === null)opc = "";
-    form.subOpcao = opc;
-    form.action = action ;
-    form.submit() ;
+    frm.subOpcao.value = opc;
+    frm.action = action ;
+    frm.submit() ;
 }

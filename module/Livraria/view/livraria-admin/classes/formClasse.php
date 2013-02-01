@@ -1,26 +1,29 @@
 <?php
 
 $form->prepare();
-echo $this->form()->openTag($form);
+echo 
+$this->FormDefault(['legend' => 'Dados da Classe', 'hidden' => 'id'],'inicio',$this, $form),
+    "<td>\r",
+        $this->FormDefault(['subOpcao' => 'hidden']),
+        $this->FormDefault(['seguradora' => 'select']),
+    "</td><td>\r",
+        $this->FormDefault(['cod' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault(['descricao' => 'text']),
+    "</td>\r",
+$this->FormDefault(['submit' => 'submit1'],'fim');
 
-echo "<fieldset>";
-echo "  <legend>Dados da Classe:</legend>";
-echo $this->formHidden($form->get('id')),"\r";
-echo "<table style='width : 100% ;'>";
-echo "<tr valign='top'>";
-echo "<td>";
-echo $this->formRow($form->get('cod')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('descricao')),"\r";
-echo "</td><td>";
-echo $this->formRow($form->get('seguradora')),"\r";
-echo "</td></tr>";
-echo "</table>";
-echo " </fieldset>";
 
-echo "<div align='center'>";
-echo $this->formSubmit($form->get('submit'));
-echo "</div>";
+require 'index.phtml';
 
-echo $this->form()->closeTag();
 ?>
+<script language="javascript">
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    function buscaSeguradora(){
+        envia(tar,'busca',formName);
+    }
+    function salvar(){
+        envia(tar,'',formName);
+    }
+</script>

@@ -31,34 +31,16 @@ return array(
                         'controller' => 'seguradoras',
                         'pages' => array(
                             'seguradora1' => array(
-                                'label' => 'Nova',
+                                'label' => 'Nova_Seguradora',
                                 'route' => 'livraria-admin',
                                 'controller' => 'seguradoras',
                                 'action' => 'new',
                             ),
                             'seguradora2' => array(
-                                'label' => 'Alterar',
+                                'label' => 'Listar_Seguradoras',
                                 'route' => 'livraria-admin',
                                 'controller' => 'seguradoras',
                                 'action' => 'index',
-                            ),
-                            'seguradora3' => array(
-                                'label' => 'Listar_Taxas',
-                                'route' => 'livraria-admin',
-                                'controller' => 'taxas',
-                                'action' => 'index',
-                            ),
-                            'seguradora4' => array(
-                                'label' => 'Listar_Classes',
-                                'route' => 'livraria-admin',
-                                'controller' => 'classes',
-                                'action' => 'index',
-                            ),
-                            'seguradora5' => array(
-                                'label' => 'Nova_Taxa',
-                                'route' => 'livraria-admin',
-                                'controller' => 'taxas',
-                                'action' => 'new',
                             ),
                         ),
                     ),
@@ -84,6 +66,56 @@ return array(
                                 'route' => 'livraria-admin',
                                 'controller' => 'administradoras',
                                 'action' => 'busca',
+                            ),
+                            'administradora4' => array(
+                                'label' => 'Listar_Comissões',
+                                'route' => 'livraria-admin',
+                                'controller' => 'comissaos',
+                                'action' => 'index',
+                            ),
+                            'administradora5' => array(
+                                'label' => 'Nova_Comissão',
+                                'route' => 'livraria-admin',
+                                'controller' => 'comissaos',
+                                'action' => 'new',
+                            ),
+                        ),
+                    ),
+                    'Taxas' => array(
+                        'label' => 'Taxas',
+                        'route' => 'livraria-admin',
+                        'controller' => 'taxas',
+                        'pages' => array(
+                            'taxas1' => array(
+                                'label' => 'Nova_Taxa',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'new',
+                            ),
+                            'taxas2' => array(
+                                'label' => 'Listar_Taxas',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
+                    'classe' => array(
+                        'label' => 'Classes',
+                        'route' => 'livraria-admin',
+                        'controller' => 'classes',
+                        'pages' => array(
+                            'classe1' => array(
+                                'label' => 'Nova_Classe',
+                                'route' => 'livraria-admin',
+                                'controller' => 'classes',
+                                'action' => 'new',
+                            ),
+                            'classe2' => array(
+                                'label' => 'Listar_Classe',
+                                'route' => 'livraria-admin',
+                                'controller' => 'classes',
+                                'action' => 'index',
                             ),
                         ),
                     ),
@@ -112,6 +144,25 @@ return array(
                             ),
                         ),
                     ),
+                    'classeAtividade' => array(
+                        'label' => 'Classes_Atividades',
+                        'route' => 'livraria-admin',
+                        'controller' => 'classeAtividades',
+                        'pages' => array(
+                            'classe1' => array(
+                                'label' => 'Nova_Classes_Atividades',
+                                'route' => 'livraria-admin',
+                                'controller' => 'classeAtividades',
+                                'action' => 'new',
+                            ),
+                            'classe2' => array(
+                                'label' => 'Listar_Classes_Atividades',
+                                'route' => 'livraria-admin',
+                                'controller' => 'classeAtividades',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
                     'users' => array(
                         'label' => 'Users',
                         'route' => 'livraria-admin',
@@ -121,26 +172,28 @@ return array(
                         'label' => 'Endereço',
                         'route' => 'livraria-admin',
                         'controller' => 'enderecos',
-                    ),
-                    'bairro' => array(
-                        'label' => 'Bairros',
-                        'route' => 'livraria-admin',
-                        'controller' => 'bairros',
-                    ),
-                    'cidade' => array(
-                        'label' => 'Cidade',
-                        'route' => 'livraria-admin',
-                        'controller' => 'cidades',
-                    ),
-                    'estado' => array(
-                        'label' => 'Estado',
-                        'route' => 'livraria-admin',
-                        'controller' => 'estados',
-                    ),
-                    'pais' => array(
-                        'label' => 'Pais',
-                        'route' => 'livraria-admin',
-                        'controller' => 'paises',
+                        'pages' => array(
+                            'bairro' => array(
+                                'label' => 'Bairros',
+                                'route' => 'livraria-admin',
+                                'controller' => 'bairros',
+                            ),
+                            'cidade' => array(
+                                'label' => 'Cidade',
+                                'route' => 'livraria-admin',
+                                'controller' => 'cidades',
+                            ),
+                            'estado' => array(
+                                'label' => 'Estado',
+                                'route' => 'livraria-admin',
+                                'controller' => 'estados',
+                            ),
+                            'pais' => array(
+                                'label' => 'Pais',
+                                'route' => 'livraria-admin',
+                                'controller' => 'paises',
+                            ),                            
+                        ),
                     ),
                     'categoria' => array(
                         'label' => 'Categoria',

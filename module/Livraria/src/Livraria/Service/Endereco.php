@@ -43,9 +43,13 @@ class Endereco extends AbstractService {
         }
         $entity->setCidade($cidade);
         
+        if(empty($data['estado']))
+            $data['estado'] = "28";
         $estado = $this->em->getReference("Livraria\Entity\Estado", $data['estado']);
         $entity->setEstado($estado);
         
+        if(empty($data['pais']))
+            $data['pais'] = "1";
         $pais = $this->em->getReference("Livraria\Entity\Pais", $data['pais']);
         $entity->setPais($pais);
         
@@ -92,9 +96,13 @@ class Endereco extends AbstractService {
         }
         $entity->setCidade($cidade);
         
+        if(empty($data['estado']))
+            $data['estado'] = "28";
         $estado = $this->em->getReference("Livraria\Entity\Estado", $data['estado']);
         $entity->setEstado($estado);
         
+        if(empty($data['pais']))
+            $data['pais'] = "1";
         $pais = $this->em->getReference("Livraria\Entity\Pais", $data['pais']);
         $entity->setPais($pais);
         

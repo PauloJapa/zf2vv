@@ -113,6 +113,14 @@ class Administradora {
         $this->updatedAt = new \DateTime('now');
         $this->updatedAt->setTimezone(new \DateTimeZone('UTC'));
     }
+
+    /**
+     * Nome da Administradora
+     * @return string
+     */
+    public function __toString() {
+        return $this->nome;
+    }
     
     public function getId() {
         return $this->id;

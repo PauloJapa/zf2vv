@@ -1,20 +1,20 @@
-<h1>Classe Atividades</h1>
+<h1>Comissaos</h1>
 <br />
 
 <p>
-    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'classeAtividades','action'=>'new')); ?>"><i class="icon-plus"></i>Nova ClasseAtividade</a>
+    <a href="<?php echo $this->url('livraria-admin',array('controller'=>'comissaos','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Comissao</a>
 </p>
 <?php
-$coluns = array('ID','Atividade','Classe','Inicio','Fim','Status','Ação');
-$td     = array();
+$coluns = array('ID','Administradora','Comissão','Inicio','Fim','Status','Ação');
+$td     = array('','','class="r"','','','','');
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),
-        $entity->getAtividade()->getDescricao(),
-        $entity->getClasseTaxas()->getDescricao(),
+        $entity->getAdministradora(),
+        $entity->floatToStr('Comissao'),
         $entity->getInicio(),
         $entity->getFim(),
         $entity->getStatus(),
@@ -30,13 +30,13 @@ echo $this->ViewIndex('close');
 </form>
 <script language="javascript">
     function edit(id){
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classeAtividades','action'=>'edit','id'=>'')); ?>";
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'comissaos','action'=>'edit','id'=>'')); ?>";
         envia(tar + id);
     }    
     function del(id){
         var msg = "Deseja realmente excluir este registro?";
         if(!confirm(msg))return;
-        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'classeAtividades','action'=>'delete','id'=>'')); ?>";
+        var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'comissaos','action'=>'delete','id'=>'')); ?>";
         envia(tar + id);        
     }
 </script>

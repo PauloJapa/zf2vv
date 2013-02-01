@@ -73,6 +73,7 @@ return array(
             'taxas' => 'LivrariaAdmin\Controller\TaxasController',
             'atividades' => 'LivrariaAdmin\Controller\AtividadesController',
             'classeAtividades' => 'LivrariaAdmin\Controller\ClasseAtividadesController',
+            'comissaos' => 'LivrariaAdmin\Controller\ComissaosController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

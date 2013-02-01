@@ -16,59 +16,65 @@ class ClassesController extends CrudController {
         $this->service = "Livraria\Service\Classe";
         $this->controller = "classes";
         $this->route = "livraria-admin";
-        
+        $this->autoCompParams = array('input' => 'classeDesc');
     }
     
     public function newAction() {
-        $form = $this->getServiceLocator()->get($this->form);
+        $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
 
+        $filtro = '';
+        
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            $data   = $request->getPost()->toArray();
+            $filtro = $data['seguradora'];
+            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($request->getPost()->toArray());
-
+                $service->insert($data);
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
-
-        return new ViewModel(array('form' => $form));
+        
+        $this->setRender(FALSE);
+        parent::indexAction($filtro);
+        
+        return new ViewModel($this->getParamsForNewOrEdit()); 
     }
 
     public function editAction() {
-        $form = $this->getServiceLocator()->get($this->form);
+        $this->formData = $this->getServiceLocator()->get($this->form);
         $request = $this->getRequest();
 
         $repository = $this->getEm()->getRepository($this->entity);
         $entity = $repository->find($this->params()->fromRoute('id', 0));
 
         if ($this->params()->fromRoute('id', 0))
-            $form->setData($entity->toArray());
+            $this->formData->setData($entity->toArray());
+        else{            
+            $data   = $request->getPost()->toArray();
+            $entity = $repository->find($data['id']);
+            $this->formData->setData($entity->toArray());
+        }
 
         if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+            $this->formData->setData($request->getPost());
+            if(isset($data['seguradora']))
+                $filtro = $data['seguradora'];
+            else
+                $filtro = $entity->getSeguradora()->getId();
+            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $service->update($request->getPost()->toArray());
 
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
+        
+        $this->setRender(FALSE);
+        parent::indexAction($filtro);
 
-        return new ViewModel(array('form' => $form));
-    }
-    
-    public function autoCompAction(){
-        $classe = $this->getRequest()->getPost('classeDesc');
-        $repository = $this->getEm()->getRepository($this->entity);
-        $resultSet = $repository->autoComp($classe .'%');
-        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $classe .'%');
-        // instancia uma view sem o layout da tela
-        $viewModel = new ViewModel(array('resultSet' => $resultSet));
-        $viewModel->setTerminal(true);
-        return $viewModel;
+        return new ViewModel($this->getParamsForNewOrEdit()); 
     }
 
 }
