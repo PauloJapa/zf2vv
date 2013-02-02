@@ -94,8 +94,19 @@ abstract class CrudController extends AbstractActionController {
 
     public function deleteAction() {
         $service = $this->getServiceLocator()->get($this->service);
-        if ($service->delete($this->params()->fromRoute('id', 0)))
+        
+        if($this->params()->fromRoute('id', 0))
+            $data['id'] = $this->params()->fromRoute('id', 0);
+        else
+            $data = $this->getRequest()->getPost()->toArray();
+        
+        $result = $service->delete($data['id']);
+        if ($result === TRUE){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        }
+        foreach ($result as $value) {
+            $this->flashMessenger()->addMessage($value);
+        }
     }
 
     /**
@@ -130,6 +141,7 @@ abstract class CrudController extends AbstractActionController {
         $viewData['route'] = $this->route2;
         $viewData['params'] = $this->route2->getParams();
         $viewData['matchedRouteName'] = $this->route2->getMatchedRouteName();
+        $viewData['flashMessages']    = $this->flashMessenger()->getMessages();
         return $viewData;    
     }
     
@@ -142,11 +154,11 @@ abstract class CrudController extends AbstractActionController {
      * @return \Zend\View\Model\ViewModel
      */
     public function autoCompAction(){
-        $classe = $this->getRequest()->getPost($this->autoCompParams['input']);
+        $param = $this->getRequest()->getPost('TxtBusca');
         $repository = $this->getEm()->getRepository($this->entity);
-        $resultSet = $repository->autoComp($classe .'%');
+        $resultSet = $repository->autoComp($param .'%');
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $classe .'%');
+            $resultSet = $repository->autoComp('%'. $param .'%');
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('resultSet' => $resultSet));
         $viewModel->setTerminal(true);

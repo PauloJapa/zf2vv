@@ -23,6 +23,7 @@ class Taxa extends AbstractService {
      */     
     public function insert(array $data) { 
         //Pega uma referencia do registro da tabela classe
+        $data['seguradora'] = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
         $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
         $date = explode("/", $data['inicio']);
         $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
@@ -43,6 +44,7 @@ class Taxa extends AbstractService {
      */    
     public function update(array $data) {
         //Pega uma referencia do registro da tabela classe
+        $data['seguradora'] = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
         $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
         $date = explode("/", $data['inicio']);
         $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);

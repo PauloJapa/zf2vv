@@ -166,7 +166,7 @@ class Taxa extends Form {
     }
     
     public function reloadSelectClasse(array $filtro){
-        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro['filtro']);
+        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
         $classe = new Select();
         $classe->setLabel("*Classe")
                 ->setName("classe")
@@ -175,7 +175,6 @@ class Taxa extends Form {
                 ->setOptions(array('value_options' => $this->classes)
         );
         $this->add($classe);
-        $this->setData($filtro['data']);
     }
 
 }

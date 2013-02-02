@@ -47,7 +47,8 @@ abstract class AbstractService {
         
         $this->em->persist($entity);
         $this->em->flush();
-        return $entity;
+        
+        return TRUE;
     }
 
     /** 
@@ -65,7 +66,7 @@ abstract class AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
         
-        return $entity;
+        return TRUE;
     }
   
     /** 

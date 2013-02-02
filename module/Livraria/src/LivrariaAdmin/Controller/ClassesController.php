@@ -20,19 +20,27 @@ class ClassesController extends CrudController {
     }
     
     public function newAction() {
-        $this->formData = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-
+        $this->formData = new $this->form(null, $this->getEm());
+        $data = $this->getRequest()->getPost()->toArray();
         $filtro = null;
         
-        if ($request->isPost()) {
-            $this->formData->setData($request->getPost());
-            $data   = $request->getPost()->toArray();
-            $filtro['seguradora'] = $data['seguradora'];
-            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
+        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+            }
+            $this->formData->setData($data);
+        }
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($data);
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                $result = $service->insert($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
             }
         }
         
@@ -43,33 +51,40 @@ class ClassesController extends CrudController {
     }
 
     public function editAction() {
-        $this->formData = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
+        $this->formData = new $this->form(null, $this->getEm());
+        $data = $this->getRequest()->getPost()->toArray();
         $repository = $this->getEm()->getRepository($this->entity);
-
-        if ($this->params()->fromRoute('id', 0))
-            $entity = $repository->find($this->params()->fromRoute('id', 0));
-        else{            
-            $data   = $request->getPost()->toArray();
-            $entity = $repository->find($data['id']);
-        }
-        
-        $this->formData->setData($entity->toArray());
-
         $filtro = null;
-
-        if ($request->isPost()) {
-            $this->formData->setData($request->getPost());
-            if(isset($data['seguradora']))
+        
+        switch ($data['subOpcao']){
+        case 'editar':    
+            $entity = $repository->find($data['id']);
+            $filtro['seguradora'] = $entity->getSeguradora()->getId();
+            $this->formData->setData($entity->toArray());
+            break;
+        case 'buscar':  
+            if(!empty($data['seguradora'])){
                 $filtro['seguradora'] = $data['seguradora'];
-            else
-                $filtro['seguradora'] = $entity->getSeguradora()->getId();
-            if ((empty($data['subOpcao'])) and ($this->formData->isValid())) {
-                $service = $this->getServiceLocator()->get($this->service);
-                $service->update($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
+            $this->formData->setData($data);  
+            break;
+        case 'salvar': 
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+            }
+            $this->formData->setData($data);
+            if ($this->formData->isValid()){
+                $service = $this->getServiceLocator()->get($this->service);
+                $result = $service->update($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }   
+            break;
         }
         
         $this->setRender(FALSE);

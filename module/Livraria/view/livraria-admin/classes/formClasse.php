@@ -1,3 +1,12 @@
+<?php if(count($flashMessages)) : ?>
+<div class="control-group error">
+<ul class="help-inline">
+    <?php foreach ($flashMessages as $msg) : ?>
+    <li><?php echo $msg; ?></li>
+    <?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
 <?php
 
 $form->prepare();
@@ -20,9 +29,9 @@ require 'index.phtml';
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
     function buscaSeguradora(){
-        envia(tar,'busca',formName);
+        envia(tar,'buscar',formName);
     }
     function salvar(){
-        envia(tar,'',formName);
+        envia(tar,'salvar',formName);
     }
 </script>

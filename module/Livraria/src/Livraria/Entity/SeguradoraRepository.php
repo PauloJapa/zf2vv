@@ -9,7 +9,7 @@ class SeguradoraRepository extends EntityRepository {
     public function fetchPairs() {
         $entities = $this->findAll();
         
-        $array = array(' ' => 'Selecione na lista');
+        $array = array('' => 'Selecione na lista');
         
         foreach($entities as $entity) {
             $array[$entity->getId()] = $entity->getNome();
