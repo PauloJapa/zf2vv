@@ -4,36 +4,31 @@ namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
 /**
- * Taxa
+ * Log
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class TaxasController extends CrudController {
+class LogsController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\Taxa";
-        $this->form = "LivrariaAdmin\Form\Taxa";
-        $this->service = "Livraria\Service\Taxa";
-        $this->controller = "taxas";
+        $this->entity = "Livraria\Entity\Log";
+        $this->form = "LivrariaAdmin\Form\Log";
+        $this->service = "Livraria\Service\Log";
+        $this->controller = "logs";
         $this->route = "livraria-admin";
         
     }
     
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'classe' => 'ASC'));
+        return parent::indexAction($filtro,array('user' => 'ASC'));
     }
 
     public function newAction() {
-        $this->formData = new $this->form(null, $this->getEm());
+        $this->formData = new $this->form();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
-        
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora'])) ;
-            }
+            if(!empty($data['user']))    $filtro['user']     = $data['user'];
             $this->formData->setData($data);
         }
         if($data['subOpcao'] == 'salvar'){
@@ -53,12 +48,11 @@ class TaxasController extends CrudController {
         $this->setRender(FALSE);
         $this->indexAction($filtro);
         
-        
         return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
-        $this->formData = new $this->form(null, $this->getEm());
+        $this->formData = new $this->form();
         $this->formData->setEdit();
         $data = $this->getRequest()->getPost()->toArray();
         $repository = $this->getEm()->getRepository($this->entity);
@@ -67,27 +61,17 @@ class TaxasController extends CrudController {
         switch ($data['subOpcao']){
         case 'editar':    
             $entity = $repository->find($data['id']);
-            $filtro['seguradora'] = $entity->getSeguradora()->getId();
-            $filtro['classe']     = $entity->getClasse()->getId();
-            $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
+            $filtro['user'] = $entity->getUser()->getId();
             $this->formData->setData($entity->toArray());
             break;
         case 'buscar':  
-            if(!empty($data['classe']))    
-                $filtro['classe']     = $data['classe'];
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
-            }
+            if(!empty($data['user']))    
+                $filtro['user']     = $data['user'];
             $this->formData->setData($data);  
             break;
         case 'salvar': 
-            //Com selects desabilitados eles nao sao enviados e deve ser carregado manualmente
-            $entity = $repository->find($data['id']);
-            $data['seguradora'] = $filtro['seguradora'] = $entity->getSeguradora()->getId();
-            $data['classe']     = $filtro['classe']     = $entity->getClasse()->getId();
-            $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
-            
+            if(!empty($data['user']))    
+                $filtro['user']     = $data['user'];
             $this->formData->setData($data);
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);

@@ -22,6 +22,12 @@ class Taxa extends Form {
      * @var Doctrine\ORM\EntityManager
      */
     protected $em;
+    
+    /**
+     * Para setar o form corretamente para edição de dados
+     * @var bollean 
+     */
+    protected $isEdit = false;
 
     public function __construct($name = null, $em = null) {
         parent::__construct('taxa');
@@ -175,6 +181,20 @@ class Taxa extends Form {
                 ->setOptions(array('value_options' => $this->classes)
         );
         $this->add($classe);
+        if($this->isEdit)
+            $this->setEdit ();
+    }
+    
+    public function setEdit(){
+        $this->isEdit = TRUE;
+        $this->get('seguradora')->setAttribute('disabled', 'disabled');   
+        $this->get('classe')->setAttribute('disabled', 'disabled');   
+        $this->get('inicio')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('incendio')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('incendioConteudo')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('aluguel')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('eletrico')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('desastres')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
     }
 
 }

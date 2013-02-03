@@ -30,20 +30,33 @@ abstract class AbstractService {
      */
     protected $authService;
     
+    /**
+     * Dados do form a serem validados
+     * @var array
+     */
+    protected $data;
+
+    /**
+     * Contruct recebe EntityManager para manipulação de registros
+     * @param \Doctrine\ORM\EntityManager $em
+     */
     public function __construct(EntityManager $em) {
         $this->em = $em;
     }
  
     /** 
      * Inserir no banco de dados o registro
-     * Retorna a entity da tabela que foi criada.
-     * @param Array $data com os campos do registro
-     * @return entidade 
-     */    
-    public function insert(array $data) {
+     * @param array $data com os campos do registro
+     * @return boolean 
+     */  
+    public function insert(array $data = null) {
+        if($data){
+            $this->data = $data;
+        }
         if ($user = $this->getIdentidade())
-            $data['userIdCriado'] = $user->getId();
-        $entity = new $this->entity($data);
+            $this->data['userIdCriado'] = $user->getId();
+        
+        $entity = new $this->entity($this->data);
         
         $this->em->persist($entity);
         $this->em->flush();
@@ -53,15 +66,17 @@ abstract class AbstractService {
 
     /** 
      * Alterar no banco de dados o registro e
-     * Retorna a entity da tabela que foi alterada.
-     * @param Array $data com os campos do registro
-     * @return entidade
+     * @param array $data com os campos do registro
+     * @return boolean
      */      
-    public function update(array $data) {
+    public function update(array $data = null) {
+        if($data){
+            $this->data = $data;
+        }
         if ($user = $this->getIdentidade())
-            $data['userIdAlterado'] = $user->getId();
-        $entity = $this->em->getReference($this->entity, $data['id']);
-        $entity = Configurator::configure($entity, $data);
+            $this->data['userIdAlterado'] = $user->getId();
+        $entity = $this->em->getReference($this->entity, $this->data['id']);
+        $entity = Configurator::configure($entity, $this->data);
         
         $this->em->persist($entity);
         $this->em->flush();
@@ -72,7 +87,7 @@ abstract class AbstractService {
     /** 
      * Esclui o registro ou marca como cancelado se existir os campo status
      * @param $id do registro
-     * @return Boolean
+     * @return boolean
      */   
     public function delete($id) {
         $entity = $this->em->getReference($this->entity, $id);
@@ -83,15 +98,17 @@ abstract class AbstractService {
                 $this->em->remove($entity);
             }
             $this->em->flush();
-            return true ;
+            return TRUE ;
         }
+        return FALSE ;
     }
  
     /** 
      * Busca os dados do usuario da storage session
      * Retorna a entity com os dados do usuario
      * @param Array $data com os campos do registro
-     * @return entidade 
+     * @return Livraria\Entity\User 
+     * @return boolean
      */     
     public function getIdentidade() { 
         if (is_object($this->authService)) {
@@ -103,9 +120,42 @@ abstract class AbstractService {
             if ($this->authService->hasIdentity()) 
                 return $this->authService->getIdentity();
         }
-        return false;
+        return FALSE;
     }
     
+    /**
+     * Converte uma data string em data object no indice apontado.
+     * @param string $index
+     * @return boolean
+     */
+    public function dateToObject($index){
+        //Trata as variveis data string para data objetos
+        if(!isset($this->data[$index]))
+            return FALSE;
+        
+        if((!empty($this->data[$index])) && ($this->data[$index] != "vigente")){
+            $date = explode("/", $this->data[$index]);
+            $this->data[$index]    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }else{
+            $this->data[$index]    = new \DateTime("00/00/0000");
+        }
+        
+        if($this->data[$index]){
+            return TRUE;
+        }
+        return FALSE;
+    }   
+    
+    /**
+     * Converte o id de um registro dependente em object reference
+     * @param string $index   Indice do array a ser feita a ligação
+     * @param string $entity  Caminho para a Entity 
+     */
+    public function idToReference($index, $entity){
+        if(!isset($this->data[$index]))
+            return FALSE;
+        $this->data[$index] = $this->em->getReference($entity, $this->data[$index]);
+    }
     
     
 }

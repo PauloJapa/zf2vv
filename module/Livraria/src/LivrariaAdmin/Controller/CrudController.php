@@ -26,16 +26,16 @@ abstract class CrudController extends AbstractActionController {
     protected $autoCompParams;
     protected $render = TRUE;
 
-    public function indexAction($filtro = null) {
+    public function indexAction(array $filtro = null,array $orderBy = null) {
         if(is_null($filtro)){
-            $list = $this->getEm()
-                    ->getRepository($this->entity)
-                    ->findAll();
-        }else{
-            $list = $this->getEm()
-                    ->getRepository($this->entity)
-                    ->findBy($filtro);
+            $filtro = array();
         }
+        if(is_null($orderBy)){
+            $orderBy = array();
+        }
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findBy($filtro,$orderBy);
 
         $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler

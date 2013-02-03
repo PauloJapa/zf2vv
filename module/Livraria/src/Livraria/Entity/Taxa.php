@@ -149,11 +149,16 @@ class Taxa
      
     /**
      * Executa antes de salvar o registro atualizando assim a data de alteradoEm
+     * Verifica a data e seta o status do registro conforme valor de fim
      * @ORM\PreUpdate
      */
     function preUpdate(){
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
+        if($this->inicio < $this->fim)
+            $this->status = 'C';
+        else
+            $this->status = 'A';
     }
     
     /**

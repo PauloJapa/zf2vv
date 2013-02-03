@@ -211,6 +211,8 @@ class FormDefault extends AbstractHelper {
     public function renderInputCalend($name) {
         $element = $this->form->get($name);
         $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
         echo
         '<div class="input-append">',
             $this->formView->formLabel($element),

@@ -15,6 +15,12 @@ class Taxa extends AbstractService {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Taxa";
     }
+    
+    public function setReferences(){
+        //Pega uma referencia do registro da tabela classe
+        $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
+        $this->idToReference('classe', 'Livraria\Entity\Classe');
+    }
 
     /** 
      * Inserir no banco de dados o registro
@@ -22,39 +28,78 @@ class Taxa extends AbstractService {
      * @return entidade 
      */     
     public function insert(array $data) { 
-        //Pega uma referencia do registro da tabela classe
-        $data['seguradora'] = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
-        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
-        $date = explode("/", $data['inicio']);
-        $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
-        if(!empty($data['fim'])){
-            $date = explode("/", $data['fim']);
-            $data['fim']    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
-        }else{
-            $data['fim']    = new \DateTime("00/00/0000");
+        $this->data = $data;
+        
+        $this->dateToObject('inicio');
+        $this->dateToObject('fim');
+        
+        $result = $this->isValid();
+        if($result !== TRUE){
+            return $result;
         }
-        //Pegar um referencia da classe para classe
-        return parent::insert($data);       
+        
+        $this->setReferences();
+
+        return parent::insert();       
     }
  
     /** 
      * Alterar no banco de dados o registro
      * @param Array $data com os campos do registro
-     * @return entidade 
+     * @return boolean|array 
      */    
     public function update(array $data) {
-        //Pega uma referencia do registro da tabela classe
-        $data['seguradora'] = $this->em->getReference("Livraria\Entity\Seguradora", $data['seguradora']);
-        $data['classe'] = $this->em->getReference("Livraria\Entity\Classe", $data['classe']);
-        $date = explode("/", $data['inicio']);
-        $data['inicio'] = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
-        if((!empty($data['fim'])) && ($data['fim'] != "vigente")){
-            $date = explode("/", $data['fim']);
-            $data['fim']    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
-        }else{
-            $data['fim']    = new \DateTime("00/00/0000");
+        $this->data = $data;
+        
+        $this->dateToObject('inicio');
+        $this->dateToObject('fim');
+        
+        $result = $this->isValid();
+        if($result !== TRUE){
+            return $result;
         }
         
-        return parent::update($data);
+        $this->setReferences();
+        
+        return parent::update();
+    }
+    
+    public function isValid(){ 
+        // Valida se o registro esta conflitando com algum registro existente
+        $repository = $this->em->getRepository($this->entity);
+        $entitys = $repository->findBy(array('seguradora' => $this->data['seguradora'], 
+                                             'classe' => $this->data['classe'],
+                                             'status' => 'A'
+                                            )
+                                      );
+        $diferenca = 3650 ;
+        if(!$entitys)
+            $diferenca = 0 ;
+        $erro = null ;
+        foreach ($entitys as $entity) {
+            if($this->data['id'] != $entity->getId()){
+                if(($entity->getFim() == 'vigente') and ($this->data['fim']->format('d/m/Y') == '30/11/-0001')){
+                    $erro[] = "Alerta! Já existe um taxa para esta seguradora e classe vigente! ID = " . $entity->getId() ;
+                }
+                $fim = $entity->getFim('obj');
+                if($fim >= $this->data['inicio']){
+                    $erro[] = "Alerta! Data de inicio conflita com data de registro existente! ID = " . $entity->getId() ;
+                    $erro[] = "Data de inicio não pode ser menor ou igual a data final de vigencia<br>";
+                }
+                $diff = $fim->diff($this->data['inicio']);
+                if($diff->days < $diferenca){
+                    $diferenca = $diff->days ;
+                }
+            }
+        }
+        if(($diferenca > 3) and ($this->data['fim']->format('d/m/Y') == '30/11/-0001')){
+            $erro[] = "Alerta! Data de inicio esta com + 3 dias da data do ultima taxa valida! " ;
+            $erro[] = 'Direfença de dias é ' . $diferenca;
+        }
+        if($erro){
+            return $erro;
+        }else{
+            return TRUE;
+        }
     }
 }

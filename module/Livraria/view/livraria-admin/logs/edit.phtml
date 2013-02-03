@@ -1,0 +1,12 @@
+<h3>Editando log</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')));
+
+include 'formLog.php';
+
+?>
