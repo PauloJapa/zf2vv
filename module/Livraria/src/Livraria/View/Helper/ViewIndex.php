@@ -79,13 +79,13 @@ class ViewIndex extends AbstractHelper {
      */
     public function openTable($options) {
         if(is_null($options)){
-            echo '<table class="table table-striped table-bordered table-hover table-condensed">' , "\r";
+            echo '<table class="table table-striped table-bordered table-hover table-condensed">' , "\n";
         }else{
            echo '<table';
             foreach ($options as $atributo => $value) {
                 echo ' ', $atributo, '="', $value, '"';
             }
-            echo '>', "\r";   
+            echo '>', "\n";   
         }
     }
 
@@ -106,11 +106,11 @@ class ViewIndex extends AbstractHelper {
         if(isset($options['editLine'])) 
             $this->editLine = $this->getEditLine($options['editLine']);
         
-        echo "<thead>\r<tr>\r";        
+        echo "<thead>\n<tr>\n";        
         foreach ($this->coluns as $value) {
-            echo "<th>$value</th>\r";
+            echo "\t<th>$value</th>\n";
         }        
-        echo "<tr>\r</thead>\r<tbody>\r";
+        echo "<tr>\n</thead>\n<tbody>\n";
     }
 
     /**
@@ -119,11 +119,11 @@ class ViewIndex extends AbstractHelper {
      */
     public function renderTfoot($options) {
         $this->foot = $options;
-        echo "</tbody>\r<tfoot>\r<tr>\r";        
+        echo "</tbody>\n<tfoot>\n<tr>\n";        
         foreach ($this->foot as $value) {
-            echo "<td>$value</td>\r";
+            echo "\t<td>$value</td>\n";
         }        
-        echo "<tr>\r</tfoot>\r";
+        echo "<tr>\n</tfoot>\n";
     }
 
     /**
@@ -134,21 +134,21 @@ class ViewIndex extends AbstractHelper {
      */
     public function renderLine($options) {
         if(isset($options['tr']))
-            echo "<tr ", $options['tr'] , ">", "\r";
+            echo "<tr ", $options['tr'] , ">", "\n";
         else    
-            echo "<tr>", "\r";
+            echo "<tr>", "\n";
         
         foreach ($options['data'] as $key => $value) {
             if($key == $this->editLine){
                 $this->renderEditLine($value);
             }else{
                 if(isset($this->tdopt[$key]))
-                    echo "<td ", $this->tdopt[$key], ">", $value, "</td>", "\r";
+                    echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", "\n";
                 else
-                    echo "<td>", $value, "</td>", "\r";
+                    echo "\t<td>", $value, "</td>", "\n";
             }
         }
-        echo "</tr>", "\r";
+        echo "</tr>", "\n";
     }
 
     /**
@@ -156,10 +156,10 @@ class ViewIndex extends AbstractHelper {
      * @param string $value
      */
     public function renderEditLine($value) {
-        echo "<td>",
+        echo "\t<td>",
                 '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                 '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-pencil"></i>Deletar</span>',
-             "</td>\r";   
+             "</td>\n";   
     }
 
     /**
@@ -169,9 +169,9 @@ class ViewIndex extends AbstractHelper {
      */
     public function renderCloseTable($options) {
         if($this->foot)
-            echo "</table>\r";
+            echo "</table>\n";
         else
-            echo "</tbody>\r</table>\r";
+            echo "</tbody>\n</table>\n";
     }
 
     /**
@@ -179,7 +179,7 @@ class ViewIndex extends AbstractHelper {
      * @param string $options
      */
     public function renderCaption($options) {
-        echo "<caption>",
+        echo "\t<caption>",
                 $options,
              "</caption>";
     }

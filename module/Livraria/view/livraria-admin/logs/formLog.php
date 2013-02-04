@@ -12,7 +12,9 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados da Log', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
-        $this->FormDefault(['user' => 'hidden','subOpcao' => 'hidden','userDesc' => 'text','tabela' => 'text','idDoReg' => 'text']),
+        $this->FormDefault(['user','subOpcao','autoComp','ajaxStatus'],'hidden'),
+        $this->FormDefault(['name' => 'userDesc','icone' => 'icon-search','js' => 'autoCompUser()','span' => "popUser' style='position:absolute"],'icone'),
+        $this->FormDefault(['tabela','idDoReg'],'text'),
     "</td><td>\r",
         $this->FormDefault(['data' => 'calend','controller' => 'text','dePara' => 'text']),
     "</td><td>\r",
@@ -35,11 +37,12 @@ require 'index.phtml';
         envia(tar,'salvar',formName);
     }
     function autoCompUser(){
-        var filtros = 'userDesc';
-        var servico = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'autoComp')); ?>";
+        document.getElementById('autoComp').value = 'userDesc';
+        var filtros = 'userDesc,autoComp';
+        var servico = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'users','action'=>'autoComp')); ?>";
         var returns = Array('user','userDesc');
         var functionCall = '';
-        autoComp2(filtros,servico,'popAdminis',returns,'2',functionCall);
+        autoComp2(filtros,servico,'popUser',returns,'2',functionCall);
         
     }
 </script>

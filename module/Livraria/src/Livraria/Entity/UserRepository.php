@@ -16,5 +16,18 @@ class UserRepository extends EntityRepository {
         }        
         return false;
     }
+    
+    public function autoComp($user){
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\User', 'u')
+                ->where("u.nome LIKE :user")
+                ->setParameter('user', $user)
+                ->setMaxResults(20)
+                ->getQuery()
+                ;
+        return $query->getResult();
+    }
 
 }

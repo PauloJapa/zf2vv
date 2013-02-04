@@ -124,16 +124,16 @@ class FormDefault extends AbstractHelper {
      * @param Array $options 
      */
     public function renderFieldsetIni($options) {
-        echo "<fieldset>\r",
+        echo "<fieldset>\n",
                 "<legend>";
         if(isset($options['legend'])) 
             echo $options['legend'];
-        echo    "</legend>\r";
+        echo    "</legend>\n";
         if(isset($options['hidden'])) 
             $this->renderInputHidden($options['hidden']);
         echo            
-                "<table style='width : 100% ;'>\r",
-                    "<tr valign='top'>\r"; 
+                "<table style='width : 100% ;'>\n",
+                    "<tr valign='top'>\n"; 
     }
 
     /**
@@ -143,9 +143,9 @@ class FormDefault extends AbstractHelper {
      */
     public function renderFieldsetFim($options) {
         echo
-                "</tr>\r",
-            "</table>\r",
-        "</fieldset>\r";
+                "</tr>\n",
+            "</table>\n",
+        "</fieldset>\n";
         if(isset($options['submit'])) 
             $this->renderInputSubmit($options['submit']);
     }
@@ -163,7 +163,7 @@ class FormDefault extends AbstractHelper {
             if(isset($options['submit']))
                 $this->renderInputSubmit($options['submit']);
         }
-        echo $this->formView->form()->closeTag(),"\r";        
+        echo $this->formView->form()->closeTag(),"\n";        
     }
 
     /**
@@ -174,7 +174,7 @@ class FormDefault extends AbstractHelper {
         echo
         "<div align='center'>",
             $this->formView->formSubmit($this->form->get($name)),
-        "</div>\r";
+        "</div>\n";
     }
 
     /**
@@ -182,7 +182,7 @@ class FormDefault extends AbstractHelper {
      * @param String $name
      */
     public function renderInputHidden($name) {
-        echo $this->formView->formHidden($this->form->get($name)),"\r";          
+        echo $this->formView->formHidden($this->form->get($name)),"\n";          
     }
 
     /**
@@ -193,12 +193,14 @@ class FormDefault extends AbstractHelper {
     public function renderInputText($name) {
         $element = $this->form->get($name);
         $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
         echo 
         '<div class="input-append">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\r",
+        "</div>\n",
         $this->checkError();
     }
 
@@ -219,7 +221,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="displayCalendar(document.forms[0].', $name ,',dateFormat,this)"><i class="icon-calendar"></i></span>',
-        "</div>\r",
+        "</div>\n",
         $this->checkError();
     }
 
@@ -231,6 +233,8 @@ class FormDefault extends AbstractHelper {
     public function renderInpuIcone($options) {
         $element = $this->form->get($options['name']);
         $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
         echo
         '<div class="input-append">',
             $this->formView->formLabel($element),
@@ -240,7 +244,7 @@ class FormDefault extends AbstractHelper {
         if(isset($options['span'])) 
             echo "<span id='", $options['span'] ,"'></span></font>";    
         echo
-        "</div>\r",
+        "</div>\n",
         $this->checkError();        
     }
 
@@ -256,7 +260,7 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
-        "</div>\r";
+        "</div>\n";
         $this->checkError();
     }
 
@@ -269,7 +273,7 @@ class FormDefault extends AbstractHelper {
     public function checkError($element = null) {
         if(is_null($element)){
             if($this->inputError){
-                echo $this->inputError, "</div>\r";
+                echo $this->inputError, "</div>\n";
                 $this->inputError = false;
             }
         }else {

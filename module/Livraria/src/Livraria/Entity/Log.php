@@ -274,6 +274,7 @@ class Log
         $data['data']       = $this->getData();
         $data['ip']         = $this->getIp();
         $data['user']       = $this->getUser()->getId(); 
+        $data['userDesc']   = $this->getUser(); 
         return $data ;
     }
 

@@ -22,7 +22,22 @@ class Log extends Form {
                         'name' => 'subOpcao',
                         'attributes' => array(
                                              'id' => 'subOpcao',
-                                             'type'  => 'hidden'
+                                             )
+                        )
+                 );    
+
+        $this->add(array(
+                        'name' => 'autoComp',
+                        'attributes' => array(
+                                             'id' => 'autoComp',
+                                             )
+                        )
+                 );  
+
+        $this->add(array(
+                        'name' => 'ajaxStatus',
+                        'attributes' => array(
+                                             'id' => 'ajaxStatus',
                                              )
                         )
                  );
@@ -31,7 +46,6 @@ class Log extends Form {
             'name' => 'id',
             'attributes' => array(
                 'id' => 'id',
-                'type'  => 'hidden'
             )
         ));    
         
@@ -51,8 +65,7 @@ class Log extends Form {
         $this->add(array(
             'name'      => 'user',
             'attributes' => array(
-                'id'    => 'bairro',
-                'type'  => 'user'
+                'id'    => 'user',
             )
         ));
         

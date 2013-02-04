@@ -29,6 +29,8 @@ class Log extends AbstractService {
     public function insert(array $data) { 
         $this->data = $data;
         
+        $this->dateToObject('data');
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -46,6 +48,8 @@ class Log extends AbstractService {
      */    
     public function update(array $data) {
         $this->data = $data;
+        
+        $this->dateToObject('data');
         
         $result = $this->isValid();
         if($result !== TRUE){

@@ -171,5 +171,9 @@ class User {
         $data['administradoraDesc'] = $this->getAdministradora()->getNome();
         return $data ;
     }
+    
+    public function __toString() {
+        return $this->nome;
+    }
 
 }

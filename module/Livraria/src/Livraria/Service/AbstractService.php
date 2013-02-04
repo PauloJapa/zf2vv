@@ -35,6 +35,13 @@ abstract class AbstractService {
      * @var array
      */
     protected $data;
+    
+    /**
+     * String no formato para gravação de alterações feitas no registro
+     * Formato campo  nome; valor antes; valor depois;
+     * @var string
+     */
+    protected $dePara;
 
     /**
      * Contruct recebe EntityManager para manipulação de registros
@@ -61,6 +68,8 @@ abstract class AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
         
+        $this->data['id'] = $entity->getId();
+        
         return TRUE;
     }
 
@@ -75,8 +84,17 @@ abstract class AbstractService {
         }
         if ($user = $this->getIdentidade())
             $this->data['userIdAlterado'] = $user->getId();
-        $entity = $this->em->getReference($this->entity, $this->data['id']);
-        $entity = Configurator::configure($entity, $this->data);
+        
+        if(method_exists($this,'logForEdit')){
+            $entity = $this->em->find($this->entity, $this->data['id']);
+            $this->getDiff($entity);
+            
+            if(empty($this->dePara)) return TRUE;
+            $entity = Configurator::configure($entity, $this->data);
+        }else{
+            $entity = $this->em->getReference($this->entity, $this->data['id']);
+            $entity = Configurator::configure($entity, $this->data);
+        }
         
         $this->em->persist($entity);
         $this->em->flush();
@@ -155,6 +173,34 @@ abstract class AbstractService {
         if(!isset($this->data[$index]))
             return FALSE;
         $this->data[$index] = $this->em->getReference($entity, $this->data[$index]);
+    }
+    
+    /**
+     * Faz a comparação de alteração e retorna uma string no formato para gravação.
+     * @param type $input
+     * @param type $after
+     * @param type $before
+     * @return string
+     */
+    public function diffAfterBefore($input,$after,$before){
+        if($after != $before){
+            return $input . ';' . $after . ';' . $before . ';';
+        }
+        return '';
+    }
+ 
+    /** 
+     * Faz tratamento na variavel string se necessario antes de fazer log
+     * @param String $check variavel a ser convertida se tratada se necessario
+     * @return String no formato para validação de log
+     */    
+    public function strToFloat($check){
+        if(is_string($check)){
+            $check = preg_replace("/[^0-9,]/", "", $check);
+            $check = str_replace(",", ".", $check);
+        }
+        $float = floatval($check);
+        return number_format($float, 2, ',','.');
     }
     
     

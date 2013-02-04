@@ -154,7 +154,8 @@ abstract class CrudController extends AbstractActionController {
      * @return \Zend\View\Model\ViewModel
      */
     public function autoCompAction(){
-        $param = $this->getRequest()->getPost('TxtBusca');
+        $autoComp = $this->getRequest()->getPost('autoComp');
+        $param = $this->getRequest()->getPost($autoComp);
         $repository = $this->getEm()->getRepository($this->entity);
         $resultSet = $repository->autoComp($param .'%');
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string

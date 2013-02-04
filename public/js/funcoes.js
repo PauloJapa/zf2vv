@@ -28,6 +28,7 @@ function cleanInputsForm(ind){
 }
 
 function cleanInput(obj){
+    if(obj == '')return ;
     if(!isObject(obj)) obj = document.getElementById(obj) ;
     switch (obj.type) {
         case "radio":
@@ -48,6 +49,7 @@ function cleanInput(obj){
 }
 
 function cleanInputAll(obj){
+    if(obj == '')return ;
     if(!isObject(obj)) obj = document.getElementById(obj) ;
     switch (obj.type) {
         case "radio":
