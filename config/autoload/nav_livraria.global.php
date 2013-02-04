@@ -221,7 +221,28 @@ return array(
             'auditoria' => array(
                 'label' => 'Auditoria',
                 'route' => 'livraria-admin',
-                'controller' => 'auditorias',
+                'controller' => 'logs',
+                'pages' => array(
+                    'logs' => array(
+                        'label' => 'Rastreamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'logs',
+                        'pages' => array(
+                            'logs1' => array(
+                                'label' => 'Listar_Ações',
+                                'route' => 'livraria-admin',
+                                'controller' => 'logs',
+                                'action' => 'index',
+                            ),
+                            'logs2' => array(
+                                'label' => 'Inserir_Ação',
+                                'route' => 'livraria-admin',
+                                'controller' => 'logs',
+                                'action' => 'new',
+                            ),
+                        ),
+                    ),
+                ),
             ),
             'exportar' => array(
                 'label' => 'Exportar',

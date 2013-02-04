@@ -9,6 +9,20 @@ echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
 foreach($this->data as $entity){ 
+    $dePara = $entity->getDePara();
+    if(substr($dePara, 0, 5) == 'Campo'){
+        $data = explode(';', $dePara);
+        $dePara = '<table class="table table-striped table-bordered table-hover table-condensed">';
+        for($i = 0, $y = 1, $z = 2; $z < count($data); $i+=3, $y+=3, $z+=3){
+            $dePara .= '<tr>';
+            $dePara .= '<td>' . $data[$i] . '</td>';
+            $dePara .= '<td>' . $data[$y] . '</td>';
+            $dePara .= '<td>' . $data[$z] . '</td>';
+            $dePara .= '</tr>';
+        }
+        $dePara .= '</table>';
+    }
+        
     echo $this->ViewIndex('line',array('data' => array(
         $entity->getId(),
         $entity->getUser(),
@@ -17,7 +31,7 @@ foreach($this->data as $entity){
         $entity->getIdDoReg(),
         $entity->getController(),
         $entity->getAction(),
-        $entity->getDePara(),
+        $dePara,
         $entity->getIp(),
         $entity->getId()
     )));
