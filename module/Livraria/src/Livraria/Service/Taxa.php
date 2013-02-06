@@ -18,6 +18,10 @@ class Taxa extends AbstractService {
         $this->entity = "Livraria\Entity\Taxa";
     }
     
+    /**
+     * Faz as conversões de id para entity para o doctrine valida
+     * Abstração das actions new e edit
+     */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');

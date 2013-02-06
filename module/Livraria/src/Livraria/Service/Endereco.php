@@ -14,44 +14,50 @@ class Endereco extends AbstractService {
         $this->entity = "Livraria\Entity\Endereco";
     }
     
-    public function insert(array $data) {
-        $entity = new $this->entity($data);
-        
+    /**
+     * Faz as conversões de id para entity para o doctrine valida
+     * Abstração das actions new e edit
+     */
+    public function setReferences(){
         //Caso a bairro não foi escolhido da lista procura o id pelo nome 
-        if(empty($data['bairro'])){ 
+        if(empty($this->data['bairro'])){ 
             $repository = $this->em->getRepository("Livraria\Entity\Bairro");
-            $bairro = $repository->findOneByNome($data['bairroDesc']);
-            if(!$bairro){
-                $bairro = new Bairro(array('nome' => $data['bairroDesc']));
-                $this->em->persist($bairro);
+            $this->data['bairro'] = $repository->findOneByNome($this->data['bairroDesc']);
+            if(!$this->data['bairro']){
+                $this->data['bairro'] = new Bairro(array('nome' => $this->data['bairroDesc']));
+                $this->em->persist($this->data['bairro']);
             }
         }else{            
-            $bairro = $this->em->getReference("Livraria\Entity\Bairro", $data['bairro']);
+            $this->data['bairro'] = $this->em->getReference("Livraria\Entity\Bairro", $this->data['bairro']);
         }
-        $entity->setBairro($bairro);
         
         //Caso a cidade não foi escolhida da lista procura o id pelo nome 
-        if(empty($data['cidade'])){ 
+        if(empty($this->data['cidade'])){ 
             $repository = $this->em->getRepository("Livraria\Entity\Cidade");
-            $cidade = $repository->findOneByNome($data['cidadeDesc']);
-            if(!$cidade){
-                $cidade = new Cidade(array('nome' => $data['cidadeDesc']));
-                $this->em->persist($cidade);
+            $this->data['cidade'] = $repository->findOneByNome($this->data['cidadeDesc']);
+            if(!$this->data['cidade']){
+                $this->data['cidade'] = new Cidade(array('nome' => $this->data['cidadeDesc']));
+                $this->em->persist($this->data['cidade']);
             }
         }else{            
-            $cidade = $this->em->getReference("Livraria\Entity\Cidade", $data['cidade']);
+            $this->data['cidade'] = $this->em->getReference("Livraria\Entity\Cidade", $this->data['cidade']);
         }
-        $entity->setCidade($cidade);
         
-        if(empty($data['estado']))
-            $data['estado'] = "28";
-        $estado = $this->em->getReference("Livraria\Entity\Estado", $data['estado']);
-        $entity->setEstado($estado);
+        if(empty($this->data['estado'])) $this->data['estado'] = "28";
+        //Pega uma referencia do registro da tabela estado
+        $this->idToReference('estado', "Livraria\Entity\Estado");
         
-        if(empty($data['pais']))
-            $data['pais'] = "1";
-        $pais = $this->em->getReference("Livraria\Entity\Pais", $data['pais']);
-        $entity->setPais($pais);
+        //Pega uma referencia do registro da tabela pais
+        if(empty($this->data['pais'])) $this->data['pais'] = "1";
+        $this->idToReference('pais', "Livraria\Entity\Pais");
+    }
+    
+    public function insert(array $data) {
+        $this->data = $data;
+        
+        $this->setReferences();
+        
+        $entity = new $this->entity($this->data);
         
         $this->em->persist($entity);
         $this->em->flush();
@@ -60,55 +66,41 @@ class Endereco extends AbstractService {
         
     }
     
-    public function update(array $data2) {
-        //Converter idEnde para apenas id para configurar(hidratar) a classe
-        $data = $data2;
-        $data['id'] = $data['idEnde'];
-        unset($data['idEnde']);
-        //Pega referencia do registro 
-        $entity = $this->em->getReference($this->entity, $data['id']);
+    public function update(array $data) {
+        $this->data = $data;
+        unset($this->data['id']);
+        
+        $this->setReferences();
+        
+        //Pega o registro endereço do banco para verificar modificações
+        $entity = $this->em->find($this->entity, $this->data['idEnde']);
+            
+        $this->getDiff($entity);
+        if(empty($this->dePara)) 
+            return $entity;
+            
         //Faz todos os sets de endereco
-        $entity = Configurator::configure($entity,$data);
-                
-        //Caso a bairro não foi escolhido da lista procura o id pelo nome 
-        if(empty($data['bairro'])){ 
-            $repository = $this->em->getRepository("Livraria\Entity\Bairro");
-            $bairro = $repository->findOneByNome($data['bairroDesc']);
-            if(!$bairro){
-                $bairro = new Bairro(array('nome' => $data['bairroDesc']));
-                $this->em->persist($bairro);
-            }
-        }else{            
-            $bairro = $this->em->getReference("Livraria\Entity\Bairro", $data['bairro']);
-        }
-        $entity->setBairro($bairro);
-        
-        //Caso a cidade não foi escolhida da lista procura o id pelo nome 
-        if(empty($data['cidade'])){ 
-            $repository = $this->em->getRepository("Livraria\Entity\Cidade");
-            $cidade = $repository->findOneByNome($data['cidadeDesc']);
-            if(!$cidade){
-                $cidade = new Cidade(array('nome' => $data['cidadeDesc']));
-                $this->em->persist($cidade);
-            }
-        }else{            
-            $cidade = $this->em->getReference("Livraria\Entity\Cidade", $data['cidade']);
-        }
-        $entity->setCidade($cidade);
-        
-        if(empty($data['estado']))
-            $data['estado'] = "28";
-        $estado = $this->em->getReference("Livraria\Entity\Estado", $data['estado']);
-        $entity->setEstado($estado);
-        
-        if(empty($data['pais']))
-            $data['pais'] = "1";
-        $pais = $this->em->getReference("Livraria\Entity\Pais", $data['pais']);
-        $entity->setPais($pais);
+        $entity = Configurator::configure($entity,$this->data);    
         
         $this->em->persist($entity);
         $this->em->flush();
         
         return $entity;
+    }
+    
+    /**
+     * Monta string de campos afetados para registrar no log
+     * @param \Livraria\Entity\Endereco $ent
+     */
+    public function getDiff($ent){
+        $this->dePara = '';
+        $this->dePara .= $this->diffAfterBefore('Rua', $ent->getRua(), $this->data['rua']);
+        $this->dePara .= $this->diffAfterBefore('Numero', $ent->getNumero(), $this->data['numero']);
+        $this->dePara .= $this->diffAfterBefore('Complemento', $ent->getCompl(), $this->data['compl']);
+        $this->dePara .= $this->diffAfterBefore('CEP', $ent->getCep(), $this->data['cep']);
+        $this->dePara .= $this->diffAfterBefore('Bairro', $ent->getBairro(), $this->data['bairro']);
+        $this->dePara .= $this->diffAfterBefore('Cidade', $ent->getCidade(), $this->data['cidade']);
+        $this->dePara .= $this->diffAfterBefore('Estado', $ent->getEstado(), $this->data['estado']);
+        $this->dePara .= $this->diffAfterBefore('Pais', $ent->getPais(), $this->data['pais']);
     }
 }

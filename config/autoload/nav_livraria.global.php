@@ -42,6 +42,18 @@ return array(
                                 'controller' => 'seguradoras',
                                 'action' => 'index',
                             ),
+                            'taxas1' => array(
+                                'label' => 'Nova_Taxa',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'new',
+                            ),
+                            'taxas2' => array(
+                                'label' => 'Listar_Taxas',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxas',
+                                'action' => 'index',
+                            ),
                         ),
                     ),
                     'administradora' => array(
@@ -78,25 +90,6 @@ return array(
                                 'route' => 'livraria-admin',
                                 'controller' => 'comissaos',
                                 'action' => 'new',
-                            ),
-                        ),
-                    ),
-                    'Taxas' => array(
-                        'label' => 'Taxas',
-                        'route' => 'livraria-admin',
-                        'controller' => 'taxas',
-                        'pages' => array(
-                            'taxas1' => array(
-                                'label' => 'Nova_Taxa',
-                                'route' => 'livraria-admin',
-                                'controller' => 'taxas',
-                                'action' => 'new',
-                            ),
-                            'taxas2' => array(
-                                'label' => 'Listar_Taxas',
-                                'route' => 'livraria-admin',
-                                'controller' => 'taxas',
-                                'action' => 'index',
                             ),
                         ),
                     ),
@@ -167,6 +160,25 @@ return array(
                         'label' => 'Users',
                         'route' => 'livraria-admin',
                         'controller' => 'users',
+                    ),
+                    'locatarios' => array(
+                        'label' => 'Locatario',
+                        'route' => 'livraria-admin',
+                        'controller' => 'locatarios',
+                        'pages' => array(
+                            'locatarios1' => array(
+                                'label' => 'Novo_Locatario',
+                                'route' => 'livraria-admin',
+                                'controller' => 'locatarios',
+                                'action' => 'new',
+                            ),
+                            'locatarios2' => array(
+                                'label' => 'Listar_Locatarios',
+                                'route' => 'livraria-admin',
+                                'controller' => 'locatarios',
+                                'action' => 'index',
+                            ),
+                        ),
                     ),
                     'endereco' => array(
                         'label' => 'Endereço',

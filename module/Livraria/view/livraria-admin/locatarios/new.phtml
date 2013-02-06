@@ -1,0 +1,12 @@
+<h3>Nova locatarios</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'locatarios','action'=>'new')));
+
+include 'formLocatario.php';
+
+?>

@@ -171,6 +171,10 @@ class Taxa extends Form {
         ));
     }
     
+    /**
+     * Recarrega o select baseado em filtro
+     * @param array $filtro
+     */
     public function reloadSelectClasse(array $filtro){
         $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
         $classe = new Select();
@@ -184,7 +188,10 @@ class Taxa extends Form {
         if($this->isEdit)
             $this->setEdit ();
     }
-    
+  
+    /**
+     * Atualiza o form para o modo de edição bloqueando campos se necessario
+     */   
     public function setEdit(){
         $this->isEdit = TRUE;
         $this->get('seguradora')->setAttribute('disabled', 'disabled');   

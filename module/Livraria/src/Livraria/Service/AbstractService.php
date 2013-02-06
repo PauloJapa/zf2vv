@@ -203,5 +203,12 @@ abstract class AbstractService {
         return number_format($float, 2, ',','.');
     }
     
-    
+    /**
+     * Retorna um string com campos monitorados que foram afetados.
+     * @return string
+     */
+    public function getDePara() {
+        return $this->dePara;
+    }
+
 }

@@ -75,6 +75,7 @@ return array(
             'classeAtividades' => 'LivrariaAdmin\Controller\ClasseAtividadesController',
             'comissaos' => 'LivrariaAdmin\Controller\ComissaosController',
             'logs' => 'LivrariaAdmin\Controller\LogsController',
+            'locatarios' => 'LivrariaAdmin\Controller\LocatariosController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

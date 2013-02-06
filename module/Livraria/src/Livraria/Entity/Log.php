@@ -92,7 +92,6 @@ class Log
         Configurator::configure($this, $options);
         $this->data = new \DateTime('now');
         $this->data->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
-        $this->userIdCriado = 1 ;
     }
     
     /**

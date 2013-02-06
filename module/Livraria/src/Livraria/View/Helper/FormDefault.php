@@ -196,7 +196,7 @@ class FormDefault extends AbstractHelper {
         if($element->getAttribute('readOnly'))
             $name = '';
         echo 
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',

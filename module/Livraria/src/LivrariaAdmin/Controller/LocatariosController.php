@@ -4,23 +4,23 @@ namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
 /**
- * Taxa
+ * Locatario
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class TaxasController extends CrudController {
+class LocatariosController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\Taxa";
-        $this->form = "LivrariaAdmin\Form\Taxa";
-        $this->service = "Livraria\Service\Taxa";
-        $this->controller = "taxas";
+        $this->entity = "Livraria\Entity\Locatario";
+        $this->form = "LivrariaAdmin\Form\Locatario";
+        $this->service = "Livraria\Service\Locatario";
+        $this->controller = "locatarios";
         $this->route = "livraria-admin";
         
     }
     
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'classe' => 'ASC'));
+        return parent::indexAction($filtro);
     }
 
     public function newAction() {
@@ -30,11 +30,8 @@ class TaxasController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora'])) ;
-            }
+            if(!empty($data['cpf']))       $filtro['cpf']           = $data['cpf'];
+            if(!empty($data['cnpj']))      $filtro['cnpj']          = $data['cnpj'];
             $this->formData->setData($data);
         }
         if($data['subOpcao'] == 'salvar'){
@@ -54,7 +51,6 @@ class TaxasController extends CrudController {
         $this->setRender(FALSE);
         $this->indexAction($filtro);
         
-        
         return new ViewModel($this->getParamsForView()); 
     }
 
@@ -69,27 +65,16 @@ class TaxasController extends CrudController {
         switch ($data['subOpcao']){
         case 'editar':    
             $entity = $repository->find($data['id']);
-            $filtro['seguradora'] = $entity->getSeguradora()->getId();
-            $filtro['classe']     = $entity->getClasse()->getId();
-            $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
+            $filtro['cpf']   = $entity->getCpf();
+            $filtro['cnpj']  = $entity->getCnpj();
             $this->formData->setData($entity->toArray());
             break;
-        case 'buscar':  
-            if(!empty($data['classe']))    
-                $filtro['classe']     = $data['classe'];
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
-            }
+        case 'buscar': 
+            if(!empty($data['cpf']))       $filtro['cpf']           = $data['cpf'];
+            if(!empty($data['cnpj']))      $filtro['cnpj']          = $data['cnpj'];
             $this->formData->setData($data);  
             break;
         case 'salvar': 
-            //Com selects desabilitados eles nao sao enviados e deve ser carregado manualmente
-            $entity = $repository->find($data['id']);
-            $data['seguradora'] = $filtro['seguradora'] = $entity->getSeguradora()->getId();
-            $data['classe']     = $filtro['classe']     = $entity->getClasse()->getId();
-            $this->formData->reloadSelectClasse(array('seguradora' => $filtro['seguradora']));
-            
             $this->formData->setData($data);
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
