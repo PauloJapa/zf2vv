@@ -192,6 +192,8 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputText($name) {
         $element = $this->form->get($name);
+        if(!$element)
+            return;
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
             $name = '';

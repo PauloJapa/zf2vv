@@ -31,6 +31,14 @@ abstract class AbstractEndereco extends Form {
         ));
         
         $this->add(array(
+            'name'      => 'ajaxStatus',
+            'attributes' => array(
+                'id'    => 'ajaxStatus',
+                'type'  => 'hidden'
+            )
+        ));
+        
+        $this->add(array(
             'name'      => 'rua',
             'options'   => array(
                 'type'  => 'text',
@@ -39,7 +47,7 @@ abstract class AbstractEndereco extends Form {
             'attributes'      => array(
                 'id'          => 'rua',
                 'placeholder' => 'Endereço',
-                'class'       => 'input-xxlarge'
+                'class'       => 'input-xmlarge'
             )
         ));
 

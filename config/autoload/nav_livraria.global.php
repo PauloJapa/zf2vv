@@ -180,6 +180,37 @@ return array(
                             ),
                         ),
                     ),
+                    'locadors' => array(
+                        'label' => 'Locador',
+                        'route' => 'livraria-admin',
+                        'controller' => 'locadors',
+                        'pages' => array(
+                            'locadors1' => array(
+                                'label' => 'Novo_Locador',
+                                'route' => 'livraria-admin',
+                                'controller' => 'locadors',
+                                'action' => 'new',
+                            ),
+                            'locadors2' => array(
+                                'label' => 'Listar_Locadores',
+                                'route' => 'livraria-admin',
+                                'controller' => 'locadors',
+                                'action' => 'index',
+                            ),
+                            'locadors3' => array(
+                                'label' => 'Novo Imovel',
+                                'route' => 'livraria-admin',
+                                'controller' => 'imovels',
+                                'action' => 'new',
+                            ),
+                            'locadors4' => array(
+                                'label' => 'Listar_Imoveis',
+                                'route' => 'livraria-admin',
+                                'controller' => 'imovels',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
                     'endereco' => array(
                         'label' => 'Endereço',
                         'route' => 'livraria-admin',

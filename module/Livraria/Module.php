@@ -25,6 +25,7 @@ use Livraria\Service\Atividade as AtividadeService;
 use Livraria\Service\Comissao as ComissaoService;
 use Livraria\Service\Log as LogService;
 use Livraria\Service\Locatario as LocatarioService;
+use Livraria\Service\Imovel as ImovelService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
 use LivrariaAdmin\Form\Administradora as AdministradoraFrm;
@@ -140,6 +141,9 @@ class Module {
                 },
                 'Livraria\Service\Locatario' => function($service) {
                     return new LocatarioService($service->get('Doctrine\ORM\EntityManager'));
+                },
+                'Livraria\Service\Imovel' => function($service) {
+                    return new ImovelService($service->get('Doctrine\ORM\EntityManager'));
                 },
                 'LivrariaAdmin\Form\Livro' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');

@@ -26,6 +26,12 @@ abstract class CrudController extends AbstractActionController {
     protected $autoCompParams;
     protected $render = TRUE;
 
+    /**
+     * Faz listagem dos dados baseado nos parametros passados
+     * @param array $filtro
+     * @param array $orderBy
+     * @return \Zend\View\Model\ViewModel|no return
+     */
     public function indexAction(array $filtro = null,array $orderBy = null) {
         if(is_null($filtro)){
             $filtro = array();
