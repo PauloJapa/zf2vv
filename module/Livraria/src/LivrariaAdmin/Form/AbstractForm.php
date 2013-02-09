@@ -1,0 +1,104 @@
+<?php
+
+namespace LivrariaAdmin\Form;
+
+use Zend\Form\Form;
+
+/**
+ * AbstractForm
+ * Abstração dos inputs + usados para montagem do from
+ * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
+ */
+abstract class AbstractForm extends Form {
+
+    public function __construct($name = null) {
+        parent::__construct($name);
+    }
+    
+    /**
+     * Nome do campo oculto do form
+     * @param string $name
+     */
+    public function setInputHidden($name){
+        
+        $this->add(array(
+            'name'      => $name,
+            'attributes' => array(
+                'id'    => $name,
+                'type'  => 'hidden'
+            )
+        ));
+    }
+    
+    /**
+     * Monta os paramentro basicos para se fazer um input text
+     * @param string $name
+     * @param string $label
+     * @param array $attributes
+     */
+    public function setInputText($name,$label,array $attributes = array()){
+        
+        $input['name'] = $name;
+        $input['options'] = array('type' => 'text','label' => $label);
+        
+        if(empty($attributes)){
+            $input['attributes'] = array('id' => $name); 
+        }else{
+            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+        }
+        
+        $this->add($input);
+    }
+    
+    /**
+     * Monta os paramentro basicos para se fazer um input select
+     * @param string $name
+     * @param string $label
+     * @param array  $options
+     * @param array  $attributes
+     */
+    public function setInputSelect($name,$label,array & $options = [],array $attributes = []){  
+        
+        $input['type'] = 'Zend\Form\Element\Select';
+        $input['name'] = $name;
+        
+        if(empty($attributes)){
+            $input['attributes'] = array('id' => $name); 
+        }else{
+            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+        }
+        
+        $input['options'] = array(
+            'label' => $label,
+            'empty_option' => 'Escolha da lista',
+            'value_options' => $options
+        ); 
+        
+        $this->add($input);
+    }
+    
+    /**
+     * Monta os paramentro basicos para se fazer um input submit
+     * @param string $name
+     * @param string $label
+     * @param array  $attributes
+     */
+    public function setInputSubmit($name,$label,array $attributes = []){
+           
+        $input['type'] = 'Zend\Form\Element\Submit';
+        $input['name'] = $name;
+        
+        $attrib = array('id' => $name,
+                        'value' => $label,
+                        'class' => 'btn-success',
+                        'onClick' => 'return salvar()');
+        
+        if(empty($attributes)){
+            $input['attributes'] = $attrib;
+        }else{
+            $input['attributes'] = array_merge($attrib,$attributes); 
+        }
+        
+        $this->add($input);        
+    }
+}

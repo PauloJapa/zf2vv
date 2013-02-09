@@ -32,13 +32,7 @@ abstract class CrudController extends AbstractActionController {
      * @param array $orderBy
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = null,array $orderBy = null) {
-        if(is_null($filtro)){
-            $filtro = array();
-        }
-        if(is_null($orderBy)){
-            $orderBy = array();
-        }
+    public function indexAction(array $filtro = [],array $orderBy = []) {
         $list = $this->getEm()
                      ->getRepository($this->entity)
                      ->findBy($filtro,$orderBy);
@@ -161,7 +155,7 @@ abstract class CrudController extends AbstractActionController {
      */
     public function autoCompAction(){
         $autoComp = $this->getRequest()->getPost('autoComp');
-        $param = $this->getRequest()->getPost($autoComp);
+        $param = trim($this->getRequest()->getPost($autoComp));
         $repository = $this->getEm()->getRepository($this->entity);
         $resultSet = $repository->autoComp($param .'%');
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string

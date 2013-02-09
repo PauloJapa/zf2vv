@@ -267,5 +267,13 @@ class Atividade
         $data['alteradoEm']     = $this->getAlteradoEm();
         return $data ;
     }
+    
+    /**
+     * Metodo magico para retornar o nome do locador
+     * @return string
+     */
+    public function __toString() {
+        return $this->descricao;
+    }
 
 }

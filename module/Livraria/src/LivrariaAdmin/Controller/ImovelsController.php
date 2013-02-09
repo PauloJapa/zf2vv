@@ -42,8 +42,9 @@ class ImovelsController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            $filtro['rua']    = $data['rua'];
-            $filtro['numero'] = $data['numero'];
+            $filtro['locador']= $data['locador'];
+            if(!empty($data['rua']))   $filtro['rua']    = $data['rua'];
+            if(!empty($data['numero']))$filtro['numero'] = $data['numero'];
             $this->formData->setData($data);
         }
         if($data['subOpcao'] == 'salvar'){
@@ -81,17 +82,21 @@ class ImovelsController extends CrudController {
         switch ($data['subOpcao']){
         case 'editar':    
             $entity = $repository->find($data['id']);
+            $filtro['locador'] = $entity->getLocador()->getId();
             $filtro['rua'] = $entity->getRua();
+            $filtro['numero'] = $entity->getNumero();
             $this->formData->setData($entity->toArray());
             break;
         case 'buscar':  
-            $filtro['rua']    = $data['rua'];
-            $filtro['numero'] = $data['numero'];
+            $filtro['locador']= $data['locador'];
+            if(!empty($data['rua']))   $filtro['rua']    = $data['rua'];
+            if(!empty($data['numero']))$filtro['numero'] = $data['numero'];
             $this->formData->setData($data);  
             break;
         case 'salvar':   
-            $filtro['rua']    = $data['rua'];
-            $filtro['numero'] = $data['numero'];
+            $filtro['locador']= $data['locador'];
+            if(!empty($data['rua']))   $filtro['rua']    = $data['rua'];
+            if(!empty($data['numero']))$filtro['numero'] = $data['numero'];
             $this->formData->setData($data);
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);

@@ -4,21 +4,25 @@ namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
 /**
- * Classe
+ * Locador
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class ClassesController extends CrudController {
+class LocadorsController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\Classe";
-        $this->form = "LivrariaAdmin\Form\Classe";
-        $this->service = "Livraria\Service\Classe";
-        $this->controller = "classes";
+        $this->entity = "Livraria\Entity\Locador";
+        $this->form = "LivrariaAdmin\Form\Locador";
+        $this->service = "Livraria\Service\Locador";
+        $this->controller = "locadors";
         $this->route = "livraria-admin";
-        $this->autoCompParams = array('input' => 'classeDesc');
+        
     }
     
+    public function indexAction(array $filtro = array()){
+        return parent::indexAction($filtro);
+    }
+
     public function newAction() {
         $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
@@ -26,11 +30,12 @@ class ClassesController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
+            if(!empty($data['cpf']))           $filtro['cpf']           = $data['cpf'];
+            if(!empty($data['cnpj']))          $filtro['cnpj']          = $data['cnpj'];
+            if(!empty($data['administradora']))$filtro['administradora']= $data['administradora'];
             $this->formData->setData($data);
         }
+        
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
@@ -46,13 +51,14 @@ class ClassesController extends CrudController {
         }
         
         $this->setRender(FALSE);
-        parent::indexAction($filtro);
+        $this->indexAction($filtro);
         
         return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
         $this->formData = new $this->form(null, $this->getEm());
+        $this->formData->setEdit();
         $data = $this->getRequest()->getPost()->toArray();
         $repository = $this->getEm()->getRepository($this->entity);
         $filtro = array();
@@ -61,19 +67,16 @@ class ClassesController extends CrudController {
         switch ($data['subOpcao']){
         case 'editar':    
             $entity = $repository->find($data['id']);
-            $filtro['seguradora'] = $entity->getSeguradora()->getId();
+            $filtro['cpf']   = $entity->getCpf();
+            $filtro['cnpj']  = $entity->getCnpj();
             $this->formData->setData($entity->toArray());
             break;
-        case 'buscar':  
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
+        case 'buscar': 
+            if(!empty($data['cpf']))       $filtro['cpf']           = $data['cpf'];
+            if(!empty($data['cnpj']))      $filtro['cnpj']          = $data['cnpj'];
             $this->formData->setData($data);  
             break;
         case 'salvar': 
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
             $this->formData->setData($data);
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
@@ -88,9 +91,9 @@ class ClassesController extends CrudController {
             }   
             break;
         }
-        
+            
         $this->setRender(FALSE);
-        parent::indexAction($filtro);
+        $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
     }

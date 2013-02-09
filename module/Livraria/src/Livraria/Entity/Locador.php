@@ -5,15 +5,15 @@ namespace Livraria\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Locatario
- * Entity para manipular os registros de locatarios
- * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
+ * Locador
+ * 
+ * Donos dos imoveis.
  *
- * @ORM\Table(name="locatario")
+ * @ORM\Table(name="locador")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="Livraria\Entity\LocatarioRepository")
+ * @ORM\Entity(repositoryClass="Livraria\Entity\LocadorRepository")
  */
-class Locatario
+class Locador
 {
     /**
      * @var integer $id
@@ -27,14 +27,14 @@ class Locatario
     /**
      * @var string $nome
      *
-     * @ORM\Column(name="nome", type="string", length=200, nullable=false)
+     * @ORM\Column(name="nome", type="string", length=255, nullable=false)
      */
     private $nome;
 
     /**
      * @var string $tipo
      *
-     * @ORM\Column(name="tipo", type="string", length=10, nullable=false)
+     * @ORM\Column(name="tipo", type="string", length=5, nullable=false)
      */
     private $tipo;
 
@@ -74,25 +74,35 @@ class Locatario
     private $status;
 
     /**
-     * @var Enderecos
+     * @var Endereco
      *
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Endereco")
+     * @ORM\ManyToOne(targetEntity="Endereco")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      * })
      */
     private $endereco;
 
+    /**
+     * @var Administradora
+     *
+     * @ORM\ManyToOne(targetEntity="Administradora")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
+     * })
+     */
+    private $administradora;
+
+ 
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
-     * Tambem carrega as data de criadoEm e alteradoEm atuais 
      * @param Array $option
      */    
     public function __construct($options = null) {
         Configurator::configure($this, $options);
     }
-    
+     
     /**
      * 
      * @return int $id do registro
@@ -101,11 +111,10 @@ class Locatario
         return $this->id;
     }
 
-
     /** 
      * Setar o id do registro
      * @param Int $id
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Taxa 
      */ 
     public function setId($id) {
         $this->id = $id;
@@ -113,7 +122,7 @@ class Locatario
     }
 
     /**
-     * Nome do locatario
+     * Nome do locador
      * @return string
      */
     public function getNome() {
@@ -123,7 +132,7 @@ class Locatario
     /**
      * 
      * @param string $nome
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setNome($nome) {
         $this->nome = $nome;
@@ -141,7 +150,7 @@ class Locatario
     /**
      * Valores Fisica|Juridica
      * @param string $tipo
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setTipo($tipo) {
         $this->tipo = $tipo;
@@ -159,7 +168,7 @@ class Locatario
     /**
      * CPF no formato 000.000.000-00
      * @param string $cpf
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setCpf($cpf) {
         $this->cpf = $this->formatarCPF_CNPJ($cpf);
@@ -177,7 +186,7 @@ class Locatario
     /**
      * 
      * @param string $cnpj
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setCnpj($cnpj) {
         $this->cnpj = $this->formatarCPF_CNPJ($cnpj);
@@ -195,7 +204,7 @@ class Locatario
     /**
      * 
      * @param string $tel
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setTel($tel) {
         $this->tel = $tel;
@@ -213,7 +222,7 @@ class Locatario
     /**
      * 
      * @param string $email
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setEmail($email) {
         $this->email = $email;
@@ -231,7 +240,7 @@ class Locatario
     /**
      * A = ativo, B = bloqueado, C = cancelado
      * @param string $status
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setStatus($status) {
         $this->status = $status;
@@ -239,7 +248,8 @@ class Locatario
     }
 
     /**
-     * Dados do endereço do locatario se houver
+     * Entity Endereco
+     * Dados do endereço do locador se houver
      * @return \Livraria\Entity\Endereco
      */
     public function getEndereco() {
@@ -247,12 +257,30 @@ class Locatario
     }
 
     /**
-     * 
+     * Entity Endereco
      * @param \Livraria\Entity\Endereco $endereco
-     * @return \Livraria\Entity\Locatario
+     * @return \Livraria\Entity\Locador
      */
     public function setEndereco(Endereco $endereco) {
         $this->endereco = $endereco;
+        return $this;
+    }
+
+    /**
+     * Entity Administradora
+     * @return \Livraria\Entity\Administradora
+     */
+    public function getAdministradora() {
+        return $this->administradora;
+    }
+
+    /**
+     * Entity Administradora
+     * @param \Livraria\Entity\Administradora $administradora
+     * @return \Livraria\Entity\Locador
+     */
+    public function setAdministradora(Administradora $administradora) {
+        $this->administradora = $administradora;
         return $this;
     }
 
@@ -270,11 +298,13 @@ class Locatario
         $data['tel']   = $this->getTel();
         $data['email'] = $this->getEmail();
         $data['status'] = $this->getStatus();
+        $data['administradora'] = $this->getAdministradora()->getId();
+        $data['administradoraDesc'] = $this->getAdministradora();
         return $data ;
     }
     
     /**
-     * Metodo magico para retornar o nome do locatario
+     * Metodo magico para retornar o nome do locador
      * @return string
      */
     public function __toString() {
@@ -317,5 +347,6 @@ class Locatario
 	return $retorno;
  
     }
+
 
 }

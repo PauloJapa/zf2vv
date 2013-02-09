@@ -1,10 +1,13 @@
 <?php
 
-
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form;
-
+/**
+ * Imovel
+ * Form para manipular dados do Imovel
+ * 
+ * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
+ */
 class Imovel extends AbstractEndereco { 
     
     /**
@@ -26,131 +29,30 @@ class Imovel extends AbstractEndereco {
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ImovelFilter);  
 
-        $this->add(array(
-            'name' => 'subOpcao',
-            'attributes' => array(
-                'id' => 'subOpcao'
-            )
-        ));
+        $this->setInputHidden('autoComp');
+        
+        $this->setInputHidden('subOpcao');
+        
+        $this->setInputHidden('id');
 
-        $this->add(array(
-            'name' => 'id',
-            'attributes' => array(
-                'id' => 'id',
-            )
-        ));
+        $this->setInputText('tel', 'Telefone', ['placeholder' => '(xx) xxxx-xxxx']);
+        
+        $this->setInputText('bloco', 'Predio Bloco', ['placeholder' => 'Predio Bloco','class'       => 'input-small']);
 
-        $this->add(array(
-            'name' => 'tel',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Telefone'
-            ),
-            'attributes' => array(
-                'id' => 'tel',
-                'placeholder' => '(xx) xxxx-xxxx'
-            )
-        ));
+        $this->setInputText('apto', 'Apartamento', ['class'=>'input-small']);
 
-        $this->add(array(
-            'name' => 'bloco',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Predio Bloco'
-            ),
-            'attributes' => array(
-                'id' => 'bloco',
-                'placeholder' => 'Predio Bloco',
-                'class'       => 'input-small'
-            )
-        ));
+        $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
+        $this->setInputSelect('status', 'Situação', $options);
 
-        $this->add(array(
-            'name' => 'apto',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Apartamento'
-            ),
-            'attributes' => array(
-                'id' => 'apto',
-                'placeholder' => 'Predio Bloco',
-                'class'       => 'input-small'
-            )
-        ));
+        $this->setInputHidden('atividade');
+        $this->setInputText('atividadeDesc', 'Atividade', ['placeholder' => 'Pesquise digitando a atividade aqui!','onKeyUp' => 'autoCompAtividade();']);
 
-        $this->add(array(
-                'type' => 'Zend\Form\Element\Select',
-                'name' => 'status',
-                'attributes' => array(
-                    'id' => 'status'
-                ),
-                'options' => array(
-                    'label' => 'Situação',
-                    'empty_option' => 'Escolha a situação do cadastro!',
-                    'value_options' => array(
-                        'A'=>'Ativo',
-                        'B'=>'Bloqueado',
-                        'C'=>'Cancelado',
-                ),
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'atividade',
-            'options' => array(
-                'type' => 'hidden',
-            ),
-            'attributes' => array(
-                'id' => 'atividade',
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'atividadeDesc',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Atividade'
-            ),
-            'attributes' => array(
-                'id' => 'atividadeDesc',
-                'placeholder' => 'Atividade'
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'locador',
-            'options' => array(
-                'type' => 'hidden',
-            ),
-            'attributes' => array(
-                'id' => 'locador',
-            )
-        ));
-
-        $this->add(array(
-            'name' => 'locadorDesc',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Locador'
-            ),
-            'attributes' => array(
-                'id' => 'locadorDesc',
-                'placeholder' => 'Pesquise digitando o Locador aqui!',
-                'onKeyUp' => 'autoCompLocador();'
-            )
-        ));
+        $this->setInputHidden('locador');
+        $this->setInputText('locadorDesc', 'Locador', ['placeholder' => 'Pesquise pelo nome, cpf ou cnpj aqui!','onKeyUp' => 'autoCompLocador();']);
 
         $this->getEnderecoElements($em);
-     
-        $this->add(array(
-            'name' => 'enviar',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success',
-                'onClick' => 'return salvar()'
-            )
-        ));
+
+        $this->setInputSubmit('enviar', 'Salvar', ['onClick' => 'return salvar()']);
     }   
     
     /**

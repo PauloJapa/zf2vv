@@ -2,112 +2,34 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\InputFilter\InputFilter;
-
-class EnderecoFilter extends InputFilter {
+class EnderecoFilter extends AbstractFilter {
 
     public function __construct() {
-        $this->add(array(
-            'name' => 'rua',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
-            'name' => 'numero',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
         
-        $this->add(array(
-            'name' => 'bairroDesc',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
+        $this->notEmpty('rua');
 
-        $this->add(array(
-            'name' => 'cidadeDesc',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
+        $this->notEmpty('numero');
 
-        $this->add(array(
+        $this->notEmpty('bairroDesc');
+
+        $this->notEmpty('cidadeDesc');
+
+        $this->notEmpty('estado');
+
+        $this->notEmpty('pais');
+    }
+    
+    public function notValidateEndereco(){
+        // Especie do bug no zf2 que força a validação dos campos selects
+        $this->add( array(
             'name' => 'estado',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
-
-        $this->add(array(
+            'required' => false,
+        ) );
+        
+        $this->add( array(
             'name' => 'pais',
-            'required' => true,
-            'filters' => array(
-                array('name' => 'StripTags'),
-                array('name' => 'StringTrim'),
-            ),
-            'validators' => array(
-                array(
-                    'name' => 'NotEmpty',
-                    'options' => array(
-                        'messages' => array('isEmpty' => 'Não pode estar em branco'),
-                    ),
-                ),
-            ),
-        ));
+            'required' => false,
+        ) );
     }
 
 }

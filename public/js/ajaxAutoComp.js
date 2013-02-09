@@ -39,7 +39,7 @@ function autoComp(txt,prog,jan,exQt,func,opc){
     if((func === "")||(func === null))executar = ""    ; else executar  = func      ;
     if((jan === "" )||(jan === null ))tela = ""        ; else tela  = jan           ;
     var qtdGrupos = exiQtd + retorno.length;
-    var params = "SubOpcao=" + opc; 
+    var params = "subOpcao=" + opc; 
     for( i = 0 ; i < txt.length ; i++){
         params += "&" + txt[i] + "=" + document.getElementById(txt[i]).value;  
     }

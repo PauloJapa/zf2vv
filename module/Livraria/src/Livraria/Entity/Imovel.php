@@ -93,7 +93,7 @@ class Imovel
      */
     private $endereco;
 
-    /*
+    /**
      * @var Locador
      *
      * @ORM\ManyToOne(targetEntity="Locador")
@@ -107,7 +107,6 @@ class Imovel
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
-     * Tambem carrega as data de criadoEm e alteradoEm atuais 
      * @param Array $option
      */    
     public function __construct($options = null) {
@@ -121,7 +120,6 @@ class Imovel
     public function getId() {
         return $this->id;
     }
-
 
     /** 
      * Setar o id do registro
@@ -323,7 +321,9 @@ class Imovel
         $data['tel']       = $this->getTel();
         $data['bloco']     = $this->getBloco();
         $data['apto']      = $this->getApto();
-        $data['atividade'] = $this->getAtividade();
+        $data['atividadeDesc'] = $this->getAtividade();
+        $data['atividade'] = $this->getAtividade()->getId();
+        $data['locadorDesc']   = $this->getLocador();
         $data['locador']   = $this->getLocador()->getId();
         $data['status']    = $this->getStatus();
         return $data ;

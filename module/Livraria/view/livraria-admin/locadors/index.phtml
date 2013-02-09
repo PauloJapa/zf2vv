@@ -1,9 +1,9 @@
-<h1>Imovels</h1>
+<h1>Locadores</h1>
 <br />
 
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Imovel</span></p>
+<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Locador</span></p>
 <?php
-$coluns = array('ID','Locador','Atividade','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
+$coluns = array('ID','Nome','Tipo','Cpf ou Cnpj','Administradora','Telefone','Email','Status','Ação');
 $td     = array();
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
@@ -11,14 +11,12 @@ echo $this->ViewIndex('table'),
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),
-        $entity->getLocador(),
-        $entity->getAtividade(),
-        $entity->getRua(),
-        $entity->getNumero(),
-        $entity->getEndereco()->getCompl(),
-        $entity->getBloco(),
-        $entity->getApto(),
-        $entity->getCep(),
+        $entity->getNome(),
+        $entity->getTipo(),
+        $entity->getCpf() . $entity->getCnpj() ,
+        $entity->getAdministradora(),
+        $entity->getTel(),
+        $entity->getEmail(),
         $entity->getStatus(),
         $entity->getId(),
     );

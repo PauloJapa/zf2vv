@@ -5,28 +5,26 @@ namespace Livraria\Service;
 use Doctrine\ORM\EntityManager;
 use Livraria\Entity\Configurator;
 /**
- * Imovel
- * Faz o CRUD da tabela Imovel no banco de dados
+ * Locador
+ * Faz o CRUD da tabela Locador no banco de dados
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class Imovel extends AbstractService {
+class Locador extends AbstractService {
     
     /**
-     * Registra os campos monitorados e afetados do endereço do imovel
+     * Registra os campos monitorados e afetados do endereço do locador
      * @var string 
      */
     protected $deParaEnd;
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
-        $this->entity = "Livraria\Entity\Imovel";
+        $this->entity = "Livraria\Entity\Locador";
     }
     
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('locador', 'Livraria\Entity\Locador');
-        if(empty($this->data['atividade']))$this->data['atividade'] = '5';
-        $this->idToReference('atividade', 'Livraria\Entity\Atividade');
+        $this->idToReference('administradora', 'Livraria\Entity\Administradora');
     }
 
     /** 
@@ -37,15 +35,15 @@ class Imovel extends AbstractService {
     public function insert(array $data) { 
         $this->data = $data;
         
+        $this->setReferences();
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
         
-        //Pegando o servico endereco e inserindo novo endereco do imovel
+        //Pegando o servico endereco e inserindo novo endereco do locador
         $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);
-        
-        $this->setReferences();
 
         if(parent::insert())
             $this->logForNew();
@@ -54,7 +52,7 @@ class Imovel extends AbstractService {
     }
     
     /**
-     * Grava em logs de quem, quando, tabela e id que inseriu o registro em imovels
+     * Grava em logs de quem, quando, tabela e id que inseriu o registro em locadors
      */
     public function logForNew(){
         $log = new Log($this->em);
@@ -62,8 +60,8 @@ class Imovel extends AbstractService {
         $data  = new \DateTime('now');
         $dataLog['data']       = $data->format('d/m/Y');
         $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'imovel';
-        $dataLog['controller'] = 'imovels';
+        $dataLog['tabela']     = 'locador';
+        $dataLog['controller'] = 'locadors';
         $dataLog['action']     = 'new';
         $dataLog['dePara']     = 'Inseriu um novo registro';
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
@@ -78,17 +76,18 @@ class Imovel extends AbstractService {
     public function update(array $data) {
         $this->data = $data;
         
+        $this->setReferences();
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
         
-        //Pegando o servico endereco e inserindo novo endereco do imovel
+        //Pegando o servico endereco e inserindo novo endereco do locador
         $serviceEndereco = new Endereco($this->em);
         $this->data['endereco'] = $serviceEndereco->update($this->data);
         $this->deParaEnd = $serviceEndereco->getDePara();
         
-        $this->setReferences();
         
         if(parent::update())
             $this->logForEdit();
@@ -97,19 +96,18 @@ class Imovel extends AbstractService {
     }
     
     /**
-     * Grava no logs dados da alteção feita em imovels De/Para
+     * Grava no logs dados da alteção feita em locadors De/Para
      */
     public function logForEdit(){
         if(empty($this->dePara)) 
             return ;
-        
         $log = new Log($this->em);
         $dataLog['user']       = $this->getIdentidade()->getId();
         $data  = new \DateTime('now');
         $dataLog['data']       = $data->format('d/m/Y');
         $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'imovel';
-        $dataLog['controller'] = 'imovels';
+        $dataLog['tabela']     = 'locador';
+        $dataLog['controller'] = 'locadors';
         $dataLog['action']     = 'edit';
         $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
@@ -118,15 +116,16 @@ class Imovel extends AbstractService {
     
     /**
      * Monta string de campos afetados para registrar no log
-     * @param \Livraria\Entity\Imovel $ent
+     * @param \Livraria\Entity\Locador $ent
      */
     public function getDiff($ent){
         $this->dePara = '';
-        $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
-        $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
+        $this->dePara .= $this->diffAfterBefore('Nome', $ent->getNome(), $this->data['nome']);
+        $this->dePara .= $this->diffAfterBefore('Tipo', $ent->getTipo(), $this->data['tipo']);
+        $this->dePara .= $this->diffAfterBefore('CPF', $ent->getCpf(), $ent->formatarCPF_CNPJ($this->data['cpf']));
+        $this->dePara .= $this->diffAfterBefore('CNPJ', $ent->getCnpj(), $ent->formatarCPF_CNPJ($this->data['cnpj']));
         $this->dePara .= $this->diffAfterBefore('Telefone', $ent->getTel(), $this->data['tel']);
-        $this->dePara .= $this->diffAfterBefore('Bloco', $ent->getBloco(), $this->data['bloco']);
-        $this->dePara .= $this->diffAfterBefore('Apartamento', $ent->getApto(), $this->data['apto']);
+        $this->dePara .= $this->diffAfterBefore('Email', $ent->getEmail(), $this->data['email']);
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
@@ -142,19 +141,19 @@ class Imovel extends AbstractService {
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
-        if(empty($this->data['rua']))
-            return array('Rua não pode estar vazia!!');
-        if(empty($this->data['numero']))
-            return array('Numero não pode estar vazio!!');
-            
-        $filtro['rua'] = $this->data['rua'];
-        $filtro['numero'] = $this->data['numero'];
+        if(!empty($this->data['cpf']))
+            $filtro['cpf'] = $this->data['cpf'];
+        
+        if(!empty($this->data['administradora']))
+            $filtro['administradora'] = $this->data['administradora'];
         
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                $erro[] = 'Já existe um imovel neste endereço  ' . $entity->getId();
+                if($entity->getCpf() == $this->data['cpf'])
+                if($entity->getAdministradora() == $this->data['administradora'])
+                    $erro[] = 'Já existe esse cpf de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
             }
         }
         if(!empty($erro)){

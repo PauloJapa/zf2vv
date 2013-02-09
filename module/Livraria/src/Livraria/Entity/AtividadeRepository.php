@@ -25,6 +25,24 @@ class AtividadeRepository extends EntityRepository {
         
         return $array;
     }
-    
+     
+    /**
+     * Auto complete em ajax esta função retorna as entitys encontradas
+     * com a ocorrencia passada por parametro
+     * @param string $atividade
+     * @return \Livraria\Entity\Atividade
+     */
+    public function autoComp($atividade){
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\Atividade', 'u')
+                ->where("u.descricao LIKE :atividade")
+                ->setParameter('atividade', $atividade)
+                ->setMaxResults(20)
+                ->getQuery()
+                ;
+        return $query->getResult();
+    }   
 }
 

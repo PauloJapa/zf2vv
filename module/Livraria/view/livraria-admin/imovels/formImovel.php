@@ -12,10 +12,10 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados do Imovel', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\n",
-        $this->FormDefault(['locador' => 'hidden', 'locadorDesc' => 'text']),
-        "<br /><span id='popLocador' style='position:absolute'></span>",
+        $this->FormDefault(['subOpcao','ajaxStatus','autoComp','locador','atividade'], 'hidden'),
+        $this->FormDefault(['name' => 'locadorDesc','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
     "</td><td>\n",
-        $this->FormDefault(['subOpcao' => 'hidden','atividade' => 'hidden', 'atividadeDesc' => 'text']),
+        $this->FormDefault(['name' => 'atividadeDesc','icone' => 'icon-search','js' => 'autoCompAtividade()','span' => "popAtividade' style='position:absolute"],'icone'),
     "</td><td>\n",
     "</td>",
 "</tr><tr>\n",        
@@ -110,11 +110,27 @@ require 'index.phtml';
     }
 
     function autoCompLocador(){
-        var filtros = 'locadorDesc';
+        document.getElementById('autoComp').value = 'locadorDesc';
+        var filtros = 'locadorDesc,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locadors','action'=>'autoComp')); ?>";
         var returns = Array('locador','locadorDesc');
-        var functionCall = '';
-        autoComp2(filtros,servico,'poplocador',returns,'2',functionCall);
+        var functionCall = 'buscaLocador()';
+        autoComp2(filtros,servico,'popLocador',returns,'4',functionCall);
+    }
+    function buscaLocador(){
+        envia(tar,'buscar',formName);
+    }
+
+    function autoCompAtividade(){
+        document.getElementById('autoComp').value = 'atividadeDesc';
+        var filtros = 'atividadeDesc,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'autoComp')); ?>";
+        var returns = Array('atividade','atividadeDesc');
+        var functionCall = 'buscaAtividade()';
+        autoComp2(filtros,servico,'popAtividade',returns,'2',functionCall);
+    }
+    function buscaAtividade(){
+        envia(tar,'buscar',formName);
     }
 
     function submitenter(obj,e){

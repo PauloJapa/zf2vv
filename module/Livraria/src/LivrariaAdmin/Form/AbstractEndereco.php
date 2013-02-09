@@ -4,7 +4,7 @@ namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form;
 
-abstract class AbstractEndereco extends Form {
+abstract class AbstractEndereco extends AbstractForm {
 
     /**
      *
@@ -22,141 +22,29 @@ abstract class AbstractEndereco extends Form {
         $this->estados = $em->getRepository('Livraria\Entity\Estado')->fetchPairs();
         $this->paises  = $em->getRepository('Livraria\Entity\Pais')->fetchPairs();
         
-        $this->add(array(
-            'name'      => 'idEnde',
-            'attributes' => array(
-                'id'    => 'idEnde',
-                'type'  => 'hidden'
-            )
-        ));
-        
-        $this->add(array(
-            'name'      => 'ajaxStatus',
-            'attributes' => array(
-                'id'    => 'ajaxStatus',
-                'type'  => 'hidden'
-            )
-        ));
-        
-        $this->add(array(
-            'name'      => 'rua',
-            'options'   => array(
-                'type'  => 'text',
-                'label' => '*Rua',
-            ),
-            'attributes'      => array(
-                'id'          => 'rua',
-                'placeholder' => 'Endereço',
-                'class'       => 'input-xmlarge'
-            )
-        ));
+        $this->setInputHidden('idEnde');
 
-        $this->add(array(
-            'name' => 'numero',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Numero'
-            ),
-            'attributes' => array(
-                'id' => 'numero',
-                'placeholder' => '',
-                'class'       => 'input-mini'
-            )
-        ));
+        $this->setInputHidden('ajaxStatus');
 
-        $this->add(array(
-            'name' => 'compl',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Complemento'
-            ),
-            'attributes' => array(
-                'id' => 'compl',
-                'placeholder' => ''
-            )
-        ));
+        $this->setInputText('rua', 'Rua', ['placeholder' => 'Endereço','class' => 'input-xmlarge']);
 
-        $this->add(array(
-            'name' => 'cep',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*CEP'
-            ),
-            'attributes' => array(
-                'id' => 'cep',
-                'placeholder' => '',
-                'onKeyPress' => 'return submitenter(this,event)'
-            )
-        ));
-       
+        $this->setInputText('numero', 'Numero', ['class' => 'input-mini']);
 
-        $this->add(array(
-            'name' => 'bairroDesc',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Bairro'
-            ),
-            'attributes' => array(
-                'id' => 'bairroDesc',
-                'placeholder' => 'Pesquise digitando o bairro aqui!',
-                'onKeyUp' => 'autoCompBairro();'
-            )
-        ));
-        
-        $this->add(array(
-            'name'      => 'bairro',
-            'attributes' => array(
-                'id'    => 'bairro',
-                'type'  => 'hidden'
-            )
-        ));
+        $this->setInputText('compl', 'Complemento');
 
-        $this->add(array(
-            'name' => 'cidadeDesc',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Cidade'
-            ),
-            'attributes' => array(
-                'id' => 'cidadeDesc',
-                'placeholder' => 'Pesquise digitando a Cidade aqui!',
-                'onKeyUp' => 'autoCompCidade();'
-            )
-        ));
-        
-        $this->add(array(
-            'name'      => 'cidade',
-            'attributes' => array(
-                'id'    => 'cidade',
-                'type'  => 'hidden'
-            )
-        ));
-        
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'estado',
-            'attributes' => array(
-                'id' => 'estado'
-            ),
-            'options' => array(
-                'label' => '*Estado',
-                'empty_option' => 'Escolha o estado!',
-                'value_options' => $this->estados
-            )
-        ));
-        
-        $this->add(array(
-            'type' => 'Zend\Form\Element\Select',
-            'name' => 'pais',
-            'attributes' => array(
-                'id' => 'pais'
-            ),
-            'options' => array(
-                'label' => '*País',
-                'empty_option' => 'Escolha o pais!',
-                'value_options' => $this->paises
-            )
-        ));
+        $this->setInputText('cep', '*CEP', ['onKeyPress' => 'return submitenter(this,event)']);
+
+        $this->setInputText('bairroDesc', 'Bairro', ['placeholder' => 'Pesquise digitando o bairro aqui!','onKeyUp' => 'autoCompBairro();']);
+
+        $this->setInputHidden('bairro');
+
+        $this->setInputText('cidadeDesc', 'Cidade', ['placeholder' => 'Pesquise digitando a Cidade aqui!','onKeyUp' => 'autoCompCidade();']);
+
+        $this->setInputHidden('cidade');
+
+        $this->setInputSelect('estado', 'Estado', $this->estados);
+
+        $this->setInputSelect('pais', 'País', $this->paises);
         
     }
 
