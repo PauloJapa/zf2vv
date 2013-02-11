@@ -2,114 +2,83 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
 /**
  * ClasseAtividade
  * Fomulario para manipular os dados da entity
  */
-class ClasseAtividade extends Form {
+class ClasseAtividade extends AbstractForm { 
     
     /**
-     *
-     * @var \Livraria\Entity\ClasseTaxa
+     * Objeto para manipular dados do BD
+     * @var Doctrine\ORM\EntityManager
+     */
+    protected $em;
+    
+    /**
+     * Para setar o form corretamente para edição de dados
+     * @var bollean 
+     */
+    protected $isEdit = false;
+    
+    /**
+     * Todos os registros de \Livraria\Entity\ClasseTaxa para o select
+     * @var array
      */
     protected $classeTaxas;  
     
     /**
-     *
-     * @var \Livraria\Entity\Atividade 
-     */
-    protected $atividades;  
-    
-    /**
-     * Todos os registros de \Livraria\Entity\Seguradora
+     * Todos os registros de \Livraria\Entity\Seguradora para o select
      * @var array  
      */
     protected $seguradoras;
 
-    public function __construct($name = null, $em = null) {
+    public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('classeAtividade');
         
-        $this->classeTaxas = $em->getRepository('Livraria\Entity\Classe')->fetchPairs();
-        $this->atividades = $em->getRepository('Livraria\Entity\Atividade')->fetchPairs();
-        $this->$seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
+        $this->em = $em;
+        $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
+        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ClasseAtividadeFilter);
 
-        $this->add(array(
-            'name' => 'id',
-            'attributes' => array(
-                'id' => 'id',
-            )
-        ));
+        $this->setInputHidden('id');
+        $this->setInputHidden('subOpcao');
+        $this->setInputHidden('ajaxStatus');
+        $this->setInputHidden('autoComp');
         
-        $this->add(array(
-            'name' => 'inicio',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Inicio da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'inicio',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+        $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
+        $this->setInputText('inicio', '*Inicio da Vigência', $attributes);
+
+        $this->setInputText('fim', '*Fim da Vigência', $attributes);
+
+        $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
+        $this->setInputSelect('status', '*Situação', $options);
+
+        $this->setInputSelect('classeTaxas', '*Classe', $this->classeTaxas);
+
+        $this->setInputHidden('atividade');
+
+        $this->setInputText('atividadeDesc', '*Atividade', ['placeholder' => 'Pesquise digitando a atividade aqui!','onKeyUp' => 'autoCompAtividade();']);
+
+        $attributes = ['onChange'=>'buscaSeguradora()'];
+        $this->setInputSelect('seguradora', 'Seguradora', $this->seguradoras, $attributes);
+
+        $this->setInputSubmit('enviar', 'Salvar');
         
-        $this->add(array(
-            'name' => 'fim',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Fim da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'fim',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+    }
+    
+    /**
+     * Recarrega o select baseado em filtro
+     * @param array $filtro
+     */
+    public function reloadSelectClasse(array $filtro){
+        $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
+        
+        $this->setInputSelect('classeTaxas', '*Classe', $this->classeTaxas);
 
-        $status = new Select();
-        $status->setLabel("*Situação")
-                ->setName("status")
-                ->setOptions(array('value_options' => array('A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'))
-        );
-        $this->add($status);
-
-        $classe = new Select();
-        $classe->setLabel("*Classe")
-                ->setName("classeTaxas")
-                ->setAttribute("id","classeTaxas")
-                ->setOptions(array('value_options' => $this->classeTaxas)
-        );
-        $this->add($classe);
-
-        $classe = new Select();
-        $classe->setLabel("*Atividade")
-                ->setName("atividade")
-                ->setAttribute("id","atividade")
-                ->setOptions(array('value_options' => $this->atividades)
-        );
-        $this->add($classe);
-
-        $seguradora = new Select();
-        $seguradora->setLabel("Seguradora")
-                ->setName("seguradora")
-                ->setAttribute("id","seguradora")
-                ->setOptions(array('value_options' => $this->seguradoras)
-        );
-        $this->add($seguradora);
-     
-        $this->add(array(
-            'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success'
-            )
-        ));
+        if($this->isEdit)
+            $this->setEdit ();
     }
 
 }

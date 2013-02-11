@@ -57,17 +57,7 @@ class Imovel extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em imovels
      */
     public function logForNew(){
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'imovel';
-        $dataLog['controller'] = 'imovels';
-        $dataLog['action']     = 'new';
-        $dataLog['dePara']     = 'Inseriu um novo registro';
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+        parent::logForNew('imovel');
     }
  
     /** 
@@ -100,20 +90,7 @@ class Imovel extends AbstractService {
      * Grava no logs dados da alteção feita em imovels De/Para
      */
     public function logForEdit(){
-        if(empty($this->dePara)) 
-            return ;
-        
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'imovel';
-        $dataLog['controller'] = 'imovels';
-        $dataLog['action']     = 'edit';
-        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+        parent::logForEdit('imovel');
     }
     
     /**

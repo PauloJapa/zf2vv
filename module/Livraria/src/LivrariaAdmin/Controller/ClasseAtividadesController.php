@@ -21,51 +21,110 @@ class ClasseAtividadesController extends CrudController {
         
     }
     
+    /**
+     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * @param array $filtro
+     * @return \Zend\View\Model\ViewModel|no return
+     */
+    public function indexAction(array $filtro = array()){
+        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
+    }
+   
+    /**
+     * Tenta incluir o registro e exibe a listagem ou erros ao incluir
+     * @return \Zend\View\Model\ViewModel
+     */ 
     public function newAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+        $data = $this->getRequest()->getPost()->toArray();
+        $filtro = array();
+        $filtroForm = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+                $filtroForm['seguradora'] = $data['seguradora'];
+            }
+            if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
+        }
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        $this->formData->setData($data);
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                $result = $service->insert($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
             }
         }
         
         $this->setRender(FALSE);
-        parent::indexAction();
+        $this->indexAction($filtro);
 
-        return new ViewModel(array('form' => $form,'data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
+        return new ViewModel($this->getParamsForView()); 
     }
 
+    /**
+     * Edita o registro, Salva o registro, exibi o registro ou a listagem
+     * @return \Zend\View\Model\ViewModel
+     */
     public function editAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-
-        $repository = $this->getEm()->getRepository($this->entity);
-        $entity = $repository->find($this->params()->fromRoute('id', 0));
-
-        if ($this->params()->fromRoute('id', 0))
-            $form->setData($entity->toArray());
-
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
-                $service = $this->getServiceLocator()->get($this->service);
-                $service->update($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        $data = $this->getRequest()->getPost()->toArray();
+        var_dump($data);
+        $filtro = array();
+        $filtroForm = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if($data['subOpcao'] == 'editar'){ 
+            $repository = $this->getEm()->getRepository($this->entity);
+            $entity = $repository->find($data['id']);
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $entity->getSeguradora()->getId();
+                $filtroForm['seguradora'] = $filtro['seguradora'];
             }
-        } 
+            $filtro['atividade']  = $entity->getAtividade()->getId();
+        }
         
+        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+                $filtroForm['seguradora'] = $filtro['seguradora'];
+            }
+            if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
+        }
         
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        //Metodo que bloqueia campos da edição caso houver
+        //$this->formData->setEdit();
+        if($data['subOpcao'] == 'editar'){ 
+            $this->formData->setData($entity->toArray());
+        }else{
+            $this->formData->setData($data);
+        }
+        
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()){
+                $service = $this->getServiceLocator()->get($this->service);
+                $result = $service->update($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }  
+        }
+            
         $this->setRender(FALSE);
-        parent::indexAction();
-        
-        return new ViewModel(array('form' => $form,'data' => $this->paginator, 'page' => $this->page, 'route' => $this->route2));
+        $this->indexAction($filtro);
 
+        return new ViewModel($this->getParamsForView()); 
     }
 
 }

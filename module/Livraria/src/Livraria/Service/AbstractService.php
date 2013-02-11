@@ -71,6 +71,28 @@ abstract class AbstractService {
         $this->data['id'] = $entity->getId();
         
         return TRUE;
+    }   
+    
+    /**
+     * Grava em logs de quem, quando, tabela e id que inseriu o registro
+     * @param string $tabela
+     * @param string $obs
+     * @return no return
+     */
+    public function logForNew($tabela='', $obs='Inseriu um novo registro'){
+        if(empty($tabela))$tabela = 'Tabela Não foi definida' ;
+        
+        $log = new Log($this->em);
+        $dataLog['user']       = $this->getIdentidade()->getId();
+        $data  = new \DateTime('now');
+        $dataLog['data']       = $data->format('d/m/Y');
+        $dataLog['idDoReg']    = $this->data['id'];
+        $dataLog['tabela']     = $tabela;
+        $dataLog['controller'] = $tabela . 's';
+        $dataLog['action']     = 'new';
+        $dataLog['dePara']     = $obs;
+        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
+        $log->insert($dataLog);
     }
 
     /** 
@@ -87,19 +109,42 @@ abstract class AbstractService {
         
         if(method_exists($this,'logForEdit')){
             $entity = $this->em->find($this->entity, $this->data['id']);
-            $this->getDiff($entity);
-            
-            if(empty($this->dePara)) return TRUE;
-            $entity = Configurator::configure($entity, $this->data);
+            $this->getDiff($entity);            
+            if(empty($this->dePara)) 
+                return TRUE;
         }else{
             $entity = $this->em->getReference($this->entity, $this->data['id']);
-            $entity = Configurator::configure($entity, $this->data);
         }
+        
+        $entity = Configurator::configure($entity, $this->data);
         
         $this->em->persist($entity);
         $this->em->flush();
         
         return TRUE;
+    }
+    
+    /**
+     * 
+     * Grava no logs dados da alteção feita na Entity
+     * @param string $tabela
+     * @return no return
+     */
+    public function logForEdit($tabela=''){
+        if((empty($this->dePara)) OR (empty($tabela))) 
+            return ;
+        
+        $log = new Log($this->em);
+        $dataLog['user']       = $this->getIdentidade()->getId();
+        $data  = new \DateTime('now');
+        $dataLog['data']       = $data->format('d/m/Y');
+        $dataLog['idDoReg']    = $this->data['id'];
+        $dataLog['tabela']     = $tabela;
+        $dataLog['controller'] = $tabela . 's';
+        $dataLog['action']     = 'edit';
+        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
+        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
+        $log->insert($dataLog);
     }
   
     /** 
@@ -177,9 +222,9 @@ abstract class AbstractService {
     
     /**
      * Faz a comparação de alteração e retorna uma string no formato para gravação.
-     * @param type $input
-     * @param type $after
-     * @param type $before
+     * @param string $input
+     * @param string $after
+     * @param string $before
      * @return string
      */
     public function diffAfterBefore($input,$after,$before){

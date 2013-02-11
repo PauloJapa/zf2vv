@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="classe_atividade")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Entity(repositoryClass="Livraria\Entity\ClasseAtividadeRepository")
  */
 class ClasseAtividade
 {
@@ -91,6 +93,16 @@ class ClasseAtividade
      * })
      */
     private $atividade;
+
+    /**
+     * @var Seguradora
+     *
+     * @ORM\ManyToOne(targetEntity="Seguradora")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
+     * })
+     */
+    private $seguradora;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -104,7 +116,6 @@ class ClasseAtividade
         $this->criadoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
-        $this->userIdCriado = 1 ;
     }
      
     /**
@@ -114,6 +125,10 @@ class ClasseAtividade
     function preUpdate(){
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
+        if($this->inicio < $this->fim)
+            $this->status = 'C';
+        else
+            $this->status = 'A';
     }
     
     /**
@@ -321,8 +336,26 @@ class ClasseAtividade
         $this->atividade = $atividade;
         return $this;
     }
+    
+    /**
+     * Retorna a Entity Seguradora
+     * @return \Livraria\Entity\Seguradora
+     */
+    public function getSeguradora() {
+        return $this->seguradora;
+    }
 
     /**
+     * Define a ligação com a entity Seguradora 
+     * @param \Livraria\Entity\Seguradora $seguradora
+     * @return \Livraria\Entity\ClasseAtividade
+     */
+    public function setSeguradora(Seguradora $seguradora) {
+        $this->seguradora = $seguradora;
+        return $this;
+    }
+
+        /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -337,6 +370,8 @@ class ClasseAtividade
         $data['alteradoEm']       = $this->getAlteradoEm();
         $data['classeTaxas']      = $this->getClasseTaxas()->getId(); 
         $data['atividade']        = $this->getAtividade()->getId(); 
+        $data['atividadeDesc']    = $this->getAtividade(); 
+        $data['seguradora']       = $this->getSeguradora()->getId(); 
         return $data ;
     }
 
