@@ -51,7 +51,7 @@ class ClasseAtividade extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      */
     public function logForNew(){
-        parent::logForNew('classeatividade');
+        parent::logForNew('classe_atividade');
     }
  
     /** 
@@ -79,7 +79,7 @@ class ClasseAtividade extends AbstractService {
      * @return no return
      */
     public function logForEdit(){
-        parent::logForEdit('classeatividade');
+        parent::logForEdit('classe_atividade');
     }
 
     /**

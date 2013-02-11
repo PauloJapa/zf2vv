@@ -6,6 +6,8 @@ use Zend\Mvc\Controller\AbstractActionController,
     Zend\View\Model\ViewModel;
 use Zend\Paginator\Paginator,
     Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Authentication\AuthenticationService,
+    Zend\Authentication\Storage\Session as SessionStorage;
 
 abstract class CrudController extends AbstractActionController {
 
@@ -14,6 +16,17 @@ abstract class CrudController extends AbstractActionController {
      * @var EntityManager
      */
     protected $em;
+    
+    /**
+     * Objeto que pega os dados do usuario armazenado
+     * @var Zend\Authentication\AuthenticationService
+     */
+    protected $authService;
+    
+    /**
+     *
+     * @var type 
+     */
     protected $service;
     protected $entity;
     protected $form;
@@ -138,9 +151,11 @@ abstract class CrudController extends AbstractActionController {
         }
         $viewData['data'] = $this->paginator ;
         $viewData['page'] = $this->page;
-        $viewData['route'] = $this->route2;
-        $viewData['params'] = $this->route2->getParams();
-        $viewData['matchedRouteName'] = $this->route2->getMatchedRouteName();
+        if($this->route2){
+            $viewData['route'] = $this->route2;
+            $viewData['params'] = $this->route2->getParams();
+            $viewData['matchedRouteName'] = $this->route2->getMatchedRouteName();
+        }
         $viewData['flashMessages']    = $this->flashMessenger()->getMessages();
         return $viewData;    
     }
@@ -164,6 +179,25 @@ abstract class CrudController extends AbstractActionController {
         $viewModel = new ViewModel(array('resultSet' => $resultSet));
         $viewModel->setTerminal(true);
         return $viewModel;
+    }
+ 
+    /** 
+     * Busca os dados do usuario da storage session
+     * Retorna a entity com os dados do usuario
+     * @param Array $data com os campos do registro
+     * @return Livraria\Entity\User | boolean
+     */     
+    public function getIdentidade() { 
+        if (is_object($this->authService)) {
+            return $this->authService->getIdentity();
+        }else{
+            $sessionStorage = new SessionStorage("LivrariaAdmin");
+            $this->authService = new AuthenticationService;
+            $this->authService->setStorage($sessionStorage);
+            if ($this->authService->hasIdentity()) 
+                return $this->authService->getIdentity();
+        }
+        return FALSE;
     }
 
 }
