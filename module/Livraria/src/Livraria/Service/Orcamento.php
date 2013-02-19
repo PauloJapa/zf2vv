@@ -64,16 +64,53 @@ class Orcamento extends AbstractService {
         $this->data = $data;
         
         //Pegando o servico endereco e inserindo ou alterando o imovel
-        if(empty($this->data['imovel']))
+        if(empty($this->data['imovel'])){
             $this->data['imovel'] = (new Imovel($this->em))->insert($this->data);
-        else{
-            //Pegando o servico endereco e inserindo novo endereco do imovel
+            if(is_array($this->data['imovel'])){
+                if(substr($this->data['imovel'][0], 0, 45) == "Já existe um imovel neste endereço  registro:"){
+                    echo 'ok'; 
+                }
+            }
+        }else{
+            //Pegando o servico endereco e atualizando endereco do imovel do locador
             $serviceImove = new Imovel($this->em);
             $this->data['imovel'] = $serviceImove->update($this->data);
-            $this->deParaImovel = $serviceImove->getDePara();
+            if($this->data['imovel'] === TRUE){
+                $this->idToReference('imovel', 'Livraria\Entity\Imovel');
+                $this->deParaImovel = $serviceImove->getDePara();
+            }else{
+                return ['Houve um erro ao tentar atulizar o cadastro do Imovel desse Locador!!'];
+            }
         }
 
         $this->setReferences();
+       
+        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        
+        $this->data['fim'] = $this->data['inicio'];
+        if($this->data['validade'] == 'mensal'){
+            $interval_spec = 'P1M'; 
+        } 
+        if($this->data['validade'] == 'anual'){
+            $interval_spec = 'P1Y'; 
+        } 
+        $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        
+        $this->data['taxa'] = $this->em
+             ->getRepository('Livraria\Entity\Taxa')
+             ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
+        
+        $this->data['premio'] = '0';
+        $this->data['premioLiquido'] = '0';
+        $this->data['premioTotal'] = '0';
+        $this->data['codFechado'] = '0';
+        $this->data['status'] = 'A';
+        
+        if (!isset($this->data['user']))
+            $this->data['user'] = $this->getIdentidade()->getId();
+        
+        $this->idToReference('user', 'Livraria\Entity\User');
+        
         
         $result = $this->isValid();
         if($result !== TRUE){
@@ -83,7 +120,7 @@ class Orcamento extends AbstractService {
         if(parent::insert())
             $this->logForNew();
         
-        return TRUE;      
+        return array(TRUE,  $this->data['id']);      
     }   
     
     /**
@@ -101,12 +138,43 @@ class Orcamento extends AbstractService {
     public function update(array $data) {
         $this->data = $data;
         
-        //Pegando o servico endereco e inserindo novo endereco do imovel
-        $serviceImove = new Imovel($this->em);
-        $this->data['imovel'] = $serviceImove->update($this->data);
-        $this->deParaImovel = $serviceImove->getDePara();
-
+        //Pegando o servico endereco e inserindo ou alterando o imovel
+        if(!empty($this->data['imovel'])){
+            //Pegando o servico endereco e atualizando endereco do imovel do locador
+            $serviceImove = new Imovel($this->em);
+            $this->data['imovel'] = $serviceImove->update($this->data);
+            if($this->data['imovel'] === TRUE){
+                $this->idToReference('imovel', 'Livraria\Entity\Imovel');
+                $this->deParaImovel = $serviceImove->getDePara();
+            }else{
+                return ['Houve um erro ao tentar atulizar o cadastro do Imovel desse Locador!!'];
+            }
+        }else{
+            return ['Referencia do imovel não encontrada !!!!'];
+        }
         $this->setReferences();
+       
+        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        
+        $this->data['fim'] = $this->data['inicio'];
+        if($this->data['validade'] == 'mensal'){
+            $interval_spec = 'P1M'; 
+        } 
+        if($this->data['validade'] == 'anual'){
+            $interval_spec = 'P1Y'; 
+        } 
+        $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        
+        
+        
+        
+        $this->data['premio'] = '0';
+        $this->data['premioLiquido'] = '0';
+        $this->data['premioTotal'] = '0';
+        $this->data['codFechado'] = '0';
+        $this->data['status'] = 'A';
+        
+        
         
         $result = $this->isValid();
         if($result !== TRUE){
@@ -192,7 +260,6 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
         $this->dePara .= $this->diffAfterBefore('Seguradora', $ent->getSeguradora(), $this->data['seguradora']);
         $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora(), $this->data['administradora']);
-        $this->dePara .= $this->diffAfterBefore('User', $ent->getUser(), $this->data['user']);
         // 9 de valores float
         $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('valorAluguel'), $this->strToFloat($this->data['valorAluguel']));
         $this->dePara .= $this->diffAfterBefore('Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
@@ -219,7 +286,8 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('formaPagto', $ent->getFormaPagto(), $this->data['formaPagto']);
         $this->dePara .= $this->diffAfterBefore('numeroParcela', $ent->getNumeroParcela(), $this->data['numeroParcela']);
         $this->dePara .= $this->diffAfterBefore('observacao', $ent->getObservacao(), $this->data['observacao']);
-        $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
+        if(isset($this->data['gerado']))
+            $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
         $this->dePara .= $this->diffAfterBefore('comissao', $ent->getComissao(), $this->data['comissao']);
         $this->dePara .= $this->diffAfterBefore('codFechado', $ent->getCodFechado(), $this->data['codFechado']);
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);

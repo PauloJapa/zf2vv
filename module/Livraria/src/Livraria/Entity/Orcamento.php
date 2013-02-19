@@ -223,6 +223,20 @@ class Orcamento
     private $mesNiver;
 
     /**
+     * @var string $validade
+     *
+     * @ORM\Column(name="validade", type="string", nullable=false)
+     */
+    private $validade;
+
+    /**
+     * @var string $ocupacao
+     *
+     * @ORM\Column(name="ocupacao", type="string", length=2, nullable=false)
+     */
+    private $ocupacao;
+
+    /**
      * @var Locador
      *
      * @ORM\OneToOne(targetEntity="Locador")
@@ -404,24 +418,6 @@ class Orcamento
      */
     public function setStatus($status) {
         $this->status = $status;
-        return $this;
-    }
-
-    /**
-     * 
-     * @return int Id do usuario que cadastrou o registro
-     */
-    public function getUserIdCriado() {
-        return $this->userIdCriado;
-    }
-
-    /** 
-     * Setar o id do user que criou o registro
-     * @param Int $userIdCriado
-     * @return \Livraria\Entity\orcamento 
-     */ 
-    public function setUserIdCriado($userIdCriado) {
-        $this->userIdCriado = $userIdCriado;
         return $this;
     }
 
@@ -800,8 +796,15 @@ class Orcamento
      * @return \DateTime | string
      */
     public function getCanceladoEm($op = null) {
+        if($this->canceladoEm == null){
+            return null;
+        }
         if(is_null($op)){
-            return $this->canceladoEm->format('d/m/Y');
+            $formatado = $this->canceladoEm->format('d/m/Y');
+            if($formatado == "30/11/-0001"){
+                $formatado = "00/00/0000";
+            }
+            return $formatado;
         }
         return $this->canceladoEm;
     }
@@ -905,6 +908,44 @@ class Orcamento
     public function setMesNiver($mesNiver) {
         $this->mesNiver = $mesNiver;
         return $this;
+    }
+    
+    /**
+     * 'mensal'|'anual'
+     * @return string
+     */
+    public function getValidade(){
+        return $this->validade;
+    }
+    
+    /**
+     * 'mensal'|'anual'
+     * @param string $validade
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setValidade($validade){
+        $this->validade = $validade;
+        return $this;
+        
+    }
+    
+    /**
+     * ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria']
+     * @return string
+     */
+    public function getOcupacao(){
+        return $this->ocupacao;
+    }
+    
+    /**
+     * ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria']
+     * @param string $ocupacao
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setOcupacao($ocupacao){
+        $this->ocupacao = $ocupacao;
+        return $this;
+        
     }
 
     /**
@@ -1056,45 +1097,54 @@ class Orcamento
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {
+        $data                   = $this->getImovel()->toArray();
         $data['id']             = $this->getId();
+        $data['proposta']       = $this->getId() . '/' . $this->getCodano();
         $data['inicio']         = $this->getInicio();
         $data['fim']            = $this->getFim();
         $data['status']         = $this->getStatus();
-        $data['userIdCriado']   = $this->getUseridcriado();
         $data['criadoEm']       = $this->getCriadoem();
-        $data['userIdAlterado'] = $this->getUseridalterado();
         $data['alteradoEm']     = $this->getAlteradoem();
         $data['codano']         = $this->getCodano();
+        $data['locador']        = $this->getLocador()->getId();
         $data['locadorNome']    = $this->getLocadornome();
+        $data['locatario']      = $this->getLocatario()->getId();
         $data['locatarioNome']  = $this->getLocatarionome();
-        $data['valorAluguel']   = $this->getValoraluguel();
+        $data['valorAluguel']   = $this->floatToStr('valorAluguel');
         $data['tipoCobertura']  = $this->getTipoCobertura();
         $data['seguroEmNome']   = $this->getSeguroemnome();
         $data['codigoGerente']  = $this->getCodigogerente();
         $data['refImovel']      = $this->getRefimovel();
         $data['formaPagto']     = $this->getFormapagto();
-        $data['incendio']       = $this->getIncendio();
-        $data['aluguel']        = $this->getAluguel();
-        $data['eletrico']       = $this->getEletrico();
-        $data['vendaval']       = $this->getVendaval();
+        $data['incendio']       = $this->floatToStr('incendio');
+        $data['aluguel']        = $this->floatToStr('aluguel');
+        $data['eletrico']       = $this->floatToStr('eletrico');
+        $data['vendaval']       = $this->floatToStr('vendaval');
         $data['numeroParcela']  = $this->getNumeroparcela();
-        $data['premioLiquido']  = $this->getPremioliquido();
-        $data['premio']         = $this->getPremio();
-        $data['premioTotal']    = $this->getPremiototal();
+        $data['premioLiquido']  = $this->floatToStr('premioLiquido');
+        $data['premio']         = $this->floatToStr('premio');
+        $data['premioTotal']    = $this->floatToStr('premioTotal');
         $data['canceladoEm']    = $this->getCanceladoem();
         $data['observacao']     = $this->getObservacao();
         $data['gerado']         = $this->getGerado();
-        $data['comissao']       = $this->getComissao();
+        $data['comissao']       = $this->floatToStr('comissao');
         $data['codFechado']     = $this->getCodfechado();
         $data['mesNiver']       = $this->getMesniver();
-        $data['locador']        = $this->getLocador();
-        $data['locatario']      = $this->getLocatario();
-        $data['imovel']         = $this->getImovel();
-        $data['taxa']           = $this->getTaxa();
-        $data['atividade']      = $this->getAtividade();
-        $data['seguradora']     = $this->getSeguradora();
-        $data['administradora'] = $this->getAdministradora();
+        $data['imovel']         = $this->getImovel()->getId();
+        $data['imovelTel']      = $this->getImovel()->getTel();
+        $data['imovelStatus']   = $this->getImovel()->getStatus();
+        $data['taxa']           = $this->getTaxa()->getId();
+        $data['atividade']      = $this->getAtividade()->getId();
+        $data['atividadeDesc']  = $this->getAtividade();
+        $data['seguradora']     = $this->getSeguradora()->getId();
+        $data['administradora'] = $this->getAdministradora()->getId();
         $data['user']           = $this->getUser();
+        $data['mesNiver']       = $this->getMesNiver();
+        $data['validade']       = $this->getValidade();
+        $data['ocupacao']       = $this->getOcupacao();
+        $data['tipo']           = $this->getLocatario()->getTipo();
+        $data['cpf']            = $this->getLocatario()->getCpf();
+        $data['cnpj']           = $this->getLocatario()->getCnpj();
         return $data ;
     }
  

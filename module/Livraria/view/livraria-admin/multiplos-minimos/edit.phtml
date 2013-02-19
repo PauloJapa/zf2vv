@@ -1,0 +1,12 @@
+<h3>Editando Multiplos e Minimos</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'multiplosMinimos','action'=>'edit')));
+
+include 'formMultMin.php';
+
+?>

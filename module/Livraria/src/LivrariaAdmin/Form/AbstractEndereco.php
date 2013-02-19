@@ -42,9 +42,9 @@ abstract class AbstractEndereco extends AbstractForm {
 
         $this->setInputHidden('cidade');
 
-        $this->setInputSelect('estado', 'Estado', $this->estados);
+        $this->setInputSelect('estado', 'Estado', $this->estados,['class'=>'input-small']);
 
-        $this->setInputSelect('pais', 'País', $this->paises);
+        $this->setInputSelect('pais', 'País', $this->paises,['class'=>'input-small']);
         
     }
 

@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="imovel")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="Livraria\Entity\TaxaRepository")
+ * @ORM\Entity(repositoryClass="Livraria\Entity\ImovelRepository")
  */
 class Imovel
 {

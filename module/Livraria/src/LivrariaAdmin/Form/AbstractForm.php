@@ -3,6 +3,7 @@
 namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form;
+use Zend\Form\Element;
 
 /**
  * AbstractForm
@@ -40,6 +41,29 @@ abstract class AbstractForm extends Form {
         
         $input['name'] = $name;
         $input['options'] = array('type' => 'text','label' => $label);
+        
+        if(empty($attributes)){
+            $input['attributes'] = array('id' => $name); 
+        }else{
+            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+        }
+        
+        $this->add($input);
+    }
+    
+    /**
+     * Monta os paramentro basicos para se fazer um input text Area
+     * @param string $name
+     * @param string $label
+     * @param array $attributes
+     */
+    public function setInputTextArea($name,$label,array $attributes = array()){
+        //$tst = new Element\Textarea($name);
+        //$tst->setLabelAttributes($attributes);
+        
+        $input['type'] = 'Zend\Form\Element\Textarea';
+        $input['name'] = $name;
+        $input['options'] = array('label' => $label,'rows'=>'6','cols'=>'200');
         
         if(empty($attributes)){
             $input['attributes'] = array('id' => $name); 
@@ -96,9 +120,31 @@ abstract class AbstractForm extends Form {
         if(empty($attributes)){
             $input['attributes'] = $attrib;
         }else{
+            if(isset($attributes['onClick']))
+                unset ($attrib['onClick']);
             $input['attributes'] = array_merge($attrib,$attributes); 
         }
         
         $this->add($input);        
+    }
+    
+    public function setInputRadio($name, $label, $options, $attributes=[]){
+        
+        $input['type'] = 'Zend\Form\Element\Radio';
+        $input['name'] = $name;
+        
+        if(empty($attributes)){
+            $input['attributes'] = array('id' => $name); 
+        }else{
+            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+        }
+        
+        $input['options'] = array(
+            'label' => $label,
+            'value_options' => $options
+        ); 
+        
+        $this->add($input);        
+       
     }
 }

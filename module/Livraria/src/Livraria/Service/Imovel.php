@@ -68,6 +68,12 @@ class Imovel extends AbstractService {
     public function update(array $data) {
         $this->data = $data;
         
+        if(!empty($this->data['imovel'])){
+            $this->data['id'] = $this->data['imovel'];
+            $this->data['tel'] = $this->data['imovelTel'];
+            $this->data['status'] = $this->data['imovelStatus'];
+        }
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -131,7 +137,9 @@ class Imovel extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                $erro[] = 'Já existe um imovel neste endereço  ' . $entity->getId();
+                if(($this->data['bloco'] == $entity->getBloco()) and ($this->data['apto'] == $entity->getApto())){
+                    $erro[] = 'Já existe um imovel neste endereço  registro: ' . $entity->getId();
+                }
             }
         }
         if(!empty($erro)){

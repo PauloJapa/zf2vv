@@ -62,9 +62,9 @@ class Atividade extends Form {
         $status->setLabel("*Ocupação")
                 ->setName("ocupacao")
                 ->setAttribute('id' , 'ocupacao')
-                ->setOptions(array('value_options' => array('comercial'=>'Comércio e Serviços',
-                                                            'residencial'=>'Residencial',
-                                                            'industria'=>'Industria'))
+                ->setOptions(array('value_options' => array('01'=>'Comércio e Serviços',
+                                                            '02'=>'Residencial',
+                                                            '03'=>'Industria'))
         );
         $this->add($status);
 

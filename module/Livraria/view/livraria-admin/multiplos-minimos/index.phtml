@@ -1,25 +1,32 @@
-<h1>Orçamentos</h1>
+<h1>Multiplos e Minimos</h1>
 <br />
 
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Orçamento</span></p>
+<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Multiplos e Minimos</span></p>
 
 <?php
-$coluns = array('ID','Seguradora','Atividade','Classe','Inicio','Fim','Locador','Locatario','Status','Ação');
+$coluns = array('ID','Seguradora','Inicio','Fim','Mult Aluguel','Mult Conteudo','Mult Predio','Mult Eletrico','Mult Vendaval',
+                'Min Aluguel','Min Conteudo','Min Predio','Min Eletrico','Min Vendaval','Status','Ação');
 $td     = array();
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
 foreach($this->data as $entity){ 
     $linha = array(
-        $entity->getId() . $entity->getCodAno(),
+        $entity->getId(),
         $entity->getSeguradora(),
-        $entity->getAtividade(),
-        $entity->getTaxa()->getClasse(),
-        $entity->getInicio(),
-        $entity->getFim(),
-        $entity->getLocadorNome(),
-        $entity->getLocatarioNome(),
-        $entity->getStatus(),
+        $entity->getMultVigenciaInicio(),
+        $entity->getMultVigenciaFim(),
+        $entity->floatToStr('multAluguel'),
+        $entity->floatToStr('multConteudo'),
+        $entity->floatToStr('multPredio'),
+        $entity->floatToStr('multEletrico'),
+        $entity->floatToStr('multVendaval'),
+        $entity->floatToStr('minAluguel'),
+        $entity->floatToStr('minConteudo'),
+        $entity->floatToStr('minPredio'),
+        $entity->floatToStr('minEletrico'),
+        $entity->floatToStr('minVendaval'),
+        $entity->getMultStatus(),
         $entity->getId(),
     );
     echo $this->ViewIndex('line',array('data' => $linha));

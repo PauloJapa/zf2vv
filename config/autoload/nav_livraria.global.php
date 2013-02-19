@@ -211,42 +211,29 @@ return array(
                             ),
                         ),
                     ),
+                    'Mult_Min' => array(
+                        'label' => 'Multiplos_Minimos',
+                        'route' => 'livraria-admin',
+                        'controller' => 'multiplosMinimos',
+                        'pages' => array(
+                            'Mult_Min1' => array(
+                                'label' => 'Novo',
+                                'route' => 'livraria-admin',
+                                'controller' => 'multiplosMinimos',
+                                'action' => 'new',
+                            ),
+                            'Mult_Min2' => array(
+                                'label' => 'Listar',
+                                'route' => 'livraria-admin',
+                                'controller' => 'multiplosMinimos',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
                     'endereco' => array(
                         'label' => 'Endereço',
                         'route' => 'livraria-admin',
                         'controller' => 'enderecos',
-                        'pages' => array(
-                            'bairro' => array(
-                                'label' => 'Bairros',
-                                'route' => 'livraria-admin',
-                                'controller' => 'bairros',
-                            ),
-                            'cidade' => array(
-                                'label' => 'Cidade',
-                                'route' => 'livraria-admin',
-                                'controller' => 'cidades',
-                            ),
-                            'estado' => array(
-                                'label' => 'Estado',
-                                'route' => 'livraria-admin',
-                                'controller' => 'estados',
-                            ),
-                            'pais' => array(
-                                'label' => 'Pais',
-                                'route' => 'livraria-admin',
-                                'controller' => 'paises',
-                            ),                            
-                        ),
-                    ),
-                    'categoria' => array(
-                        'label' => 'Categoria',
-                        'route' => 'livraria-admin',
-                        'controller' => 'categorias',
-                    ),
-                    'livros' => array(
-                        'label' => 'Livro',
-                        'route' => 'livraria-admin',
-                        'controller' => 'livros',
                     ),
                 ),                
                 
@@ -254,7 +241,27 @@ return array(
             'contratos' => array(
                 'label' => 'Contratos',
                 'route' => 'livraria-admin',
-                'controller' => 'contratos',
+                'controller' => 'orcamentos',
+                    'pages' => array(
+                        'contratos1' => array(
+                            'label' => 'Novo_Orçamento',
+                            'route' => 'livraria-admin',
+                            'controller' => 'orcamentos',
+                            'action' => 'new',
+                        ),
+                        'locadors2' => array(
+                            'label' => 'Renovação',
+                            'route' => 'livraria-admin',
+                            'controller' => 'renovacaos',
+                            'action' => 'index',
+                        ),
+                        'locadors3' => array(
+                            'label' => 'Fechados',
+                            'route' => 'livraria-admin',
+                            'controller' => 'fechados',
+                            'action' => 'index',
+                        ),
+                    ),
             ),
             'relatorios' => array(
                 'label' => 'Relatórios',

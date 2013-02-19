@@ -11,5 +11,21 @@ use Doctrine\ORM\EntityRepository;
 class ImovelRepository extends EntityRepository {
 
     
+    public function autoComp($locador){
+        if(empty($locador))
+            return false;
+        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\Imovel', 'u')
+                ->where("u.locador = :locador")
+                ->setParameter('locador', $locador)
+                ->setMaxResults(20)
+                ->getQuery()
+                ;
+        return $query->getResult();
+    }
+    
 }
 

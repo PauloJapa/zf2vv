@@ -1,0 +1,34 @@
+<?php 
+if($this->resultSet){
+    echo "ok|s|";
+    $cont = 0;
+    foreach($this->resultSet as $entity){
+        if($cont > 0)echo "|s|";
+        $cont++;
+        echo $entity->getId(), "|c|"; 
+        echo $entity->getEndereco()->getId(), "|c|"; 
+        echo $entity->getCep(), "|c|"; 
+        echo $entity->getRua(), "|c|"; 
+        echo $entity->getNumero(), "|c|"; 
+        echo $entity->getBloco(), "|c|"; 
+        echo $entity->getApto(), "|c|"; 
+        echo $entity->getEndereco()->getCompl(), "|c|"; 
+        echo $entity->getEndereco()->getBairro()->getId(), "|c|"; 
+        echo $entity->getEndereco()->getBairro(), "|c|"; 
+        echo $entity->getEndereco()->getCidade()->getId(), "|c|"; 
+        echo $entity->getEndereco()->getCidade(), "|c|"; 
+        echo $entity->getEndereco()->getEstado()->getId(), "|c|"; 
+        echo $entity->getEndereco()->getPais()->getId(),     "|c|"; 
+        echo $entity->getTel(), "|c|"; 
+        echo $entity->getStatus(), "|c|"; 
+        
+        echo $entity->getRua(), ', n ' , $entity->getNumero(),    "|c|"; 
+        echo $entity->getBloco(), ' ' , $entity->getApto(),    "|c|"; 
+        echo $entity->getEndereco()->getCompl(),  "|c|"; 
+        echo $entity->getEndereco()->getBairro(), "|c|"; 
+        echo $entity->getEndereco()->getCidade(), "|c|"; 
+        echo $entity->getEndereco()->getEstado(), "|c|"; 
+        echo $entity->getCep(),    "|c|"; 
+    }
+}else
+    echo "vazio|s|";

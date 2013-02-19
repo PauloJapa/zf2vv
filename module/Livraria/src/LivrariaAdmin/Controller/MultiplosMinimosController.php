@@ -3,39 +3,50 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
+
 /**
- * Locador
+ * MultiplosMinimos
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class LocadorsController extends CrudController {
+class MultiplosMinimosController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\Locador";
-        $this->form = "LivrariaAdmin\Form\Locador";
-        $this->service = "Livraria\Service\Locador";
-        $this->controller = "locadors";
+        $this->entity = "Livraria\Entity\MultiplosMinimos";
+        $this->form = "LivrariaAdmin\Form\MultiplosMinimos";
+        $this->service = "Livraria\Service\MultiplosMinimos";
+        $this->controller = "multiplosMinimos";
         $this->route = "livraria-admin";
         
     }
     
+    /**
+     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * @param array $filtro
+     * @return \Zend\View\Model\ViewModel|no return
+     */
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro);
+        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'multVigenciaInicio' => 'DESC'));
     }
-
+   
+    /**
+     * Tenta incluir o registro e exibe a listagem ou erros ao incluir
+     * @return \Zend\View\Model\ViewModel
+     */ 
     public function newAction() {
-        $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
+        $filtroForm = array();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['cpf']))           $filtro['cpf']           = $data['cpf'];
-            if(!empty($data['cnpj']))          $filtro['cnpj']          = $data['cnpj'];
-            if(!empty($data['administradora']))$filtro['administradora']= $data['administradora'];
-            $this->formData->setData($data);
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+                $filtroForm['seguradora'] = $data['seguradora'];
+            }
         }
-        
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        $this->formData->setData($data);
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
@@ -52,32 +63,46 @@ class LocadorsController extends CrudController {
         
         $this->setRender(FALSE);
         $this->indexAction($filtro);
-        
+
         return new ViewModel($this->getParamsForView()); 
     }
 
+    /**
+     * Edita o registro, Salva o registro, exibi o registro ou a listagem
+     * @return \Zend\View\Model\ViewModel
+     */
     public function editAction() {
-        $this->formData = new $this->form(null, $this->getEm());
-        $this->formData->setEdit();
         $data = $this->getRequest()->getPost()->toArray();
-        $repository = $this->getEm()->getRepository($this->entity);
         $filtro = array();
+        $filtroForm = array();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
-        switch ($data['subOpcao']){
-        case 'editar':    
+        if($data['subOpcao'] == 'editar'){ 
+            $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
-            $filtro['cpf']   = $entity->getCpf();
-            $filtro['cnpj']  = $entity->getCnpj();
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $entity->getSeguradora()->getId();
+                $filtroForm['seguradora'] = $filtro['seguradora'];
+            }
+        }
+        
+        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
+            if(!empty($data['seguradora'])){
+                $filtro['seguradora'] = $data['seguradora'];
+                $filtroForm['seguradora'] = $filtro['seguradora'];
+            }
+        }
+        
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        //Metodo que bloqueia campos da edição caso houver
+        //$this->formData->setEdit();
+        if($data['subOpcao'] == 'editar'){ 
             $this->formData->setData($entity->toArray());
-            break;
-        case 'buscar': 
-            if(!empty($data['cpf']))       $filtro['cpf']           = $data['cpf'];
-            if(!empty($data['cnpj']))      $filtro['cnpj']          = $data['cnpj'];
-            $this->formData->setData($data);  
-            break;
-        case 'salvar': 
+        }else{
             $this->formData->setData($data);
+        }
+        
+        if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data);
@@ -88,37 +113,13 @@ class LocadorsController extends CrudController {
                 foreach ($result as $value) {
                     $this->flashMessenger()->addMessage($value);
                 }
-            }   
-            break;
+            }  
         }
             
         $this->setRender(FALSE);
         $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
-    }
-    
-    /**
-     * 
-     * Configura um chamada para o repositorio que
-     * Faz uma busca no BD pela requisição Ajax com parametro de busca
-     * Na view retorna os dados no formato texto para o js exibir para o locators
-     * 
-     * @return \Zend\View\Model\ViewModel
-     */
-    public function autoCompAction(){
-        
-        $locadorNome = trim($this->getRequest()->getPost('locadorNome'));
-        $administradora = trim($this->getRequest()->getPost('administradora',''));
-        
-        $repository = $this->getEm()->getRepository($this->entity);
-        $resultSet = $repository->autoComp($locadorNome .'%',$administradora);
-        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $locadorNome .'%',$administradora);
-        // instancia uma view sem o layout da tela
-        $viewModel = new ViewModel(array('resultSet' => $resultSet));
-        $viewModel->setTerminal(true);
-        return $viewModel;
     }
 
 }

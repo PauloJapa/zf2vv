@@ -1,8 +1,8 @@
 <?php echo $this->doctype(); ?>
-
 <html>
     <head>
-        <meta charset="utf-8">
+        <meta http-equiv="content-language" content="pt-br" />
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <?php echo $this->headTitle('Vila Velha Seguros')->setSeparator(' - ')->setAutoEscape(false) ?>
 
         <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0') ?>
@@ -13,20 +13,21 @@
                 ->prependStylesheet($this->basePath() . '/css/bootstrap-responsive.min.css')
                 ->prependStylesheet($this->basePath() . '/css/style.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
-                ->prependStylesheet($this->basePath() . '/css/dhtmlgoodies_calendar.css?random=20051112')
+                ->prependStylesheet($this->basePath() . '/css/dhtmlgoodies_calendar.css')
         ?>
 
         <!-- Scripts -->
         <?php 
         echo $this->headScript()
                   ->prependFile($this->basePath() . '/js/html5.js', 'text/javascript', array('conditional' => 'lt IE 9',))
-                  ->prependFile('//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js')
+                  ->prependFile('/js/jquery.min.js')
                   ->prependFile($this->basePath() . '/js/ajax.js')
                   ->prependFile($this->basePath() . '/js/ajaxCep.js')
                   ->prependFile($this->basePath() . '/js/ajaxAutoComp.js')
                   ->prependFile($this->basePath() . '/js/funcoes.js')
-                  ->prependFile($this->basePath() . '/js/dhtmlgoodies_calendar.js?random=20060118')
+                  ->prependFile($this->basePath() . '/js/dhtmlgoodies_calendar.js') , "\n";
         ?>
+        <script type="text/javascript" src="/js/jquery.maskMoney.js"></script>
     </head>
     <body>
         <div class="navbar navbar-fixed-top">
@@ -37,7 +38,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="<?php echo $this->url('livraria-home') ?>">Seguros Admin</a>
+                    <a class="brand" href="<?php echo $this->url('livraria-home'); ?>">Seguros Admin</a>
                     <div class="nav-collapse">
                     <?php if ($user = $this->UserIdentity('LivrariaAdmin')){
                               if($user->getTipo() == 'admin')

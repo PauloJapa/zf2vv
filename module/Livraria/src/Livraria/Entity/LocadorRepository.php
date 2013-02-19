@@ -17,7 +17,7 @@ class LocadorRepository extends EntityRepository {
      * @param string $locador
      * @return \Livraria\Entity\Locador
      */
-    public function autoComp($locador, $cpf='', $cnpj=''){
+    public function autoComp($locador, $administradora='', $cpf='', $cnpj=''){
         
         $locador = trim($locador);
         
@@ -27,17 +27,30 @@ class LocadorRepository extends EntityRepository {
         if(empty($cnpj))
             $cnpj = $locador;
         
-        $query = $this->getEntityManager()
-                ->createQueryBuilder()
-                ->select('u')
-                ->from('Livraria\Entity\Locador', 'u')
-                ->where("u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj")
-                ->setParameter('locador', $locador)
-                ->setParameter('cpf', $cpf)
-                ->setParameter('cnpj', $cnpj)
-                ->setMaxResults(20)
-                ->getQuery()
-                ;
+        if(empty($administradora)){
+            $query = $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('u')
+                    ->from('Livraria\Entity\Locador', 'u')
+                    ->where("u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj")
+                    ->setParameter('locador', $locador)
+                    ->setParameter('cpf', $cpf)
+                    ->setParameter('cnpj', $cnpj)
+                    ->setMaxResults(20)
+                    ->getQuery();
+        }else{
+            $query = $this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('u')
+                    ->from('Livraria\Entity\Locador', 'u')
+                    ->where("(u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj) AND u.administradora = :administradora")
+                    ->setParameter('locador', $locador)
+                    ->setParameter('cpf', $cpf)
+                    ->setParameter('cnpj', $cnpj)
+                    ->setParameter('administradora', $administradora)
+                    ->setMaxResults(20)
+                    ->getQuery();
+        }
         return $query->getResult();
     }
     

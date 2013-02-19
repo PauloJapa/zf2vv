@@ -19,4 +19,25 @@ class AtividadesController extends CrudController {
         
     }
     
+    /**
+     * 
+     * Configura um chamada para o repositorio que
+     * Faz uma busca no BD pela requisição Ajax com parametro de busca
+     * Na view retorna os dados no formato texto para o js exibir para o usuario
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function autoCompAction(){
+        $descricao = trim($this->getRequest()->getPost('atividadeDesc'));
+        $ocupacao = trim($this->getRequest()->getPost('autoComp'));
+        $repository = $this->getEm()->getRepository($this->entity);
+        $resultSet = $repository->autoComp($descricao .'%',$ocupacao);
+        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%'. $descricao .'%', $ocupacao);
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('resultSet' => $resultSet));
+        $viewModel->setTerminal(true);
+        return $viewModel;
+    }
+    
 }

@@ -61,6 +61,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInpuIcone($options);
                 break;
             
+            case "submits":
+                $this->renderInputSubmits($options);
+                break;
+            
             case null;
                 foreach ($options as $option => $acao) {
                     $this->direciona($acao,$option);               
@@ -91,12 +95,40 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputText($name);
                 break;
             
-            case "calend":
-                $this->renderInputCalend($name);
+            case "textArea":
+                $this->renderInputTextArea($name);
                 break;
             
             case "select":
                 $this->renderInputSelect($name);
+                break;
+            
+            case "radio":
+                $this->renderInputRadio($name);
+                break;
+            
+            case "submit":
+                $this->renderInputSubmit($name);
+                break;
+            
+            case "calend":
+                $this->renderInputCalend($name);
+                break;
+            
+            case "moeda":
+                $this->renderInputMoeda($name);
+                break;
+            
+            case "textLine":
+                $this->renderInputTextLine($name);
+                break;
+            
+            case "selectLine":
+                $this->renderInputSelectLine($name);
+                break;
+            
+            case "moedaLine":
+                $this->renderInputMoedaLine($name);
                 break;
 
             default:
@@ -176,6 +208,16 @@ class FormDefault extends AbstractHelper {
             $this->formView->formSubmit($this->form->get($name)),
         "</div>\n";
     }
+    
+    public function renderInputSubmits($names=[]){
+        echo '<table width="100%"><tr>';
+        foreach ($names as $name) {
+            echo '<td align=center>',
+            $this->formView->formSubmit($this->form->get($name)),
+                 '</td>';   
+        }
+        echo '</tr></table>';
+    }
 
     /**
      * Renderiza o input hidden 
@@ -190,10 +232,35 @@ class FormDefault extends AbstractHelper {
      * Caso exista msg de erro sera exibo em vermelho
      * @param String $name
      */
+    public function renderInputTextArea($name) {
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
+        echo 
+        '<div class="input-append" id="pop' . $name . '">',
+            $this->formView->formLabel($element),
+            $this->formView->formTextarea($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>\n",
+        $this->checkError();
+    }
+
+    /**
+     * Renderiza o input text com um botao para limpar o conteudo
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
     public function renderInputText($name) {
         $element = $this->form->get($name);
-        if(!$element)
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
             return;
+        }
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
             $name = '';
@@ -202,6 +269,31 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>\n",
+        $this->checkError();
+    }
+
+    /**
+     * Renderiza o input text na posição inline com um botao para limpar o conteudo
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputTextLine($name) {
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
+        echo 
+        '<div class="form-horizontal">',
+        '<div class="input-append control-group" id="pop' . $name . '">',
+            $this->formView->formLabel($element),
+            $this->formView->formText($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>\n",
         "</div>\n",
         $this->checkError();
     }
@@ -228,6 +320,60 @@ class FormDefault extends AbstractHelper {
     }
 
     /**
+     * Renderiza o input text no estilo moeda com um botao para limpar o conteudo  
+     * Adiciona js para mascara de moeda
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputMoeda($name) {
+        $element = $this->form->get($name);
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
+        echo
+        '<div class="input-append">',
+            $this->formView->formLabel($element),
+            $this->formView->formText($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>\n",
+        '<script language="javascript">',
+        '$(function(){$("#',
+                $name,
+        '").maskMoney({symbol:"R$ ", showSymbol:true, thousands:".", decimal:",", symbolStay: true});});',
+        '</script>',
+         
+        $this->checkError();
+    }
+
+    /**
+     * Renderiza o input text no estilo moeda com label na horizontal com um botao para limpar o conteudo  
+     * Adiciona js para mascara de moeda 
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputMoedaLine($name) {
+        $element = $this->form->get($name);
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
+        echo
+        '<div class="form-horizontal">',
+        '<div class="input-append control-group">',
+            $this->formView->formLabel($element),
+            $this->formView->formText($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>\n",
+        "</div>\n",
+        '<script language="javascript">',
+        '$(function(){$("#',
+                $name,
+        '").maskMoney({symbol:"R$ ", showSymbol:true, thousands:".", decimal:",", symbolStay: true});});',
+        '</script>',
+         
+        $this->checkError();
+    }
+
+    /**
      * Renderiza um input com botão de limpar e outro botão passado por parametro 
      * Caso exista o parametro span renderiza sua tag
      * @param array $options
@@ -242,11 +388,10 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
-            '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>';
+            '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
+        "</div>\n";
         if(isset($options['span'])) 
             echo "<span id='", $options['span'] ,"'></span></font>";    
-        echo
-        "</div>\n",
         $this->checkError();        
     }
 
@@ -257,11 +402,53 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputSelect($name) {
         $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
         $this->checkError($element);
         echo 
         '<div class="input-append">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
+        "</div>\n";
+        $this->checkError();
+    }
+
+    /**
+     * Renderiza o input Selec
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputSelectLine($name) {
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $this->checkError($element);
+        echo 
+        '<div class="form-horizontal">',
+        '<div class="input-append control-group">',
+            $this->formView->formLabel($element),
+            $this->formView->formSelect($element),
+        "</div>\n";
+        "</div>\n";
+        $this->checkError();
+    }
+    
+    
+    public function renderInputRadio($name){
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $this->checkError($element);
+        echo 
+        '<div class="input-append">',
+            $this->formView->formLabel($element),
+            $this->formView->formRadio($element),
         "</div>\n";
         $this->checkError();
     }

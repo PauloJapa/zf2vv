@@ -28,6 +28,7 @@ use Livraria\Service\Locatario as LocatarioService;
 use Livraria\Service\Locador as LocadorService;
 use Livraria\Service\Imovel as ImovelService;
 use Livraria\Service\Orcamento as OrcamentoService;
+use Livraria\Service\MultiplosMinimos as MultiplosMinimosService;
 use LivrariaAdmin\Form\Livro as LivroFrm;
 use LivrariaAdmin\Form\Endereco as EnderecoFrm;
 use LivrariaAdmin\Form\Administradora as AdministradoraFrm;
@@ -152,6 +153,9 @@ class Module {
                 },
                 'Livraria\Service\Orcamento' => function($service) {
                     return new OrcamentoService($service->get('Doctrine\ORM\EntityManager'));
+                },
+                'Livraria\Service\MultiplosMinimos' => function($service) {
+                    return new MultiplosMinimosService($service->get('Doctrine\ORM\EntityManager'));
                 },
                 'LivrariaAdmin\Form\Livro' => function($service) {
                     $em = $service->get('Doctrine\ORM\EntityManager');
