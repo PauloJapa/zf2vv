@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Entity(repositoryClass="Livraria\Entity\OrcamentoRepository")
  */
-class LogOrcamento
+class LogOrcamento extends Filtro
 {
     /**
      * @var integer $id
@@ -25,18 +25,25 @@ class LogOrcamento
     private $id;
 
     /**
+     * @var string $controller
+     *
+     * @ORM\Column(name="controller", type="string", length=30, nullable=true)
+     */
+    private $controller;
+
+    /**
+     * @var string $action
+     *
+     * @ORM\Column(name="action", type="string", length=30, nullable=true)
+     */
+    private $action;
+
+    /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=true)
      */
     private $userIdCriado;
-
-    /**
-     * @var \DateTime $criadoEm
-     *
-     * @ORM\Column(name="criado_em", type="datetime", nullable=true)
-     */
-    private $criadoEm;
 
     /**
      * @var string $mensagem
@@ -53,14 +60,37 @@ class LogOrcamento
     private $dePara;
 
     /**
+     * @var \DateTime $data
+     *
+     * @ORM\Column(name="data", type="datetime", nullable=false)
+     */
+    private $data;
+
+    /**
+     * @var string $ip
+     *
+     * @ORM\Column(name="ip", type="string", length=20, nullable=false)
+     */
+    private $ip;
+
+    /**
      * @var Orcamento
      *
-     * @ORM\OneToOne(targetEntity="Orcamento")
+     * @ORM\ManyToOne(targetEntity="Orcamento")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="orcamento_id", referencedColumnName="id")
      * })
      */
     private $orcamento;
+
+    /** 
+     * Instacia um novo objeto se passado o parametro de dados
+     * Faz automaticamente todos os seters com a classe configurator
+     * @param Array $option
+     */    
+    public function __construct($options = null) {
+        Configurator::configure($this, $options);
+    }
     
     /**
      * 
@@ -95,29 +125,6 @@ class LogOrcamento
      */ 
     public function setUserIdCriado($userIdCriado) {
         $this->userIdCriado = $userIdCriado;
-        return $this;
-    }
-
-    /**
-     * 
-     * @param Boolean $op
-     * @return String data formatada em dia/mes/ano
-     * @return \DateTime data em que foi incluido no BD
-     */
-    public function getCriadoEm($op = null) {
-        if(is_null($op)){
-            return $this->criadoEm->format('d/m/Y');
-        }
-        return $this->criadoEm;
-    }
-
-    /** 
-     * Setar quando foi criado o registro
-     * @param \DateTime $criadoEm
-     * @return \Livraria\Entity\LogOrcamento 
-     */ 
-    public function setCriadoEm(\DateTime $criadoEm) {
-        $this->criadoEm = $criadoEm;
         return $this;
     }
 
@@ -175,5 +182,81 @@ class LogOrcamento
         $this->orcamento = $orcamento;
         return $this;
     }
+
+    /**
+     * nome do Controller 
+     * @return string
+     */
+    public function getController() {
+        return $this->controller;
+    }
+
+    /**
+     * Nome do controller
+     * @param string $controller
+     * @return \Livraria\Entity\LogOrcamento
+     */
+    public function setController($controller) {
+        $this->controller = $controller;
+        return $this;
+    }
+
+    /**
+     * Nome da ação que gerou o log
+     * @return string
+     */
+    public function getAction() {
+        return $this->action;
+    }
+
+    /**
+     * Nome da ação que gerou o log
+     * @param string $action
+     * @return \Livraria\Entity\LogOrcamento
+     */
+    public function setAction($action) {
+        $this->action = $action;
+        return $this;
+    }
+
+    /**
+     * Retorna o objeto data ou uma string formatada da data
+     * @return \DateTime | string
+     */
+    public function getData($op='') {
+        if($op == 'obj'){
+            return $this->data;
+        }
+        return $this->trataData($this->data);
+    }
+
+    public function setData(\DateTime $data) {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * Com numerp do ip 
+     * @return string 
+     */
+    public function getIp() {
+        return $this->ip;
+    }
+
+    /**
+     * 
+     * @param string $ip
+     * @return \Livraria\Entity\LogOrcamento
+     */
+    public function setIp($ip) {
+        $this->ip = $ip;
+        return $this;
+    }
+
+
+    
+    
+    
+    
 
 }

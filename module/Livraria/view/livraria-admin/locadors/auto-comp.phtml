@@ -1,16 +1,48 @@
 <?php 
 if($this->resultSet){
     echo "ok|s|";
+    if($this->subOpcao ==''){
+        echo 'X|c|',
+             'X|c|',
+             'Id|c|',
+             'Nome|c|',
+             'Administradora|c|',
+             'Documento|c|',
+             "|s|";
+    }
+    if($this->subOpcao =='tipo2'){
+        echo 'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'Id|c|',
+             'Nome|c|',
+             'Administradora|c|',
+             'Documento|c|',
+             "|s|";
+    }
     $cont = 0;
     foreach($this->resultSet as $entity){
         if($cont > 0)echo "|s|";
         $cont++;
-        echo $entity->getId(), "|c|"; 
-        echo $entity->getNome(), "|c|"; 
-        echo $entity->getId(), "|c|"; 
-        echo $entity->getNome(), "|c|"; 
-        echo $entity->getAdministradora(), "|c|"; 
-        echo $entity->getCpf(), $entity->getCnpj(), "|c|"; 
+        if($this->subOpcao ==''){
+            echo $entity->getId(), "|c|", 
+                 $entity->getNome(), "|c|", 
+                 $entity->getId(), "|c|", 
+                 $entity->getNome(), "|c|", 
+                 $entity->getAdministradora(), "|c|", 
+                 $entity->getCpf(), $entity->getCnpj(), "|c|"; 
+        }
+        if($this->subOpcao =='tipo2'){
+            echo $entity->getId(), "|c|", 
+                 $entity->getNome(), "|c|", 
+                 $entity->getTipo(), "|c|", 
+                 $entity->getCpf(), $entity->getCnpj(), "|c|", 
+                 $entity->getId(), "|c|", 
+                 $entity->getNome(), "|c|", 
+                 $entity->getAdministradora(), "|c|", 
+                 $entity->getCpf(), $entity->getCnpj(), "|c|"; 
+        }
     }
 }else
     echo "vazio|s|";

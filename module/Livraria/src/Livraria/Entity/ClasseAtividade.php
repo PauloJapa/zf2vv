@@ -183,7 +183,7 @@ class ClasseAtividade
             return $this->fim;
         }
         $check = $this->fim->format('d/m/Y');
-        if($check == '30/11/-0001'){
+        if($check == '01/01/1000'){
             return "vigente";
         }else{
             return $check;

@@ -68,8 +68,8 @@ class User {
     private $administradora;    
 
     public function __construct($options = null) {
-        Configurator::configure($this, $options);
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+        Configurator::configure($this, $options);
     }
 
     public function getId() {

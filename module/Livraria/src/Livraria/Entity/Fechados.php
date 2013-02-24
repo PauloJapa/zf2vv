@@ -5,17 +5,19 @@ namespace Livraria\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Orcamento
+ * Fechados
+ * Todos os seguros fechados ficam nesta tabela normalmente sera uma copia dos 
+ * dados do orçamento que foi aprovado 
+ * baseado nos fechado que sera gerado a renovação e 
+ * baseado nos fechado que ser preenchido a tabela contador 
+ * baseado nos fechados sera feito a exportação de dados administradora_fechado
  * 
- * Orçamento de seguros para se realizar calculos e decidir melhor preço para o fechamento
- * Parte principal onde faz a junção de todos os parametros e validações dos calculos
- *
- * @ORM\Table(name="orcamento")
+ * @ORM\Table(name="fechados")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity(repositoryClass="Livraria\Entity\OrcamentoRepository")
+ * @ORM\Entity(repositoryClass="Livraria\Entity\FechadosRepository")
  */
-class Orcamento
+class Fechados
 {
     /**
      * @var integer $id
@@ -209,37 +211,44 @@ class Orcamento
     private $status;
 
     /**
-     * @var integer $codFechado
+     * @var integer $orcamentoId
      *
-     * @ORM\Column(name="cod_fechado", type="integer", nullable=false)
+     * @ORM\Column(name="orcamento_id", type="integer", nullable=true)
      */
-    private $codFechado;
+    private $orcamentoId;
+
+    /**
+     * @var integer $renovacaoId
+     *
+     * @ORM\Column(name="renovacao_id", type="integer", nullable=true)
+     */
+    private $renovacaoId;
 
     /**
      * @var integer $mesNiver
      *
-     * @ORM\Column(name="mes_niver", type="integer", nullable=false)
+     * @ORM\Column(name="mes_niver", type="integer", nullable=true)
      */
     private $mesNiver;
 
     /**
      * @var string $validade
      *
-     * @ORM\Column(name="validade", type="string", nullable=false)
+     * @ORM\Column(name="validade", type="string", length=10, nullable=true)
      */
     private $validade;
 
     /**
      * @var string $ocupacao
      *
-     * @ORM\Column(name="ocupacao", type="string", length=2, nullable=false)
+     * @ORM\Column(name="ocupacao", type="string", length=2, nullable=true)
      */
     private $ocupacao;
 
     /**
      * @var Locador
      *
-     * @ORM\OneToOne(targetEntity="Locador")
+     * @ORM\ManyToOne(targetEntity="Locador")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      * })
@@ -249,7 +258,7 @@ class Orcamento
     /**
      * @var Locatario
      *
-     * @ORM\OneToOne(targetEntity="Locatario")
+     * @ORM\ManyToOne(targetEntity="Locatario")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      * })
@@ -259,7 +268,7 @@ class Orcamento
     /**
      * @var Imovel
      *
-     * @ORM\OneToOne(targetEntity="Imovel")
+     * @ORM\ManyToOne(targetEntity="Imovel")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
      * })
@@ -269,7 +278,7 @@ class Orcamento
     /**
      * @var Taxa
      *
-     * @ORM\OneToOne(targetEntity="Taxa")
+     * @ORM\ManyToOne(targetEntity="Taxa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
      * })
@@ -279,7 +288,7 @@ class Orcamento
     /**
      * @var Atividade
      *
-     * @ORM\OneToOne(targetEntity="Atividade")
+     * @ORM\ManyToOne(targetEntity="Atividade")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
@@ -289,7 +298,7 @@ class Orcamento
     /**
      * @var Seguradora
      *
-     * @ORM\OneToOne(targetEntity="Seguradora")
+     * @ORM\ManyToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -299,7 +308,7 @@ class Orcamento
     /**
      * @var Administradora
      *
-     * @ORM\OneToOne(targetEntity="Administradora")
+     * @ORM\ManyToOne(targetEntity="Administradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -309,7 +318,7 @@ class Orcamento
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      * })
@@ -319,7 +328,7 @@ class Orcamento
     /**
      * @var MultiplosMinimos
      *
-     * @ORM\OneToOne(targetEntity="MultiplosMinimos")
+     * @ORM\ManyToOne(targetEntity="MultiplosMinimos")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
      * })
@@ -428,6 +437,42 @@ class Orcamento
      */
     public function setStatus($status) {
         $this->status = $status;
+        return $this;
+    }
+    
+    /**
+     * Key de referencia para Orçamento que originou este fechamento
+     * @return integer
+     */
+    public function getOrcamentoId() {
+        return $this->orcamentoId;
+    }
+
+    /**
+     * Key de referencia para Orçamento que originou este fechamento
+     * @param integer $orcamentoId
+     * @return \Livraria\Entity\Fechados
+     */
+    public function setOrcamentoId($orcamentoId) {
+        $this->orcamentoId = $orcamentoId;
+        return $this;
+    }
+
+    /**
+     * Key de referencia para a Renovação que originou este fechamento
+     * @return integer
+     */
+    public function getRenovacaoId() {
+        return $this->renovacaoId;
+    }
+
+    /**
+     * Key de referencia para a Renovação que originou este fechamento
+     * @param integer $renovacaoId
+     * @return \Livraria\Entity\Fechados
+     */
+    public function setRenovacaoId($renovacaoId) {
+        $this->renovacaoId = $renovacaoId;
         return $this;
     }
 
@@ -807,7 +852,7 @@ class Orcamento
      */
     public function getCanceladoEm($op = null) {
         if($this->canceladoEm == null){
-            return "00/00/0000";
+            return null;
         }
         if(is_null($op)){
             $formatado = $this->canceladoEm->format('d/m/Y');
@@ -1137,14 +1182,8 @@ class Orcamento
         $data['codano']         = $this->getCodano();
         $data['locador']        = $this->getLocador()->getId();
         $data['locadorNome']    = $this->getLocadornome();
-        $data['tipoLoc']        = $this->getLocador()->getTipo();
-        $data['cpfLoc']         = $this->getLocador()->getCpf();
-        $data['cnpjLoc']        = $this->getLocador()->getCnpj();
         $data['locatario']      = $this->getLocatario()->getId();
         $data['locatarioNome']  = $this->getLocatarionome();
-        $data['tipo']           = $this->getLocatario()->getTipo();
-        $data['cpf']            = $this->getLocatario()->getCpf();
-        $data['cnpj']           = $this->getLocatario()->getCnpj();
         $data['valorAluguel']   = $this->floatToStr('valorAluguel');
         $data['tipoCobertura']  = $this->getTipoCobertura();
         $data['seguroEmNome']   = $this->getSeguroemnome();
@@ -1159,7 +1198,7 @@ class Orcamento
         $data['premioLiquido']  = $this->floatToStr('premioLiquido');
         $data['premio']         = $this->floatToStr('premio');
         $data['premioTotal']    = $this->floatToStr('premioTotal');
-        $data['canceladoEm']    = $this->getCanceladoEm();
+        $data['canceladoEm']    = $this->getCanceladoem();
         $data['observacao']     = $this->getObservacao();
         $data['gerado']         = $this->getGerado();
         $data['comissao']       = $this->floatToStr('comissao');
@@ -1178,6 +1217,11 @@ class Orcamento
         $data['mesNiver']       = $this->getMesNiver();
         $data['validade']       = $this->getValidade();
         $data['ocupacao']       = $this->getOcupacao();
+        $data['tipo']           = $this->getLocatario()->getTipo();
+        $data['cpf']            = $this->getLocatario()->getCpf();
+        $data['cnpj']           = $this->getLocatario()->getCnpj();
+        $data['orcamentoId']    = $this->getOrcamentoId();
+        $data['renovacaoId']    = $this->getRenovacaoId();
         return $data ;
     }
  
@@ -1211,7 +1255,5 @@ class Orcamento
         }
         return $check;
     }
-
-
 
 }

@@ -1,6 +1,25 @@
 <?php 
 if($this->resultSet){
     echo "ok|s|";
+    if($this->subOpcao ==''){
+        echo 'X|c|',
+             'X|c|',
+             'Id|c|',
+             'Nome|c|',
+             'Documento|c|',
+             "|s|";
+    }
+    if($this->subOpcao =='tipo2'){
+        echo 'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'Id|c|',
+             'Nome|c|',
+             'Tipo|c|',
+             'Documento|c|',
+             "|s|";
+    }
     $cont = 0;
     foreach($this->resultSet as $entity){
         if($cont > 0)echo "|s|";

@@ -108,6 +108,7 @@ class LocadorsController extends CrudController {
      */
     public function autoCompAction(){
         
+        $subOpcao = $this->getRequest()->getPost('subOpcao','');
         $locadorNome = trim($this->getRequest()->getPost('locadorNome'));
         $administradora = trim($this->getRequest()->getPost('administradora',''));
         
@@ -116,7 +117,7 @@ class LocadorsController extends CrudController {
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
             $resultSet = $repository->autoComp('%'. $locadorNome .'%',$administradora);
         // instancia uma view sem o layout da tela
-        $viewModel = new ViewModel(array('resultSet' => $resultSet));
+        $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
         $viewModel->setTerminal(true);
         return $viewModel;
     }

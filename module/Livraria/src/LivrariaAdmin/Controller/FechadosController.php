@@ -6,78 +6,24 @@ use Zend\View\Model\ViewModel;
 
 use Zend\Session\Container as SessionContainer;
 /**
- * Orcamento
+ * Fechados
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class OrcamentosController extends CrudController {
+class FechadossController extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\Orcamento";
-        $this->form = "LivrariaAdmin\Form\Orcamento";
-        $this->service = "Livraria\Service\Orcamento";
-        $this->controller = "orcamentos";
+        $this->entity = "Livraria\Entity\Fechados";
+        $this->form = "LivrariaAdmin\Form\Fechados";
+        $this->service = "Livraria\Service\Fechados";
+        $this->controller = "fechados";
         $this->route = "livraria-admin";
         
     }
     
     public function verificaUserAction(){
-        $user = $this->getIdentidade();
-        $data = $this->getRequest()->getPost()->toArray();
-        
-        $sessionContainer = new SessionContainer("LivrariaAdmin");
-       
-        if(($user->getIsAdmin()) and (!isset($sessionContainer->administradora['id'])))
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'escolheAdm'));
-        
-        if(isset($sessionContainer->administradora['id']))
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'new'));
-        
-        $id = $user->getId();
-        $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
-        if(!is_array($sessionContainer->administradora))
-            return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
-        
-        $sessionContainer->administradora = $user->getAdministradora->toArray();
-        
-        if(!is_array($sessionContainer->administradora))
-            return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
-            
-        $seguradora = $this->getEm()->getRepository('Livraria\Entity\Seguradora')->findById($sessionContainer->administradora['seguradora']);
-        $sessionContainer->user = $user;
-        $sessionContainer->administradora = $administradora[0]->toArray();
-        $sessionContainer->seguradora = $seguradora[0]->toArray();
-        
-        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
     }
     
-    public function escolheAdmAction(){
-        $user = $this->getIdentidade();
-        $data = $this->getRequest()->getPost()->toArray();
-        
-        if(!$user->getIsAdmin())
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'verificaUser'));
-        
-        if(!empty($data['administradora'])){
-            $administradora = $this->getEm()->getRepository('Livraria\Entity\Administradora')->findById($data['administradora']);
-            if(empty($administradora))
-                return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
-            
-            $seguradora = $this->getEm()->getRepository('Livraria\Entity\Seguradora')->findById($administradora[0]->getSeguradora()->getId());
-            $sessionContainer = new SessionContainer("LivrariaAdmin");
-            $sessionContainer->user = $user;
-            $sessionContainer->administradora = $administradora[0]->toArray();
-            $sessionContainer->seguradora = $seguradora[0]->toArray();
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
-        }
-        
-        $this->form = "LivrariaAdmin\Form\EscolheAdm";
-        $this->formData = new $this->form();        
-        // Pegar a rota atual do controler
-        $this->route2 = $this->getEvent()->getRouteMatch();
-        return new ViewModel($this->getParamsForView()); 
-    }
-
     /**
      * Faz pesquisa no BD e retorna as variaveis de exbição
      * @param array $filtro
@@ -124,9 +70,7 @@ class OrcamentosController extends CrudController {
                 $result = $service->insert($data);
                 if($result[0] === TRUE){
                     $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
-                    $sessionContainer->idOrcamento = $result[1];
-                    unset($sessionContainer->administradora);
-                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit', 'id'=>$result[1]));
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -147,31 +91,13 @@ class OrcamentosController extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */
     public function editAction() {
+        //Pegar id se for redirecionado da action new
+        $id = $this->params()->fromRoute('id', '0');
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
-        $sessionContainer = new SessionContainer("LivrariaAdmin");
-        
-        //Verifica se o id veio registrado na sessão
-        if(isset($sessionContainer->idOrcamento)){
-            $data['id'] = $sessionContainer->idOrcamento;
-            unset($sessionContainer->idOrcamento);
-            $data['subOpcao'] = 'editar';
-        }
-        
-        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
-        
-        if($data['subOpcao'] == 'fechar'){ 
-            $servicoFechado = new \Livraria\Service\Fechados($this->getEm());
-            $resul = $servicoFechado->fechaOrcamento($data['id']);
-            if($resul[0] === TRUE){
-                $this->flashMessenger()->addMessage('Registro fechado com sucesso!!!');
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
-            }else{
-                unset($resul[0]);
-                foreach ($resul as $value) {
-                    $this->flashMessenger()->addMessage($value);
-                }
-            }
+        //Verifica se o id veio por meio de get
+        if($id != '0'){
+            $data['id'] = $id;
         }
         
         $filtro = array();

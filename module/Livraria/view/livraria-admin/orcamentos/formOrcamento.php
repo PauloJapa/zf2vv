@@ -15,16 +15,28 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\n",
-        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora','locador','imovel','imovelTel','imovelStatus','locatario','atividade','seguradora','taxa','comissao','canceladoEm','codano','numeroParcela'],'hidden'),
-        $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
-        $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
-        $this->FormDefault(['tipo' => 'select']),
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora','locador','imovel','imovelTel','imovelStatus','locatario','atividade','seguradora','taxa','comissao','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado'],'hidden'),
+        $this->FormDefault(['proposta' => 'text']),
+    "</td><td>\n",
         $this->FormDefault(['seguroEmNome' => 'radio']),
     "</td><td>\n",
-        $this->FormDefault(['proposta' => 'text']),
         $this->FormDefault(['criadoEm' => 'calend']),
-        $this->FormDefault(['cpf' => 'text']),
-        $this->FormDefault(['cnpj' => 'text']),
+    "</td>\n",
+  "</tr><tr>\n",
+    "<td>\n",
+        $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
+    "</td><td>\n",
+        $this->FormDefault(['tipoLoc' => 'select']),
+    "</td><td>\n",
+        $this->FormDefault(['cpfLoc','cnpjLoc'],'text'),
+    "</td>\n",
+  "</tr><tr>\n",
+    "<td>\n",
+        $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
+    "</td><td>\n",
+        $this->FormDefault(['tipo' => 'select']),
+    "</td><td>\n",
+        $this->FormDefault(['cpf','cnpj'],'text'),
     "</td>\n",
   "</tr>\n",
 "</table>\n",
@@ -103,6 +115,7 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         $this->FormDefault(['aluguel' => 'moedaLine']),
         $this->FormDefault(['eletrico' => 'moedaLine']),
         $this->FormDefault(['vendaval' => 'moedaLine']),
+        $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['tipoCobertura' => 'selectLine']),
         $this->FormDefault(['formaPagto' => 'selectLine']),
         $this->FormDefault(['observacao' => 'textArea']),
@@ -112,7 +125,7 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         
 $this->FormDefault([],'fieldFim'),
         
-$this->FormDefault(['enviar'],'submits');
+$this->FormDefault(['enviar','fecha'],'submits');
 
 $this->FormDefault([],'fim');
 
@@ -125,12 +138,44 @@ $this->FormDefault([],'fim');
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
     function salvar(){
+        var cnpj = document.getElementById('cnpjLoc');
+        var cpf  = document.getElementById('cpfLoc');
+        var tipo = document.getElementById('tipoLoc');
+        if((tipo.value == 'fisica')&&(cpf.value == "")){
+            alert('Deve ser digitado o numero do CPF do locador!');
+            return false;
+        }
+        if((tipo.value == 'juridica')&&(cnpj.value == "")){
+            alert('Deve ser digitado o numero do CNPJ do locador!');
+            return false;
+        }
+        var cnpj = document.getElementById('cnpj');
+        var cpf  = document.getElementById('cpf');
+        var tipo = document.getElementById('tipo');
+        if((tipo.value == 'fisica')&&(cpf.value == "")){
+            alert('Deve ser digitado o numero do CPF do locatario!');
+            return false;
+        }
+        if((tipo.value == 'juridica')&&(cnpj.value == "")){
+            alert('Deve ser digitado o numero do CNPJ do locatario!');
+            return false;
+        }
+        var ides = new Array('tipoLoc','tipo');
+        if(!valida(ides)){
+            return false;
+        }
+        
         envia(tar,'salvar',formName);
         return false;
     }
 
     function calcular(){
         envia(tar,'calcular',formName);
+        return false;
+    }
+
+    function fechar(){
+        envia(tar,'fechar',formName);
         return false;
     }
 
@@ -165,15 +210,43 @@ $this->FormDefault([],'fim');
     }
 
     function autoCompLocador(){
+        var locador = document.getElementById('locador');
+        if(locador.value !== ''){
+            locador.value = '';
+            document.getElementById('tipoLoc').value = '';
+            document.getElementById('cpfLoc').value = '';
+            document.getElementById('cnpjLoc').value = '';
+        }
         document.getElementById('autoComp').value = '';
         var filtros = 'locadorNome,administradora';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locadors','action'=>'autoComp')); ?>";
-        var returns = Array('locador','locadorNome');
-        var functionCall = '';
-        autoComp2(filtros,servico,'popLocador',returns,'4',functionCall);
+        var returns = Array('locador','locadorNome','tipoLoc','cpfLoc');
+        var functionCall = 'setCpfOrCnpjLoc()';
+        autoComp2(filtros,servico,'popLocador',returns,'4',functionCall,'tipo2');
+    }
+
+    function setCpfOrCnpjLoc(){
+        var tipo = document.getElementById('tipoLoc').value ;
+        var cpf  = document.getElementById('cpfLoc')  ;
+        var cnpj = document.getElementById('cnpjLoc') ;
+        if(tipo == 'fisica'){
+            cnpj.value = '';
+        }
+        if(tipo == 'juridica'){
+            cnpj.value = cpf.value;
+            cpf.value = '';
+        }
+        showTipoLoc();
     }
 
     function autoCompLocatario(){
+        var locatario = document.getElementById('locatario');
+        if(locatario.value !== ''){
+            locatario.value = '';
+            document.getElementById('tipo').value = '';
+            document.getElementById('cpf').value = '';
+            document.getElementById('cnpj').value = '';
+        }
         document.getElementById('autoComp').value = 'locatarioNome';
         var filtros = 'locatarioNome,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locatarios','action'=>'autoComp')); ?>";
@@ -188,13 +261,12 @@ $this->FormDefault([],'fim');
         var cnpj = document.getElementById('cnpj') ;
         if(tipo == 'fisica'){
             cnpj.value = '';
-            showTipo();
         }
         if(tipo == 'juridica'){
             cnpj.value = cpf.value;
             cpf.value = '';
-            showTipo();
         }
+        showTipo();
     }
 
     function autoCompImoveis(){
@@ -262,7 +334,51 @@ $this->FormDefault([],'fim');
             cnpj.style.display = 'none';
             cpf.style.display = 'none';
         }
+        showTipoLoc();
     }
 
-    setTimeout('showTipo()',500);
+    function showTipoLoc(){
+        var cnpj = document.getElementById('popcnpjLoc');
+        var cpf  = document.getElementById('popcpfLoc');
+        var tipo = document.getElementById('tipoLoc');
+        if(tipo.value == 'fisica'){
+            cnpj.style.display = 'none';
+            cpf.style.display = 'block';
+        }
+        if(tipo.value == 'juridica'){
+            cnpj.style.display = 'block';
+            cpf.style.display = 'none';
+        }
+        if(tipo.value == ''){
+            cnpj.style.display = 'none';
+            cpf.style.display = 'none';
+        }
+    }
+ 
+    function setButtonFechaOrc(){
+        if(tar.indexOf('edit') === -1){
+            document.getElementById('fecha').style.display = 'none';
+        }
+    }
+
+    function limpaImovel(){
+        var imovel = document.getElementById('imovel');
+        if(imovel.value !== ''){
+            imovel.value = '';
+            document.getElementById('cep').value = '';
+            document.getElementById('rua').value = '';
+            document.getElementById('numero').value = '';
+            document.getElementById('bloco').value = '';
+            document.getElementById('apto').value = '';
+            document.getElementById('compl').value = '';
+            document.getElementById('bairro').value = '';
+            document.getElementById('bairroDesc').value = '';
+            document.getElementById('cidade').value = '';
+            document.getElementById('cidadeDesc').value = '';
+            document.getElementById('estado').value = '';
+            document.getElementById('pais').value = '';
+        }
+    }
+
+    setTimeout('showTipo();setButtonFechaOrc();',500);
 </script>

@@ -20,6 +20,15 @@ class Endereco extends AbstractService {
      */
     public function setReferences(){
         //Caso a bairro não foi escolhido da lista procura o id pelo nome 
+        if(!isset($this->data['cep'])) $this->data['cep'] ='';
+        if(!isset($this->data['rua'])) $this->data['rua'] ='';
+        if(!isset($this->data['numero'])) $this->data['numero'] ='';
+        if(!isset($this->data['bairro'])) $this->data['bairro'] ='';
+        if(!isset($this->data['bairroDesc'])) $this->data['bairroDesc'] ='';
+        if(!isset($this->data['cidade'])) $this->data['cidade'] ='';
+        if(!isset($this->data['cidadeDesc'])) $this->data['cidadeDesc'] ='';
+        if(!isset($this->data['estado'])) $this->data['estado'] ='';
+        if(!isset($this->data['pais'])) $this->data['pais'] ='';
         if(empty($this->data['bairro'])){ 
             $repository = $this->em->getRepository("Livraria\Entity\Bairro");
             $this->data['bairro'] = $repository->findOneByNome($this->data['bairroDesc']);

@@ -40,9 +40,6 @@ class Orcamento extends AbstractService {
      */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('locador', 'Livraria\Entity\Locador');
-        $this->idToReference('locatario', 'Livraria\Entity\Locatario');
-        $this->idToReference('taxa', 'Livraria\Entity\Taxa');
         $this->idToReference('atividade', 'Livraria\Entity\Atividade');
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
         $this->idToReference('administradora', 'Livraria\Entity\Administradora');
@@ -63,46 +60,41 @@ class Orcamento extends AbstractService {
     public function insert(array $data) { 
         $this->data = $data;
         
-        //Pegando o servico endereco e inserindo ou alterando o imovel
-        if(empty($this->data['imovel'])){
-            $this->data['imovel'] = (new Imovel($this->em))->insert($this->data);
-            if(is_array($this->data['imovel'])){
-                if(substr($this->data['imovel'][0], 0, 45) == "Já existe um imovel neste endereço  registro:"){
-                    echo 'ok'; 
-                }
-            }
-        }else{
-            //Pegando o servico endereco e atualizando endereco do imovel do locador
-            $serviceImove = new Imovel($this->em);
-            $this->data['imovel'] = $serviceImove->update($this->data);
-            if($this->data['imovel'] === TRUE){
-                $this->idToReference('imovel', 'Livraria\Entity\Imovel');
-                $this->deParaImovel = $serviceImove->getDePara();
-            }else{
-                return ['Houve um erro ao tentar atulizar o cadastro do Imovel desse Locador!!'];
-            }
+        $locadorResul = $this->setLocador();
+        if($locadorResul !== TRUE){
+            return $locadorResul;
+        }
+        
+        $imovelResul = $this->setImovel();
+        if($imovelResul !== TRUE){
+            return $imovelResul;
+        }
+        
+        $locatarioResul = $this->setLocatario();
+        if($locatarioResul !== TRUE){
+            return $locatarioResul;
         }
 
         $this->setReferences();
+        
+        $this->calculaVigencia();
        
-        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        //Comissão da Administradora padrão
+        $this->data['comissao'] = $this->em
+            ->getRepository('Livraria\Entity\Comissao')
+            ->findComissaoVigente($this->data['administradora']->getId())
+            ->floatToStr('comissao');
         
-        $this->data['fim'] = $this->data['inicio'];
-        if($this->data['validade'] == 'mensal'){
-            $interval_spec = 'P1M'; 
-        } 
-        if($this->data['validade'] == 'anual'){
-            $interval_spec = 'P1Y'; 
-        } 
-        $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        $resul = $this->novoCalculo();
         
-        $this->data['taxa'] = $this->em
-             ->getRepository('Livraria\Entity\Taxa')
-             ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
+        $this->data['premio'] = $this->strToFloat($resul[0]);
+        $this->data['premioLiquido'] = $this->strToFloat($resul[0]);
+        $this->data['premioTotal'] = $this->strToFloat($resul[0]);
+        $this->data['aluguel'] = $this->strToFloat($resul[1]);
+        $this->data['incendio'] = $this->strToFloat($resul[2]);
+        $this->data['eletrico'] = $this->strToFloat($resul[3]);
+        $this->data['vendaval'] = $this->strToFloat($resul[4]);
         
-        $this->data['premio'] = '0';
-        $this->data['premioLiquido'] = '0';
-        $this->data['premioTotal'] = '0';
         $this->data['codFechado'] = '0';
         $this->data['status'] = 'A';
         
@@ -113,6 +105,7 @@ class Orcamento extends AbstractService {
         
         
         $result = $this->isValid();
+//$result = ['testando e nao gravando'];
         if($result !== TRUE){
             return $result;
         }
@@ -127,9 +120,130 @@ class Orcamento extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      */
     public function logForNew(){
-        parent::logForNew('orcamento');
+        //parent::logForNew('orcamento');
+        //serviço logorcamento
+        $log = new LogOrcamento($this->em);
+        $dataLog['orcamento']  = $this->data['id']; 
+        $dataLog['tabela']     = 'log_orcamento';
+        $dataLog['controller'] = 'orcamentos' ;
+        $dataLog['action']     = 'new';
+        $dataLog['mensagem']   = 'Novo orçamento com numero ' . $this->data['id'] . '/' . $this->data['codano'] ;
+        $dataLog['dePara']     = '';
+        $log->insert($dataLog);
     }
- 
+    
+    /**
+     * Pegando o servico endereco e inserindo ou referenciando o imovel
+     * @return boolean | array
+     */
+    public function setImovel(){
+        if(empty($this->data['imovel'])){
+            $serviceImovel = new Imovel($this->em);
+            $resul = $serviceImovel->insert($this->data);
+            if(is_array($resul)){
+                if($resul[0] == "Já existe um imovel neste endereço  registro:"){
+                    $this->data['imovel'] = $resul[1];
+                    $this->idToReference('imovel', 'Livraria\Entity\Imovel');
+                }else{
+                    return array_merge(['Erro ao tentar incluir imovel no BD.'],$resul);
+                }
+            }else{
+                $this->data['imovel'] = $serviceImovel->getEntity();
+            }
+        }else{
+            $this->idToReference('imovel', 'Livraria\Entity\Imovel');
+        }
+        return TRUE;
+    }
+    
+    /**
+     * Faz um referencia ou tenta incluir o locador no BD
+     * Caso não consiga retorna os erros 
+     * @return boolean | array
+     */
+    public function setLocador(){
+        if(empty($this->data['locador'])){
+            $serviceLocador = new Locador($this->em);
+            $data['id'] = '';
+            $data['administradora'] = $this->data['administradora'];
+            $data['nome'] = $this->data['locadorNome'];
+            $data['tipo'] = $this->data['tipoLoc'];
+            $data['cpf'] = $this->data['cpfLoc'];
+            $data['cnpj'] = $this->data['cnpjLoc'];
+            $data['status'] = 'A';
+            $resul = $serviceLocador->insert($data);
+            if($resul === TRUE){
+                $this->data['locador'] = $serviceLocador->getEntity();
+            }else{
+                if(substr($resul[0], 0, 15) == 'Já existe esse'){
+                    $this->data['locador'] = $resul[1];
+                    $this->idToReference('locador', 'Livraria\Entity\Locador');
+                }else{
+                    return $resul;
+                }
+            }
+        }else{
+            $this->idToReference('locador', 'Livraria\Entity\Locador');
+        }
+        return TRUE;
+    }
+    
+    /**
+     * Faz um referencia ou tenta incluir o locatario no BD
+     * Caso não consiga retorna os erros 
+     * @return boolean | array
+     */
+    public function setLocatario(){
+        if(empty($this->data['locatario'])){
+            $serviceLocatario = new Locatario($this->em);
+            $data['id'] = '';
+            $data['nome'] = $this->data['locatarioNome'];
+            $data['tipo'] = $this->data['tipo'];
+            $data['cpf'] = $this->data['cpf'];
+            $data['cnpj'] = $this->data['cnpj'];
+            $data['status'] = 'A';
+            $resul = $serviceLocatario->insert($data);
+            if($resul === TRUE){
+                $this->data['locatario'] = $serviceLocatario->getEntity();
+            }else{
+                if(substr($resul[0], 0, 13) == 'Já existe um'){
+                    $this->data['locatario'] = $resul[1];
+                    $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+                }else{
+                    var_dump(substr($resul[0], 0, 13));
+                    return $resul;
+                }
+            }
+        }else{
+            $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+        }
+        return TRUE;
+    }
+
+    /**
+     * Calcula a vigencia do seguro periodo mensal ou anual
+     * @return boolean | array
+     */
+    public function calculaVigencia(){
+        if(!isset($this->data['validade'])){
+            return ['Campo validade não existe!!'];
+        }
+        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $interval_spec = ''; 
+        if($this->data['validade'] == 'mensal'){
+            $interval_spec = 'P1M'; 
+        } 
+        if($this->data['validade'] == 'anual'){
+            $interval_spec = 'P1Y'; 
+        } 
+        if(empty($interval_spec)){
+            return ['Campo validade com valor que não existe na lista!!'];
+        }
+        $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        return TRUE;
+    }
+
     /** 
      * Alterar no banco de dados o registro
      * @param Array $data com os campos do registro
@@ -201,42 +315,36 @@ class Orcamento extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
-            return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
-        if(empty($this->data['atividade']))
-            return array('Atividade não pode estar vazia!!');
-            
-        $filtro['atividade'] = $this->data['atividade']->getId();
-        $filtro['seguradora'] = $this->data['seguradora']->getId();
-        //$filtro['classeTaxas'] = $this->data['classeTaxas']->getId();
+        if(empty($this->data['imovel']))
+            return array('Um imovel deve ser selecionado!');
         
+        $inicio = $this->data['inicio'];
+        if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
+            return array('A data deve ser preenchida corretamente!');
+            
+        $filtro['imovel'] = $this->data['imovel']->getId();
         $entitys = $repository->findBy($filtro);
-        $diferenca = 3650 ;
-        if(!$entitys)
-            $diferenca = 0 ;
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                if(($entity->getFim() == 'vigente') and ($this->data['fim']->format('d/m/Y') == '30/11/-0001')){
-                    $erro[] = "Alerta! Já existe uma classe com esta Atividade para esta seguradora com data vigente! ID = " . $entity->getId() ;
-                }
-                $fim = $entity->getFim('obj');
-                if($fim >= $this->data['inicio']){
-                    $erro[] = "Alerta! Data de inicio conflita com data de registro existente! ID = " . $entity->getId() ;
-                    $erro[] = "Data de inicio não pode ser menor ou igual a data final de vigencia<br>";
-                }
-                $diff = $fim->diff($this->data['inicio']);
-                if($diff->days < $diferenca){
-                    $diferenca = $diff->days ;
+                if(($inicio <= $entity->getFim('obj'))){
+                    if($entity->getStatus() == "A"){
+                        $erro[] = "Alerta!" ;
+                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    }
+                    if($entity->getStatus() == "F"){
+                        $erro[] = "Alerta!" ;
+                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    }
                 }
             }
         }
-        if(($diferenca > 3) and ($this->data['fim']->format('d/m/Y') == '30/11/-0001') and ($diferenca != 3650)){
-            $erro[] = "Alerta! Data de inicio esta com + 3 dias da data do ultima taxa valida! " ;
-            $erro[] = 'Direfença de dias é ' . $diferenca;
-        }
+        
         if(!empty($erro)){
             return $erro;
         }else{
@@ -293,5 +401,105 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
         //Juntar as alterações no imovel se houver
         $this->dePara .= $this->deParaImovel;
+    }
+    
+    
+    public function calculaSeguro(){
+        if(!empty($this->data['id'])){
+            $this->refazCalculo();
+        }else{
+            $this->novoCalculo();
+        }
+    }
+    
+    public function novoCalculo($data=[]){
+        if(!empty($data)){
+            $this->data = $data ;
+        }
+        $this->data['taxa'] = $this->em
+            ->getRepository('Livraria\Entity\Taxa')
+            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
+
+        $this->data['multiplosMinimos'] = $this->em
+            ->getRepository('Livraria\Entity\MultiplosMinimos')
+            ->findMultMinVigente($this->data['seguradora']->getId());
+        
+        /* Por enquanto não vai carregar os dados da propria tela
+         * 
+        $vlrAluguel = $this->strToFloat($this->data['valorAluguel'], 'float');
+        $aluguel    = $this->strToFloat($this->data['aluguel'], 'float');
+        $conteudo   = $this->strToFloat($this->data['conteudo'], 'float');
+        $eletrico   = $this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval   = $this->strToFloat($this->data['vendaval'], 'float');
+        if(isset($this->data['predio'])){
+            $predio   = $this->strToFloat($this->data['predio'], 'float');            
+        }
+         * 
+         */
+        $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
+        $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
+        $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
+        $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
+        $vendaval = $vlrAluguel * $this->data['multiplosMinimos']->getMultVendaval();
+        if(isset($this->data['predio'])){
+            $predio   = $vlrAluguel * $this->data['multiplosMinimos']->getMultPredio();       
+        }
+        /*
+         * 
+        var_dump($vlrAluguel);
+        var_dump($aluguel);
+        var_dump($conteudo);
+        var_dump($eletrico);
+        var_dump($vendaval);
+         */
+        
+        $total = 0.0 ;
+        $calc =  $vlrAluguel  * $this->data['taxa']->getAluguel();
+        if($calc < $this->data['multiplosMinimos']->getMinAluguel()){
+            $calc = $this->data['multiplosMinimos']->getMinAluguel();
+        }
+        $total += $calc ;
+//var_dump($total);
+        
+        $calc = $vlrAluguel * $this->data['taxa']->getIncendioConteudo();
+        if($calc < $this->data['multiplosMinimos']->getMinConteudo()){
+            $calc = $this->data['multiplosMinimos']->getMinConteudo();
+        }
+        $total += $calc ;
+//var_dump($this->data['taxa']->getIncendioConteudo());
+//var_dump($total);
+        /*
+        $calc = $vlrAluguel * $this->data['taxa']->getEletrico();
+        if($calc < $this->data['multiplosMinimos']->getMinEletrico()){
+            $calc = $this->data['multiplosMinimos']->getMinEletrico();
+        }
+        $total += $calc ;
+        var_dump($total);
+        
+        $calc = $vlrAluguel * $this->data['taxa']->getDesastres();
+        if($calc < $this->data['multiplosMinimos']->getMinVendaval()){
+            $calc = $this->data['multiplosMinimos']->getMinVendaval();
+        }
+        $total += $calc ;
+         * 
+         */
+        
+        $total = $total * 1.0738 ;
+//var_dump($total);
+        
+        return array($total,$aluguel,$conteudo,$eletrico,$vendaval);
+        
+    }
+
+    public function getNewInputs() {
+        return array(
+            'premioTotal'=>$this->data['premioTotal'],
+            'premioLiquido'=>$this->data['premioLiquido'],
+            'premio'=>$this->data['premio'],
+            'incendio'=>$this->data['incendio'],
+            'aluguel'=>$this->data['aluguel'],
+            'eletrico'=>$this->data['eletrico'],
+            'vendaval'=>$this->data['vendaval'],
+        );
     }
 }

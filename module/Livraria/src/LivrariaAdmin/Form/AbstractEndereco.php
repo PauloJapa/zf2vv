@@ -19,8 +19,9 @@ abstract class AbstractEndereco extends AbstractForm {
     }
     
     public function getEnderecoElements($em)    {
-        $this->estados = $em->getRepository('Livraria\Entity\Estado')->fetchPairs();
-        $this->paises  = $em->getRepository('Livraria\Entity\Pais')->fetchPairs();
+        $this->em = $em;
+        $this->estados = $this->em->getRepository('Livraria\Entity\Estado')->fetchPairs();
+        $this->paises  = $this->em->getRepository('Livraria\Entity\Pais')->fetchPairs();
         
         $this->setInputHidden('idEnde');
 
@@ -46,6 +47,22 @@ abstract class AbstractEndereco extends AbstractForm {
 
         $this->setInputSelect('pais', 'País', $this->paises,['class'=>'input-small']);
         
+    }
+    /**
+     * Função para setar varios inputs com com algo padrão
+     * Por padrão o array são os inputs visiveis na tela
+     * 
+     * @param string $key
+     * @param string $attribute
+     * @param array  $inputs
+     */
+    public function addAttributeInputs($key,$attribute,array $inputs=[]){
+        if(empty($inputs)){
+            $inputs = ['cep','rua','numero','compl','bairroDesc','cidadeDesc','estado','pais'];
+        }
+        foreach ($inputs as $input) {
+            $this->get($input)->setAttribute($key, $attribute);
+        }
     }
 
 }

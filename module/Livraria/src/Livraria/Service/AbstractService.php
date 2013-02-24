@@ -19,11 +19,21 @@ abstract class AbstractService {
      * @var Doctrine\ORM\EntityManager
      */
     protected $em;
+    
     /**
-     * Onde "Tabela" é nome da tabela em que está sendo tratada.
-     * @var Livraria\Entity\"Tabela" 
+     * Caminho para "Tabela" é nome da tabela em que está sendo tratada.
+     * Livraria\Entity\"Tabela" 
+     * @var string 
      */
     protected $entity;
+    
+    /**
+     * Caminho para "Tabela" é nome da tabela em que está sendo tratada.
+     * Livraria\Entity\"Tabela" 
+     * @var string 
+     */
+    protected $entityReal;
+    
     /**
      * Objeto que pega os dados do usuario armazenado
      * @var Zend\Authentication\AuthenticationService
@@ -56,19 +66,19 @@ abstract class AbstractService {
      * @param array $data com os campos do registro
      * @return boolean 
      */  
-    public function insert(array $data = null) {
-        if($data){
+    public function insert(array $data=[]) {
+        if(!empty($data)){
             $this->data = $data;
         }
         if ($user = $this->getIdentidade())
             $this->data['userIdCriado'] = $user->getId();
         
-        $entity = new $this->entity($this->data);
+        $this->entityReal = new $this->entity($this->data);
         
-        $this->em->persist($entity);
+        $this->em->persist($this->entityReal);
         $this->em->flush();
         
-        $this->data['id'] = $entity->getId();
+        $this->data['id'] = $this->entityReal->getId();
         
         return TRUE;
     }   
@@ -76,11 +86,14 @@ abstract class AbstractService {
     /**
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      * @param string $tabela
+     * @param string $controller
      * @param string $obs
      * @return no return
      */
-    public function logForNew($tabela='', $obs='Inseriu um novo registro'){
+    public function logForNew($tabela='',$controller='', $obs='Inseriu um novo registro'){
         if(empty($tabela))$tabela = 'Tabela Não foi definida' ;
+        
+        if(empty($controller))$controller = $tabela . 's' ;
         
         $log = new Log($this->em);
         $dataLog['user']       = $this->getIdentidade()->getId();
@@ -88,7 +101,7 @@ abstract class AbstractService {
         $dataLog['data']       = $data->format('d/m/Y');
         $dataLog['idDoReg']    = $this->data['id'];
         $dataLog['tabela']     = $tabela;
-        $dataLog['controller'] = $tabela . 's';
+        $dataLog['controller'] = $controller ;
         $dataLog['action']     = 'new';
         $dataLog['dePara']     = $obs;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
@@ -108,17 +121,17 @@ abstract class AbstractService {
             $this->data['userIdAlterado'] = $user->getId();
         
         if(method_exists($this,'logForEdit')){
-            $entity = $this->em->find($this->entity, $this->data['id']);
-            $this->getDiff($entity);            
+            $this->entityReal = $this->em->find($this->entity, $this->data['id']);
+            $this->getDiff($this->entityReal);            
             if(empty($this->dePara)) 
                 return TRUE;
         }else{
-            $entity = $this->em->getReference($this->entity, $this->data['id']);
+            $this->entityReal = $this->em->getReference($this->entity, $this->data['id']);
         }
         
-        $entity = Configurator::configure($entity, $this->data);
+        $this->entityReal = Configurator::configure($this->entityReal, $this->data);
         
-        $this->em->persist($entity);
+        $this->em->persist($this->entityReal);
         $this->em->flush();
         
         return TRUE;
@@ -153,12 +166,12 @@ abstract class AbstractService {
      * @return boolean
      */   
     public function delete($id) {
-        $entity = $this->em->getReference($this->entity, $id);
-        if($entity) {
-            if(method_exists($entity,"setStatus")){
-                $entity->setStatus('C'); //Cancelado
+        $this->entityReal = $this->em->getReference($this->entity, $id);
+        if($this->entityReal) {
+            if(method_exists($this->entityReal,"setStatus")){
+                $this->entityReal->setStatus('C'); //Cancelado
             }else{
-                $this->em->remove($entity);
+                $this->em->remove($this->entityReal);
             }
             $this->em->flush();
             return TRUE ;
@@ -193,14 +206,16 @@ abstract class AbstractService {
      */
     public function dateToObject($index){
         //Trata as variveis data string para data objetos
-        if(!isset($this->data[$index]))
-            return FALSE;
+        if(!isset($this->data[$index])){
+            //echo '<h1>Indice do array data desconhecido ', $index , '.</h1>';die;
+            $this->data[$index] = '';
+        }
         
         if((!empty($this->data[$index])) && ($this->data[$index] != "vigente")){
             $date = explode("/", $this->data[$index]);
             $this->data[$index]    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
         }else{
-            $this->data[$index]    = new \DateTime("00/00/0000");
+            $this->data[$index]    = new \DateTime("01/01/1000");
         }
         
         if($this->data[$index]){
@@ -217,6 +232,14 @@ abstract class AbstractService {
     public function idToReference($index, $entity){
         if(!isset($this->data[$index]))
             return FALSE;
+        
+        if(is_object($this->data[$index])){
+            if($this->data[$index] instanceof $entity)
+                return TRUE;
+            else
+                return FALSE;
+        }
+            
         $this->data[$index] = $this->em->getReference($entity, $this->data[$index]);
     }
     
@@ -239,13 +262,16 @@ abstract class AbstractService {
      * @param String $check variavel a ser convertida se tratada se necessario
      * @return String no formato para validação de log
      */    
-    public function strToFloat($check){
+    public function strToFloat($check,$op=''){
         if(is_string($check)){
-            $check = preg_replace("/[^0-9,]/", "", $check);
-            $check = str_replace(",", ".", $check);
+            $check = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $check));
         }
         $float = floatval($check);
-        return number_format($float, 2, ',','.');
+        if(empty($op)){
+            return number_format($float, 2, ',','.');            
+        }else{
+            return $float;                        
+        }
     }
     
     /**
@@ -254,6 +280,26 @@ abstract class AbstractService {
      */
     public function getDePara() {
         return $this->dePara;
+    }
+    
+    /**
+     * Dados da entity no formato array
+     * @return array
+     */
+    public function getData() {
+        return $this->entityReal->toArray();
+    }
+    
+    /**
+     * Retorna a entity que foi trabalhada no serviço
+     * False se a Entity ainda não tiver sido inicializada
+     * @return boolean | Entity
+     */
+    public function getEntity() {
+        if(empty($this->entityReal))
+            return FALSE;
+        
+        return $this->entityReal;
     }
 
 }

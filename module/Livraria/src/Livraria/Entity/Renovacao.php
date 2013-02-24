@@ -5,17 +5,17 @@ namespace Livraria\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Orcamento
- * 
- * Orçamento de seguros para se realizar calculos e decidir melhor preço para o fechamento
- * Parte principal onde faz a junção de todos os parametros e validações dos calculos
+ * Renovacao
+ * Registros para renovação são gerados com base o mes de vencimento dos fechados
+ * Cliente analisa a lista de seguros a renovar e apos o aceite do cliente é
+ * gerado os novos fechamentos ou log dos que não fecharam
  *
- * @ORM\Table(name="orcamento")
+ * @ORM\Table(name="renovacao")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity(repositoryClass="Livraria\Entity\OrcamentoRepository")
+ * @ORM\Entity(repositoryClass="Livraria\Entity\RenovacaoRepository")
  */
-class Orcamento
+class Renovacao
 {
     /**
      * @var integer $id
@@ -209,11 +209,11 @@ class Orcamento
     private $status;
 
     /**
-     * @var integer $codFechado
+     * @var integer $FechadoId
      *
-     * @ORM\Column(name="cod_fechado", type="integer", nullable=false)
+     * @ORM\Column(name="fechado_id", type="integer", nullable=false)
      */
-    private $codFechado;
+    private $FechadoId;
 
     /**
      * @var integer $mesNiver
@@ -223,23 +223,30 @@ class Orcamento
     private $mesNiver;
 
     /**
+     * @var integer $FechadoOrigemId
+     *
+     * @ORM\Column(name="fechado_origem_id", type="integer", nullable=true)
+     */
+    private $FechadoOrigemId;
+
+    /**
      * @var string $validade
      *
-     * @ORM\Column(name="validade", type="string", nullable=false)
+     * @ORM\Column(name="validade", type="string", length=10, nullable=true)
      */
     private $validade;
 
     /**
      * @var string $ocupacao
      *
-     * @ORM\Column(name="ocupacao", type="string", length=2, nullable=false)
+     * @ORM\Column(name="ocupacao", type="string", length=2, nullable=true)
      */
     private $ocupacao;
 
     /**
      * @var Locador
      *
-     * @ORM\OneToOne(targetEntity="Locador")
+     * @ORM\ManyToOne(targetEntity="Locador")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      * })
@@ -249,7 +256,7 @@ class Orcamento
     /**
      * @var Locatario
      *
-     * @ORM\OneToOne(targetEntity="Locatario")
+     * @ORM\ManyToOne(targetEntity="Locatario")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      * })
@@ -259,7 +266,7 @@ class Orcamento
     /**
      * @var Imovel
      *
-     * @ORM\OneToOne(targetEntity="Imovel")
+     * @ORM\ManyToOne(targetEntity="Imovel")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
      * })
@@ -269,7 +276,7 @@ class Orcamento
     /**
      * @var Taxa
      *
-     * @ORM\OneToOne(targetEntity="Taxa")
+     * @ORM\ManyToOne(targetEntity="Taxa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
      * })
@@ -279,7 +286,7 @@ class Orcamento
     /**
      * @var Atividade
      *
-     * @ORM\OneToOne(targetEntity="Atividade")
+     * @ORM\ManyToOne(targetEntity="Atividade")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
@@ -289,7 +296,7 @@ class Orcamento
     /**
      * @var Seguradora
      *
-     * @ORM\OneToOne(targetEntity="Seguradora")
+     * @ORM\ManyToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -299,7 +306,7 @@ class Orcamento
     /**
      * @var Administradora
      *
-     * @ORM\OneToOne(targetEntity="Administradora")
+     * @ORM\ManyToOne(targetEntity="Administradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -309,7 +316,7 @@ class Orcamento
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      * })
@@ -319,7 +326,7 @@ class Orcamento
     /**
      * @var MultiplosMinimos
      *
-     * @ORM\OneToOne(targetEntity="MultiplosMinimos")
+     * @ORM\ManyToOne(targetEntity="MultiplosMinimos")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
      * })
@@ -807,7 +814,7 @@ class Orcamento
      */
     public function getCanceladoEm($op = null) {
         if($this->canceladoEm == null){
-            return "00/00/0000";
+            return null;
         }
         if(is_null($op)){
             $formatado = $this->canceladoEm->format('d/m/Y');
@@ -920,6 +927,42 @@ class Orcamento
         return $this;
     }
     
+    /**
+     * Key do registro fechado gerado apos o aceite do cliente
+     * @return integer
+     */
+    public function getFechadoId() {
+        return $this->FechadoId;
+    }
+
+    /**
+     * Key do registro fechado gerado apos o aceite do cliente
+     * @param integer $FechadoId
+     * @return \Livraria\Entity\Renovacao
+     */
+    public function setFechadoId($FechadoId) {
+        $this->FechadoId = $FechadoId;
+        return $this;
+    }
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @return integer
+     */
+    public function getFechadoOrigemId() {
+        return $this->FechadoOrigemId;
+    }
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @param integer $FechadoOrigemId
+     * @return \Livraria\Entity\Renovacao
+     */
+    public function setFechadoOrigemId($FechadoOrigemId) {
+        $this->FechadoOrigemId = $FechadoOrigemId;
+        return $this;
+    }
+
     /**
      * 'mensal'|'anual'
      * @return string
@@ -1137,14 +1180,8 @@ class Orcamento
         $data['codano']         = $this->getCodano();
         $data['locador']        = $this->getLocador()->getId();
         $data['locadorNome']    = $this->getLocadornome();
-        $data['tipoLoc']        = $this->getLocador()->getTipo();
-        $data['cpfLoc']         = $this->getLocador()->getCpf();
-        $data['cnpjLoc']        = $this->getLocador()->getCnpj();
         $data['locatario']      = $this->getLocatario()->getId();
         $data['locatarioNome']  = $this->getLocatarionome();
-        $data['tipo']           = $this->getLocatario()->getTipo();
-        $data['cpf']            = $this->getLocatario()->getCpf();
-        $data['cnpj']           = $this->getLocatario()->getCnpj();
         $data['valorAluguel']   = $this->floatToStr('valorAluguel');
         $data['tipoCobertura']  = $this->getTipoCobertura();
         $data['seguroEmNome']   = $this->getSeguroemnome();
@@ -1159,7 +1196,7 @@ class Orcamento
         $data['premioLiquido']  = $this->floatToStr('premioLiquido');
         $data['premio']         = $this->floatToStr('premio');
         $data['premioTotal']    = $this->floatToStr('premioTotal');
-        $data['canceladoEm']    = $this->getCanceladoEm();
+        $data['canceladoEm']    = $this->getCanceladoem();
         $data['observacao']     = $this->getObservacao();
         $data['gerado']         = $this->getGerado();
         $data['comissao']       = $this->floatToStr('comissao');
@@ -1178,6 +1215,11 @@ class Orcamento
         $data['mesNiver']       = $this->getMesNiver();
         $data['validade']       = $this->getValidade();
         $data['ocupacao']       = $this->getOcupacao();
+        $data['tipo']           = $this->getLocatario()->getTipo();
+        $data['cpf']            = $this->getLocatario()->getCpf();
+        $data['cnpj']           = $this->getLocatario()->getCnpj();
+        $data['fechadoId']      = $this->getFechadoId();
+        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         return $data ;
     }
  
@@ -1206,11 +1248,11 @@ class Orcamento
      */    
     public function strToFloat($check){
         if(is_string($check)){
-            $check = preg_replace("/[^0-9,]/", "", $check);
-            $check = str_replace(",", ".", $check);
+            $check = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $check));
         }
         return $check;
     }
+
 
 
 

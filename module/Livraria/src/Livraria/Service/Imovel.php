@@ -138,7 +138,8 @@ class Imovel extends AbstractService {
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
                 if(($this->data['bloco'] == $entity->getBloco()) and ($this->data['apto'] == $entity->getApto())){
-                    $erro[] = 'Já existe um imovel neste endereço  registro: ' . $entity->getId();
+                    $erro[] = 'Já existe um imovel neste endereço  registro:' ;
+                    $erro[] = $entity->getId();
                 }
             }
         }

@@ -150,10 +150,17 @@ class Locatario extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                if($entity->getCpf() == $this->data['cpf'])
-                    $erro[] = 'Já existe um cpf cadastrado nome de ' . $entity->getNome();
-                if($entity->getCnpj() == $this->data['cnpj'])
-                    $erro[] = 'Já existe um cnpj cadastrado nome de ' . $entity->getNome();
+                if($entity->getTipo() == 'fisica'){
+                    if($entity->getCpf() == $this->data['cpf']){
+                        $erro[] = 'Já existe um cpf cadastrado nome de ' . $entity->getNome();
+                        $erro[] = $entity->getId();
+                    }
+                }else{
+                    if($entity->getCnpj() == $this->data['cnpj']){
+                        $erro[] = 'Já existe um cnpj cadastrado nome de ' . $entity->getNome();
+                        $erro[] = $entity->getId();
+                    }
+                }
             }
         }
         if(!empty($erro)){

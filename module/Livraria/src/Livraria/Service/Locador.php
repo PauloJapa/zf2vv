@@ -144,6 +144,9 @@ class Locador extends AbstractService {
         if(!empty($this->data['cpf']))
             $filtro['cpf'] = $this->data['cpf'];
         
+        if(!empty($this->data['cnpj']))
+            $filtro['cnpj'] = $this->data['cnpj'];
+        
         if(!empty($this->data['administradora']))
             $filtro['administradora'] = $this->data['administradora'];
         
@@ -151,9 +154,19 @@ class Locador extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                if($entity->getCpf() == $this->data['cpf'])
-                if($entity->getAdministradora() == $this->data['administradora'])
-                    $erro[] = 'Já existe esse cpf de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
+                if($entity->getTipo() == 'fisica'){
+                    if(($entity->getCpf() == $this->data['cpf'])
+                    and ($entity->getAdministradora() == $this->data['administradora'])){
+                        $erro[] = 'Já existe esse cpf de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
+                        $erro[] = $entity->getId();
+                    }
+                }else{
+                    if(($entity->getCnpj() == $this->data['cnpj'])
+                    and ($entity->getAdministradora() == $this->data['administradora'])){
+                        $erro[] = 'Já existe esse cnpj de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
+                        $erro[] = $entity->getId();
+                    }
+                }
             }
         }
         if(!empty($erro)){

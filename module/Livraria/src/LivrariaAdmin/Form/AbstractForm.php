@@ -147,4 +147,21 @@ abstract class AbstractForm extends Form {
         $this->add($input);        
        
     }
+    /**
+     * Função para setar varios inputs com com algo padrão
+     * Por padrão o array são os inputs visiveis na tela
+     * 
+     * @param string $key
+     * @param string $attribute
+     * @param array  $inputs
+     * @return void no return
+     */
+    public function addAttributeInputs($key,$attribute,array $inputs=[]){
+        if(empty($inputs)){
+            return;
+        }
+        foreach ($inputs as $input) {
+            $this->get($input)->setAttribute($key, $attribute);
+        }
+    }
 }

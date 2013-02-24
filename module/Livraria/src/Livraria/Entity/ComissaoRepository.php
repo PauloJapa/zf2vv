@@ -11,5 +11,24 @@ use Doctrine\ORM\EntityRepository;
 class ComissaoRepository extends EntityRepository {
 
     
+    public function findComissaoVigente($administradora){
+                
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('c')
+                ->from('Livraria\Entity\Comissao', 'c')
+                ->where(" c.administradora = :administradora
+                    AND   c.status = :status
+                    ")
+                ->setParameter('administradora', $administradora)
+                ->setParameter('status', 'A')
+                ->setMaxResults(1)
+                ->orderBy('c.inicio', 'DESC')
+                ->getQuery()
+                ;
+        return $query->getSingleResult();
+        
+    }
+    
 }
 

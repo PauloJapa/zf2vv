@@ -36,24 +36,31 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('imovelTel');
         $this->setInputHidden('imovelStatus');
         
+        //Dados do Locador
         $this->setInputHidden('locador');
         $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
                        'onKeyUp' => 'autoCompLocador();',
                        'autoComplete'=>'off'];        
         $this->setInputText('locadorNome', 'Locador', $attributes);
+
+        $options = [''=>'','fisica'=>'Pessoa Fisica','juridica'=>'Pessoa Juridica'];
+        $this->setInputSelect('tipoLoc', 'Fisica/Juridica', $options, ['onChange' => 'showTipo()']);
         
+        $attributes=[];
+        $attributes['placeholder'] = 'xxx.xxx.xxx-xx';
+        $attributes['onKeyUp'] = 'this.value=cpfCnpj(this.value)';
+        $attributes['onblur'] = 'if(this.value != varVazio)checkCPF_CNPJ(this)';
+        $this->setInputText('cpfLoc', 'CPF', $attributes);
+        
+        $attributes['placeholder'] = 'xx.xxx.xxx/xxxx-xx';
+        $this->setInputText('cnpjLoc', 'CNPJ', $attributes); 
+        
+        //Dados do Locatario
         $this->setInputHidden('locatario');
         $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
                        'onKeyUp' => 'autoCompLocatario();',
                        'autoComplete'=>'off'];        
         $this->setInputText('locatarioNome', 'Locatario', $attributes);
-        
-        $this->setInputHidden('atividade');
-        $attributes = ['placeholder' => 'Pesquise aqui!!',
-                       'onKeyUp' => 'autoCompAtividade();',
-                       'class' => 'input-xmlarge',
-                       'autoComplete'=>'off'];        
-        $this->setInputText('atividadeDesc', 'Atividade', $attributes);
 
         $options = [''=>'','fisica'=>'Pessoa Fisica','juridica'=>'Pessoa Juridica'];
         $this->setInputSelect('tipo', 'Fisica/Juridica', $options, ['onChange' => 'showTipo()']);
@@ -65,14 +72,17 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('cpf', 'CPF', $attributes);
         
         $attributes['placeholder'] = 'xx.xxx.xxx/xxxx-xx';
-        $this->setInputText('cnpj', 'CNPJ', $attributes);
+        $this->setInputText('cnpj', 'CNPJ', $attributes);   
+        
+        $this->setInputHidden('atividade');
+        $attributes = ['placeholder' => 'Pesquise aqui!!',
+                       'onKeyUp' => 'autoCompAtividade();',
+                       'class' => 'input-xmlarge',
+                       'autoComplete'=>'off'];        
+        $this->setInputText('atividadeDesc', 'Atividade', $attributes);
      
         $this->setInputText('proposta', 'Proposta',['readOnly'=>'true']);
         $this->setInputText('valorAluguel', 'Valor Aluguel');
-        
-        $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small']);
-
-        $this->setInputText('apto', 'Apartamento', ['class'=>'input-small']);
         
         $options = ['01'=>'Prédio', '02'=>'Prédio + conteúdo', '03'=>'Conteúdo'];
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $options);
@@ -113,7 +123,8 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('numeroParcela');
         $this->setInputHidden('premioLiquido');
         $this->setInputHidden('premio');
-        $this->setInputHidden('premioTotal');
+        $this->setInputText('premioTotal','Pagamento total de :');
+        $this->setInputHidden('codFechado');
         
         $attributes = ['rows' => "8",'class'=>'span8'];
         $this->setInputTextArea('observacao', 'Obs', $attributes);
@@ -125,10 +136,17 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('seguradora');
         
         $this->getEnderecoElements($em);
+        
+        $this->addAttributeInputs('onchange', 'limpaImovel()');
+        
+        $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small','onchange' => 'limpaImovel();']);
+
+        $this->setInputText('apto', 'Apartamento', ['class'=>'input-small','onchange' => 'limpaImovel();']);
 
         $this->setInputSubmit('enviar', 'Salvar');
         
         $this->setInputSubmit('calcula', 'Calcular',['onClick'=>'return calcular()']);
+        $this->setInputSubmit('fecha', 'Fechar Seguro',['onClick'=>'return fechar()']);
         
     }
     
