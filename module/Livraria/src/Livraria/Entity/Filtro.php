@@ -42,7 +42,7 @@ class  Filtro
             return "Erro no metodo!!";
         }
         $float = call_user_func(array($this,$getter));
-        return $this->trataFloat($float, $dec);
+        return number_format($float, $dec, ',','.');
     }
  
     /** 
@@ -51,12 +51,12 @@ class  Filtro
      * @return String $check no formato float para gravação pelo doctrine
      */    
     public function trataFloat($valor,$dec=2){
+        if(is_float($valor)){
+            return number_format($valor, $dec, ',','.');
+        }
         if(is_string($valor)){
             $valor = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $valor));
             return floatval($valor);
-        }
-        if(is_float($valor)){
-            return number_format($valor, $dec, ',','.');
         }
         return FALSE;
     }

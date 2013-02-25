@@ -248,7 +248,7 @@ class Fechados
     /**
      * @var Locador
      *
-     * @ORM\ManyToOne(targetEntity="Locador")
+     * @ORM\OneToOne(targetEntity="Locador")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      * })
@@ -258,7 +258,7 @@ class Fechados
     /**
      * @var Locatario
      *
-     * @ORM\ManyToOne(targetEntity="Locatario")
+     * @ORM\OneToOne(targetEntity="Locatario")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      * })
@@ -268,7 +268,7 @@ class Fechados
     /**
      * @var Imovel
      *
-     * @ORM\ManyToOne(targetEntity="Imovel")
+     * @ORM\OneToOne(targetEntity="Imovel")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
      * })
@@ -278,7 +278,7 @@ class Fechados
     /**
      * @var Taxa
      *
-     * @ORM\ManyToOne(targetEntity="Taxa")
+     * @ORM\OneToOne(targetEntity="Taxa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
      * })
@@ -288,7 +288,7 @@ class Fechados
     /**
      * @var Atividade
      *
-     * @ORM\ManyToOne(targetEntity="Atividade")
+     * @ORM\OneToOne(targetEntity="Atividade")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
@@ -298,7 +298,7 @@ class Fechados
     /**
      * @var Seguradora
      *
-     * @ORM\ManyToOne(targetEntity="Seguradora")
+     * @ORM\OneToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -308,7 +308,7 @@ class Fechados
     /**
      * @var Administradora
      *
-     * @ORM\ManyToOne(targetEntity="Administradora")
+     * @ORM\OneToOne(targetEntity="Administradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -318,7 +318,7 @@ class Fechados
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\OneToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      * })
@@ -328,7 +328,7 @@ class Fechados
     /**
      * @var MultiplosMinimos
      *
-     * @ORM\ManyToOne(targetEntity="MultiplosMinimos")
+     * @ORM\OneToOne(targetEntity="MultiplosMinimos")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
      * })

@@ -3,8 +3,26 @@
 
 <p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Taxa</span></p>
 <?php
-$coluns = array('ID','Seguradora','Classe','Inicio','Fim','Incêndio','Incêndio<br>Conteúdo','Aluguel','Eletrico','Desastres','Status','Ação');
-$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','','');
+$coluns = array(
+    'ID',
+    'Seguradora',
+    'Classe',
+    'Inicio',
+    'Fim',
+    'Incêndio',
+    'Incêndio<br>Conteúdo',
+    'Aluguel',
+    'Eletrico',
+    'Desastres',
+    'Incêndio Mensal',
+    'Incêndio<br>Conteúdo Mensal',
+    'Aluguel Mensal',
+    'Eletrico Mensal',
+    'Desastres Mensal',
+    'Status',
+    'Ação'
+    );
+$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
@@ -20,6 +38,11 @@ foreach($this->data as $entity){
         $entity->floatToStr('Aluguel'),
         $entity->floatToStr('Eletrico'),
         $entity->floatToStr('Desastres'),
+        $entity->floatToStr('incendioMen'),
+        $entity->floatToStr('IncendioConteudoMen'),
+        $entity->floatToStr('AluguelMen'),
+        $entity->floatToStr('EletricoMen'),
+        $entity->floatToStr('DesastresMen'),
         $entity->getStatus(),
         $entity->getId(),
     );

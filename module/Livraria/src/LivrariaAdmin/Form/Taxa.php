@@ -5,7 +5,7 @@ namespace LivrariaAdmin\Form;
 use Zend\Form\Form,
     Zend\Form\Element\Select;
 
-class Taxa extends Form {
+class Taxa extends AbstractForm {
     /**
      * Registros para preencher o input select
      * @var array 
@@ -22,12 +22,6 @@ class Taxa extends Form {
      * @var Doctrine\ORM\EntityManager
      */
     protected $em;
-    
-    /**
-     * Para setar o form corretamente para edição de dados
-     * @var bollean 
-     */
-    protected $isEdit = false;
 
     public function __construct($name = null, $em = null) {
         parent::__construct('taxa');
@@ -37,138 +31,43 @@ class Taxa extends Form {
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new TaxaFilter);    
 
-        $this->add(array(
-            'name' => 'subOpcao',
-            'attributes' => array(
-                'id' => 'subOpcao'
-            )
-        ));
+        $this->setInputHidden('subOpcao');
+        $this->setInputHidden('id');
 
-        $this->add(array(
-            'name' => 'id',
-            'attributes' => array(
-                'id' => 'id',
-            )
-        ));
+        $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
+        $this->setInputText('inicio', '*Inicio da Vigência', $attributes);
         
-        $this->add(array(
-            'name' => 'inicio',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Inicio da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'inicio',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+        $this->setInputText('fim', '*Fim da Vigência', $attributes);
         
-        $this->add(array(
-            'name' => 'fim',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Fim da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'fim',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+        $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
+        $this->setInputSelect('status', '*Situação', $options);
 
-        $status = new Select();
-        $status->setLabel("*Situação")
-                ->setName("status")
-                ->setOptions(array('value_options' => array('A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'))
-        );
-        $this->add($status);
+        $this->setInputText('incendio', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->add(array(
-            'name' => 'incendio',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Taxa p/ incêndio'
-            ),
-            'attributes' => array(
-                'id' => 'incendio',
-                'placeholder' => 'XXX,XX'
-            )
-        ));
+        $this->setInputText('incendioConteudo', '*Taxa p/ incêndio + conteúdo', ['placeholder' => 'XXX,XX']);
 
-        $this->add(array(
-            'name' => 'incendioConteudo',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Taxa p/ incêndio + conteúdo'
-            ),
-            'attributes' => array(
-                'id' => 'incendioConteudo',
-                'placeholder' => 'XXX,XX'
-            )
-        ));
+        $this->setInputText('aluguel', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
+        
+        $this->setInputText('eletrico', '*Taxa p/ eletrica', ['placeholder' => 'XXX,XX']);
+        
+        $this->setInputText('desastres', '*Taxa p/ desastres', ['placeholder' => 'XXX,XX']);
 
-        $this->add(array(
-            'name' => 'aluguel',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Taxa p/ aluguel'
-            ),
-            'attributes' => array(
-                'id' => 'aluguel',
-                'placeholder' => 'XXX,XX'
-            )
-        ));
+        $this->setInputText('incendioMen', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->add(array(
-            'name' => 'eletrico',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Taxa p/ eletrica'
-            ),
-            'attributes' => array(
-                'id' => 'eletrico',
-                'placeholder' => 'XXX,XX'
-            )
-        ));
+        $this->setInputText('incendioConteudoMen', '*Taxa p/ incêndio + conteúdo', ['placeholder' => 'XXX,XX']);
 
-        $this->add(array(
-            'name' => 'desastres',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Taxa p/ desastres'
-            ),
-            'attributes' => array(
-                'id' => 'desastres',
-                'placeholder' => 'XXX,XX'
-            )
-        ));
-
-        $classe = new Select();
-        $classe->setLabel("*Classe")
-                ->setName("classe")
-                ->setAttribute("id","classe")
-                ->setAttribute("onChange","buscaClasse()");
-        $this->add($classe);
-
-        $seguradora = new Select();
-        $seguradora->setLabel("*Seguradora")
-                ->setName("seguradora")
-                ->setAttribute("id","seguradora")
-                ->setAttribute("onChange","buscaSeguradora()")
-                ->setOptions(array('value_options' => $this->seguradoras)
-        );
-        $this->add($seguradora);
-     
-        $this->add(array(
-            'name' => 'enviar',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success',
-                'onClick' => 'salvar()'
-            )
-        ));
+        $this->setInputText('aluguelMen', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
+        
+        $this->setInputText('eletricoMen', '*Taxa p/ eletrica', ['placeholder' => 'XXX,XX']);
+        
+        $this->setInputText('desastresMen', '*Taxa p/ desastres', ['placeholder' => 'XXX,XX']);
+        
+        $options = [];
+        $this->setInputSelect('classe', '*Classe', $options, ["onChange" => "buscaClasse()"] );
+        
+        $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ["onChange" => "buscaSeguradora()"] );
+        
+        $this->setInputSubmit('enviar', 'Salvar');
     }
     
     /**
@@ -188,12 +87,19 @@ class Taxa extends Form {
         if($this->isEdit)
             $this->setEdit ();
     }
-  
+    
     /**
+     * 
      * Atualiza o form para o modo de edição bloqueando campos se necessario
-     */   
-    public function setEdit(){
+     * @param boolean $isAdmin Super usuario pode alterar
+     * @return void
+     */ 
+    public function setEdit($isAdmin=false){
         $this->isEdit = TRUE;
+        if(($isAdmin)or($this->isAdmin)){
+            $this->isAdmin = TRUE;
+            return ;
+        }
         $this->get('seguradora')->setAttribute('disabled', 'disabled');   
         $this->get('classe')->setAttribute('disabled', 'disabled');   
         $this->get('inicio')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
@@ -201,7 +107,12 @@ class Taxa extends Form {
         $this->get('incendioConteudo')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('aluguel')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('eletrico')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('desastres')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('desastres')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));  
+        $this->get('incendioMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('incendioConteudoMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('aluguelMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('eletricoMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('desastresMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
     }
 
 }

@@ -82,6 +82,41 @@ class Taxa extends Filtro
     private $desastres;
 
     /**
+     * @var float $incendioMen
+     *
+     * @ORM\Column(name="incendio_men", type="decimal", precision=10, scale=8, options={"default" = 0})
+     */
+    private $incendioMen;
+
+    /**
+     * @var float $incendioConteudoMen
+     *
+     * @ORM\Column(name="incendio_conteudo_men", precision=10, scale=8, options={"default" = 0})
+     */
+    private $incendioConteudoMen;
+
+    /**
+     * @var float $aluguelMen
+     *
+     * @ORM\Column(name="aluguel_men", type="decimal", precision=10, scale=8, options={"default" = 0})
+     */
+    private $aluguelMen;
+
+    /**
+     * @var float $eletricoMen
+     *
+     * @ORM\Column(name="eletrico_men", type="decimal", precision=10, scale=8, options={"default" = 0})
+     */
+    private $eletricoMen;
+
+    /**
+     * @var float $desastresMen
+     *
+     * @ORM\Column(name="desastres_men", type="decimal", precision=10, scale=8, options={"default" = 0})
+     */
+    private $desastresMen;
+
+    /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
@@ -112,7 +147,7 @@ class Taxa extends Filtro
     /**
      * @var Classe
      *
-     * @ORM\ManyToOne(targetEntity="Classe")
+     * @ORM\OneToOne(targetEntity="Classe")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
      * })
@@ -123,7 +158,7 @@ class Taxa extends Filtro
     /**
      * @var Seguradora
      *
-     * @ORM\ManyToOne(targetEntity="Seguradora")
+     * @ORM\OneToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -241,12 +276,16 @@ class Taxa extends Filtro
         return $this;
     }
 
+    /**
+     * Taxa cobrada para seguro incendio Anual
+     * @return float
+     */
     public function getIncendio() {
         return $this->incendio;
     }
 
     /** 
-     * Setar a taxa cobrada para seguro incendio
+     * Setar a taxa cobrada para seguro incendio Anual
      * @param Float $incendio
      * @return \Livraria\Entity\Taxa 
      */ 
@@ -260,7 +299,7 @@ class Taxa extends Filtro
     }
 
     /** 
-     * Setar a taxa cobrada para seguro incendio + conteudo
+     * Setar a taxa cobrada para seguro incendio + conteudo Anual
      * @param Float $incendioConteudo
      * @return \Livraria\Entity\Taxa 
      */ 
@@ -274,7 +313,7 @@ class Taxa extends Filtro
     }
 
     /** 
-     * Setar a taxa cobrada para seguro do aluguel
+     * Setar a taxa cobrada para seguro do aluguel Anual
      * @param Float $aluguel
      * @return this 
      */ 
@@ -288,7 +327,7 @@ class Taxa extends Filtro
     }
 
     /** 
-     * Setar a taxa cobrada para seguro de danos eletrico
+     * Setar a taxa cobrada para seguro de danos eletrico Anual
      * @param Float $incendioConteudo
      * @return this 
      */ 
@@ -302,12 +341,102 @@ class Taxa extends Filtro
     }
 
     /** 
-     * Setar a taxa cobrada para seguro de desastres naturais
+     * Setar a taxa cobrada para seguro de desastres naturais Anual
      * @param Float $desastres
      * @return this 
      */
     public function setDesastres($desastres) {
         $this->desastres = $this->strToFloat($desastres);
+        return $this;
+    }
+    
+    /**
+     * Taxa de seguro para calculo de incendio(Predio) mensal
+     * @return float
+     */
+    public function getIncendioMen() {
+        return $this->incendioMen;
+    }
+
+    /**
+     * Taxa de seguro para calculo de incendio(Predio) mensal
+     * @param flaot $incendioMen
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setIncendioMen($incendioMen) {
+        $this->incendioMen = $this->strToFloat($incendioMen);
+        return $this;
+    }
+
+    /**
+     * Taxa de seguro para calculo de incendio+conteudo mensal
+     * @return float
+     */
+    public function getIncendioConteudoMen() {
+        return $this->incendioConteudoMen;
+    }
+    
+    /**
+     * Taxa de seguro para calculo de incendio+conteudo mensal
+     * @param float $incendioConteudoMen
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setIncendioConteudoMen($incendioConteudoMen) {
+        $this->incendioConteudoMen = $this->strToFloat($incendioConteudoMen);
+        return $this;
+    }
+
+    /**
+     * Taxa de seguro para calculo de Aluguel mensal
+     * @return float
+     */
+    public function getAluguelMen() {
+        return $this->aluguelMen;
+    }
+
+    /**
+     * Taxa de seguro para calculo de Aluguel mensal
+     * @param float $aluguelMen
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setAluguelMen($aluguelMen) {
+        $this->aluguelMen = $this->strToFloat($aluguelMen);
+        return $this;
+    }
+
+    /**
+     * Taxa de seguro para calculo de eletrico mensal
+     * @return float
+     */
+    public function getEletricoMen() {
+        return $this->eletricoMen;
+    }
+
+    /**
+     * Taxa de seguro para calculo de eletrico mensal
+     * @param float $eletricoMen
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setEletricoMen($eletricoMen) {
+        $this->eletricoMen = $this->strToFloat($eletricoMen);
+        return $this;
+    }
+
+    /**
+     * Taxa de seguro para calculo de desastres(Vendaval) mensal
+     * @return float
+     */
+    public function getDesastresMen() {
+        return $this->desastresMen;
+    }
+
+    /**
+     * Taxa de seguro para calculo de desastres(Vendaval) mensal
+     * @param float $desastresMen
+     * @return \Livraria\Entity\Taxa
+     */
+    public function setDesastresMen($desastresMen) {
+        $this->desastresMen = $this->strToFloat($desastresMen);
         return $this;
     }
 
@@ -443,6 +572,11 @@ class Taxa extends Filtro
         $data['aluguel']          = $this->floatToStr('Aluguel');
         $data['eletrico']         = $this->floatToStr('Eletrico');
         $data['desastres']        = $this->floatToStr('Desastres');
+        $data['incendioMen']         = $this->floatToStr('IncendioMen');
+        $data['incendioConteudoMen'] = $this->floatToStr('IncendioConteudoMen');
+        $data['aluguelMen']          = $this->floatToStr('AluguelMen');
+        $data['eletricoMen']         = $this->floatToStr('EletricoMen');
+        $data['desastresMen']        = $this->floatToStr('DesastresMen');
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();

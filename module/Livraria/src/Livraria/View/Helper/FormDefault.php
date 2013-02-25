@@ -119,6 +119,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputMoeda($name);
                 break;
             
+            case "float":
+                $this->renderInputFloat($name);
+                break;
+            
             case "textLine":
                 $this->renderInputTextLine($name);
                 break;
@@ -324,9 +328,11 @@ class FormDefault extends AbstractHelper {
      * Adiciona js para mascara de moeda
      * Caso exista msg de erro sera exibo em vermelho
      * @param String $name
+     * @param String $symbol para exibir ou não o simbolo da moeda
      */
-    public function renderInputMoeda($name) {
+    public function renderInputMoeda($name,$symbol='true') {
         $element = $this->form->get($name);
+        $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
             $name = '';
@@ -339,10 +345,20 @@ class FormDefault extends AbstractHelper {
         '<script language="javascript">',
         '$(function(){$("#',
                 $name,
-        '").maskMoney({symbol:"R$ ", showSymbol:true, thousands:".", decimal:",", symbolStay: true});});',
+        '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay: true});});',
         '</script>',
          
         $this->checkError();
+    }
+
+    /**
+     * Renderiza o input text no estilo float com um botao para limpar o conteudo  
+     * Adiciona js para mascara de decimal
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputFloat($name){
+        $this->renderInputMoeda($name,'false');
     }
 
     /**
@@ -353,6 +369,7 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputMoedaLine($name) {
         $element = $this->form->get($name);
+        $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
             $name = '';

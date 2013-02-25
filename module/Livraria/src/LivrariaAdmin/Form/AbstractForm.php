@@ -11,6 +11,18 @@ use Zend\Form\Element;
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 abstract class AbstractForm extends Form {
+    
+    /**
+     * Para setar o form corretamente para edição de dados
+     * @var bollean 
+     */
+    protected $isEdit = false;
+    
+    /**
+     * Para setar o form corretamente para edição de dados
+     * @var bollean 
+     */
+    protected $isAdmin = false;
 
     public function __construct($name = null) {
         parent::__construct($name);

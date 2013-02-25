@@ -60,7 +60,7 @@ class TaxasController extends CrudController {
 
     public function editAction() {
         $this->formData = new $this->form(null, $this->getEm());
-        $this->formData->setEdit();
+        $this->formData->setEdit($this->getIdentidade()->getIsAdmin());
         $data = $this->getRequest()->getPost()->toArray();
         $repository = $this->getEm()->getRepository($this->entity);
         $filtro = array();
