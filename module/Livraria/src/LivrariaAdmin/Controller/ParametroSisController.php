@@ -2,34 +2,50 @@
 
 namespace LivrariaAdmin\Controller;
 
-use Zend\View\Model\ViewModel;
+use Zend\Mvc\Controller\AbstractActionController,
+    Zend\View\Model\ViewModel;
 use Zend\Paginator\Paginator,
     Zend\Paginator\Adapter\ArrayAdapter;
-/**
- * ClasseAtividade
- * Recebe requisição e direciona para a ação responsavel depois de validar.
- * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
- */
-class ClasseAtividadesController extends CrudController {
+use Zend\Authentication\AuthenticationService,
+    Zend\Authentication\Storage\Session as SessionStorage;
+
+class ParametroSisController  extends CrudController {
 
     public function __construct() {
-        $this->entity = "Livraria\Entity\ClasseAtividade";
-        $this->form = "LivrariaAdmin\Form\ClasseAtividade";
-        $this->service = "Livraria\Service\ClasseAtividade";
-        $this->controller = "classeAtividades";
+        $this->entity = "Livraria\Entity\ParametroSis";
+        $this->form = "LivrariaAdmin\Form\ParametroSis";
+        $this->service = "Livraria\Service\ParametroSis";
+        $this->controller = "parametroSis";
         $this->route = "livraria-admin";
-        
     }
     
     /**
-     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * Faz listagem dos dados baseado nos parametros passados
      * @param array $filtro
+     * @param array $orderBy
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
+    public function indexAction(array $filtro = [],array $orderBy = ['key' => 'ASC']) {
+        
+        if(empty($filtro))
+            $filtro['key'] = '%';
+        
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findKey($filtro['key'],$orderBy);
+
+        $this->page = $this->params()->fromRoute('page');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+
+        $this->paginator = new Paginator(new ArrayAdapter($list));
+        $this->paginator->setCurrentPageNumber($this->page);
+        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setPageRange(15);
+        if($this->render)
+            return new ViewModel($this->getParamsForView());
     }
-   
+    
     /**
      * Tenta incluir o registro e exibe a listagem ou erros ao incluir
      * @return \Zend\View\Model\ViewModel
@@ -41,11 +57,7 @@ class ClasseAtividadesController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $data['seguradora'];
-            }
-            if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
+            if(!empty($data['key'])) $filtro['key'] = $data['key'] . '%';
         }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
@@ -82,24 +94,16 @@ class ClasseAtividadesController extends CrudController {
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $entity->getSeguradora()->getId();
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
-            $filtro['atividade']  = $entity->getAtividade()->getId();
+            $filtro['key']  = $entity->getKey();
         }
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
-            if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
+            if(!empty($data['key'])) $filtro['key'] = $data['key'] . '%';
         }
         
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         //Metodo que bloqueia campos da edição caso houver
-        //$this->formData->setEdit();
+        $this->formData->setEdit($this->getIdentidade()->getIsAdmin());
         if($data['subOpcao'] == 'editar'){ 
             $this->formData->setData($entity->toArray());
         }else{
@@ -125,5 +129,4 @@ class ClasseAtividadesController extends CrudController {
 
         return new ViewModel($this->getParamsForView()); 
     }
-
 }

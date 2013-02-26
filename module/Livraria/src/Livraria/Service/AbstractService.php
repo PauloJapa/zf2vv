@@ -143,9 +143,11 @@ abstract class AbstractService {
      * @param string $tabela
      * @return no return
      */
-    public function logForEdit($tabela=''){
+    public function logForEdit($tabela='', $controller=''){
         if((empty($this->dePara)) OR (empty($tabela))) 
             return ;
+        
+        if(empty($controller))$controller = $tabela . 's' ;
         
         $log = new Log($this->em);
         $dataLog['user']       = $this->getIdentidade()->getId();
@@ -153,7 +155,7 @@ abstract class AbstractService {
         $dataLog['data']       = $data->format('d/m/Y');
         $dataLog['idDoReg']    = $this->data['id'];
         $dataLog['tabela']     = $tabela;
-        $dataLog['controller'] = $tabela . 's';
+        $dataLog['controller'] = $controller;
         $dataLog['action']     = 'edit';
         $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];

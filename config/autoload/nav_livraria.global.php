@@ -230,6 +230,25 @@ return array(
                             ),
                         ),
                     ),
+                    'Parametro' => array(
+                        'label' => 'Parametros',
+                        'route' => 'livraria-admin',
+                        'controller' => 'parametroSis',
+                        'pages' => array(
+                            'Parametro1' => array(
+                                'label' => 'Novo',
+                                'route' => 'livraria-admin',
+                                'controller' => 'parametroSis',
+                                'action' => 'new',
+                            ),
+                            'Parametro2' => array(
+                                'label' => 'Listar',
+                                'route' => 'livraria-admin',
+                                'controller' => 'parametroSis',
+                                'action' => 'index',
+                            ),
+                        ),
+                    ),
                     'endereco' => array(
                         'label' => 'Endereço',
                         'route' => 'livraria-admin',

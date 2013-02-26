@@ -1,0 +1,40 @@
+<?php if(count($flashMessages)) : ?>
+<div class="control-group error">
+<ul class="help-inline">
+    <?php foreach ($flashMessages as $msg) : ?>
+    <li><?php echo $msg; ?></li>
+    <?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
+<?php
+$form->prepare();
+echo 
+$this->FormDefault(['legend' => 'Dados do Parametro do Sistema', 'hidden' => 'id'],'inicio',$this, $form),
+    "<td>\r",
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao'],'hidden'),
+        $this->FormDefault(['name' => 'key','js' => 'buscaKey()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
+    "</td><td>\r",
+        $this->FormDefault(['conteudo' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault(['descricao' => 'text']),
+    "</td>\r",
+$this->FormDefault(['submit' => 'enviar'],'fim');
+
+require 'index.phtml';
+?>
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    function salvar(){
+        envia(tar,'salvar',formName);
+        return false;
+    }
+
+    function buscaKey(){
+        envia(tar,'buscar',formName);
+    }
+
+</script>

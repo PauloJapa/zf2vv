@@ -80,6 +80,7 @@ return array(
             'locadors' => 'LivrariaAdmin\Controller\LocadorsController',
             'orcamentos' => 'LivrariaAdmin\Controller\OrcamentosController',
             'multiplosMinimos' => 'LivrariaAdmin\Controller\MultiplosMinimosController',
+            'parametroSis' => 'LivrariaAdmin\Controller\ParametroSisController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

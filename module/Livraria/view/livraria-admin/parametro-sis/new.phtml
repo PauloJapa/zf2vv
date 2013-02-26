@@ -1,0 +1,12 @@
+<h3>Nova Parametro do Sistema</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'parametroSis','action'=>'new')));
+
+include 'formParametroSis.php';
+
+?>
