@@ -5,20 +5,20 @@ namespace Livraria\Service;
 use Doctrine\ORM\EntityManager;
 use Livraria\Entity\Configurator;
 /**
- * LogOrcamento
- * Faz o CRUD da tabela LogOrcamento no banco de dados
+ * LogFechados
+ * Faz o CRUD da tabela LogFechados no banco de dados
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class LogOrcamento extends AbstractService {
+class LogFechados extends AbstractService {
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
-        $this->entity = "Livraria\Entity\LogOrcamento";
+        $this->entity = "Livraria\Entity\LogFechados";
     }
     
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('orcamento', 'Livraria\Entity\Orcamento');
+        $this->idToReference('fechados', 'Livraria\Entity\Fechados');
         $this->idToReference('user', 'Livraria\Entity\User');
     }
 

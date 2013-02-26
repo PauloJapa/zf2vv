@@ -84,7 +84,9 @@ class Fechados extends AbstractService {
         $dataLog['tabela']     = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos' ;
         $dataLog['action']     = 'fechaOrcamento';
-        $dataLog['mensagem']   = 'Fechou o orçamento e gerou o fechado de numero ' . $this->data['id'] . '/' . $this->data['codano'] ;
+        $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+        $fechado   = $this->data['id'] . '/' . $this->data['codano'];
+        $dataLog['mensagem']   = 'Fechou o orçamento(' . $orcamento . ') e gerou o fechado de numero ' . $fechado ;
         $dataLog['dePara']     = '';
         $log->insert($dataLog);
     }
@@ -138,7 +140,18 @@ class Fechados extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      */
     public function logForNew(){
-        parent::logForNew('fechados');
+        //parent::logForNew('fechados');
+        //serviço LogFechamento
+        $log = new LogFechados($this->em);
+        $dataLog['fechados']  = $this->data['id']; 
+        $dataLog['tabela']     = 'log_fechados';
+        $dataLog['controller'] = 'orcamentos' ;
+        $dataLog['action']     = 'fechar';
+        $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+        $fechado   = $this->data['id'] . '/' . $this->data['codano'];
+        $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' do orçamento n ' . $orcamento;
+        $dataLog['dePara']     = '';
+        $log->insert($dataLog);
     }
 
     /**

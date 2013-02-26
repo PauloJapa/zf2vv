@@ -139,7 +139,7 @@ class ViewIndex extends AbstractHelper {
             echo "<tr>", "\n";
         
         foreach ($options['data'] as $key => $value) {
-            if($key == $this->editLine){
+            if(($this->editLine !== FALSE)AND($key == $this->editLine)){
                 $this->renderEditLine($value);
             }else{
                 if(isset($this->tdopt[$key]))
@@ -199,6 +199,10 @@ class ViewIndex extends AbstractHelper {
             
             case 'last':
                 return (count($this->coluns) - 1 ) ;
+                break;
+            
+            case 'false':
+                return FALSE;
                 break;
             
             default:

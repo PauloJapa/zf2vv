@@ -5,15 +5,15 @@ namespace Livraria\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * LogOrcamento
+ * LogRenovacao
  * 
  * Todo historico do orçamento como inclusão, alterações, cancelamento motivo.
  * 
- * @ORM\Table(name="log_orcamento")
+ * @ORM\Table(name="log_renovacao")
  * @ORM\Entity
- * @ORM\Entity(repositoryClass="Livraria\Entity\LogOrcamentoRepository")
+ * @ORM\Entity(repositoryClass="Livraria\Entity\LogRenovacaoRepository")
  */
-class LogOrcamento extends Filtro
+class LogRenovacao extends Filtro
 {
     /**
      * @var integer $id
@@ -77,14 +77,14 @@ class LogOrcamento extends Filtro
     private $user;
 
     /**
-     * @var Orcamento
+     * @var Renovacao
      *
-     * @ORM\OneToOne(targetEntity="Orcamento")
+     * @ORM\OneToOne(targetEntity="Renovacao")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="orcamento_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="renovacao_id", referencedColumnName="id")
      * })
      */
-    private $orcamento;
+    private $renovacao;
 
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -106,7 +106,7 @@ class LogOrcamento extends Filtro
     /** 
      * Setar o id do registro
      * @param Int $id
-     * @return \Livraria\Entity\LogOrcamento 
+     * @return \Livraria\Entity\LogRenovacao 
      */ 
     public function setId($id) {
         $this->id = $id;
@@ -124,7 +124,7 @@ class LogOrcamento extends Filtro
     /**
      * Observação do log
      * @param type $mensagem
-     * @return \Livraria\Entity\LogOrcamento
+     * @return \Livraria\Entity\LogRenovacao
      */
     public function setMensagem($mensagem) {
         $this->mensagem = $mensagem;
@@ -143,7 +143,7 @@ class LogOrcamento extends Filtro
     /**
      * Formato de campo_nome; valor_antes; valor_depois;
      * @param string $dePara
-     * @return \Livraria\Entity\LogOrcamento
+     * @return \Livraria\Entity\LogRenovacao
      */
     public function setDePara($dePara) {
         $this->dePara = $dePara;
@@ -161,7 +161,7 @@ class LogOrcamento extends Filtro
     /** 
      * Entity User a qual se referencia esse log
      * @param \Livraria\Entity\User $user
-     * @return \Livraria\Entity\LogOrcamento 
+     * @return \Livraria\Entity\LogRenovacao 
      */ 
     public function setUser(User $user) {
         $this->user = $user;
@@ -169,20 +169,20 @@ class LogOrcamento extends Filtro
     }
 
     /**
-     * Entity Orcamento a qual se referencia esse log
-     * @return \Livraria\Entity\Orcamento
+     * Entity Renovacao a qual se referencia esse log
+     * @return \Livraria\Entity\Renovacao
      */
-    public function getOrcamento() {
-        return $this->orcamento;
+    public function getRenovacao() {
+        return $this->renovacao;
     }
 
     /**
-     * Entiry Orcamento a qual se referencia esse log
-     * @param \Livraria\Entity\Orcamento $orcamento
-     * @return \Livraria\Entity\LogOrcamento
+     * Entiry Renovacao a qual se referencia esse log
+     * @param \Livraria\Entity\Renovacao $renovacao
+     * @return \Livraria\Entity\LogRenovacao
      */
-    public function setOrcamento(Orcamento $orcamento) {
-        $this->orcamento = $orcamento;
+    public function setRenovacao(Renovacao $renovacao) {
+        $this->renovacao = $renovacao;
         return $this;
     }
 
@@ -197,7 +197,7 @@ class LogOrcamento extends Filtro
     /**
      * Nome do controller
      * @param string $controller
-     * @return \Livraria\Entity\LogOrcamento
+     * @return \Livraria\Entity\LogRenovacao
      */
     public function setController($controller) {
         $this->controller = $controller;
@@ -215,7 +215,7 @@ class LogOrcamento extends Filtro
     /**
      * Nome da ação que gerou o log
      * @param string $action
-     * @return \Livraria\Entity\LogOrcamento
+     * @return \Livraria\Entity\LogRenovacao
      */
     public function setAction($action) {
         $this->action = $action;
@@ -249,7 +249,7 @@ class LogOrcamento extends Filtro
     /**
      * 
      * @param string $ip
-     * @return \Livraria\Entity\LogOrcamento
+     * @return \Livraria\Entity\LogRenovacao
      */
     public function setIp($ip) {
         $this->ip = $ip;
@@ -270,7 +270,7 @@ class LogOrcamento extends Filtro
             'dePara' => $this->getDePara(), 
             'data' => $this->getData(), 
             'ip' => $this->getId(), 
-            'orcamento' => $this->getOrcamento()->getId()
+            'renovacao' => $this->getRenovacao()->getId()
         ];
     }
 

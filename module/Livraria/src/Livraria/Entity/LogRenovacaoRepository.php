@@ -4,20 +4,20 @@ namespace Livraria\Entity;
 
 use Doctrine\ORM\EntityRepository;
 /**
- * LogOrcamentoRepository
+ * LogRenovacaoRepository
  * Todos os metodos de consulta ao banco para esta classe
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class LogOrcamentoRepository extends EntityRepository {
+class LogRenovacaoRepository extends EntityRepository {
 
     
-    public function findLogOrcamento($filtro){
+    public function findLogRenovacao($filtro){
         
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('lo,u')
-                ->from('Livraria\Entity\LogOrcamento', 'lo')
-                ->join('lo.user', 'u')
+                ->select('lr,u')
+                ->from('Livraria\Entity\LogRenovacao', 'lr')
+                ->join('lr.user', 'u')
                 ->getQuery()
                 ;
         return $query->getResult();

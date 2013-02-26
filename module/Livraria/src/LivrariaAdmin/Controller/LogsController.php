@@ -3,6 +3,8 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
+use Zend\Paginator\Paginator,
+    Zend\Paginator\Adapter\ArrayAdapter;
 /**
  * Log
  * Recebe requisição e direciona para a ação responsavel depois de validar.
@@ -10,17 +12,109 @@ use Zend\View\Model\ViewModel;
  */
 class LogsController extends CrudController {
 
+    /**
+     * Contem o caminho para Entity
+     * @var string 
+     */
+    protected $entityOrc;
+    
+    /**
+     * Contem o caminho para Entity
+     * @var string 
+     */
+    protected $entityFec;
+    
+    /**
+     * Contem o caminho para Entity
+     * @var string 
+     */
+    protected $entityRen;
+    
+    /**
+     * Contem o caminho para o Serviço da Entity
+     * @var string 
+     */
+    protected $serviceOrc;
+    
+    /**
+     * Contem o caminho para o Serviço da Entity
+     * @var string 
+     */
+    protected $serviceFec;
+    
+    /**
+     * Contem o caminho para o Serviço da Entity
+     * @var string 
+     */
+    protected $serviceRen;
+    
     public function __construct() {
-        $this->entity = "Livraria\Entity\Log";
-        $this->form = "LivrariaAdmin\Form\Log";
-        $this->service = "Livraria\Service\Log";
+        $this->entity     = "Livraria\Entity\Log";
+        $this->entityOrc  = "Livraria\Entity\LogOrcamento";
+        $this->entityFec  = "Livraria\Entity\LogFechados";
+        $this->entityRen  = "Livraria\Entity\LogRenovacao";
+        $this->form       = "LivrariaAdmin\Form\Log";
+        $this->service    = "Livraria\Service\Log";
+        $this->serviceOrc = "Livraria\Service\LogOrcamento";
+        $this->serviceFec = "Livraria\Service\LogFechados";
+        $this->serviceRen = "Livraria\Service\LogRenovacao";
         $this->controller = "logs";
-        $this->route = "livraria-admin";
-        
+        $this->route      = "livraria-admin";
     }
     
     public function indexAction(array $filtro = array()){
         return parent::indexAction($filtro,array('user' => 'ASC'));
+    }
+    
+    public function logOrcamentoAction($filtro=[]){
+        $list = $this->getEm()
+                     ->getRepository($this->entityOrc)
+                     ->findLogOrcamento($filtro);
+        
+        $this->page = $this->params()->fromRoute('page');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+
+        $this->paginator = new Paginator(new ArrayAdapter($list));
+        $this->paginator->setCurrentPageNumber($this->page);
+        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setPageRange(15);
+        if($this->render)
+            return new ViewModel($this->getParamsForView());
+    }
+    
+    public function logFechadosAction($filtro=[]){
+        $list = $this->getEm()
+                     ->getRepository($this->entityFec)
+                     ->findLogFechados($filtro);
+        
+        $this->page = $this->params()->fromRoute('page');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+
+        $this->paginator = new Paginator(new ArrayAdapter($list));
+        $this->paginator->setCurrentPageNumber($this->page);
+        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setPageRange(15);
+        if($this->render)
+            return new ViewModel($this->getParamsForView());
+    }
+    
+    public function logRenovacaoAction($filtro=[]){
+        $list = $this->getEm()
+                     ->getRepository($this->entityRen)
+                     ->findLogRenovacao($filtro);
+        
+        $this->page = $this->params()->fromRoute('page');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+
+        $this->paginator = new Paginator(new ArrayAdapter($list));
+        $this->paginator->setCurrentPageNumber($this->page);
+        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setPageRange(15);
+        if($this->render)
+            return new ViewModel($this->getParamsForView());
     }
 
     public function newAction() {

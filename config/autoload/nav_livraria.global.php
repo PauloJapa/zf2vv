@@ -296,6 +296,7 @@ return array(
                         'label' => 'Rastreamento',
                         'route' => 'livraria-admin',
                         'controller' => 'logs',
+                        'action' => 'index',
                         'pages' => array(
                             'logs1' => array(
                                 'label' => 'Listar_Ações',
@@ -310,6 +311,24 @@ return array(
                                 'action' => 'new',
                             ),
                         ),
+                    ),
+                    'logOrcamento' => array(
+                        'label' => 'Logs_de_Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'logs',
+                        'action' => 'logOrcamento',
+                    ),
+                    'logFechados' => array(
+                        'label' => 'Logs_de_Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'logs',
+                        'action' => 'logFechados',
+                    ),
+                    'logRenovacao' => array(
+                        'label' => 'Logs_de_Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'logs',
+                        'action' => 'logRenovacao',
                     ),
                 ),
             ),

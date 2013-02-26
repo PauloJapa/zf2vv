@@ -305,7 +305,19 @@ class Orcamento extends AbstractService {
      * @return no return
      */
     public function logForEdit(){
-        parent::logForEdit('orcamento');
+        //parent::logForEdit('orcamento');
+        //serviço logorcamento
+        if(empty($this->dePara)) 
+            return ;
+        
+        $log = new LogOrcamento($this->em);
+        $dataLog['orcamento']  = $this->data['id']; 
+        $dataLog['tabela']     = 'log_orcamento';
+        $dataLog['controller'] = 'orcamentos' ;
+        $dataLog['action']     = 'edit';
+        $dataLog['mensagem']   = 'Alterou orçamento de numero ' . $this->data['id'] . '/' . $this->data['codano'] ;
+        $dataLog['dePara']     = $this->dePara;
+        $log->insert($dataLog);
     }
 
     /**
