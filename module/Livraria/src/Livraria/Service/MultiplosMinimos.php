@@ -106,7 +106,7 @@ class MultiplosMinimos extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Minimo Vendaval', $ent->floatToStr('minVendaval'), $this->strToFloat($this->data['minVendaval']));
         $this->dePara .= $this->diffAfterBefore('Vigencia Inicio', $ent->getMultVigenciaInicio(), $this->data['multVigenciaInicio']->format('d/m/Y'));
         $check = $this->data['multVigenciaFim']->format('d/m/Y');
-        if($check == '30/11/-0001'){
+        if($check == '01/01/1000'){
             $check = "vigente";
         }
         $this->dePara .= $this->diffAfterBefore('Vigencia Fim',    $ent->getMultVigenciaFim(),$check);

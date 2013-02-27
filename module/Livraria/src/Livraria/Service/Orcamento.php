@@ -105,7 +105,7 @@ class Orcamento extends AbstractService {
         
         
         $result = $this->isValid();
-//$result = ['testando e nao gravando'];
+$result = ['testando e nao gravando'];
         if($result !== TRUE){
             return $result;
         }

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Entity(repositoryClass="Livraria\Entity\MultiplosMinimosRepository")
  */
-class MultiplosMinimos
+class MultiplosMinimos extends Filtro
 {
     /**
      * @var integer $idMultiplos
@@ -96,6 +96,41 @@ class MultiplosMinimos
     private $minVendaval;
 
     /**
+     * @var float $maxAluguel
+     *
+     * @ORM\Column(name="max_aluguel", type="decimal", nullable=true)
+     */
+    private $maxAluguel;
+
+    /**
+     * @var float $maxPredio
+     *
+     * @ORM\Column(name="max_predio", type="decimal", nullable=true)
+     */
+    private $maxPredio;
+
+    /**
+     * @var float $maxConteudo
+     *
+     * @ORM\Column(name="max_conteudo", type="decimal", nullable=true)
+     */
+    private $maxConteudo;
+
+    /**
+     * @var float $maxEletrico
+     *
+     * @ORM\Column(name="max_eletrico", type="decimal", nullable=true)
+     */
+    private $maxEletrico;
+
+    /**
+     * @var float $maxVendaval
+     *
+     * @ORM\Column(name="max_vendaval", type="decimal", nullable=true)
+     */
+    private $maxVendaval;
+
+    /**
      * @var \DateTime $multVigenciaInicio
      *
      * @ORM\Column(name="mult_vigencia_inicio", type="date", nullable=false)
@@ -174,7 +209,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultAluguel($multAluguel) {
-        $this->multAluguel = $this->strToFloat($multAluguel);
+        $this->multAluguel = $this->trataFloat($multAluguel);
         return $this;
     }
 
@@ -192,7 +227,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultConteudo($multConteudo) {
-        $this->multConteudo = $this->strToFloat($multConteudo);
+        $this->multConteudo = $this->trataFloat($multConteudo);
         return $this;
     }
 
@@ -205,7 +240,7 @@ class MultiplosMinimos
     }
 
     public function setMultPredio($multPredio) {
-        $this->multPredio = $this->strToFloat($multPredio);
+        $this->multPredio = $this->trataFloat($multPredio);
         return $this;
     }
 
@@ -223,7 +258,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultEletrico($multEletrico) {
-        $this->multEletrico = $this->strToFloat($multEletrico);
+        $this->multEletrico = $this->trataFloat($multEletrico);
         return $this;
     }
 
@@ -241,7 +276,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultVendaval($multVendaval) {
-        $this->multVendaval = $this->strToFloat($multVendaval);
+        $this->multVendaval = $this->trataFloat($multVendaval);
         return $this;
     }
 
@@ -259,7 +294,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMinAluguel($minAluguel) {
-        $this->minAluguel = $this->strToFloat($minAluguel);
+        $this->minAluguel = $this->trataFloat($minAluguel);
         return $this;
     }
 
@@ -277,7 +312,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMinPredio($minPredio) {
-        $this->minPredio = $this->strToFloat($minPredio);
+        $this->minPredio = $this->trataFloat($minPredio);
         return $this;
     }
 
@@ -295,7 +330,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMinConteudo($minConteudo) {
-        $this->minConteudo = $this->strToFloat($minConteudo);
+        $this->minConteudo = $this->trataFloat($minConteudo);
         return $this;
     }
 
@@ -313,7 +348,7 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMinEletrico($minEletrico) {
-        $this->minEletrico = $this->strToFloat($minEletrico);
+        $this->minEletrico = $this->trataFloat($minEletrico);
         return $this;
     }
 
@@ -331,7 +366,97 @@ class MultiplosMinimos
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMinVendaval($minVendaval) {
-        $this->minVendaval = $this->strToFloat($minVendaval);
+        $this->minVendaval = $this->trataFloat($minVendaval);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxAluguel() {
+        return $this->maxAluguel;
+    }
+
+    /**
+     * 
+     * @param float $maxAluguel
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setMaxAluguel($maxAluguel) {
+        $this->maxAluguel = $this->trataFloat($maxAluguel);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxPredio() {
+        return $this->maxPredio;
+    }
+
+    /**
+     * 
+     * @param float $maxPredio
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setMaxPredio($maxPredio) {
+        $this->maxPredio = $this->trataFloat($maxPredio);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxConteudo() {
+        return $this->maxConteudo;
+    }
+
+    /**
+     * 
+     * @param float $maxConteudo
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setMaxConteudo($maxConteudo) {
+        $this->maxConteudo = $this->trataFloat($maxConteudo);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxEletrico() {
+        return $this->maxEletrico;
+    }
+
+    /**
+     * 
+     * @param float $maxEletrico
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setMaxEletrico($maxEletrico) {
+        $this->maxEletrico = $this->trataFloat($maxEletrico);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxVendaval() {
+        return $this->maxVendaval;
+    }
+
+    /**
+     * 
+     * @param float $maxVendaval
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setMaxVendaval($maxVendaval) {
+        $this->maxVendaval = $this->trataFloat($maxVendaval);
         return $this;
     }
 
@@ -419,37 +544,6 @@ class MultiplosMinimos
         $this->seguradora = $seguradora;
         return $this;
     }
- 
-    /** 
-     * Converte a variavel do tipo float para string para exibição
-     * @param String $get com nome do metodo a ser convertido
-     * @param Int $dec quantidade de casas decimais
-     * @return String do numero no formato brasileiro padrão com 2 casas decimais
-     */    
-    public function floatToStr($get,$dec = 2){
-        if($get == ""){
-            return "vazio!!";
-        }
-        $getter  = 'get' . ucwords($get);
-        if(!method_exists($this,$getter)){
-            return "Erro no metodo!!";
-        }
-        $float = call_user_func(array($this,$getter));
-        return number_format($float, $dec, ',','.');
-    }
- 
-    /** 
-     * Faz tratamento na variavel string se necessario antes de converte em float
-     * @param String $check variavel a ser convertida se tratada se necessario
-     * @return String $check no formato float para gravação pelo doctrine
-     */    
-    public function strToFloat($check){
-        if(is_string($check)){
-            $check = preg_replace("/[^0-9,]/", "", $check);
-            $check = str_replace(",", ".", $check);
-        }
-        return $check;
-    }
     
     public function toArray(){
         $data['idMultiplos']        = $this->getIdMultiplos() ; 
@@ -463,6 +557,11 @@ class MultiplosMinimos
         $data['minConteudo']        = $this->floatToStr('minConteudo') ; 
         $data['minEletrico']        = $this->floatToStr('minEletrico') ; 
         $data['minVendaval']        = $this->floatToStr('minVendaval') ; 
+        $data['maxAluguel']         = $this->floatToStr('maxAluguel') ; 
+        $data['maxPredio']          = $this->floatToStr('maxPredio') ; 
+        $data['maxConteudo']        = $this->floatToStr('maxConteudo') ; 
+        $data['maxEletrico']        = $this->floatToStr('maxEletrico') ; 
+        $data['maxVendaval']        = $this->floatToStr('maxVendaval') ; 
         $data['multVigenciaInicio'] = $this->getMultVigenciaInicio() ; 
         $data['multVigenciaFim']    = $this->getMultVigenciaFim() ; 
         $data['multStatus']         = $this->getMultStatus() ; 

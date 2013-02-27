@@ -49,6 +49,12 @@ class MultiplosMinimos extends AbstractForm {
         $this->setInputText('minPredio', 'Minimo para Predio',$attributos);
         $this->setInputText('minEletrico', 'Minimo para Eletrico',$attributos);
         $this->setInputText('minVendaval', 'Minimo para Vendaval',$attributos);
+        
+        $this->setInputText('maxAluguel', 'Maximo para Aluguel',$attributos);
+        $this->setInputText('maxConteudo', 'Maximo para Conteudo',$attributos);
+        $this->setInputText('maxPredio', 'Maximo para Predio',$attributos);
+        $this->setInputText('maxEletrico', 'Maximo para Eletrico',$attributos);
+        $this->setInputText('maxVendaval', 'Maximo para Vendaval',$attributos);
 
         $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
         $this->setInputSelect('multStatus', '*Situação', $options,$attributos);
