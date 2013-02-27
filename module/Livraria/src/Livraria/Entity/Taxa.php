@@ -290,7 +290,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa 
      */ 
     public function setIncendio($incendio) {
-        $this->incendio = $this->strToFloat($incendio);
+        $this->incendio = $this->trataFloat($incendio);
         return $this;
     }
 
@@ -304,7 +304,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa 
      */ 
     public function setIncendioConteudo($incendioConteudo) {
-        $this->incendioConteudo = $this->strToFloat($incendioConteudo);
+        $this->incendioConteudo = $this->trataFloat($incendioConteudo);
         return $this;
     }
 
@@ -318,7 +318,7 @@ class Taxa extends Filtro
      * @return this 
      */ 
     public function setAluguel($aluguel) {
-        $this->aluguel = $this->strToFloat($aluguel);
+        $this->aluguel = $this->trataFloat($aluguel);
         return $this;
     }
 
@@ -332,7 +332,7 @@ class Taxa extends Filtro
      * @return this 
      */ 
     public function setEletrico($eletrico) {
-        $this->eletrico = $this->strToFloat($eletrico);
+        $this->eletrico = $this->trataFloat($eletrico);
         return $this;
     }
 
@@ -346,7 +346,7 @@ class Taxa extends Filtro
      * @return this 
      */
     public function setDesastres($desastres) {
-        $this->desastres = $this->strToFloat($desastres);
+        $this->desastres = $this->trataFloat($desastres);
         return $this;
     }
     
@@ -364,7 +364,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa
      */
     public function setIncendioMen($incendioMen) {
-        $this->incendioMen = $this->strToFloat($incendioMen);
+        $this->incendioMen = $this->trataFloat($incendioMen);
         return $this;
     }
 
@@ -382,7 +382,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa
      */
     public function setIncendioConteudoMen($incendioConteudoMen) {
-        $this->incendioConteudoMen = $this->strToFloat($incendioConteudoMen);
+        $this->incendioConteudoMen = $this->trataFloat($incendioConteudoMen);
         return $this;
     }
 
@@ -400,7 +400,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa
      */
     public function setAluguelMen($aluguelMen) {
-        $this->aluguelMen = $this->strToFloat($aluguelMen);
+        $this->aluguelMen = $this->trataFloat($aluguelMen);
         return $this;
     }
 
@@ -418,7 +418,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa
      */
     public function setEletricoMen($eletricoMen) {
-        $this->eletricoMen = $this->strToFloat($eletricoMen);
+        $this->eletricoMen = $this->trataFloat($eletricoMen);
         return $this;
     }
 
@@ -436,7 +436,7 @@ class Taxa extends Filtro
      * @return \Livraria\Entity\Taxa
      */
     public function setDesastresMen($desastresMen) {
-        $this->desastresMen = $this->strToFloat($desastresMen);
+        $this->desastresMen = $this->trataFloat($desastresMen);
         return $this;
     }
 
@@ -567,16 +567,16 @@ class Taxa extends Filtro
         $data['inicio']           = $this->getInicio();
         $data['fim']              = $this->getFim();
         $data['status']           = $this->getStatus();
-        $data['incendio']         = $this->floatToStr('Incendio');
-        $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo');
-        $data['aluguel']          = $this->floatToStr('Aluguel');
-        $data['eletrico']         = $this->floatToStr('Eletrico');
-        $data['desastres']        = $this->floatToStr('Desastres');
-        $data['incendioMen']         = $this->floatToStr('IncendioMen');
-        $data['incendioConteudoMen'] = $this->floatToStr('IncendioConteudoMen');
-        $data['aluguelMen']          = $this->floatToStr('AluguelMen');
-        $data['eletricoMen']         = $this->floatToStr('EletricoMen');
-        $data['desastresMen']        = $this->floatToStr('DesastresMen');
+        $data['incendio']         = $this->floatToStr('Incendio',4);
+        $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo',4);
+        $data['aluguel']          = $this->floatToStr('Aluguel',4);
+        $data['eletrico']         = $this->floatToStr('Eletrico',4);
+        $data['desastres']        = $this->floatToStr('Desastres',4);
+        $data['incendioMen']         = $this->floatToStr('IncendioMen',4);
+        $data['incendioConteudoMen'] = $this->floatToStr('IncendioConteudoMen',4);
+        $data['aluguelMen']          = $this->floatToStr('AluguelMen',4);
+        $data['eletricoMen']         = $this->floatToStr('EletricoMen',4);
+        $data['desastresMen']        = $this->floatToStr('DesastresMen',4);
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();

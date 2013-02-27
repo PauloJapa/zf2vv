@@ -123,6 +123,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputFloat($name);
                 break;
             
+            case "float4":
+                $this->renderInputFloat4($name);
+                break;
+            
             case "textLine":
                 $this->renderInputTextLine($name);
                 break;
@@ -330,7 +334,7 @@ class FormDefault extends AbstractHelper {
      * @param String $name
      * @param String $symbol para exibir ou não o simbolo da moeda
      */
-    public function renderInputMoeda($name,$symbol='true') {
+    public function renderInputMoeda($name,$symbol='true',$dec='2') {
         $element = $this->form->get($name);
         $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
@@ -345,7 +349,7 @@ class FormDefault extends AbstractHelper {
         '<script language="javascript">',
         '$(function(){$("#',
                 $name,
-        '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay: true});});',
+        '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay:true, precision:', $dec, '});});',
         '</script>',
          
         $this->checkError();
@@ -359,6 +363,16 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputFloat($name){
         $this->renderInputMoeda($name,'false');
+    }
+
+    /**
+     * Renderiza o input text no estilo float com um botao para limpar o conteudo  
+     * Adiciona js para mascara de 4 decimal
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputFloat4($name){
+        $this->renderInputMoeda($name,'false','4');
     }
 
     /**

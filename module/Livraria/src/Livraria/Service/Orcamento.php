@@ -449,6 +449,7 @@ $result = ['testando e nao gravando'];
          * 
          */
         $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
+        
         $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
         $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
         $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
@@ -458,37 +459,46 @@ $result = ['testando e nao gravando'];
         }
         /*
          * 
-        var_dump($vlrAluguel);
-        var_dump($aluguel);
-        var_dump($conteudo);
-        var_dump($eletrico);
-        var_dump($vendaval);
+var_dump($vlrAluguel);
+var_dump($aluguel);
+var_dump($conteudo);
+var_dump($eletrico);
+var_dump($vendaval);
          */
         
         $total = 0.0 ;
-        $calc =  $vlrAluguel  * $this->data['taxa']->getAluguel();
+        $calc =  $aluguel  * ($this->data['taxa']->getAluguel() / 100);
+var_dump($calc);
+
         if($calc < $this->data['multiplosMinimos']->getMinAluguel()){
             $calc = $this->data['multiplosMinimos']->getMinAluguel();
         }
-        $total += $calc ;
-//var_dump($total);
+var_dump($calc);
         
-        $calc = $vlrAluguel * $this->data['taxa']->getIncendioConteudo();
+        $total += $calc ;
+        
+        $calc = $conteudo * ($this->data['taxa']->getIncendioConteudo() / 100);
+var_dump($conteudo);
+var_dump($this->data['taxa']->getIncendioConteudo());
+var_dump($calc);
         if($calc < $this->data['multiplosMinimos']->getMinConteudo()){
             $calc = $this->data['multiplosMinimos']->getMinConteudo();
         }
+var_dump($calc);
+        
         $total += $calc ;
-//var_dump($this->data['taxa']->getIncendioConteudo());
-//var_dump($total);
+        
+var_dump($total);
         /*
-        $calc = $vlrAluguel * $this->data['taxa']->getEletrico();
+        $calc = $eletrico * ($this->data['taxa']->getEletrico() / 100);
+var_dump($calc);
         if($calc < $this->data['multiplosMinimos']->getMinEletrico()){
             $calc = $this->data['multiplosMinimos']->getMinEletrico();
         }
         $total += $calc ;
         var_dump($total);
         
-        $calc = $vlrAluguel * $this->data['taxa']->getDesastres();
+        $calc = $vendaval * ($this->data['taxa']->getDesastres() / 100);
         if($calc < $this->data['multiplosMinimos']->getMinVendaval()){
             $calc = $this->data['multiplosMinimos']->getMinVendaval();
         }
@@ -496,8 +506,8 @@ $result = ['testando e nao gravando'];
          * 
          */
         
-        $total = $total * 1.0738 ;
-//var_dump($total);
+        $total *= 1.0738 ;
+var_dump($total);
         
         return array($total,$aluguel,$conteudo,$eletrico,$vendaval);
         
