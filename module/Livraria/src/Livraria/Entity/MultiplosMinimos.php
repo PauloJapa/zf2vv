@@ -40,11 +40,11 @@ class MultiplosMinimos extends Filtro
     private $multConteudo;
 
     /**
-     * @var integer $multPredio
+     * @var integer $multIncendio
      *
-     * @ORM\Column(name="mult_predio", type="integer", nullable=true)
+     * @ORM\Column(name="mult_incendio", type="integer", nullable=true)
      */
-    private $multPredio;
+    private $multIncendio;
 
     /**
      * @var integer $multEletrico
@@ -68,11 +68,11 @@ class MultiplosMinimos extends Filtro
     private $minAluguel;
 
     /**
-     * @var float $minPredio
+     * @var float $minIncendio
      *
-     * @ORM\Column(name="min_predio", type="decimal", nullable=true)
+     * @ORM\Column(name="min_incendio", type="decimal", nullable=true)
      */
-    private $minPredio;
+    private $minIncendio;
 
     /**
      * @var float $minConteudo
@@ -103,11 +103,11 @@ class MultiplosMinimos extends Filtro
     private $maxAluguel;
 
     /**
-     * @var float $maxPredio
+     * @var float $maxIncendio
      *
-     * @ORM\Column(name="max_predio", type="decimal", nullable=true)
+     * @ORM\Column(name="max_incendio", type="decimal", nullable=true)
      */
-    private $maxPredio;
+    private $maxIncendio;
 
     /**
      * @var float $maxConteudo
@@ -235,12 +235,12 @@ class MultiplosMinimos extends Filtro
      * 
      * @return integer
      */
-    public function getMultPredio() {
-        return $this->multPredio;
+    public function getMultIncendio() {
+        return $this->multIncendio;
     }
 
-    public function setMultPredio($multPredio) {
-        $this->multPredio = $this->trataFloat($multPredio);
+    public function setMultIncendio($multIncendio) {
+        $this->multIncendio = $this->trataFloat($multIncendio);
         return $this;
     }
 
@@ -302,17 +302,17 @@ class MultiplosMinimos extends Filtro
      * 
      * @return float
      */
-    public function getMinPredio() {
-        return $this->minPredio;
+    public function getMinIncendio() {
+        return $this->minIncendio;
     }
 
     /**
      * 
-     * @param float $minPredio
+     * @param float $minIncendio
      * @return \Livraria\Entity\MultiplosMinimos
      */
-    public function setMinPredio($minPredio) {
-        $this->minPredio = $this->trataFloat($minPredio);
+    public function setMinIncendio($minIncendio) {
+        $this->minIncendio = $this->trataFloat($minIncendio);
         return $this;
     }
 
@@ -392,17 +392,17 @@ class MultiplosMinimos extends Filtro
      * 
      * @return float
      */
-    public function getMaxPredio() {
-        return $this->maxPredio;
+    public function getMaxIncendio() {
+        return $this->maxIncendio;
     }
 
     /**
      * 
-     * @param float $maxPredio
+     * @param float $maxIncendio
      * @return \Livraria\Entity\MultiplosMaximos
      */
-    public function setMaxPredio($maxPredio) {
-        $this->maxPredio = $this->trataFloat($maxPredio);
+    public function setMaxIncendio($maxIncendio) {
+        $this->maxIncendio = $this->trataFloat($maxIncendio);
         return $this;
     }
 
@@ -548,17 +548,17 @@ class MultiplosMinimos extends Filtro
     public function toArray(){
         $data['idMultiplos']        = $this->getIdMultiplos() ; 
         $data['multAluguel']         = $this->floatToStr('multAluguel') ; 
-        $data['multPredio']          = $this->floatToStr('multPredio') ; 
+        $data['multIncendio']          = $this->floatToStr('multIncendio') ; 
         $data['multConteudo']        = $this->floatToStr('multConteudo') ; 
         $data['multEletrico']        = $this->floatToStr('multEletrico') ; 
         $data['multVendaval']        = $this->floatToStr('multVendaval') ; 
         $data['minAluguel']         = $this->floatToStr('minAluguel') ; 
-        $data['minPredio']          = $this->floatToStr('minPredio') ; 
+        $data['minIncendio']          = $this->floatToStr('minIncendio') ; 
         $data['minConteudo']        = $this->floatToStr('minConteudo') ; 
         $data['minEletrico']        = $this->floatToStr('minEletrico') ; 
         $data['minVendaval']        = $this->floatToStr('minVendaval') ; 
         $data['maxAluguel']         = $this->floatToStr('maxAluguel') ; 
-        $data['maxPredio']          = $this->floatToStr('maxPredio') ; 
+        $data['maxIncendio']          = $this->floatToStr('maxIncendio') ; 
         $data['maxConteudo']        = $this->floatToStr('maxConteudo') ; 
         $data['maxEletrico']        = $this->floatToStr('maxEletrico') ; 
         $data['maxVendaval']        = $this->floatToStr('maxVendaval') ; 

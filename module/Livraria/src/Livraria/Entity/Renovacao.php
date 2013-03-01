@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="Livraria\Entity\RenovacaoRepository")
  */
-class Renovacao
+class Renovacao extends Filtro
 {
     /**
      * @var integer $id
@@ -242,6 +242,13 @@ class Renovacao
      * @ORM\Column(name="ocupacao", type="string", length=2, nullable=true)
      */
     private $ocupacao;
+
+    /**
+     * @var float $taxaIof
+     *
+     * @ORM\Column(name="taxa_iof", type="decimal", nullable=false)
+     */
+    private $taxaIof;
 
     /**
      * @var Locador
@@ -570,7 +577,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setValorAluguel($valorAluguel) {
-        $this->valorAluguel = $this->strToFloat($valorAluguel);
+        $this->valorAluguel = $this->trataFloat($valorAluguel);
         return $this;
     }
     
@@ -678,7 +685,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setIncendio($incendio) {
-        $this->incendio = $this->strToFloat($incendio);
+        $this->incendio = $this->trataFloat($incendio);
         return $this;
     }
 
@@ -696,7 +703,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setAluguel($aluguel) {
-        $this->aluguel = $this->strToFloat($aluguel);
+        $this->aluguel = $this->trataFloat($aluguel);
         return $this;
     }
 
@@ -714,7 +721,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setEletrico($eletrico) {
-        $this->eletrico = $this->strToFloat($eletrico);
+        $this->eletrico = $this->trataFloat($eletrico);
         return $this;
     }
 
@@ -732,7 +739,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setVendaval($vendaval) {
-        $this->vendaval = $this->strToFloat($vendaval);
+        $this->vendaval = $this->trataFloat($vendaval);
         return $this;
     }
 
@@ -768,7 +775,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setPremioLiquido($premioLiquido) {
-        $this->premioLiquido = $this->strToFloat($premioLiquido);
+        $this->premioLiquido = $this->trataFloat($premioLiquido);
         return $this;
     }
 
@@ -786,7 +793,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setPremio($premio) {
-        $this->premio = $this->strToFloat($premio);
+        $this->premio = $this->trataFloat($premio);
         return $this;
     }
 
@@ -804,7 +811,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setPremioTotal($premioTotal) {
-        $this->premioTotal = $this->strToFloat($premioTotal);
+        $this->premioTotal = $this->trataFloat($premioTotal);
         return $this;
     }
 
@@ -813,15 +820,8 @@ class Renovacao
      * @return \DateTime | string
      */
     public function getCanceladoEm($op = null) {
-        if($this->canceladoEm == null){
-            return null;
-        }
         if(is_null($op)){
-            $formatado = $this->canceladoEm->format('d/m/Y');
-            if($formatado == "30/11/-0001"){
-                $formatado = "00/00/0000";
-            }
-            return $formatado;
+            return $this->trataData($this->canceladoEm, '00/00/0000');
         }
         return $this->canceladoEm;
     }
@@ -887,7 +887,7 @@ class Renovacao
      * @return \Livraria\Entity\Orcamento
      */
     public function setComissao($comissao) {
-        $this->comissao = $this->strToFloat($comissao);
+        $this->comissao = $this->trataFloat($comissao);
         return $this;
     }
 
@@ -990,6 +990,24 @@ class Renovacao
         return $this->ocupacao;
     }
     
+    /**
+     * Taxa do IOF
+     * @return string (com taxa no formato float)
+     */
+    public function getTaxaIof() {
+        return $this->taxaIof;
+    }
+
+    /**
+     * Taxa do IOF
+     * @param string $taxaIof
+     * @return \Livraria\Entity\Renovacao
+     */
+    public function setTaxaIof($taxaIof) {
+        $this->taxaIof = $this->trataFloat($taxaIof);
+        return $this;
+    }
+
     /**
      * ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria']
      * @param string $ocupacao
@@ -1220,40 +1238,7 @@ class Renovacao
         $data['cnpj']           = $this->getLocatario()->getCnpj();
         $data['fechadoId']      = $this->getFechadoId();
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
+        $data['taxaIof']       = $this->floatToStr('taxaIof');
         return $data ;
     }
- 
-    /** 
-     * Converte a variavel do tipo float para string para exibição
-     * @param String $get com nome do metodo a ser convertido
-     * @param Int $dec quantidade de casas decimais
-     * @return String do numero no formato brasileiro padrão com 2 casas decimais
-     */    
-    public function floatToStr($get,$dec = 2){
-        if($get == ""){
-            return "vazio!!";
-        }
-        $getter  = 'get' . ucwords($get);
-        if(!method_exists($this,$getter)){
-            return "Erro no metodo!!";
-        }
-        $float = call_user_func(array($this,$getter));
-        return number_format($float, $dec, ',','.');
-    }
- 
-    /** 
-     * Faz tratamento na variavel string se necessario antes de converte em float
-     * @param String $check variavel a ser convertida se tratada se necessario
-     * @return String $check no formato float para gravação pelo doctrine
-     */    
-    public function strToFloat($check){
-        if(is_string($check)){
-            $check = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $check));
-        }
-        return $check;
-    }
-
-
-
-
 }

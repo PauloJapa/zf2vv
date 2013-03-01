@@ -50,6 +50,20 @@ class Orcamento extends AbstractService {
         $this->dateToObject('criadoEm');
         $this->dateToObject('canceladoEm');
         $this->dateToObject('alteradoEm');
+        
+        $locadorResul = $this->setLocador();
+        if($locadorResul !== TRUE){
+            return $locadorResul;
+        }
+        $imovelResul = $this->setImovel();
+        if($imovelResul !== TRUE){
+            return $imovelResul;
+        }
+        $locatarioResul = $this->setLocatario();
+        if($locatarioResul !== TRUE){
+            return $locatarioResul;
+        }
+        return TRUE;
     }
 
     /** 
@@ -57,25 +71,12 @@ class Orcamento extends AbstractService {
      * @param Array $data com os campos do registro
      * @return entidade 
      */   
-    public function insert(array $data) { 
+    public function insert(array $data, $param='') { 
         $this->data = $data;
         
-        $locadorResul = $this->setLocador();
-        if($locadorResul !== TRUE){
-            return $locadorResul;
-        }
-        
-        $imovelResul = $this->setImovel();
-        if($imovelResul !== TRUE){
-            return $imovelResul;
-        }
-        
-        $locatarioResul = $this->setLocatario();
-        if($locatarioResul !== TRUE){
-            return $locatarioResul;
-        }
-
-        $this->setReferences();
+        $ret = $this->setReferences();
+        if($ret !== TRUE)
+            return $ret;
         
         $this->calculaVigencia();
        
@@ -85,15 +86,24 @@ class Orcamento extends AbstractService {
             ->findComissaoVigente($this->data['administradora']->getId())
             ->floatToStr('comissao');
         
-        $resul = $this->novoCalculo();
+        $this->data['taxa'] = $this->em
+            ->getRepository('Livraria\Entity\Taxa')
+            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
+
+        $this->data['multiplosMinimos'] = $this->em
+            ->getRepository('Livraria\Entity\MultiplosMinimos')
+            ->findMultMinVigente($this->data['seguradora']->getId());
+        
+        $resul = $this->CalculaPremio();
         
         $this->data['premio'] = $this->strToFloat($resul[0]);
         $this->data['premioLiquido'] = $this->strToFloat($resul[0]);
         $this->data['premioTotal'] = $this->strToFloat($resul[0]);
-        $this->data['aluguel'] = $this->strToFloat($resul[1]);
-        $this->data['incendio'] = $this->strToFloat($resul[2]);
-        $this->data['eletrico'] = $this->strToFloat($resul[3]);
-        $this->data['vendaval'] = $this->strToFloat($resul[4]);
+        $this->data['incendio'] = $this->strToFloat($resul[1]);
+        $this->data['conteudo'] = $this->strToFloat($resul[2]);
+        $this->data['aluguel'] = $this->strToFloat($resul[3]);
+        $this->data['eletrico'] = $this->strToFloat($resul[4]);
+        $this->data['vendaval'] = $this->strToFloat($resul[5]);
         
         $this->data['codFechado'] = '0';
         $this->data['status'] = 'A';
@@ -103,9 +113,11 @@ class Orcamento extends AbstractService {
         
         $this->idToReference('user', 'Livraria\Entity\User');
         
+        if($param == 'OnlyCalc'){
+            return ['Calculado com Sucesso !!!']; 
+        }
         
         $result = $this->isValid();
-$result = ['testando e nao gravando'];
         if($result !== TRUE){
             return $result;
         }
@@ -249,46 +261,35 @@ $result = ['testando e nao gravando'];
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data) {
+    public function update(array $data,$param='') {
         $this->data = $data;
         
-        //Pegando o servico endereco e inserindo ou alterando o imovel
-        if(!empty($this->data['imovel'])){
-            //Pegando o servico endereco e atualizando endereco do imovel do locador
-            $serviceImove = new Imovel($this->em);
-            $this->data['imovel'] = $serviceImove->update($this->data);
-            if($this->data['imovel'] === TRUE){
-                $this->idToReference('imovel', 'Livraria\Entity\Imovel');
-                $this->deParaImovel = $serviceImove->getDePara();
-            }else{
-                return ['Houve um erro ao tentar atulizar o cadastro do Imovel desse Locador!!'];
-            }
-        }else{
-            return ['Referencia do imovel não encontrada !!!!'];
+        $ret = $this->setReferences();
+        if($ret !== TRUE)
+            return $ret;
+        
+        $this->calculaVigencia();
+        
+        $this->idToEntity('taxa', 'Livraria\Entity\Taxa');
+        
+        $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
+
+        $resul = $this->CalculaPremio();
+        
+        $this->data['premio'] = $this->strToFloat($resul[0]);
+        $this->data['premioLiquido'] = $this->strToFloat($resul[0]);
+        $this->data['premioTotal'] = $this->strToFloat($resul[0]);
+        $this->data['incendio'] = $this->strToFloat($resul[1]);
+        $this->data['conteudo'] = $this->strToFloat($resul[2]);
+        $this->data['aluguel'] = $this->strToFloat($resul[3]);
+        $this->data['eletrico'] = $this->strToFloat($resul[4]);
+        $this->data['vendaval'] = $this->strToFloat($resul[5]);
+        
+        $this->idToReference('user', 'Livraria\Entity\User');
+        
+        if($param == 'OnlyCalc'){
+            return ['Calculado com Sucesso !!!']; 
         }
-        $this->setReferences();
-       
-        $this->data['codano'] = $this->data['criadoEm']->format('Y');
-        
-        $this->data['fim'] = $this->data['inicio'];
-        if($this->data['validade'] == 'mensal'){
-            $interval_spec = 'P1M'; 
-        } 
-        if($this->data['validade'] == 'anual'){
-            $interval_spec = 'P1Y'; 
-        } 
-        $this->data['fim']->add(new \DateInterval($interval_spec)); 
-        
-        
-        
-        
-        $this->data['premio'] = '0';
-        $this->data['premioLiquido'] = '0';
-        $this->data['premioTotal'] = '0';
-        $this->data['codFechado'] = '0';
-        $this->data['status'] = 'A';
-        
-        
         
         $result = $this->isValid();
         if($result !== TRUE){
@@ -424,104 +425,115 @@ $result = ['testando e nao gravando'];
         }
     }
     
-    public function novoCalculo($data=[]){
+    public function CalculaPremio($data=[]){
         if(!empty($data)){
             $this->data = $data ;
         }
-        $this->data['taxa'] = $this->em
-            ->getRepository('Livraria\Entity\Taxa')
-            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
-
-        $this->data['multiplosMinimos'] = $this->em
-            ->getRepository('Livraria\Entity\MultiplosMinimos')
-            ->findMultMinVigente($this->data['seguradora']->getId());
         
-        /* Por enquanto não vai carregar os dados da propria tela
-         * 
-        $vlrAluguel = $this->strToFloat($this->data['valorAluguel'], 'float');
-        $aluguel    = $this->strToFloat($this->data['aluguel'], 'float');
-        $conteudo   = $this->strToFloat($this->data['conteudo'], 'float');
-        $eletrico   = $this->strToFloat($this->data['eletrico'], 'float');
-        $vendaval   = $this->strToFloat($this->data['vendaval'], 'float');
-        if(isset($this->data['predio'])){
-            $predio   = $this->strToFloat($this->data['predio'], 'float');            
-        }
-         * 
-         */
+        //Base de todo calculo        
         $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
         
-        $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
-        $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
-        $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
-        $vendaval = $vlrAluguel * $this->data['multiplosMinimos']->getMultVendaval();
-        if(isset($this->data['predio'])){
-            $predio   = $vlrAluguel * $this->data['multiplosMinimos']->getMultPredio();       
-        }
-        /*
-         * 
-var_dump($vlrAluguel);
-var_dump($aluguel);
-var_dump($conteudo);
-var_dump($eletrico);
-var_dump($vendaval);
-         */
+        //Coberturas 
+        $incendio = $this->strToFloat($this->data['incendio'], 'float');
+        $conteudo = $this->strToFloat($this->data['conteudo'], 'float');            
+        $aluguel  = $this->strToFloat($this->data['aluguel'],  'float');
+        $eletrico = $this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
         
-        $total = 0.0 ;
-        $calc =  $aluguel  * ($this->data['taxa']->getAluguel() / 100);
-var_dump($calc);
+        //Calcula de coberturas caso estejam zeradas do form
+        if($incendio == 0.0)
+            $incendio = $vlrAluguel * $this->data['multiplosMinimos']->getMultIncendio();
+        
+        if($conteudo == 0.0)
+            $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
+        
+        if($aluguel == 0.0)
+            $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
+        
+        if($eletrico == 0.0)
+            $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
+        
+        if($vendaval == 0.0)
+            $vendaval = $vlrAluguel * $this->data['multiplosMinimos']->getMultVendaval();
 
-        if($calc < $this->data['multiplosMinimos']->getMinAluguel()){
-            $calc = $this->data['multiplosMinimos']->getMinAluguel();
+        // Calcula cobertura premio = cobertura * (taxa / 100)       
+        $total = 0.0 ;
+        $total += $this->calcTaxaMultMinMax($incendio,'Incendio') ;
+        $total += $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+        $total += $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
+        $total += $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
+        $total += $this->calcTaxaMultMinMax($vendaval,'Desastres','Vendaval') ;
+        
+        $iof = $this->getParametroSis('taxaIof'); 
+        
+        $total *= $iof ;
+        
+        //Verificar Se administradora tem total de cobertura minima e compara
+        $coberturaMinAdm = $this->getParametroSis($this->data['administradora']->getId() . '_cob_min');
+        if($coberturaMinAdm !== FALSE);{
+            if($total < $coberturaMinAdm){
+                $total = $coberturaMinAdm;
+            }
         }
-var_dump($calc);
         
-        $total += $calc ;
-        
-        $calc = $conteudo * ($this->data['taxa']->getIncendioConteudo() / 100);
-var_dump($conteudo);
-var_dump($this->data['taxa']->getIncendioConteudo());
-var_dump($calc);
-        if($calc < $this->data['multiplosMinimos']->getMinConteudo()){
-            $calc = $this->data['multiplosMinimos']->getMinConteudo();
-        }
-var_dump($calc);
-        
-        $total += $calc ;
-        
-var_dump($total);
-        /*
-        $calc = $eletrico * ($this->data['taxa']->getEletrico() / 100);
-var_dump($calc);
-        if($calc < $this->data['multiplosMinimos']->getMinEletrico()){
-            $calc = $this->data['multiplosMinimos']->getMinEletrico();
-        }
-        $total += $calc ;
-        var_dump($total);
-        
-        $calc = $vendaval * ($this->data['taxa']->getDesastres() / 100);
-        if($calc < $this->data['multiplosMinimos']->getMinVendaval()){
-            $calc = $this->data['multiplosMinimos']->getMinVendaval();
-        }
-        $total += $calc ;
-         * 
-         */
-        
-        $total *= 1.0738 ;
-var_dump($total);
-        
-        return array($total,$aluguel,$conteudo,$eletrico,$vendaval);
-        
+        return array($total,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
     }
 
+    /**
+     * Pega os inputs com dados calculados e trabalhados
+     * @return array com inputs atualizados para colocar no form
+     */
     public function getNewInputs() {
         return array(
             'premioTotal'=>$this->data['premioTotal'],
             'premioLiquido'=>$this->data['premioLiquido'],
             'premio'=>$this->data['premio'],
             'incendio'=>$this->data['incendio'],
+            'conteudo'=>$this->data['conteudo'],
             'aluguel'=>$this->data['aluguel'],
             'eletrico'=>$this->data['eletrico'],
             'vendaval'=>$this->data['vendaval'],
         );
+    }
+
+    /**
+     * Calcula o premio(vlr) do seguro no item da cobertura passada pelo paramentro
+     * premio = cobertura * (taxa / 100)
+     * Tipo de Taxa pode ser anual ou mensal
+     * se premio for menor que o vlr minimo prevalece o minimo o mesmo acontece para o vlr maximo 
+     * @param float $vlr     Valor da Cobertura
+     * @param string $fTaxa  Parte do nome da funcao da entity taxa ex Incendio
+     * @param string $fMin   Parte do nome da funcao da entity multiplosMinimos ex Incendio
+     * @return real
+     */
+    public function calcTaxaMultMinMax($vlr, $fTaxa, $fMin='') {
+        if($vlr == 0.0)    
+            return 0.0;
+
+        if (empty($fMin))
+            $fMin = $fTaxa;
+
+        //Gera o nome da função a ser chamada na entity taxa
+        if($this->data['validade'] == 'anual')
+            $fTaxa = 'get' . $fTaxa ;
+        else
+            $fTaxa = 'get' . $fTaxa . 'Men';
+        //Gera o nome da função a ser chamada na entity multiplosMinimos
+        $fMax = 'getMax' . $fMin ;
+        $fMin = 'getMin' . $fMin ;
+        
+        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
+        
+        // Se calculado for menor que o minimo retorna o min
+        $vlrMin = floatval($this->data['multiplosMinimos']->$fMin());
+        if($calc < $vlrMin)
+            return $vlrMin;
+        
+        // Se calculado for maior que o maximo retorna o max
+        $vlrMax = floatval($this->data['multiplosMinimos']->$fMax());
+        if(($vlrMax != 0.0)AND($calc > $vlrMax))
+            return $vlrMax;
+        // Valor calculado
+        return $calc;
     }
 }

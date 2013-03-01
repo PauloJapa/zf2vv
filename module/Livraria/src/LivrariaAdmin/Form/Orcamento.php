@@ -23,18 +23,19 @@ class Orcamento extends AbstractEndereco {
         //$this->setInputFilter(new EscolhaAdmFilter);
 
         $this->setInputHidden('id');
-        $this->setInputHidden('subOpcao');
-        $this->setInputHidden('ajaxStatus');
-        $this->setInputHidden('autoComp');
         
         $this->setInputHidden('codano');
         $this->setInputHidden('taxa');
+        $this->setInputHidden('taxaIof');
         $this->setInputHidden('comissao');
         $this->setInputHidden('canceladoEm');
         
         $this->setInputHidden('imovel');
         $this->setInputHidden('imovelTel');
         $this->setInputHidden('imovelStatus');
+        $this->setInputHidden('status');
+        $this->setInputHidden('user');
+        $this->setInputHidden('multiplosMinimos');
         
         //Dados do Locador
         $this->setInputHidden('locador');
@@ -82,7 +83,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('atividadeDesc', 'Atividade', $attributes);
      
         $this->setInputText('proposta', 'Proposta',['readOnly'=>'true']);
-        $this->setInputText('valorAluguel', 'Valor Aluguel');
+        $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyPress'=>'cleanCoberturas()']);
         
         $options = ['01'=>'Prédio', '02'=>'Prédio + conteúdo', '03'=>'Conteúdo'];
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $options);
@@ -113,6 +114,8 @@ class Orcamento extends AbstractEndereco {
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves(obrigatório)';
         $this->setInputText('incendio', $label);
+        
+        $this->setInputText('conteudo', 'Conteúdo - Móveis, Máquinas e utensilios');
         
         $this->setInputText('aluguel', 'Perda de aluguel');
         

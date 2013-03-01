@@ -2,6 +2,7 @@
     .form-horizontal .control-group>label{float:left;width:450px;padding-top:5px;text-align:right;}
 </style>
 <?php if(count($flashMessages)) : ?>
+
 <div class="control-group error">
 <ul class="help-inline">
     <?php foreach ($flashMessages as $msg) : ?>
@@ -15,7 +16,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\n",
-        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora','locador','imovel','imovelTel','imovelStatus','locatario','atividade','seguradora','taxa','comissao','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado'],'hidden'),
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora','locador','imovel','imovelTel','imovelStatus','locatario','atividade','seguradora','taxa','comissao','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>\n",
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -111,10 +112,13 @@ $this->FormDefault([],'fieldFim'),
 $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
     "<td>\n",
         $this->FormDefault(['valorAluguel' => 'moedaLine']),
+        
         $this->FormDefault(['incendio' => 'moedaLine']),
+        $this->FormDefault(['conteudo' => 'moedaLine']),
         $this->FormDefault(['aluguel' => 'moedaLine']),
         $this->FormDefault(['eletrico' => 'moedaLine']),
         $this->FormDefault(['vendaval' => 'moedaLine']),
+        
         $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['tipoCobertura' => 'selectLine']),
         $this->FormDefault(['formaPagto' => 'selectLine']),
@@ -177,6 +181,14 @@ $this->FormDefault([],'fim');
     function fechar(){
         envia(tar,'fechar',formName);
         return false;
+    }
+
+    function cleanCoberturas(){
+        cleanInputAll('incendio');
+        cleanInputAll('conteudo');
+        cleanInputAll('aluguel');
+        cleanInputAll('eletrico');
+        cleanInputAll('vendaval');
     }
 
     function autoCompAtividade(){
@@ -381,4 +393,5 @@ $this->FormDefault([],'fim');
     }
 
     setTimeout('showTipo();setButtonFechaOrc();',500);
+    window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 500);
 </script>

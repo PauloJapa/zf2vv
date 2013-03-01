@@ -40,19 +40,19 @@ class MultiplosMinimos extends AbstractForm {
         $attributos = ['class'=>'input-small'];
         $this->setInputText('multAluguel', 'Multiplo para Aluguel',$attributos);
         $this->setInputText('multConteudo', 'Multiplo para Conteudo',$attributos);
-        $this->setInputText('multPredio', 'Multiplo para Predio',$attributos);
+        $this->setInputText('multIncendio', 'Multiplo para Incendio',$attributos);
         $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
         $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
         
         $this->setInputText('minAluguel', 'Minimo para Aluguel',$attributos);
         $this->setInputText('minConteudo', 'Minimo para Conteudo',$attributos);
-        $this->setInputText('minPredio', 'Minimo para Predio',$attributos);
+        $this->setInputText('minIncendio', 'Minimo para Incendio',$attributos);
         $this->setInputText('minEletrico', 'Minimo para Eletrico',$attributos);
         $this->setInputText('minVendaval', 'Minimo para Vendaval',$attributos);
         
         $this->setInputText('maxAluguel', 'Maximo para Aluguel',$attributos);
         $this->setInputText('maxConteudo', 'Maximo para Conteudo',$attributos);
-        $this->setInputText('maxPredio', 'Maximo para Predio',$attributos);
+        $this->setInputText('maxIncendio', 'Maximo para Incendio',$attributos);
         $this->setInputText('maxEletrico', 'Maximo para Eletrico',$attributos);
         $this->setInputText('maxVendaval', 'Maximo para Vendaval',$attributos);
 

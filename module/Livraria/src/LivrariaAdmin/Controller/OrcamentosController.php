@@ -118,6 +118,22 @@ class OrcamentosController extends CrudController {
         }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
+        
+        
+        if($data['subOpcao'] == 'calcular'){
+            if ($this->formData->isValid()){
+                $service = $this->getServiceLocator()->get($this->service);
+                $service->insert($data,'OnlyCalc');
+                $result = $this->formData->setData($service->getNewInputs());
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }else{
+                $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');
+            }
+        }
+
+        
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
@@ -176,7 +192,6 @@ class OrcamentosController extends CrudController {
         
         $filtro = array();
         $filtroForm = array();
-        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
@@ -201,6 +216,19 @@ class OrcamentosController extends CrudController {
             $this->formData->setData($entity->toArray());
         }else{
             $this->formData->setData($data);
+        }
+        
+        if($data['subOpcao'] == 'calcular'){
+            if ($this->formData->isValid()){
+                $service = $this->getServiceLocator()->get($this->service);
+                $result = $service->update($data,'OnlyCalc');
+                $this->formData->setData($service->getNewInputs());
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }else{
+                $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');
+            }
         }
         
         if($data['subOpcao'] == 'salvar'){

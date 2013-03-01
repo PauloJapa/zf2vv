@@ -96,15 +96,20 @@ class MultiplosMinimos extends AbstractService {
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Multiplo Aluguel',  $ent->floatToStr('multAluguel'),   $this->strToFloat($this->data['multAluguel']));
         $this->dePara .= $this->diffAfterBefore('Multiplo Conteudo', $ent->floatToStr('multConteudo'), $this->strToFloat($this->data['multConteudo']));
-        $this->dePara .= $this->diffAfterBefore('Multiplo Predio',   $ent->floatToStr('multPredio'),   $this->strToFloat($this->data['multPredio']));
+        $this->dePara .= $this->diffAfterBefore('Multiplo Incendio',   $ent->floatToStr('multIncendio'),   $this->strToFloat($this->data['multIncendio']));
         $this->dePara .= $this->diffAfterBefore('Multiplo Eletrico', $ent->floatToStr('multEletrico'), $this->strToFloat($this->data['multEletrico']));
         $this->dePara .= $this->diffAfterBefore('Multiplo Vendaval', $ent->floatToStr('multVendaval'), $this->strToFloat($this->data['multVendaval']));
         $this->dePara .= $this->diffAfterBefore('Minimo Aluguel',  $ent->floatToStr('minAluguel'),   $this->strToFloat($this->data['minAluguel']));
         $this->dePara .= $this->diffAfterBefore('Minimo Conteudo', $ent->floatToStr('minConteudo'), $this->strToFloat($this->data['minConteudo']));
-        $this->dePara .= $this->diffAfterBefore('Minimo Predio',   $ent->floatToStr('minPredio'),   $this->strToFloat($this->data['minPredio']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Incendio',   $ent->floatToStr('minIncendio'),   $this->strToFloat($this->data['minIncendio']));
         $this->dePara .= $this->diffAfterBefore('Minimo Eletrico', $ent->floatToStr('minEletrico'), $this->strToFloat($this->data['minEletrico']));
         $this->dePara .= $this->diffAfterBefore('Minimo Vendaval', $ent->floatToStr('minVendaval'), $this->strToFloat($this->data['minVendaval']));
-        $this->dePara .= $this->diffAfterBefore('Vigencia Inicio', $ent->getMultVigenciaInicio(), $this->data['multVigenciaInicio']->format('d/m/Y'));
+        $this->dePara .= $this->diffAfterBefore('Maximo Aluguel',  $ent->floatToStr('maxAluguel'),   $this->strToFloat($this->data['maxAluguel']));
+        $this->dePara .= $this->diffAfterBefore('Maximo Conteudo', $ent->floatToStr('maxConteudo'), $this->strToFloat($this->data['maxConteudo']));
+        $this->dePara .= $this->diffAfterBefore('Maximo Incendio',   $ent->floatToStr('maxIncendio'),   $this->strToFloat($this->data['maxIncendio']));
+        $this->dePara .= $this->diffAfterBefore('Maximo Eletrico', $ent->floatToStr('maxEletrico'), $this->strToFloat($this->data['maxEletrico']));
+        $this->dePara .= $this->diffAfterBefore('Maximo Vendaval', $ent->floatToStr('maxVendaval'), $this->strToFloat($this->data['maxVendaval']));
+        $this->dePara .= $this->diffAfterBefore('Maximo Inicio', $ent->getMultVigenciaInicio(), $this->data['multVigenciaInicio']->format('d/m/Y'));
         $check = $this->data['multVigenciaFim']->format('d/m/Y');
         if($check == '01/01/1000'){
             $check = "vigente";

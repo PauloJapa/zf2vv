@@ -156,7 +156,7 @@ abstract class CrudController extends AbstractActionController {
             $viewData['params'] = $this->route2->getParams();
             $viewData['matchedRouteName'] = $this->route2->getMatchedRouteName();
         }
-        $viewData['flashMessages']    = $this->flashMessenger()->getMessages();
+        $viewData['flashMessages']    = $this->flashMessenger()->getCurrentMessages();
         return $viewData;    
     }
     

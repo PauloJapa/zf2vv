@@ -44,7 +44,7 @@ class Taxa extends AbstractForm {
 
         $this->setInputText('incendio', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioConteudo', '*Taxa p/ incêndio + conteúdo', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioConteudo', '*Taxa p/ conteúdo', ['placeholder' => 'XXX,XX']);
 
         $this->setInputText('aluguel', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
         
@@ -54,7 +54,7 @@ class Taxa extends AbstractForm {
 
         $this->setInputText('incendioMen', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioConteudoMen', '*Taxa p/ incêndio + conteúdo', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioConteudoMen', '*Taxa p/ conteúdo', ['placeholder' => 'XXX,XX']);
 
         $this->setInputText('aluguelMen', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
         

@@ -246,6 +246,25 @@ abstract class AbstractService {
     }
     
     /**
+     * Converte o id de um registro dependente em um Entity
+     * @param string $index   Indice do array a ser feita a ligação
+     * @param string $entity  Caminho para a Entity 
+     */
+    public function idToEntity($index, $entity){
+        if(!isset($this->data[$index]))
+            return FALSE;
+        
+        if(is_object($this->data[$index])){
+            if($this->data[$index] instanceof $entity)
+                return TRUE;
+            else
+                return FALSE;
+        }
+            
+        $this->data[$index] = $this->em->find($entity, $this->data[$index]);
+    }
+    
+    /**
      * Faz a comparação de alteração e retorna uma string no formato para gravação.
      * @param string $input
      * @param string $after
@@ -302,6 +321,14 @@ abstract class AbstractService {
             return FALSE;
         
         return $this->entityReal;
+    }
+    
+    public function getParametroSis($key){
+        $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findByKey($key);
+        if($entity){
+            return $entity[0]->getConteudo();
+        }else
+            return FALSE;        
     }
 
 }

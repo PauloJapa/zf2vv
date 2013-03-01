@@ -26,6 +26,12 @@ abstract class AbstractForm extends Form {
 
     public function __construct($name = null) {
         parent::__construct($name);
+        
+        $this->setInputHidden('subOpcao');
+        $this->setInputHidden('ajaxStatus');
+        $this->setInputHidden('autoComp');
+        $this->setInputHidden('scrolX');
+        $this->setInputHidden('scrolY');
     }
     
     /**

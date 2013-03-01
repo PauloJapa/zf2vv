@@ -280,5 +280,11 @@ function envia(action,opc,frm){
     if(opc === null)opc = "";
     frm.subOpcao.value = opc;
     frm.action = action ;
+    try{
+        frm.scrolX.value = (document.all)?document.body.scrollLeft: window.pageXOffset;
+        frm.scrolY.value = (document.all)?document.body.scrollTop: window.pageYOffset;
+    }catch(e){
+        erro = true;
+    }
     frm.submit() ;
 }
