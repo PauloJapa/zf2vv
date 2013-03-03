@@ -8,6 +8,8 @@ use Zend\Mvc\Controller\AbstractActionController,
 use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Storage\Session as SessionStorage;
 
+use Zend\Session\Container as SessionContainer;
+
 use LivrariaAdmin\Form\Login as LoginForm;
 
 class AuthController extends AbstractActionController {
@@ -50,6 +52,10 @@ class AuthController extends AbstractActionController {
         $auth = new AuthenticationService;
         $auth->setStorage(new SessionStorage('LivrariaAdmin'));
         $auth->clearIdentity();
+        
+        
+        $sessionContainer = new SessionContainer("LivrariaAdmin");
+        $sessionContainer->setExpirationSeconds(1);
         
         return $this->redirect()->toRoute('livraria-admin-auth');
     }

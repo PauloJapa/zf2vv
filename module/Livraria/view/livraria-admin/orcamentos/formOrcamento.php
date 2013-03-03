@@ -1,14 +1,34 @@
-<style>
-    .form-horizontal .control-group>label{float:left;width:450px;padding-top:5px;text-align:right;}
+<style type="text/css">
+.form-horizontal .control-group>label{float:left;width:450px;padding-top:5px;text-align:right;}
+#mensagen {
+    left:50px;
+    margin:0;
+    padding:10px;
+    position:absolute;
+    top:50%;
+    width:450px;
+    background-color: #ffffff;
+    border: solid #000 1px;
+}
 </style>
 <?php if(count($flashMessages)) : ?>
-
-<div class="control-group error">
-<ul class="help-inline">
-    <?php foreach ($flashMessages as $msg) : ?>
-    <li><?php echo $msg; ?></li>
-    <?php endforeach; ?>
-</ul>
+<div id="mensagen">
+    <table width="100%">
+        <tr>
+            <td>
+                <div class="control-group error">
+                    <ul class="help-inline">
+                        <?php foreach ($flashMessages as $msg) : ?>
+                        <li><?php echo $msg; ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </td>
+            <td valign='top'>
+                <a href="javascript:document.getElementById('mensagen').style.display='none';">Fechar <i class="icon-remove-circle"></i></a>
+            </td>
+        </tr>
+    </table>
 </div>
 <?php endif; ?>
 <?php
@@ -391,6 +411,16 @@ $this->FormDefault([],'fim');
             document.getElementById('pais').value = '';
         }
     }
+
+$(document).ready(function(){
+    var y_fixo = $("#mensagen").offset().top;
+    $(window).scroll(function () {
+        $("#mensagen").stop().animate({
+            top: y_fixo+$(document).scrollTop()+"px"
+            },{duration:500,queue:false}
+        );
+    });
+});
 
     setTimeout('showTipo();setButtonFechaOrc();',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 500);

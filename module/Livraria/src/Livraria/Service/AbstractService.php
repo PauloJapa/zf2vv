@@ -213,7 +213,10 @@ abstract class AbstractService {
             $this->data[$index] = '';
         }
         
-        if((!empty($this->data[$index])) && ($this->data[$index] != "vigente")){
+        if((!empty($this->data[$index])) 
+                && ($this->data[$index] != "vigente") 
+                && ($this->data[$index] != "30/11/-0001") 
+                && ($this->data[$index] != "00/00/0000")){
             $date = explode("/", $this->data[$index]);
             $this->data[$index]    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
         }else{
@@ -232,8 +235,10 @@ abstract class AbstractService {
      * @param string $entity  Caminho para a Entity 
      */
     public function idToReference($index, $entity){
-        if(!isset($this->data[$index]))
+        if((!isset($this->data[$index])) OR (empty($this->data[$index]))){
+            echo "erro no indice e nao pode ser carregar entity";
             return FALSE;
+        }
         
         if(is_object($this->data[$index])){
             if($this->data[$index] instanceof $entity)
@@ -251,8 +256,10 @@ abstract class AbstractService {
      * @param string $entity  Caminho para a Entity 
      */
     public function idToEntity($index, $entity){
-        if(!isset($this->data[$index]))
+        if((!isset($this->data[$index])) OR (empty($this->data[$index]))){
+            echo "erro no indice e nao pode ser carregar entity";
             return FALSE;
+        }
         
         if(is_object($this->data[$index])){
             if($this->data[$index] instanceof $entity)

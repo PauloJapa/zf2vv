@@ -347,10 +347,30 @@ return array(
                 'label' => 'Home',
                 'route' => 'livraria-home',
             ),
-            'livros' => array(
-                'label' => 'Livros',
+            'contratos' => array(
+                'label' => 'Contratos',
                 'route' => 'livraria-admin',
-                'controller' => 'livros',
+                'controller' => 'orcamentos',
+                    'pages' => array(
+                        'contratos1' => array(
+                            'label' => 'Novo_Orçamento',
+                            'route' => 'livraria-admin',
+                            'controller' => 'orcamentos',
+                            'action' => 'new',
+                        ),
+                        'locadors2' => array(
+                            'label' => 'Renovação',
+                            'route' => 'livraria-admin',
+                            'controller' => 'renovacaos',
+                            'action' => 'index',
+                        ),
+                        'locadors3' => array(
+                            'label' => 'Fechados',
+                            'route' => 'livraria-admin',
+                            'controller' => 'fechados',
+                            'action' => 'index',
+                        ),
+                    ),
             ),
             'logout' => array(
                 'label' => 'Logout',

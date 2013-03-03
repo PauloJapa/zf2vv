@@ -21,13 +21,13 @@ class OrcamentosController extends CrudController {
         
     }
     
-    public function verificaUserAction(){
+    public function verificaUserAction($redirect=true){
         $user = $this->getIdentidade();
         $data = $this->getRequest()->getPost()->toArray();
         
         $sessionContainer = new SessionContainer("LivrariaAdmin");
        
-        if(($user->getIsAdmin()) and (!isset($sessionContainer->administradora['id'])))
+        if(($user->getTipo() == 'admin') and (!isset($sessionContainer->administradora['id'])) and ($redirect))
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'escolheAdm'));
         
         if(isset($sessionContainer->administradora['id']))
@@ -35,27 +35,25 @@ class OrcamentosController extends CrudController {
         
         $id = $user->getId();
         $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
-        if(!is_array($sessionContainer->administradora))
-            return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
         
-        $sessionContainer->administradora = $user->getAdministradora->toArray();
-        
+        $sessionContainer->administradora = $user->getAdministradora()->toArray();
         if(!is_array($sessionContainer->administradora))
             return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
             
-        $seguradora = $this->getEm()->getRepository('Livraria\Entity\Seguradora')->findById($sessionContainer->administradora['seguradora']);
         $sessionContainer->user = $user;
-        $sessionContainer->administradora = $administradora[0]->toArray();
-        $sessionContainer->seguradora = $seguradora[0]->toArray();
+        $sessionContainer->seguradora = $user->getAdministradora()->getSeguradora()->toArray();
         
-        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
+        if($redirect)
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
+        else
+            return TRUE;
     }
     
     public function escolheAdmAction(){
         $user = $this->getIdentidade();
         $data = $this->getRequest()->getPost()->toArray();
         
-        if(!$user->getIsAdmin())
+        if($user->getTipo() != 'admin')
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'verificaUser'));
         
         if(!empty($data['administradora'])){
@@ -68,6 +66,7 @@ class OrcamentosController extends CrudController {
             $sessionContainer->user = $user;
             $sessionContainer->administradora = $administradora[0]->toArray();
             $sessionContainer->seguradora = $seguradora[0]->toArray();
+            $sessionContainer->expiraSessaoMontada = true;
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
         }
         
@@ -84,6 +83,15 @@ class OrcamentosController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function indexAction(array $filtro = array()){
+        $sessionContainer = new SessionContainer("LivrariaAdmin");
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction(FALSE);
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+        }
         return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
     }
    
@@ -95,27 +103,26 @@ class OrcamentosController extends CrudController {
         
         $sessionContainer = new SessionContainer("LivrariaAdmin");
        
+        $data = $this->getRequest()->getPost()->toArray();
+        if((!isset($data['subOpcao'])) OR ($data['subOpcao'] == 'novo')){
+            $data['subOpcao'] = '';
+            if(($this->getIdentidade()->getTipo() == 'admin')and(!isset($sessionContainer->expiraSessaoMontada))){
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'escolheAdm'));
+            }
+            //Expira montagem da sessao do usuario admin
+            unset($sessionContainer->expiraSessaoMontada);
+        }
+        
+        
         if(!isset($sessionContainer->administradora['id'])){
-            $this->flashMessenger()->addMessage('Escolha a Administradora !!!');
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
         }
         
-        $data = $this->getRequest()->getPost()->toArray();
         $data['administradora'] = $sessionContainer->administradora['id'];
         $data['seguradora'] = $sessionContainer->seguradora['id'];
         $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
         
-        $filtro = array();
         $filtroForm = array();
-        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
-        
-        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $data['seguradora'];
-            }
-            if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
-        }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
         
@@ -123,8 +130,8 @@ class OrcamentosController extends CrudController {
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($data,'OnlyCalc');
-                $result = $this->formData->setData($service->getNewInputs());
+                $result = $service->insert($data,'OnlyCalc');
+                $this->formData->setData($service->getNewInputs());
                 foreach ($result as $value) {
                     $this->flashMessenger()->addMessage($value);
                 }
@@ -167,6 +174,12 @@ class OrcamentosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         
+        //Verifica se usuario tem registrado a administradora na sessao
+        if(!isset($sessionContainer->administradora['id']) && ($this->getIdentidade()->getTipo() != 'admin')){
+            if(!$this->verificaUserAction(FALSE))
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        }
+        
         //Verifica se o id veio registrado na sessão
         if(isset($sessionContainer->idOrcamento)){
             $data['id'] = $sessionContainer->idOrcamento;
@@ -190,23 +203,11 @@ class OrcamentosController extends CrudController {
             }
         }
         
-        $filtro = array();
         $filtroForm = array();
         
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $entity->getSeguradora()->getId();
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
-        }
-        
-        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
         }
         
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
@@ -214,10 +215,18 @@ class OrcamentosController extends CrudController {
         //$this->formData->setEdit();
         if($data['subOpcao'] == 'editar'){ 
             $this->formData->setData($entity->toArray());
+            $data['administradora'] = $entity->getAdministradora()->getId();
+            $data['status'] = $entity->getStatus();
         }else{
             $this->formData->setData($data);
         }
         
+        // Verificar se usuario pode editar esse orçamento
+        if(($data['administradora'] != $sessionContainer->administradora['id'] && ($this->getIdentidade()->getTipo() != 'admin'))){
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        }
+        
+        $this->formData->setEdit();
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
@@ -244,10 +253,10 @@ class OrcamentosController extends CrudController {
                 }
             }  
         }
-            
-        $this->setRender(FALSE);
-        $this->indexAction($filtro);
-
+          
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        
         return new ViewModel($this->getParamsForView()); 
     }
 

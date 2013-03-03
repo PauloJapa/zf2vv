@@ -152,5 +152,21 @@ class Orcamento extends AbstractEndereco {
         $this->setInputSubmit('fecha', 'Fechar Seguro',['onClick'=>'return fechar()']);
         
     }
+ 
+    /**
+     * 
+     * Atualiza o form para o modo de edição bloqueando campos se necessario
+     * @param boolean $isAdmin Super usuario pode alterar
+     * @return void
+     */ 
+    public function setEdit($isAdmin=false){
+        $this->isEdit = TRUE;
+        if(($isAdmin)or($this->isAdmin)){
+            $this->isAdmin = TRUE;
+            return ;
+        }
+        $this->get('ocupacao')->setAttribute('disabled', 'true');   
+        $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+    }
     
 }

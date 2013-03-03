@@ -40,7 +40,7 @@ class Orcamento extends AbstractService {
      */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('atividade', 'Livraria\Entity\Atividade');
+        $this->idToEntity('atividade', 'Livraria\Entity\Atividade');
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
         $this->idToReference('administradora', 'Livraria\Entity\Administradora');
         $this->idToReference('user', 'Livraria\Entity\User');
@@ -73,6 +73,9 @@ class Orcamento extends AbstractService {
      */   
     public function insert(array $data, $param='') { 
         $this->data = $data;
+        
+        if (empty($this->data['user']))
+            $this->data['user'] = $this->getIdentidade()->getId();
         
         $ret = $this->setReferences();
         if($ret !== TRUE)
@@ -108,10 +111,6 @@ class Orcamento extends AbstractService {
         $this->data['codFechado'] = '0';
         $this->data['status'] = 'A';
         
-        if (!isset($this->data['user']))
-            $this->data['user'] = $this->getIdentidade()->getId();
-        
-        $this->idToReference('user', 'Livraria\Entity\User');
         
         if($param == 'OnlyCalc'){
             return ['Calculado com Sucesso !!!']; 
@@ -264,6 +263,9 @@ class Orcamento extends AbstractService {
     public function update(array $data,$param='') {
         $this->data = $data;
         
+        if($data['status'] != 'A')
+            return ['Este orçamento não pode ser editado!','Pois já esta finalizado!!'];
+        
         $ret = $this->setReferences();
         if($ret !== TRUE)
             return $ret;
@@ -317,7 +319,7 @@ class Orcamento extends AbstractService {
         $dataLog['controller'] = 'orcamentos' ;
         $dataLog['action']     = 'edit';
         $dataLog['mensagem']   = 'Alterou orçamento de numero ' . $this->data['id'] . '/' . $this->data['codano'] ;
-        $dataLog['dePara']     = $this->dePara;
+        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
         $log->insert($dataLog);
     }
 

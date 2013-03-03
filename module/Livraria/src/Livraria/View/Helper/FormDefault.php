@@ -413,7 +413,7 @@ class FormDefault extends AbstractHelper {
         $element = $this->form->get($options['name']);
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
-            $name = '';
+            $options['name'] = '';
         echo
         '<div class="input-append">',
             $this->formView->formLabel($element),
@@ -475,12 +475,21 @@ class FormDefault extends AbstractHelper {
             echo '<h1>Erro ao tentar carregar input= ' . $name ;
             return;
         }
+        $disabled = $element->getAttribute('disabled');
+     //   if($disabled){ //OnClick nao é necessario quando desativa o campo =)
+     //       if($element->getAttribute('onClick')) $element->getAttribute('onClick') = '';
+     //   }
         $this->checkError($element);
         echo 
         '<div class="input-append">',
             $this->formView->formLabel($element),
             $this->formView->formRadio($element),
         "</div>\n";
+        if($disabled)
+            echo '<script language="javascript">',
+                    'setInputDisabledMulti("', $name, '");',
+                 '</script>',
+                 '<input type="hidden" name="', $name, '" value="', $element->getValue() ,'">';
         $this->checkError();
     }
 

@@ -236,6 +236,13 @@ function cleanInputAll(obj){
             break;
     }   
 }
+
+function setInputDisabledMulti(name){
+    var inp = document.getElementsByName(name);
+    for(i=0; i<inp.length; i++){
+        inp[i].disabled = true;
+    }
+}
 //Função para saber se o parametro é objeto
 function isObject( what ){
     return (typeof what == 'object');
