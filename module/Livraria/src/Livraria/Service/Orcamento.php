@@ -99,15 +99,6 @@ class Orcamento extends AbstractService {
         
         $resul = $this->CalculaPremio();
         
-        $this->data['premio'] = $this->strToFloat($resul[0]);
-        $this->data['premioLiquido'] = $this->strToFloat($resul[0]);
-        $this->data['premioTotal'] = $this->strToFloat($resul[0]);
-        $this->data['incendio'] = $this->strToFloat($resul[1]);
-        $this->data['conteudo'] = $this->strToFloat($resul[2]);
-        $this->data['aluguel'] = $this->strToFloat($resul[3]);
-        $this->data['eletrico'] = $this->strToFloat($resul[4]);
-        $this->data['vendaval'] = $this->strToFloat($resul[5]);
-        
         $this->data['codFechado'] = '0';
         $this->data['status'] = 'A';
         
@@ -277,15 +268,6 @@ class Orcamento extends AbstractService {
         $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
 
         $resul = $this->CalculaPremio();
-        
-        $this->data['premio'] = $this->strToFloat($resul[0]);
-        $this->data['premioLiquido'] = $this->strToFloat($resul[0]);
-        $this->data['premioTotal'] = $this->strToFloat($resul[0]);
-        $this->data['incendio'] = $this->strToFloat($resul[1]);
-        $this->data['conteudo'] = $this->strToFloat($resul[2]);
-        $this->data['aluguel'] = $this->strToFloat($resul[3]);
-        $this->data['eletrico'] = $this->strToFloat($resul[4]);
-        $this->data['vendaval'] = $this->strToFloat($resul[5]);
         
         $this->idToReference('user', 'Livraria\Entity\User');
         
@@ -460,25 +442,56 @@ class Orcamento extends AbstractService {
 
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
-        $total += $this->calcTaxaMultMinMax($incendio,'Incendio') ;
-        $total += $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
-        $total += $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
-        $total += $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
-        $total += $this->calcTaxaMultMinMax($vendaval,'Desastres','Vendaval') ;
+        $txIncendio = $this->calcTaxaMultMinMax($incendio,'Incendio') ;
+        $total += $txIncendio;
         
-        $iof = $this->getParametroSis('taxaIof'); 
+        $txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+        $total += $txConteudo;
         
-        $total *= $iof ;
+        $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
+        $total += $txAluguel;
+        
+        $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
+        $total += $txEletrico;
+        
+        $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Desastres','Vendaval') ;
+        $total += $txVendaval;
         
         //Verificar Se administradora tem total de cobertura minima e compara
         $coberturaMinAdm = $this->getParametroSis($this->data['administradora']->getId() . '_cob_min');
+        $totalAntes = 0.0;
         if($coberturaMinAdm !== FALSE);{
             if($total < $coberturaMinAdm){
+                $totalAntes = $total;
                 $total = $coberturaMinAdm;
             }
         }
         
-        return array($total,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
+        $iof = floatval($this->getParametroSis('taxaIof')); 
+        
+        $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
+        
+        $totalBruto = $total * (1 + $iof) ;
+        
+        if($totalAntes != 0.0){
+            $this->data['premio']        = $this->strToFloat($totalAntes);
+        }else{
+            $this->data['premio']        = $this->strToFloat($total);
+        }
+        $this->data['premioLiquido'] = $this->strToFloat($total);
+        $this->data['premioTotal']   = $this->strToFloat($totalBruto);
+        $this->data['incendio']      = $this->strToFloat($incendio);
+        $this->data['cobIncendio']   = $this->strToFloat($txIncendio);
+        $this->data['conteudo']      = $this->strToFloat($conteudo);
+        $this->data['cobConteudo']   = $this->strToFloat($txConteudo);
+        $this->data['aluguel']       = $this->strToFloat($aluguel);
+        $this->data['cobAluguel']    = $this->strToFloat($txAluguel);
+        $this->data['eletrico']      = $this->strToFloat($eletrico);
+        $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
+        $this->data['vendaval']      = $this->strToFloat($vendaval);
+        $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
+        
+        return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
     }
 
     /**

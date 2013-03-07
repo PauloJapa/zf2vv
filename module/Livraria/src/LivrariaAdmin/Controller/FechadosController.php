@@ -10,11 +10,11 @@ use Zend\Session\Container as SessionContainer;
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class FechadossController extends CrudController {
+class FechadosController extends CrudController {
 
     public function __construct() {
         $this->entity = "Livraria\Entity\Fechados";
-        $this->form = "LivrariaAdmin\Form\Fechados";
+        $this->form = "LivrariaAdmin\Form\Orcamento";
         $this->service = "Livraria\Service\Fechados";
         $this->controller = "fechados";
         $this->route = "livraria-admin";
@@ -147,6 +147,15 @@ class FechadossController extends CrudController {
         $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
+    }
+    
+    public function imprimiSeguroAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        if(!isset($data['id']))
+            $data['id'] = '1';
+        
+        $this->getServiceLocator()->get($this->service)->getPdfSeguro($data['id']);
     }
 
 }

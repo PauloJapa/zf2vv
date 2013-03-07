@@ -194,7 +194,7 @@ class OrcamentosController extends CrudController {
             $resul = $servicoFechado->fechaOrcamento($data['id']);
             if($resul[0] === TRUE){
                 $this->flashMessenger()->addMessage('Registro fechado com sucesso!!!');
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                return;
             }else{
                 unset($resul[0]);
                 foreach ($resul as $value) {
@@ -258,6 +258,10 @@ class OrcamentosController extends CrudController {
         $this->route2 = $this->getEvent()->getRouteMatch();
         
         return new ViewModel($this->getParamsForView()); 
+    }
+    
+    public function imprimiSeguroAction(){
+        $this->getServiceLocator()->get('Livraria\Service\Fechados')->getPdfSeguro('12');
     }
 
 }

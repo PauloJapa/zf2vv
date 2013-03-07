@@ -285,18 +285,21 @@ abstract class AbstractService {
         return '';
     }
  
-    /** 
-     * Faz tratamento na variavel string se necessario antes de fazer log
-     * @param String $check variavel a ser convertida se tratada se necessario
-     * @return String no formato para validação de log
-     */    
-    public function strToFloat($check,$op=''){
+    /**
+     * Faz tratamento na variavel string com conteudo float ou inverso
+     * Retorna um float ou string com float para exibição
+     * @param string $check (String a ser tratada com separador de decimal com virgula)
+     * @param string $op    (Vazio retorna string ou 'f' retorna float)
+     * @param integer $dec  (Casas decimais)
+     * @return float|string (com conteudo float)
+     */
+    public function strToFloat($check,$op='',$dec=2){
         if(is_string($check)){
             $check = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $check));
         }
         $float = floatval($check);
         if(empty($op)){
-            return number_format($float, 2, ',','.');            
+            return number_format($float, $dec, ',','.');            
         }else{
             return $float;                        
         }

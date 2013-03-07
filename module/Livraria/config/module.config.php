@@ -79,6 +79,7 @@ return array(
             'imovels' => 'LivrariaAdmin\Controller\ImovelsController',
             'locadors' => 'LivrariaAdmin\Controller\LocadorsController',
             'orcamentos' => 'LivrariaAdmin\Controller\OrcamentosController',
+            'fechados' => 'LivrariaAdmin\Controller\FechadosController',
             'multiplosMinimos' => 'LivrariaAdmin\Controller\MultiplosMinimosController',
             'parametroSis' => 'LivrariaAdmin\Controller\ParametroSisController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',

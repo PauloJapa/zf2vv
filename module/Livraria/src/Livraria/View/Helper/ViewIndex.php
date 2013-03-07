@@ -33,6 +33,12 @@ class ViewIndex extends AbstractHelper {
      * @var array $foot 
      */
     protected $foot;
+    
+    /**
+     * Colocar uma função para substituir a função de edição padrão.
+     * @var lambda
+     */
+    protected $funcEdit;
 
     /**
      * Metodo chamado pela view ao executar esta classe ViewIndex
@@ -66,9 +72,14 @@ class ViewIndex extends AbstractHelper {
         case 'close':
             $this->renderCloseTable($options);
             break;
+        
+        case 'setFuncEdit':
+            $this->funcEdit = $options;
+            break;
 
         default:
             echo "<h1>error $acao </h1>";
+            return $this;
             break;
         }      
     }
@@ -140,7 +151,11 @@ class ViewIndex extends AbstractHelper {
         
         foreach ($options['data'] as $key => $value) {
             if(($this->editLine !== FALSE)AND($key == $this->editLine)){
-                $this->renderEditLine($value);
+                if(is_callable($this->funcEdit)){
+                    $lambda = $this->funcEdit;
+                    $lambda($value);
+                }else
+                    $this->renderEditLine($value);
             }else{
                 if(isset($this->tdopt[$key]))
                     echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", "\n";
@@ -156,9 +171,9 @@ class ViewIndex extends AbstractHelper {
      * @param string $value
      */
     public function renderEditLine($value) {
-        echo "\t<td>",
+        echo "\t<td nowrap>",
                 '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
-                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-pencil"></i>Deletar</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Deletar</span>',
              "</td>\n";   
     }
 

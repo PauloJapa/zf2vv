@@ -18,16 +18,16 @@ function autoComp2(txt,prog,jan,ret,exQt,func,opc){
     }catch(e){
         alert("Campo não definido status " + e.description );
     }
-    if(statu.value === 'INICIANDO'){
+    if(statu.value == 'INICIANDO'){
       return;
     }
     document.getElementById(jan).innerHTML = "";
     statu.value = 'INICIANDO' ;
     var txt = txt.split(",");  
-    if((ret === "" )||(ret === null ))retorno = txt[0] ; else retorno = ret         ;
-    if((opc === "" )||(opc === null ))opc = "Pesquisar";
+    if((ret == "" )||(ret == null ))retorno = txt[0] ; else retorno = ret         ;
+    if((opc == "" )||(opc == null ))opc = "Pesquisar";
     var tempo = 1000;
-    if(opc === 'ALL') tempo = 10;
+    if(opc == 'ALL') tempo = 10;
     //ATRASANDO A EXECUÇÃO DA FUNCAO EM 1 segundos
     setTimeout("autoComp(\""+txt+"\",\""+prog+"\",\""+jan+"\",\""+exQt+"\",\""+func+"\",\""+opc+"\")",tempo);
 }
@@ -35,9 +35,9 @@ function autoComp2(txt,prog,jan,ret,exQt,func,opc){
 function autoComp(txt,prog,jan,exQt,func,opc){
     var statu = document.getElementById('ajaxStatus');
     var txt = txt.split(",");  
-    if((exQt === "")||(exQt === null))exiQtd = 1       ; else exiQtd  = Number(exQt);
-    if((func === "")||(func === null))executar = ""    ; else executar  = func      ;
-    if((jan === "" )||(jan === null ))tela = ""        ; else tela  = jan           ;
+    if((exQt == "")||(exQt == null))exiQtd = 1       ; else exiQtd  = Number(exQt);
+    if((func == "")||(func == null))executar = ""    ; else executar  = func      ;
+    if((jan == "" )||(jan == null ))tela = ""        ; else tela  = jan           ;
     var qtdGrupos = exiQtd + retorno.length;
     var params = "subOpcao=" + opc; 
     for( i = 0 ; i < txt.length ; i++){
@@ -63,7 +63,7 @@ function autoComp(txt,prog,jan,exQt,func,opc){
 }
 function closeMsg(tela){
     var statu = document.getElementById('ajaxStatus');
-    if(statu.value === 'INICIANDO'){
+    if(statu.value == 'INICIANDO'){
         RetEsco2('fechar',tela);
     }
     setOCUPADO(false);
@@ -76,7 +76,7 @@ function processXMLauto2(texto){
     var dataArray   = texto.split("|s|");
     statu.value = 'OK' ; 
     //total de elementos contidos na tag opcoes
-    if(dataArray[0] === "vazio") { //exibir mensagem de nao encontrados
+    if(dataArray[0] == "vazio") { //exibir mensagem de nao encontrados
         Saida = "<div style='background-color:#fefefe; width:auto; max-height:350px; overflow:auto; margin:0; border:1px solid #00F;'>";
         Saida += "<table width='100%'>";
         Saida += "<tr class='auto1'><td class='td10'>Nenhum resultado encontrado!</td>";
@@ -87,7 +87,7 @@ function processXMLauto2(texto){
         setTimeout("RetEsco2('fechar','" + tela + "')",1500);
         return ;
     }
-    if(dataArray[0] !== "ok") {
+    if(dataArray[0] != "ok") {
         statu.value = 'problemas no retorno' ;
         janela.innerHTML = texto;
         return ;
@@ -114,11 +114,11 @@ function processXMLauto2(texto){
                 funcao +=  "Array('" ;
                 for(var y = 0 ; y < auxseq ; y++){
                     funcao +=  item[y] ;
-                    if(y + 1 === auxseq)funcao +=  "'),'" ; else funcao +=  "','" ;
+                    if(y + 1 == auxseq)funcao +=  "'),'" ; else funcao +=  "','" ;
                 }
             }
             funcao += tela + "');\"" ; 
-            if(exiQtd === 1){
+            if(exiQtd == 1){
                 Saida += "<td nowrap " + funcao +  ">"
                     +  item[auxseq] + "</td>";
             }else{
@@ -141,27 +141,27 @@ function processXMLauto2(texto){
 } 
 
 function setStatus(vlr){
-        if (vlr === null) vlr = "";
-        if(vlr === "") setOCUPADO(false) ;
+        if (vlr == null) vlr = "";
+        if(vlr == "") setOCUPADO(false) ;
         document.getElementById('ajaxStatus').value = vlr ;
 }
 
 function RetEsco2(op,obj){  
-    if(op === "fechar"||op === "Criterio"){
+    if(op == "fechar"||op == "Criterio"){
         document.getElementById(obj).innerHTML = "";
         return ;
     }  
     if(!isArray(retorno)){
-        if((op === "x")||(op === "X")) return ;
+        if((op == "x")||(op == "X")) return ;
         document.getElementById(retorno).value = op ;
     }else{
-        if((op[0] === "x")||(op[0] === "X")) return ;
+        if((op[0] == "x")||(op[0] == "X")) return ;
         for(i = 0 ; i < retorno.length ; i++){
             document.getElementById(retorno[i]).value = op[i] ;
         }
     }  
     document.getElementById(obj).innerHTML = "";
-    if(executar !== "")eval(executar);
+    if(executar != "")eval(executar);
 }
 function isArray(o){
     return(typeof(o.length)=="undefined")?false:true;
@@ -171,13 +171,13 @@ trocaOld = "";
 trocaOldClass = "";
 function trocaCl(E)
 {
-  if (trocaOld !== "")trocaOld.className = trocaOldClass ;
+  if (trocaOld != "")trocaOld.className = trocaOldClass ;
   trocaOldClass = E.className;
   E.className = "auto3";
   trocaOld = E;
 }
 function trocaCorClean(){
-  if(tela === "") return ;
+  if(tela == "") return ;
   document.getElementById(tela).innerHTML = "";
 }  
   

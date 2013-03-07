@@ -281,10 +281,11 @@ function valida(ids){
     return true;
 }
 
-function envia(action,opc,frm){
+function envia(action,opc,frm,tar){
     if(frm == null)frm = document.getElementById('form'); else frm = document.getElementById(frm);
-    if((action === null)||(action === ""))action = "/admin/seguradoras";
-    if(opc === null)opc = "";
+    if((action == null)||(action == ""))action = "/admin/orcamentos";
+    if(opc == null)opc = "";
+    if(tar != null)frm.target = tar;
     frm.subOpcao.value = opc;
     frm.action = action ;
     try{

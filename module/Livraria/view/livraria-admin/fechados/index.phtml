@@ -1,13 +1,10 @@
-<h1>Orçamentos</h1>
+<h1>Seguros Fechados</h1>
 <br />
-
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Orçamento</span></p>
 
 <?php
 $coluns = array(
     'ID',
     'Seguradora',
-    'Administradora',
     'Atividade',
     'Classe',
     'Inicio',
@@ -16,29 +13,35 @@ $coluns = array(
     'Locatario',
     'Valor',
     'Status',
-    'Ação'
+    'Imprimir'
     );
-$td     = array(
-    'nowrap class="r"',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap',
-    'nowrap'
-);
+$td = [
+    'class="r"',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'class="r"',
+    '',
+];
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
-     
+
+$lambda = function($value){
+        echo "\t<td>",
+                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
+             "</td>\n";   
+    };
+    
+$this->ViewIndex('setFuncEdit',$lambda);    
+    
 foreach($this->data as $entity){ 
     $linha = array(
-        $entity->getId() .'/'. $entity->getCodAno(),
+        $entity->getId() . '/' . $entity->getCodAno(),
         $entity->getSeguradora(),
-        $entity->getAdministradora(),
         $entity->getAtividade(),
         $entity->getTaxa()->getClasse(),
         $entity->getInicio(),
@@ -74,6 +77,12 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         document.getElementById('id2').value = id ;
         envia(tar,id);        
+    }
+    function printPdf(id){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'imprimiSeguro')); ?>";
+        document.getElementById('id2').value = id ;
+        envia(tar,id,null,'new');  
+        
     }
 </script>
 
