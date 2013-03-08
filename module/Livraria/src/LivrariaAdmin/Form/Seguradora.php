@@ -46,17 +46,11 @@ class Seguradora extends AbstractEndereco {
             )
         ));
 
-        $this->add(array(
-            'name' => 'cnpj',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'CNPJ'
-            ),
-            'attributes' => array(
-                'id' => 'cnpj',
-                'placeholder' => ''
-            )
-        ));
+        $attributes=[];
+        $attributes['onKeyUp'] = 'this.value=cpfCnpj(this.value)';
+        $attributes['onblur'] = 'if(this.value != varVazio)checkCPF_CNPJ(this)';
+        $attributes['placeholder'] = 'xx.xxx.xxx/xxxx-xx';
+        $this->setInputText('cnpj', 'CNPJ', $attributes);
 
         $this->add(array(
             'name' => 'tel',
@@ -125,14 +119,7 @@ class Seguradora extends AbstractEndereco {
 
         $this->getEnderecoElements($em);
         
-        $this->add(array(
-           'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success'
-            )
-        ));
+        $this->setInputSubmit('enviar', 'Salvar', ['onClick' => 'return salvar()']);
     }   
     
     

@@ -26,7 +26,7 @@ class Seguradora extends AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
         
-        return $entity;
+        return true;
         
     }
 
@@ -44,6 +44,6 @@ class Seguradora extends AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
 
-        return $entity;
+        return true;
     }
 }

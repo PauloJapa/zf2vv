@@ -39,7 +39,7 @@ class AuthController extends AbstractActionController {
                 if ($result->isValid()) {
                     $sessionStorage->write($auth->getIdentity()['user'], null);
                //     $sessionStorage->write($auth->getIdentity()['tipo'], null);
-                    return $this->redirect()->toRoute("livraria-admin", array('controller' => 'administradoras'));
+                    return $this->redirect()->toRoute("livraria-admin", array('controller' => 'index', 'action' => 'bemVindo'));
                 }else
                     $error = true;
             }
