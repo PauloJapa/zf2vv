@@ -12,45 +12,83 @@ class UsersController extends CrudController {
         $this->controller = "users";
         $this->route = "livraria-admin";
     }
+    
+    /**
+     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * @param array $filtro
+     * @return \Zend\View\Model\ViewModel|no return
+     */
+    public function indexAction(array $filtro = array()){
+        return parent::indexAction($filtro,array('administradora' => 'ASC'));
+    }
 
     public function newAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-
-        $request = $this->getRequest();
-
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+        $this->formData = new $this->form(null, $this->getEm());
+        $data = $this->getRequest()->getPost()->toArray();
+        $filtro = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        $this->formData->setData($data);
+        
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                $result = $service->insert($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
             }
         }
-
-        return new ViewModel(array('form' => $form));
+        
+        $this->setRender(FALSE);
+        $this->indexAction($filtro);
+        
+        return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-
-        $repository = $this->getEm()->getRepository($this->entity);
-        $entity = $repository->find($this->params()->fromRoute('id', 0));
-
-        if ($this->params()->fromRoute('id', 0)) {
+        $data = $this->getRequest()->getPost()->toArray();
+        $filtro = array();
+        $filtroForm = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if($data['subOpcao'] == 'editar'){ 
+            $repository = $this->getEm()->getRepository($this->entity);
+            $entity = $repository->find($data['id']);
+        }
+        
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        //Metodo que bloqueia campos da edição caso houver
+        //$this->formData->setEdit();
+        if($data['subOpcao'] == 'editar'){ 
             $array = $entity->toArray();
-            unset($array['password']);
-            $form->setData($array);
+            unset($array['password']); // retirar o password da edição
+            $this->formData->setData($array);
+        }else{
+            $this->formData->setData($data);
         }
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+        
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
-                $res = $service->update($request->getPost()->toArray());
-                return $this->redirect()->toRoute($this->route,array('controller'=>$this->controller));
-            }
+                $result = $service->update($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }  
         }
-        return new ViewModel(array('form' => $form));
+            
+        $this->setRender(FALSE);
+        $this->indexAction($filtro);
+
+        return new ViewModel($this->getParamsForView()); 
     }
 }

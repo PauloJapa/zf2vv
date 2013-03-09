@@ -43,13 +43,13 @@ return array(
                                 'action' => 'index',
                             ),
                             'taxas1' => array(
-                                'label' => 'Nova_Taxa',
+                                'label' => 'Nova_Cobertura',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',
                                 'action' => 'new',
                             ),
                             'taxas2' => array(
-                                'label' => 'Listar_Taxas',
+                                'label' => 'Listar_Cobertura',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',
                                 'action' => 'index',

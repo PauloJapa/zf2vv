@@ -99,8 +99,28 @@ class User {
         return $this;
     }
     
-    public function getTipo() {
-        return $this->tipo;
+    /**
+     * Retorna parametro da base de dados ou Descrição do paramentro
+     * @param string $op
+     * @return string
+     */
+    public function getTipo($op='') {
+        if(empty($op))
+            return $this->tipo;
+        
+        switch ($this->tipo){
+            case 'admin':
+                return 'Vila Velha';
+                break;
+            case 'user':
+                return 'Imobiliaria';
+                break;
+            case 'gest':
+                return 'Visitante';
+                break;
+            default:
+                return $this->tipo;
+        }
     }
 
     public function setTipo($tipo) {

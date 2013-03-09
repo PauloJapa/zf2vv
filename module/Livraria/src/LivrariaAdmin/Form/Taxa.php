@@ -42,25 +42,25 @@ class Taxa extends AbstractForm {
         $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
         $this->setInputSelect('status', '*Situação', $options);
 
-        $this->setInputText('incendio', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendio', '*Cobertura p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioConteudo', '*Taxa p/ conteúdo', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioConteudo', '*Cobertura p/ conteúdo', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('aluguel', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('aluguel', '*Cobertura p/ aluguel', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('eletrico', '*Taxa p/ eletrica', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('eletrico', '*Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('desastres', '*Taxa p/ desastres', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('desastres', '*Cobertura p/ desastres', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioMen', '*Taxa p/ incêndio', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioMen', '*Cobertura p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioConteudoMen', '*Taxa p/ conteúdo', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioConteudoMen', '*Cobertura p/ conteúdo', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('aluguelMen', '*Taxa p/ aluguel', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('aluguelMen', '*Cobertura p/ aluguel', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('eletricoMen', '*Taxa p/ eletrica', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('eletricoMen', '*Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('desastresMen', '*Taxa p/ desastres', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('desastresMen', '*Cobertura p/ desastres', ['placeholder' => 'XXX,XX']);
         
         $options = [];
         $this->setInputSelect('classe', '*Classe', $options, ["onChange" => "buscaClasse()"] );

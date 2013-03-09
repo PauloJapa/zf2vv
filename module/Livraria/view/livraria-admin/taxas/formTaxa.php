@@ -10,7 +10,7 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Dados da Taxa', 'hidden' => 'id'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Dados da Cobertura', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
         $this->FormDefault(['subOpcao' => 'hidden']),
         $this->FormDefault(['seguradora' => 'select']),
@@ -24,7 +24,7 @@ $this->FormDefault(['legend' => 'Dados da Taxa', 'hidden' => 'id'],'inicio',$thi
 "</tr>\r",
 "</table>\r",
         
-$this->FormDefault(['legend'=>'Taxas Anuais'],'fieldIni'),
+$this->FormDefault(['legend'=>'Coberturas Anuais'],'fieldIni'),
     "<td>\r",
         $this->FormDefault(['incendio' => 'float4']),
         $this->FormDefault(['eletrico' => 'float4']),
@@ -36,7 +36,7 @@ $this->FormDefault(['legend'=>'Taxas Anuais'],'fieldIni'),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),
         
-$this->FormDefault(['legend'=>'Taxas Mensais'],'fieldIni'),
+$this->FormDefault(['legend'=>'Coberturas Mensais'],'fieldIni'),
     "<td>\r",
         $this->FormDefault(['incendioMen' => 'float4']),
         $this->FormDefault(['eletricoMen' => 'float4']),

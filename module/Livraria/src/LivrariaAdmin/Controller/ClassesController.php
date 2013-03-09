@@ -19,6 +19,15 @@ class ClassesController extends CrudController {
         $this->autoCompParams = array('input' => 'classeDesc');
     }
     
+    /**
+     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * @param array $filtro
+     * @return \Zend\View\Model\ViewModel|no return
+     */
+    public function indexAction(array $filtro = array()){
+        return parent::indexAction($filtro,array('seguradora' => 'ASC','descricao' => 'ASC'));
+    }
+    
     public function newAction() {
         $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
@@ -46,7 +55,7 @@ class ClassesController extends CrudController {
         }
         
         $this->setRender(FALSE);
-        parent::indexAction($filtro);
+        $this->indexAction($filtro);
         
         return new ViewModel($this->getParamsForView()); 
     }
@@ -90,7 +99,7 @@ class ClassesController extends CrudController {
         }
         
         $this->setRender(FALSE);
-        parent::indexAction($filtro);
+        $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
     }
