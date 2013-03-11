@@ -131,6 +131,8 @@ $this->FormDefault([],'fieldFim'),
         
 $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
     "<td>\n",
+        $this->FormDefault(['tipoCobertura' => 'selectLine']),
+        $this->FormDefault(['formaPagto' => 'selectLine']),
         $this->FormDefault(['valorAluguel' => 'moedaLine']),
         
         $this->FormDefault(['incendio' => 'moedaLine']),
@@ -140,8 +142,6 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         $this->FormDefault(['vendaval' => 'moedaLine']),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
-        $this->FormDefault(['tipoCobertura' => 'selectLine']),
-        $this->FormDefault(['formaPagto' => 'selectLine']),
         $this->FormDefault(['observacao' => 'textArea']),
     "</td><td style='vertical-align: middle; width:20%;'>\n",
         $this->FormDefault(['calcula'=>'submit']),
@@ -165,6 +165,8 @@ $this->FormDefault([],'fim');
         var cnpj = document.getElementById('cnpjLoc');
         var cpf  = document.getElementById('cpfLoc');
         var tipo = document.getElementById('tipoLoc');
+        var vali = document.getElementsByName('validade');
+        var niver = document.getElementById('mesNiver');
         if((tipo.value == 'fisica')&&(cpf.value == "")){
             alert('Deve ser digitado o numero do CPF do locador!');
             return false;
@@ -184,6 +186,16 @@ $this->FormDefault([],'fim');
             alert('Deve ser digitado o numero do CNPJ do locatario!');
             return false;
         }
+        //Se for mensal obrigatorio mes de aniversario
+        for(i=0; i<vali.length; i++){
+            if((vali[i].checked)&&(vali[i].value == 'mensal')){
+                if(niver.value == ''){
+                    alert('Deve ser escolhido o mês de aniversário!');
+                    niver.focus();
+                    return false;
+                }
+            }
+        }
         var ides = new Array('tipoLoc','tipo');
         if(!valida(ides)){
             return false;
@@ -199,7 +211,8 @@ $this->FormDefault([],'fim');
     }
 
     function fechar(){
-        envia(tar,'fechar',formName);
+        envia(tar,'fechar',formName,'new');
+        setTimeout("envia('/admin/fechados','','"+ formName +"','')",1000);
         return false;
     }
 
@@ -412,16 +425,28 @@ $this->FormDefault([],'fim');
         }
     }
 
-$(document).ready(function(){
-    var y_fixo = $("#mensagen").offset().top;
-    $(window).scroll(function () {
-        $("#mensagen").stop().animate({
-            top: y_fixo+$(document).scrollTop()+"px"
-            },{duration:500,queue:false}
-        );
+    //Funcao jquey para janela de flash mensagem rolar conforme o scrool
+    $(document).ready(function(){
+        try{
+            var y_fixo = $("#mensagen").offset().top;
+        }catch(e){
+            return ;
+        }
+        $(window).scroll(function () {
+            $("#mensagen").stop().animate({
+                top: y_fixo+$(document).scrollTop()+"px"
+                },{duration:500,queue:false}
+            );
+        });
     });
-});
 
-    setTimeout('showTipo();setButtonFechaOrc();',500);
+    function setOcultar(){
+        document.getElementById('poppais').style.display = 'none';
+    }
+
+    // Verificar cpf ou cnpj do locador e locatario
+    // Se não tiver salvo o orçamento não exibe o botao de fechar
+    // Oculta select pais.
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar()',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 500);
 </script>

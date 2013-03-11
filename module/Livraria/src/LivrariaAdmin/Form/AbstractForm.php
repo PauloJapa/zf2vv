@@ -13,6 +13,12 @@ use Zend\Form\Element;
 abstract class AbstractForm extends Form {
     
     /**
+     *
+     * @var EntityManager
+     */
+    protected $em; 
+    
+    /**
      * Para setar o form corretamente para edição de dados
      * @var bollean 
      */
@@ -181,5 +187,20 @@ abstract class AbstractForm extends Form {
         foreach ($inputs as $input) {
             $this->get($input)->setAttribute($key, $attribute);
         }
+    }
+    
+    /**
+     * Baseado na $key busca os registro cadastrados e monta um array para select
+     * @param string $key
+     * @param boolean $shift
+     * @return array
+     * 
+     */
+    public function getParametroSelect($key,$shift=false){
+        $array = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs($key);
+        if($shift)
+            $retira = array_shift($array);
+        
+        return $array;
     }
 }

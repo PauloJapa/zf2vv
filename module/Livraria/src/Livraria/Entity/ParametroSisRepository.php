@@ -22,5 +22,17 @@ class ParametroSisRepository extends EntityRepository {
                 ; 
         return $query->getResult();
     }
+    
+    public function fetchPairs($key) {
+        $entities = $this->findByKey($key);
+        
+        $array = array('' => 'Selecione na lista');
+        
+        foreach($entities as $entity) {
+            $array[$entity->getConteudo()] = $entity->getDescricao();
+        }
+        
+        return $array;
+    }
 }
 

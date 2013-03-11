@@ -296,7 +296,7 @@ class FormDefault extends AbstractHelper {
         if($element->getAttribute('readOnly'))
             $name = '';
         echo 
-        '<div class="form-horizontal">',
+        '<div class="form-horizontal" id="pop' . $name . '">',
         '<div class="input-append control-group" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
@@ -318,7 +318,7 @@ class FormDefault extends AbstractHelper {
         if($element->getAttribute('readOnly'))
             $name = '';
         echo
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
@@ -341,7 +341,7 @@ class FormDefault extends AbstractHelper {
         if($element->getAttribute('readOnly'))
             $name = '';
         echo
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
@@ -389,7 +389,7 @@ class FormDefault extends AbstractHelper {
             $name = '';
         echo
         '<div class="form-horizontal">',
-        '<div class="input-append control-group">',
+        '<div class="input-append control-group" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
@@ -415,7 +415,7 @@ class FormDefault extends AbstractHelper {
         if($element->getAttribute('readOnly'))
             $options['name'] = '';
         echo
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $options['name'] . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
@@ -439,7 +439,7 @@ class FormDefault extends AbstractHelper {
         }
         $this->checkError($element);
         echo 
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
         "</div>\n";
@@ -460,7 +460,7 @@ class FormDefault extends AbstractHelper {
         $this->checkError($element);
         echo 
         '<div class="form-horizontal">',
-        '<div class="input-append control-group">',
+        '<div class="input-append control-group" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
         "</div>\n";
@@ -481,7 +481,7 @@ class FormDefault extends AbstractHelper {
      //   }
         $this->checkError($element);
         echo 
-        '<div class="input-append">',
+        '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formRadio($element),
         "</div>\n";

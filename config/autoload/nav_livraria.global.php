@@ -34,7 +34,7 @@ return array(
                                 'label' => 'Nova_Seguradora',
                                 'route' => 'livraria-admin',
                                 'controller' => 'seguradoras',
-                                'action' => 'new',
+                                'action' => 'index',
                             ),
                             'seguradora2' => array(
                                 'label' => 'Listar_Seguradoras',
@@ -46,7 +46,7 @@ return array(
                                 'label' => 'Nova_Cobertura',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',
-                                'action' => 'new',
+                                'action' => 'index',
                             ),
                             'taxas2' => array(
                                 'label' => 'Listar_Cobertura',
@@ -65,19 +65,13 @@ return array(
                                 'label' => 'Nova_Administradora',
                                 'route' => 'livraria-admin',
                                 'controller' => 'administradoras',
-                                'action' => 'new',
+                                'action' => 'index',
                             ),
                             'administradora2' => array(
                                 'label' => 'Lista_Administradora',
                                 'route' => 'livraria-admin',
                                 'controller' => 'administradoras',
                                 'action' => 'index',
-                            ),
-                            'administradora3' => array(
-                                'label' => 'Pesquisar',
-                                'route' => 'livraria-admin',
-                                'controller' => 'administradoras',
-                                'action' => 'busca',
                             ),
                             'administradora4' => array(
                                 'label' => 'Listar_Comissões',
@@ -89,7 +83,7 @@ return array(
                                 'label' => 'Nova_Comissão',
                                 'route' => 'livraria-admin',
                                 'controller' => 'comissaos',
-                                'action' => 'new',
+                                'action' => 'index',
                             ),
                         ),
                     ),
@@ -212,18 +206,18 @@ return array(
                         ),
                     ),
                     'Mult_Min' => array(
-                        'label' => 'Multiplos_Minimos',
+                        'label' => 'Limites de Contratação',
                         'route' => 'livraria-admin',
                         'controller' => 'multiplosMinimos',
                         'pages' => array(
                             'Mult_Min1' => array(
-                                'label' => 'Novo',
+                                'label' => '  Novo',
                                 'route' => 'livraria-admin',
                                 'controller' => 'multiplosMinimos',
-                                'action' => 'new',
+                                'action' => 'index',
                             ),
                             'Mult_Min2' => array(
-                                'label' => 'Listar',
+                                'label' => '  Listar',
                                 'route' => 'livraria-admin',
                                 'controller' => 'multiplosMinimos',
                                 'action' => 'index',
@@ -249,11 +243,11 @@ return array(
                             ),
                         ),
                     ),
-                    'endereco' => array(
-                        'label' => 'Endereço',
-                        'route' => 'livraria-admin',
-                        'controller' => 'enderecos',
-                    ),
+                //    'endereco' => array(
+                //        'label' => 'Endereço',
+                //        'route' => 'livraria-admin',
+                //        'controller' => 'enderecos',
+                //    ),
                 ),                
                 
             ),

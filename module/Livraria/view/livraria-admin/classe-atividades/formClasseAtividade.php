@@ -39,7 +39,7 @@ require 'index.phtml';
     }
 
     function autoCompAtividade(){
-        document.getElementById('autoComp').value = 'atividadeDesc';
+        //document.getElementById('autoComp').value = 'atividadeDesc';
         var filtros = 'atividadeDesc,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'autoComp')); ?>";
         var returns = Array('atividade','atividadeDesc');

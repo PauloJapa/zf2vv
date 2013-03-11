@@ -13,7 +13,7 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Multiplos e Minimos', 'hidden' => 'idMultiplos'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Limites de Contratação', 'hidden' => 'idMultiplos'],'inicio',$this, $form),
     "<td>\n",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao'],'hidden'),
         $this->FormDefault(['seguradora' => 'select']),

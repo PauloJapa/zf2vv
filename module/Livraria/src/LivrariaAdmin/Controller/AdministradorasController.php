@@ -15,44 +15,77 @@ class AdministradorasController extends CrudController {
         
     }
     
+    public function indexAction(array $filtro = array()){
+        return parent::indexAction($filtro);
+    }
+    
     public function newAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
+        $this->formData = new $this->form(null, $this->getEm());
+        $data = $this->getRequest()->getPost()->toArray();
+        $filtro = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
+            $this->formData->setData($data);
+        }
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
-                $service->insert($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                $result = $service->insert($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
             }
         }
-
-        return new ViewModel(array('form' => $form));
+        
+        $this->setRender(FALSE);
+        $this->indexAction($filtro);
+        
+        return new ViewModel($this->getParamsForView()); 
     }
 
     public function editAction() {
-        $form = $this->getServiceLocator()->get($this->form);
-        $request = $this->getRequest();
-
-        $repository = $this->getEm()->getRepository($this->entity);
-        $entity = $repository->find($this->params()->fromRoute('id', 0));
-
-        if ($this->params()->fromRoute('id', 0))
-            $form->setData($entity->toArray());
-
-        if ($request->isPost()) {
-            $form->setData($request->getPost());
-            if ($form->isValid()) {
-                $service = $this->getServiceLocator()->get($this->service);
-                $service->update($request->getPost()->toArray());
-
-                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
-            }
+        $data = $this->getRequest()->getPost()->toArray();
+        $filtro = array();
+        $filtroForm = array();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if($data['subOpcao'] == 'editar'){ 
+            $repository = $this->getEm()->getRepository($this->entity);
+            $entity = $repository->find($data['id']);
         }
+        
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        //Metodo que bloqueia campos da edição caso houver
+        //$this->formData->setEdit();
+        if($data['subOpcao'] == 'editar'){ 
+            $this->formData->setData($entity->toArray());
+        }else{
+            $this->formData->setData($data);
+        }
+        
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()){
+                $service = $this->getServiceLocator()->get($this->service);
+                $result = $service->update($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }  
+        }
+            
+        $this->setRender(FALSE);
+        $this->indexAction($filtro);
 
-        return new ViewModel(array('form' => $form));
+        return new ViewModel($this->getParamsForView()); 
     }
     
     public function autoCompAction(){

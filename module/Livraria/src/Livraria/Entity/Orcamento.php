@@ -95,8 +95,8 @@ class Orcamento extends AbstractSeguro {
      * @ORM\Column(name="ref_imovel", type="string", length=20, nullable=true)
      */
     protected $refImovel;
-
-    /**
+ 
+   /**
      * @var string $formaPagto
      *
      * @ORM\Column(name="forma_pagto", type="string", length=10, nullable=false)

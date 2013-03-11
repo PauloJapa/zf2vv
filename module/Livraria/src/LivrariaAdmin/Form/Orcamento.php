@@ -20,7 +20,7 @@ class Orcamento extends AbstractEndereco {
         $this->em = $em;
 
         $this->setAttribute('method', 'post');
-        //$this->setInputFilter(new EscolhaAdmFilter);
+        $this->setInputFilter(new OrcamentoFilter);
 
         $this->setInputHidden('id');
         
@@ -85,14 +85,15 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('proposta', 'Proposta',['readOnly'=>'true']);
         $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyPress'=>'cleanCoberturas()']);
         
-        $options = ['01'=>'Prédio', '02'=>'Prédio + conteúdo', '03'=>'Conteúdo'];
-        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $options);
+        $tipoCobertura = $this->getParametroSelect('tipoCobertura');
+        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura);
         
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
         $this->setInputText('inicio', 'Inicio da Vigência', $attributes);
 
         $this->setInputText('fim', 'Fim da Vigência', $attributes);
+        $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));
         
         $this->setInputText('criadoEm', 'Data', $attributes);
         
@@ -102,15 +103,15 @@ class Orcamento extends AbstractEndereco {
         $attributes = ['onClick' => "cleanAtividade()"];
         $this->setInputRadio('ocupacao', 'Ocupação', $options,$attributes);
         
-        $options = ['mensal'=>'Mensal', 'anual'=>'Anual'];
-        $this->setInputRadio('validade', 'Tipo do Seguro', $options);
+        $validade = $this->getParametroSelect('validade',true);
+        $this->setInputRadio('validade', 'Tipo do Seguro', $validade);
         
         $this->setInputText('codigoGerente', 'Cod. Gerente');
         
         $this->setInputText('refImovel', 'Ref. do Imóvel');
         
-        $options = ['01'=>'A vista(no ato)', '02'=>'2 vezes(1+1)', '03'=>'3 vezes(1+2)'];
-        $this->setInputSelect('formaPagto', 'Forma de pagto', $options);
+        $formaPagto = $this->getParametroSelect('formaPagto');
+        $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto);
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves(obrigatório)';
         $this->setInputText('incendio', $label);
@@ -167,6 +168,7 @@ class Orcamento extends AbstractEndereco {
         }
         $this->get('ocupacao')->setAttribute('disabled', 'true');   
         $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
     }
     
 }

@@ -31,7 +31,7 @@ class Administradora extends AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
         
-        return $entity;
+        return TRUE;
         
     }
     
@@ -52,6 +52,6 @@ class Administradora extends AbstractService {
         $this->em->persist($entity);
         $this->em->flush();
         
-        return $entity;
+        return TRUE;
     }
 }

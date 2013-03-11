@@ -5,12 +5,7 @@ namespace LivrariaAdmin\Form;
 use Zend\Form\Form;
 
 abstract class AbstractEndereco extends AbstractForm {
-
-    /**
-     *
-     * @var EntityManager
-     */
-    protected $em;    
+   
     protected $estados;
     protected $paises;
     

@@ -13,7 +13,10 @@ use Zend\InputFilter\InputFilter;
  */
 class AbstractFilter extends InputFilter {
     
-    
+    /**
+     * Não permitir campo vazio.
+     * @param type $name do input a validar
+     */
     public function notEmpty($name){        
         $this->add(array(
             'name' => $name,
@@ -30,6 +33,18 @@ class AbstractFilter extends InputFilter {
                     ),
                 ),
             ),
+        ));
+    }
+    
+    /**
+     * Forçar a não validar estes campos
+     * Especie do bug no zf2 que força a validação dos campos selects
+     * @param string $name
+     */
+    public function emptyTrue($name){
+        $this->add(array(
+            'name' => $name,
+            'required' => false,
         ));
     }
 }

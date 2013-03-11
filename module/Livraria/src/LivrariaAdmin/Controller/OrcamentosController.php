@@ -106,9 +106,14 @@ class OrcamentosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         if((!isset($data['subOpcao'])) OR ($data['subOpcao'] == 'novo')){
             $data['subOpcao'] = '';
+            $data['seguroEmNome'] = '02';
+            $data['pais'] = '1';
             if(($this->getIdentidade()->getTipo() == 'admin')and(!isset($sessionContainer->expiraSessaoMontada))){
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'escolheAdm'));
             }
+            $data['formaPagto'] = $sessionContainer->administradora['formaPagto'];
+            $data['validade'] = $sessionContainer->administradora['validade'];
+            $data['tipoCobertura'] = $sessionContainer->administradora['tipoCobertura'];
             //Expira montagem da sessao do usuario admin
             unset($sessionContainer->expiraSessaoMontada);
         }

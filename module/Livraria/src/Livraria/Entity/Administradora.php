@@ -57,6 +57,27 @@ class Administradora {
     protected $status;
 
     /**
+     * @var string $formaPagto
+     *
+     * @ORM\Column(name="forma_pagto", type="string", length=10, nullable=false)
+     */
+    protected $formaPagto;
+
+    /**
+     * @var string $validade
+     *
+     * @ORM\Column(name="validade", type="string", nullable=false)
+     */
+    protected $validade;
+
+    /**
+     * @var string $tipoCobertura
+     *
+     * @ORM\Column(name="tipo_cobertura", type="string", length=2, nullable=false)
+     */
+    protected $tipoCobertura;
+
+    /**
      * @ORM\Column(name="user_id_criado", type="integer")
      * @var int
      */
@@ -185,6 +206,60 @@ class Administradora {
         return $this;
     }
 
+    /**
+     * Params 01=A vista(no ato), 02=2vezes(1+1), 03=3vezes(1+2)
+     * @return string
+     */
+    public function getFormaPagto() {
+        return $this->formaPagto;
+    }
+    
+    /**
+     * Params 01=A vista(no ato), 02=2vezes(1+1), 03=3vezes(1+2)
+     * @param string $formaPagto
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setFormaPagto($formaPagto) {
+        $this->formaPagto = $formaPagto;
+        return $this;
+    }
+    
+    /**
+     * 'mensal'|'anual'
+     * @return string
+     */
+    public function getValidade(){
+        return $this->validade;
+    }
+    
+    /**
+     * 'mensal'|'anual'
+     * @param string $validade
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setValidade($validade){
+        $this->validade = $validade;
+        return $this;
+        
+    }
+    
+    /**
+     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @return string
+     */
+    public function getTipoCobertura() {
+        return $this->tipoCobertura;
+    }
+
+    /**
+     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @param string $tipoCobertura
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setTipoCobertura($tipoCobertura) {
+        $this->tipoCobertura = $tipoCobertura;
+        return $this;
+    }
     
     public function getUserIdCriado() {
         return $this->userIdCriado;
@@ -277,6 +352,9 @@ class Administradora {
         $data['tel']            = $this->getTel();
         $data['email']          = $this->getEmail();
         $data['status']         = $this->getStatus();
+        $data['formaPagto']     = $this->getFormaPagto();
+        $data['validade']       = $this->getValidade();
+        $data['tipoCobertura']  = $this->getTipoCobertura();
         $data['userIdCriado']   = $this->getUserIdCriado();
         $data['CreatedAt']      = $this->getCreatedAt();
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 

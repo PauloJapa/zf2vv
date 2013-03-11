@@ -333,6 +333,11 @@ abstract class AbstractService {
         return $this->entityReal;
     }
     
+    /**
+     * Busca um paramentro especifico cadastrado com um key definida
+     * @param string $key
+     * @return boolean | entity
+     */
     public function getParametroSis($key){
         $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findByKey($key);
         if($entity){
