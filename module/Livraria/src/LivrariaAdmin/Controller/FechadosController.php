@@ -22,15 +22,19 @@ class FechadosController extends CrudController {
     }
     
     public function verificaUserAction(){
+        return new ViewModel();
     }
     
+    public function indexAction(array $filtro = array()){
+        
+    }
     /**
      * Faz pesquisa no BD e retorna as variaveis de exbição
      * @param array $filtro
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
+    public function listarFechadosAction(array $filtro = array()){
+        return parent::indexAction($filtro,array('criadoEm' => 'DESC'));
     }
    
     /**

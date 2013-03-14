@@ -63,7 +63,7 @@ class LogsController extends CrudController {
     }
     
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('user' => 'ASC'));
+        return parent::indexAction($filtro,array('data' => 'DESC'));
     }
     
     public function logOrcamentoAction($filtro=[]){

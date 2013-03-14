@@ -2,80 +2,25 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
-
-class Atividade extends Form {
+class Atividade extends AbstractForm {
     
     protected $classes;    
 
     public function __construct($name = null, $em = null) {
+        $this->em = $em;
         parent::__construct('atividade');
         
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new AtividadeFilter);
 
-        $this->add(array(
-            'name' => 'id',
-            'attributes' => array(
-                'id' => 'id',
-            )
-        ));
+        $this->setInputHidden('id');
+        $this->setInputHidden('codSeguradora');
         
-        $this->add(array(
-            'name' => 'descricao',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Descrição da atividade'
-            ),
-            'attributes' => array(
-                'id' => 'descricao',
-                'placeholder' => 'Digite atividade'
-            )
-        ));
-        
-        $this->add(array(
-            'name' => 'codSeguradora',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Referência'
-            ),
-            'attributes' => array(
-                'id' => 'codSeguradora',
-                'placeholder' => 'Ref seguradora'
-            )
-        ));
-        
-        $this->add(array(
-            'name' => 'ocupacao',
-            'options' => array(
-                'type' => 'text',
-                'label' => ''
-            ),
-            'attributes' => array(
-                'id' => 'ocupacao',
-                'placeholder' => 'Ref seguradora'
-            )
-        ));
+        $this->setInputText('descricao', '*Descrição da atividade', ['placeholder' => 'Digite atividade']);
 
-        $status = new Select();
-        $status->setLabel("*Ocupação")
-                ->setName("ocupacao")
-                ->setAttribute('id' , 'ocupacao')
-                ->setOptions(array('value_options' => array('01'=>'Comércio e Serviços',
-                                                            '02'=>'Residencial',
-                                                            '03'=>'Industria'))
-        );
-        $this->add($status);
+        $options = ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria'];
+        $this->setInputSelect('ocupacao', '*Ocupação', $options);
 
-        $this->add(array(
-            'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success'
-            )
-        ));
+        $this->setInputSubmit('submit', 'Salvar');
     }
-
 }

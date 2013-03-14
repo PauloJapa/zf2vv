@@ -20,6 +20,42 @@ class AtividadesController extends CrudController {
     }
     
     /**
+     * Faz pesquisa no BD e retorna as variaveis de exbição
+     * @param array $filtro
+     * @return \Zend\View\Model\ViewModel|no return
+     */
+    public function indexAction(array $filtro = array()){
+        $this->verificaSeUserAdmin();
+        return parent::indexAction($filtro,array('descricao'=>'ASC'));
+    }
+    
+    public function newAction() {
+        $this->verificaSeUserAdmin();
+        $data = $this->getRequest()->getPost()->toArray();
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        $this->formData = new $this->form(null, $this->getEm());
+        $this->formData->setData($data);
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()) {
+                $service = $this->getServiceLocator()->get($this->service);
+                $result = $service->insert($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }
+        }
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        
+        return new ViewModel($this->getParamsForView()); 
+    }
+    
+    /**
      * 
      * Configura um chamada para o repositorio que
      * Faz uma busca no BD pela requisição Ajax com parametro de busca

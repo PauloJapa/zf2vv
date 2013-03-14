@@ -77,12 +77,15 @@ class OrcamentosController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
 
+    public function indexAction(){
+        return new ViewModel();
+    }
     /**
      * Faz pesquisa no BD e retorna as variaveis de exbição
      * @param array $filtro
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = array()){
+    public function listarOrcamentosAction(array $filtro = array()){
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
@@ -92,7 +95,7 @@ class OrcamentosController extends CrudController {
             }
             $filtro['administradora'] = $sessionContainer->administradora['id'];
         }
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
+        return parent::indexAction($filtro,array('criadoEm' => 'DESC'));
     }
    
     /**

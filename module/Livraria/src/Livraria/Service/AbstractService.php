@@ -120,7 +120,7 @@ abstract class AbstractService {
         if ($user = $this->getIdentidade())
             $this->data['userIdAlterado'] = $user->getId();
         
-        if(method_exists($this,'logForEdit')){
+        if(method_exists($this,'getDiff')){
             $this->entityReal = $this->em->find($this->entity, $this->data['id']);
             $this->getDiff($this->entityReal);            
             if(empty($this->dePara)) 

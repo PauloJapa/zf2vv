@@ -5,20 +5,18 @@
     <a href="<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Atividade</a>
 </p>
 <?php
-$coluns = array('ID','Descrição','Ref Seguradora','Ocupação','Criado Em','Alterado Em','Ação');
+$coluns = array('ID','Descrição','Ocupação','Criado Em');
 $td     = array();
 echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'false'));
      
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),
         $entity->getDescricao(),
-        $entity->getCodSeguradora(),
-        $entity->getOcupacao(),
+        //$entity->getCodSeguradora(),
+        $entity->getOcupacao('str'),
         $entity->getCriadoEm(),
-        $entity->getAlteradoEm(),
-        $entity->getId(),
     );
     echo $this->ViewIndex('line',array('data' => $linha));
 }

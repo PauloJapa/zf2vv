@@ -156,8 +156,25 @@ class Atividade
      * 
      * @return string da categoria de ocupação
      */
-    public function getOcupacao() {
-        return $this->ocupacao;
+    public function getOcupacao($op='') {
+        if(empty($op))
+            return $this->ocupacao;
+        
+        switch ($this->ocupacao) {
+            case '01':
+                return 'Comércio e Serviços';
+                break;
+            case '02':
+                return 'Residencial';
+                break;
+            case '03':
+                return 'Industria';
+                break;
+
+            default:
+                return 'Desconhecido';
+                break;
+        }
     }
 
     /**

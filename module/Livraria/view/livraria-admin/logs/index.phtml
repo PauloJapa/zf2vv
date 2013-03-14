@@ -1,12 +1,10 @@
 <h1>Logs</h1>
 <br />
-
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Log</span></p>
 <?php
-$coluns = array('ID','Usuario','Data Hora','Tabela','ID do Registro','Controller','Ação','Afetados','IP Computador','Ação');
-$td     = array('','','','','','','','','','');
+$coluns = array('ID','Usuario','Data Hora','Tabela','ID do Registro','Controller','Ação','Afetados','IP Computador');
+$td     = array('','','','','','','','','');
 echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'false'));
      
 foreach($this->data as $entity){ 
     $dePara = $entity->getDePara();
@@ -32,8 +30,7 @@ foreach($this->data as $entity){
         $entity->getController(),
         $entity->getAction(),
         $dePara,
-        $entity->getIp(),
-        $entity->getId()
+        $entity->getIp()
     )));
 }
 echo $this->ViewIndex('close');
@@ -44,22 +41,6 @@ echo $this->ViewIndex('close');
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
-    function edit(id){
-        document.getElementById('id2').value = id ;
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
-        envia(tar,'editar');
-    }    
-    function novo(){
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
-        envia(tar,'novo');        
-    }    
-    function del(id){
-        var msg = "Deseja realmente excluir este registro?";
-        if(!confirm(msg))return;
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
-        document.getElementById('id2').value = id ;
-        envia(tar,id);        
-    }
 </script>
 
 <?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

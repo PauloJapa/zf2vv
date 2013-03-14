@@ -14,8 +14,7 @@ echo
 $this->FormDefault(['legend' => 'Dados da Classe', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
         $this->FormDefault(['subOpcao' => 'hidden', 'seguradora' => 'select']),
-    "</td><td>\r",
-        $this->FormDefault(['cod' => 'text']),
+        $this->FormDefault(['cod' => 'hidden']),
     "</td><td>\r",
         $this->FormDefault(['descricao' => 'text']),
     "</td>\r",
@@ -33,5 +32,6 @@ require 'index.phtml';
     }
     function salvar(){
         envia(tar,'salvar',formName);
+        return false;
     }
 </script>
