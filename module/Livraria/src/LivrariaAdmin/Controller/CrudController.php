@@ -38,6 +38,7 @@ abstract class CrudController extends AbstractActionController {
     protected $route2;
     protected $autoCompParams;
     protected $render = TRUE;
+    protected $data;
 
     /**
      * Faz listagem dos dados baseado nos parametros passados
@@ -199,6 +200,16 @@ abstract class CrudController extends AbstractActionController {
                 return $this->authService->getIdentity();
         }
         return FALSE;
+    }
+    
+    /**
+     * Verifica se usuario é do tipo admin se não for redireciona para tela de login
+     * @return void
+     */
+    public function verificaSeUserAdmin(){
+        $user = $this->getIdentidade();
+        if($user->getTipo() != 'admin')
+            return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
     }
 
 }

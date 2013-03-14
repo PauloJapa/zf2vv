@@ -1,0 +1,40 @@
+<?php
+$form->prepare();
+echo 
+$this->FormDefault(['legend' => 'Buscar Seguros fechados para Renovação:'],'inicio',$this, $form),
+    "<td>\r",
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
+        $this->FormDefault(['inicio' => 'calend']),
+    "</td>\r",
+"</tr><tr>\r",
+    "<td>\r",
+        $this->FormDefault(['fim' => 'calend']),
+    "</td>\r",
+"</tr><tr>\r",
+    "<td>\r",
+        $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
+    "</td>\r",
+
+$this->FormDefault(['submit' => 'enviar'],'fim');
+
+?> 
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var adm = document.getElementById('administradoraDesc').value;
+        if(adm == '')
+            document.getElementById('administradora').value = '';
+        envia(tar,'buscar',formName);
+        return false;
+    }
+    function autoCompAdministradora(){
+        var filtros = 'administradoraDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'administradoras','action'=>'autoComp')); ?>";
+        var returns = Array('administradora','administradoraDesc');
+        var functionCall = 'buscaAdministradora()';
+        autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
+    }
+</script>

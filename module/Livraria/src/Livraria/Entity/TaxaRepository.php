@@ -9,22 +9,14 @@ use Doctrine\ORM\EntityRepository;
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 class TaxaRepository extends EntityRepository {
-/*
- * 
-    // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::ON, $qb->expr()->and($qb->expr()->eq('u.group_id', 'g.id'), 'g.name = ?1'))
-    // Example - $qb->innerJoin('u.Group', 'g', 'ON', 'u.group_id = g.id AND g.name = ?1')
-    public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
 
-    // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
-    // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
-    public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
-
-    // NOTE: ->where() overr
- */
+    /**
+     * Busca um taxa valida para atividade e seguradora vigente.
+     * @param type $seguradora
+     * @param type $atividade
+     * @return boolean|Entity Livraria\Entity\Taxa
+     */
     public function findTaxaVigente($seguradora, $atividade){
-        
-        
-        
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('t,c,s')
@@ -46,7 +38,12 @@ class TaxaRepository extends EntityRepository {
                 ->setMaxResults(10)
                 ->getQuery()
                 ;
-        return $query->getSingleResult();
+        $resul = $query->getResult();
+        if(empty($resul))
+            return FALSE;
+        
+        return $resul[0];
+        //return $query->getSingleResult();
         
     }
 }

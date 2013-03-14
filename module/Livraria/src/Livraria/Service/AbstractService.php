@@ -213,6 +213,13 @@ abstract class AbstractService {
             $this->data[$index] = '';
         }
         
+        if(is_object($this->data[$index])){
+            if($this->data[$index] instanceof \DateTime)
+                return TRUE;
+            else
+                return FALSE;
+        }
+        
         if((!empty($this->data[$index])) 
                 && ($this->data[$index] != "vigente") 
                 && ($this->data[$index] != "30/11/-0001") 
@@ -346,4 +353,147 @@ abstract class AbstractService {
             return FALSE;        
     }
 
+    
+    public function CalculaPremio($data=[]){
+        if(!empty($data)){
+            $this->data = $data ;
+        }
+        
+        //Base de todo calculo        
+        $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
+        
+        //Coberturas 
+        $incendio = $this->strToFloat($this->data['incendio'], 'float');
+        $conteudo = $this->strToFloat($this->data['conteudo'], 'float');            
+        $aluguel  = $this->strToFloat($this->data['aluguel'],  'float');
+        $eletrico = $this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
+        
+        //Calcula de coberturas caso estejam zeradas do form
+        if($incendio == 0.0)
+            $incendio = $vlrAluguel * $this->data['multiplosMinimos']->getMultIncendio();
+        
+        if($conteudo == 0.0)
+            $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
+        
+        if($aluguel == 0.0)
+            $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
+        
+        if($eletrico == 0.0)
+            $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
+        
+        if($vendaval == 0.0)
+            $vendaval = $vlrAluguel * $this->data['multiplosMinimos']->getMultVendaval();
+
+        // Calcula cobertura premio = cobertura * (taxa / 100)       
+        $total = 0.0 ;
+        $txIncendio = $this->calcTaxaMultMinMax($incendio,'Incendio') ;
+        $total += $txIncendio;
+        
+        $txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+        $total += $txConteudo;
+        
+        $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
+        $total += $txAluguel;
+        
+        $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
+        $total += $txEletrico;
+        
+        $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Desastres','Vendaval') ;
+        $total += $txVendaval;
+        
+        //Verificar Se administradora tem total de cobertura minima e compara
+        $coberturaMinAdm = $this->getParametroSis($this->data['administradora']->getId() . '_cob_min');
+        $totalAntes = 0.0;
+        if($coberturaMinAdm !== FALSE);{
+            if($total < $coberturaMinAdm){
+                $totalAntes = $total;
+                $total = $coberturaMinAdm;
+            }
+        }
+        
+        $iof = floatval($this->getParametroSis('taxaIof')); 
+        
+        $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
+        
+        $totalBruto = $total * (1 + $iof) ;
+        
+        if($totalAntes != 0.0){
+            $this->data['premio']        = $this->strToFloat($totalAntes);
+        }else{
+            $this->data['premio']        = $this->strToFloat($total);
+        }
+        $this->data['premioLiquido'] = $this->strToFloat($total);
+        $this->data['premioTotal']   = $this->strToFloat($totalBruto);
+        $this->data['incendio']      = $this->strToFloat($incendio);
+        $this->data['cobIncendio']   = $this->strToFloat($txIncendio);
+        $this->data['conteudo']      = $this->strToFloat($conteudo);
+        $this->data['cobConteudo']   = $this->strToFloat($txConteudo);
+        $this->data['aluguel']       = $this->strToFloat($aluguel);
+        $this->data['cobAluguel']    = $this->strToFloat($txAluguel);
+        $this->data['eletrico']      = $this->strToFloat($eletrico);
+        $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
+        $this->data['vendaval']      = $this->strToFloat($vendaval);
+        $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
+        
+        return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
+    }
+
+    /**
+     * Pega os inputs com dados calculados e trabalhados
+     * @return array com inputs atualizados para colocar no form
+     */
+    public function getNewInputs() {
+        return array(
+            'premioTotal'=>$this->data['premioTotal'],
+            'premioLiquido'=>$this->data['premioLiquido'],
+            'premio'=>$this->data['premio'],
+            'incendio'=>$this->data['incendio'],
+            'conteudo'=>$this->data['conteudo'],
+            'aluguel'=>$this->data['aluguel'],
+            'eletrico'=>$this->data['eletrico'],
+            'vendaval'=>$this->data['vendaval'],
+        );
+    }
+
+    /**
+     * Calcula o premio(vlr) do seguro no item da cobertura passada pelo paramentro
+     * premio = cobertura * (taxa / 100)
+     * Tipo de Taxa pode ser anual ou mensal
+     * se premio for menor que o vlr minimo prevalece o minimo o mesmo acontece para o vlr maximo 
+     * @param float $vlr     Valor da Cobertura
+     * @param string $fTaxa  Parte do nome da funcao da entity taxa ex Incendio
+     * @param string $fMin   Parte do nome da funcao da entity multiplosMinimos ex Incendio
+     * @return real
+     */
+    public function calcTaxaMultMinMax($vlr, $fTaxa, $fMin='') {
+        if($vlr == 0.0)    
+            return 0.0;
+
+        if (empty($fMin))
+            $fMin = $fTaxa;
+
+        //Gera o nome da função a ser chamada na entity taxa
+        if($this->data['validade'] == 'anual')
+            $fTaxa = 'get' . $fTaxa ;
+        else
+            $fTaxa = 'get' . $fTaxa . 'Men';
+        //Gera o nome da função a ser chamada na entity multiplosMinimos
+        $fMax = 'getMax' . $fMin ;
+        $fMin = 'getMin' . $fMin ;
+        
+        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
+        
+        // Se calculado for menor que o minimo retorna o min
+        $vlrMin = floatval($this->data['multiplosMinimos']->$fMin());
+        if($calc < $vlrMin)
+            return $vlrMin;
+        
+        // Se calculado for maior que o maximo retorna o max
+        $vlrMax = floatval($this->data['multiplosMinimos']->$fMax());
+        if(($vlrMax != 0.0)AND($calc > $vlrMax))
+            return $vlrMax;
+        // Valor calculado
+        return $calc;
+    }
 }

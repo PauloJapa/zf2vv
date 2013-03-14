@@ -18,7 +18,9 @@ return array(
             // And finally, here is where we define our page hierarchy
             'home' => array(
                 'label' => 'Home',
-                'route' => 'livraria-home',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'bemVindo',
             ),
             'cadastros' => array(
                 'label' => 'Cadastro',
@@ -31,25 +33,13 @@ return array(
                         'controller' => 'seguradoras',
                         'pages' => array(
                             'seguradora1' => array(
-                                'label' => 'Nova_Seguradora',
-                                'route' => 'livraria-admin',
-                                'controller' => 'seguradoras',
-                                'action' => 'index',
-                            ),
-                            'seguradora2' => array(
-                                'label' => 'Listar_Seguradoras',
+                                'label' => 'Seguradoras',
                                 'route' => 'livraria-admin',
                                 'controller' => 'seguradoras',
                                 'action' => 'index',
                             ),
                             'taxas1' => array(
-                                'label' => 'Nova_Cobertura',
-                                'route' => 'livraria-admin',
-                                'controller' => 'taxas',
-                                'action' => 'index',
-                            ),
-                            'taxas2' => array(
-                                'label' => 'Listar_Cobertura',
+                                'label' => 'Coberturas',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',
                                 'action' => 'index',
@@ -57,30 +47,18 @@ return array(
                         ),
                     ),
                     'administradora' => array(
-                        'label' => 'Administradoras',
+                        'label' => 'Administradora',
                         'route' => 'livraria-admin',
                         'controller' => 'administradoras',
                         'pages' => array(
                             'administradora1' => array(
-                                'label' => 'Nova_Administradora',
+                                'label' => 'Administradoras',
                                 'route' => 'livraria-admin',
                                 'controller' => 'administradoras',
                                 'action' => 'index',
                             ),
                             'administradora2' => array(
-                                'label' => 'Lista_Administradora',
-                                'route' => 'livraria-admin',
-                                'controller' => 'administradoras',
-                                'action' => 'index',
-                            ),
-                            'administradora4' => array(
-                                'label' => 'Listar_Comissões',
-                                'route' => 'livraria-admin',
-                                'controller' => 'comissaos',
-                                'action' => 'index',
-                            ),
-                            'administradora5' => array(
-                                'label' => 'Nova_Comissão',
+                                'label' => 'Comissões',
                                 'route' => 'livraria-admin',
                                 'controller' => 'comissaos',
                                 'action' => 'index',
@@ -88,18 +66,12 @@ return array(
                         ),
                     ),
                     'classe' => array(
-                        'label' => 'Classes',
+                        'label' => 'Classe',
                         'route' => 'livraria-admin',
                         'controller' => 'classes',
                         'pages' => array(
                             'classe1' => array(
-                                'label' => 'Nova_Classe',
-                                'route' => 'livraria-admin',
-                                'controller' => 'classes',
-                                'action' => 'new',
-                            ),
-                            'classe2' => array(
-                                'label' => 'Listar_Classe',
+                                'label' => 'Classes',
                                 'route' => 'livraria-admin',
                                 'controller' => 'classes',
                                 'action' => 'index',
@@ -107,43 +79,25 @@ return array(
                         ),
                     ),
                     'atividades' => array(
-                        'label' => 'Atividades',
+                        'label' => 'Atividade',
                         'route' => 'livraria-admin',
                         'controller' => 'atividades',
                         'pages' => array(
                             'atividades1' => array(
-                                'label' => 'Nova_Atividade',
-                                'route' => 'livraria-admin',
-                                'controller' => 'atividades',
-                                'action' => 'new',
-                            ),
-                            'atividades2' => array(
-                                'label' => 'Lista_Atividade',
+                                'label' => 'Atividades',
                                 'route' => 'livraria-admin',
                                 'controller' => 'atividades',
                                 'action' => 'index',
                             ),
-                            'atividades3' => array(
-                                'label' => 'Pesquisar',
-                                'route' => 'livraria-admin',
-                                'controller' => 'atividades',
-                                'action' => 'busca',
-                            ),
                         ),
                     ),
                     'classeAtividade' => array(
-                        'label' => 'Classes_Atividades',
+                        'label' => 'Classes Atividade',
                         'route' => 'livraria-admin',
                         'controller' => 'classeAtividades',
                         'pages' => array(
-                            'classe1' => array(
-                                'label' => 'Nova_Classes_Atividades',
-                                'route' => 'livraria-admin',
-                                'controller' => 'classeAtividades',
-                                'action' => 'new',
-                            ),
-                            'classe2' => array(
-                                'label' => 'Listar_Classes_Atividades',
+                            'classeAtividade1' => array(
+                                'label' => 'Classes_Atividades',
                                 'route' => 'livraria-admin',
                                 'controller' => 'classeAtividades',
                                 'action' => 'index',
@@ -151,9 +105,17 @@ return array(
                         ),
                     ),
                     'users' => array(
-                        'label' => 'Users',
+                        'label' => 'Usuario',
                         'route' => 'livraria-admin',
                         'controller' => 'users',
+                        'pages' => array(
+                            'users1' => array(
+                                'label' => 'Usuarios',
+                                'route' => 'livraria-admin',
+                                'controller' => 'users',
+                                'action' => 'index',
+                            ),
+                        ),
                     ),
                     'locatarios' => array(
                         'label' => 'Locatario',
@@ -161,13 +123,7 @@ return array(
                         'controller' => 'locatarios',
                         'pages' => array(
                             'locatarios1' => array(
-                                'label' => 'Novo_Locatario',
-                                'route' => 'livraria-admin',
-                                'controller' => 'locatarios',
-                                'action' => 'new',
-                            ),
-                            'locatarios2' => array(
-                                'label' => 'Listar_Locatarios',
+                                'label' => 'Locatarios',
                                 'route' => 'livraria-admin',
                                 'controller' => 'locatarios',
                                 'action' => 'index',
@@ -180,25 +136,13 @@ return array(
                         'controller' => 'locadors',
                         'pages' => array(
                             'locadors1' => array(
-                                'label' => 'Novo_Locador',
-                                'route' => 'livraria-admin',
-                                'controller' => 'locadors',
-                                'action' => 'new',
-                            ),
-                            'locadors2' => array(
-                                'label' => 'Listar_Locadores',
+                                'label' => 'Locadores',
                                 'route' => 'livraria-admin',
                                 'controller' => 'locadors',
                                 'action' => 'index',
                             ),
-                            'locadors3' => array(
-                                'label' => 'Novo Imovel',
-                                'route' => 'livraria-admin',
-                                'controller' => 'imovels',
-                                'action' => 'new',
-                            ),
-                            'locadors4' => array(
-                                'label' => 'Listar_Imoveis',
+                            'locadors2' => array(
+                                'label' => 'Imoveis',
                                 'route' => 'livraria-admin',
                                 'controller' => 'imovels',
                                 'action' => 'index',
@@ -211,13 +155,7 @@ return array(
                         'controller' => 'multiplosMinimos',
                         'pages' => array(
                             'Mult_Min1' => array(
-                                'label' => '  Novo',
-                                'route' => 'livraria-admin',
-                                'controller' => 'multiplosMinimos',
-                                'action' => 'index',
-                            ),
-                            'Mult_Min2' => array(
-                                'label' => '  Listar',
+                                'label' => 'Limites_de_Contratação',
                                 'route' => 'livraria-admin',
                                 'controller' => 'multiplosMinimos',
                                 'action' => 'index',
@@ -225,18 +163,12 @@ return array(
                         ),
                     ),
                     'Parametro' => array(
-                        'label' => 'Parametros',
+                        'label' => 'Parametro',
                         'route' => 'livraria-admin',
                         'controller' => 'parametroSis',
                         'pages' => array(
                             'Parametro1' => array(
-                                'label' => 'Novo',
-                                'route' => 'livraria-admin',
-                                'controller' => 'parametroSis',
-                                'action' => 'new',
-                            ),
-                            'Parametro2' => array(
-                                'label' => 'Listar',
+                                'label' => 'Parametros',
                                 'route' => 'livraria-admin',
                                 'controller' => 'parametroSis',
                                 'action' => 'index',
@@ -256,19 +188,19 @@ return array(
                 'route' => 'livraria-admin',
                 'controller' => 'orcamentos',
                     'pages' => array(
-                        'contratos1' => array(
-                            'label' => 'Novo_Orçamento',
+                        'orcamentos' => array(
+                            'label' => 'Orçamento',
                             'route' => 'livraria-admin',
                             'controller' => 'orcamentos',
-                            'action' => 'new',
+                            'action' => 'index',
                         ),
-                        'locadors2' => array(
+                        'renovacaos' => array(
                             'label' => 'Renovação',
                             'route' => 'livraria-admin',
                             'controller' => 'renovacaos',
                             'action' => 'index',
                         ),
-                        'locadors3' => array(
+                        'fechados' => array(
                             'label' => 'Fechados',
                             'route' => 'livraria-admin',
                             'controller' => 'fechados',
@@ -346,19 +278,19 @@ return array(
                 'route' => 'livraria-admin',
                 'controller' => 'orcamentos',
                     'pages' => array(
-                        'contratos1' => array(
-                            'label' => 'Novo_Orçamento',
+                        'orcamentos' => array(
+                            'label' => 'Orçamento',
                             'route' => 'livraria-admin',
                             'controller' => 'orcamentos',
-                            'action' => 'new',
+                            'action' => 'index',
                         ),
-                        'locadors2' => array(
+                        'renovacaos' => array(
                             'label' => 'Renovação',
                             'route' => 'livraria-admin',
                             'controller' => 'renovacaos',
                             'action' => 'index',
                         ),
-                        'locadors3' => array(
+                        'fechados' => array(
                             'label' => 'Fechados',
                             'route' => 'livraria-admin',
                             'controller' => 'fechados',

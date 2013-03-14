@@ -2,12 +2,15 @@
 $user = $this->UserIdentity('LivrariaAdmin');
 echo '<p>Bem Vindo, ', $user->getNome(), '.</p>' ;
 echo '<p>Escolha uma das opções abaixo.</p>' ;
+
+$teste = $this->navigation('NavAdmin')->findOneByLabel('Cadastro');
+            //  var_dump ($this->navigation('NavAdmin')->findOneByLabel('Contratos')); 
 ?>
 
 <div class="nav-collapse">
 <?php if ($user = $this->UserIdentity('LivrariaAdmin')){
           if($user->getTipo() == 'admin')
-              echo $this->navigation('NavAdmin')->menu()->setUlClass('nav'); 
+              echo $this->navigation('NavAdmin')->menu()->setUlClass('nav')->renderMenu($teste); 
           else
               echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
       }else

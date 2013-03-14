@@ -143,6 +143,11 @@ class Administradora {
         return $this->nome;
     }
     
+    public function getObjeto(){
+        return $this;
+    }
+
+
     public function getId() {
         return $this->id;
     }

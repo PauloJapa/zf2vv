@@ -251,10 +251,11 @@ class OrcamentosController extends CrudController {
                 $result = $service->update($data);
                 if($result === TRUE){
                     $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
-                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
-                }
-                foreach ($result as $value) {
-                    $this->flashMessenger()->addMessage($value);
+                    //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                }else{
+                    foreach ($result as $value) {
+                        $this->flashMessenger()->addMessage($value);
+                    }
                 }
             }  
         }

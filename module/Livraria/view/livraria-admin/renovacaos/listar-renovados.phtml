@@ -1,0 +1,89 @@
+<?php if(count($flashMessages)) : ?>
+<div class="control-group error">
+<ul class="help-inline">
+    <?php foreach ($flashMessages as $msg) : ?>
+    <li><?php echo $msg; ?></li>
+    <?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
+<h1>Renovados</h1>
+<br />
+
+<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Orçamento</span></p>
+
+<?php
+$coluns = array(
+    'ID',
+    'S',
+    'Administradora',
+    'Atividade',
+    'Classe',
+    'Inicio',
+    'Fim',
+    'Locador',
+    'Locatario',
+    'Valor',
+    'Status',
+    'Ação'
+    );
+$td     = array(
+    'nowrap class="r"',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap'
+);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     
+foreach($this->data as $entity){ 
+    $linha = array(
+        $entity->getId() .'/'. $entity->getCodAno(),
+        substr($entity->getSeguradora(),0,1),
+        $entity->getAdministradora(),
+        $entity->getAtividade(),
+        $entity->getTaxa()->getClasse(),
+        $entity->getInicio(),
+        $entity->getFim(),
+        $entity->getLocadorNome(),
+        $entity->getLocatarioNome(),
+        $entity->floatToStr('premioTotal'),
+        $entity->getStatus(),
+        $entity->getId(),
+    );
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    function edit(id){
+        document.getElementById('id2').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
+        envia(tar,'editar');
+    }    
+    function novo(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
+        envia(tar,'novo');        
+    }    
+    function del(id){
+        var msg = "Deseja realmente excluir este registro?";
+        if(!confirm(msg))return;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
+        document.getElementById('id2').value = id ;
+        envia(tar,id);        
+    }
+</script>
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

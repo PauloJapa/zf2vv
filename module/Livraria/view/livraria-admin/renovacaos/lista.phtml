@@ -1,0 +1,81 @@
+<h1>Seguros Fechados a Renovar</h1>
+<br />
+
+<?php
+$coluns = array(
+    'ID',
+    'S',
+    'Administradora',
+    'Atividade',
+    'Classe',
+    'Inicio',
+    'Fim',
+    'Locador',
+    'Locatario',
+    'Valor',
+    'Status',
+    'Imprimir'
+    );
+$td = [
+    'class="r"',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    'class="r"',
+    '',
+];
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+
+$lambda = function($value){
+        echo "\t<td>",
+                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
+             "</td>\n";   
+    };
+    
+$this->ViewIndex('setFuncEdit',$lambda);    
+    
+foreach($this->data as $entity){ 
+    $linha = array(
+        $entity->getId() . '/' . $entity->getCodAno(),
+        substr($entity->getSeguradora(),0,1),
+        $entity->getAdministradora(),
+        $entity->getAtividade(),
+        $entity->getTaxa()->getClasse(),
+        $entity->getInicio(),
+        $entity->getFim(),
+        $entity->getLocadorNome(),
+        $entity->getLocatarioNome(),
+        $entity->floatToStr('premioTotal'),
+        $entity->getStatus(),
+        $entity->getId(),
+    );
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<div align="center">
+    <input type="button" name="gerar" id="gerar" class="btn-success" value="Renovar Listados" onclick="geraRenovacao()">
+</div>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    function printPdf(id){
+        var tar = "<?php echo $this->url('livraria-admin',array('controller'=> 'fechados','action'=>'imprimiSeguro')); ?>";
+        document.getElementById('id2').value = id ;
+        envia(tar,id,null,'new');  
+        
+    }
+    function geraRenovacao(){
+        var tar = "<?php echo $this->url('livraria-admin',array('controller'=> 'renovacaos','action'=>'gerarRenovacao')); ?>";
+        var msg = 'Tem certeza que deseja gerar a renovação desta lista ? \n Atenção não será possivel Desfazer a nova lista gerada!!';
+        if(!confirm(msg))return;
+        envia(tar,'');  
+    }
+</script>

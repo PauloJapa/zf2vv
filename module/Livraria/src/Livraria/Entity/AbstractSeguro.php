@@ -337,6 +337,24 @@ class AbstractSeguro  extends Filtro {
     }
 
     /**
+     * Cobertura para conteudo baseado no multiplo conteudo da seguradora vezes aluguel
+     * @return float
+     */
+    public function getConteudo() {
+        return $this->incendio;
+    }
+
+    /**
+     * Cobertura para conteudo baseado no multiplo conteudo da seguradora vezes aluguel
+     * @param string $incendio
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setConteudo($conteudo) {
+        $this->conteudo = $this->trataFloat($conteudo,8);
+        return $this;
+    }
+
+    /**
      * Cobertura para aluguel baseado no multiplo aluguel da seguradora vezes aluguel
      * @return float
      */
@@ -896,6 +914,7 @@ class AbstractSeguro  extends Filtro {
         $data['refImovel']      = $this->getRefimovel();
         $data['formaPagto']     = $this->getFormapagto();
         $data['incendio']       = $this->floatToStr('incendio');
+        $data['conteudo']       = $this->floatToStr('conteudo');
         $data['aluguel']        = $this->floatToStr('aluguel');
         $data['eletrico']       = $this->floatToStr('eletrico');
         $data['vendaval']       = $this->floatToStr('vendaval');
