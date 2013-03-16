@@ -2,9 +2,6 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
-
 class MultiplosMinimos extends AbstractForm {
     /**
      * Registros para preencher o input select
@@ -12,18 +9,6 @@ class MultiplosMinimos extends AbstractForm {
      */  
     protected $seguradoras;  
     
-    /**
-     * Objeto para manipular dados do BD
-     * @var Doctrine\ORM\EntityManager
-     */
-    protected $em;
-    
-    /**
-     * Para setar o form corretamente para edição de dados
-     * @var bollean 
-     */
-    protected $isEdit = false;
-
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('taxa');
         $this->em = $em;
@@ -35,14 +20,23 @@ class MultiplosMinimos extends AbstractForm {
         $this->setInputHidden('idMultiplos');
         $this->setInputHidden('subOpcao');
         $this->setInputHidden('ajaxStatus');
-        $this->setInputHidden('autoComp');  
+        $this->setInputHidden('autoComp'); 
+        
+        $this->setInputHidden('multAluguel');  
+        $this->setInputHidden('multConteudo');  
+        $this->setInputHidden('multIncendio');  
+        $this->setInputHidden('multEletrico');  
+        $this->setInputHidden('multVendaval');  
 
         $attributos = ['class'=>'input-small'];
+        /*
+         * 
         $this->setInputText('multAluguel', 'Multiplo para Aluguel',$attributos);
         $this->setInputText('multConteudo', 'Multiplo para Conteudo',$attributos);
         $this->setInputText('multIncendio', 'Multiplo para Incendio',$attributos);
         $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
         $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
+         */
         
         $this->setInputText('minAluguel', 'Minimo para Aluguel',$attributos);
         $this->setInputText('minConteudo', 'Minimo para Conteudo',$attributos);

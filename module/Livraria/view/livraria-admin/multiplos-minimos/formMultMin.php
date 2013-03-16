@@ -15,6 +15,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Limites de Contratação', 'hidden' => 'idMultiplos'],'inicio',$this, $form),
     "<td>\n",
+        $this->FormDefault(['multAluguel','multIncendio','multConteudo','multEletrico','multVendaval'],'hidden'),
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao'],'hidden'),
         $this->FormDefault(['seguradora' => 'select']),
     "</td><td>\n",
@@ -27,7 +28,7 @@ $this->FormDefault(['legend' => 'Limites de Contratação', 'hidden' => 'idMulti
     "</td>\n",
 "</tr>\r",
 "</table>\r",
-        
+/*
 $this->FormDefault(['legend'=>'Multiplos'],'fieldIni'),
     "<td>\n",
         $this->FormDefault(['multAluguel' => 'float']),
@@ -41,6 +42,7 @@ $this->FormDefault(['legend'=>'Multiplos'],'fieldIni'),
         $this->FormDefault(['multVendaval' => 'float']),
     "</td>\n",
 $this->FormDefault([],'fieldFim'),
+ */        
         
 $this->FormDefault(['legend'=>'Cobertura Minimas'],'fieldIni'),
     "<td>\n",

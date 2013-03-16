@@ -13,8 +13,8 @@ use Zend\Form\Element;
 abstract class AbstractForm extends Form {
     
     /**
-     *
-     * @var EntityManager
+     * Objeto para manipular dados do BD
+     * @var Doctrine\ORM\EntityManager
      */
     protected $em; 
     

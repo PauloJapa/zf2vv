@@ -2,14 +2,12 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
-
-class Comissao extends Form {
+class Comissao extends AbstractForm {
     
     protected $administradoras;    
 
     public function __construct($name = null, $em = null) {
+        $this->em = $em;
         parent::__construct('comissao');
         
         $this->administradoras = $em->getRepository('Livraria\Entity\Administradora')->fetchPairs();
@@ -17,74 +15,27 @@ class Comissao extends Form {
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ComissaoFilter);
 
-        $this->add(array(
-            'name' => 'id',
-            'attributes' => array(
-                'id' => 'id',
-            )
-        ));
+        $this->setInputHidden('id');
 
-        $this->add(array(
-            'name' => 'comissao',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Comissao'
-            ),
-            'attributes' => array(
-                'id' => 'comissao',
-                'placeholder' => 'XX,XX'
-            )
-        ));
+        $this->setInputText('comissao', '*Comissao', ['placeholder' => 'XX,XX']);
+
+        $calend = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
+        $this->setInputText('inicio', '*Inicio da Vigência', $calend);
+        $this->setInputText('fim', 'Fim da Vigência', $calend);
         
-        $this->add(array(
-            'name' => 'inicio',
-            'options' => array(
-                'type' => 'text',
-                'label' => '*Inicio da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'inicio',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', '*Situação', $status);
         
-        $this->add(array(
-            'name' => 'fim',
-            'options' => array(
-                'type' => 'text',
-                'label' => 'Fim da Vigência'
-            ),
-            'attributes' => array(
-                'id' => 'fim',
-                'placeholder' => 'dd/mm/yyyy',
-                'onClick' => "displayCalendar(this,dateFormat,this)"
-            )
-        ));
+        $attributos = ['class'=>'input-small'];
+        $this->setInputText('multAluguel', 'Multiplo para Aluguel',$attributos);
+        $this->setInputText('multConteudo', 'Multiplo para Conteudo',$attributos);
+        $this->setInputText('multIncendio', 'Multiplo para Incendio',$attributos);
+        $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
+        $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
+        
+        $this->setInputSelect('administradora', '*Administradora', $this->administradoras);
 
-        $status = new Select();
-        $status->setLabel("*Situação")
-                ->setName("status")
-                ->setOptions(array('value_options' => array('A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'))
-        );
-        $this->add($status);
-
-        $administradora = new Select();
-        $administradora->setLabel("*Administradora")
-                ->setName("administradora")
-                ->setAttribute("id","administradora")
-                ->setOptions(array('value_options' => $this->administradoras)
-        );
-        $this->add($administradora);
-     
-        $this->add(array(
-            'name' => 'submit',
-            'type' => 'Zend\Form\Element\Submit',
-            'attributes' => array(
-                'value' => 'Salvar',
-                'class' => 'btn-success'
-            )
-        ));
+        $this->setInputSubmit('enviar', 'Salvar');
     }
 
 }

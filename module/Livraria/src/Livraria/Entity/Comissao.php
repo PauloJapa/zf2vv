@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="Livraria\Entity\ComissaoRepository")
  */
-class Comissao
+class Comissao extends Filtro
 {
     /**
      * @var integer $id
@@ -51,6 +51,41 @@ class Comissao
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
     private $status;
+
+    /**
+     * @var integer $multAluguel
+     *
+     * @ORM\Column(name="mult_aluguel", type="integer", nullable=false)
+     */
+    private $multAluguel;
+
+    /**
+     * @var integer $multConteudo
+     *
+     * @ORM\Column(name="mult_conteudo", type="integer", nullable=true)
+     */
+    private $multConteudo;
+
+    /**
+     * @var integer $multIncendio
+     *
+     * @ORM\Column(name="mult_incendio", type="integer", nullable=true)
+     */
+    private $multIncendio;
+
+    /**
+     * @var integer $multEletrico
+     *
+     * @ORM\Column(name="mult_eletrico", type="integer", nullable=true)
+     */
+    private $multEletrico;
+
+    /**
+     * @var integer $multVendaval
+     *
+     * @ORM\Column(name="mult_vendaval", type="integer", nullable=true)
+     */
+    private $multVendaval;
 
     /**
      * @var integer $userIdCriado
@@ -103,7 +138,6 @@ class Comissao
         $this->criadoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
-        $this->userIdCriado = 1 ;
     }
      
     /**
@@ -147,7 +181,7 @@ class Comissao
      * @return \Livraria\Entity\Comissao
      */
     public function setComissao($comissao) {
-        $this->comissao = $this->strToFloat($comissao);
+        $this->comissao = $this->trataFloat($comissao);
         return $this;
     }
 
@@ -184,12 +218,7 @@ class Comissao
         if($op == 'obj'){
             return $this->fim;
         }
-        $check = $this->fim->format('d/m/Y');
-        if($check == '01/01/1000'){
-            return "vigente";
-        }else{
-            return $check;
-        }
+        return $this->trataData($this->fim);
     }
 
     /** 
@@ -217,6 +246,91 @@ class Comissao
      */
     public function setStatus($status) {
         $this->status = $status;
+        return $this;
+    }
+    
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultAluguel() {
+        return $this->multAluguel;
+    }
+
+    /**
+     * 
+     * @param integer $multAluguel
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultAluguel($multAluguel) {
+        $this->multAluguel = $this->trataFloat($multAluguel);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultConteudo() {
+        return $this->multConteudo;
+    }
+
+    /**
+     * 
+     * @param integer $multConteudo
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultConteudo($multConteudo) {
+        $this->multConteudo = $this->trataFloat($multConteudo);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultIncendio() {
+        return $this->multIncendio;
+    }
+
+    public function setMultIncendio($multIncendio) {
+        $this->multIncendio = $this->trataFloat($multIncendio);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultEletrico() {
+        return $this->multEletrico;
+    }
+
+    /**
+     * 
+     * @param integer $multEletrico
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultEletrico($multEletrico) {
+        $this->multEletrico = $this->trataFloat($multEletrico);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultVendaval() {
+        return $this->multVendaval;
+    }
+
+    /**
+     * 
+     * @param integer $multVendaval
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultVendaval($multVendaval) {
+        $this->multVendaval = $this->trataFloat($multVendaval);
         return $this;
     }
 
@@ -330,6 +444,11 @@ class Comissao
         $data['inicio']           = $this->getInicio();
         $data['fim']              = $this->getFim();
         $data['status']           = $this->getStatus();
+        $data['multAluguel']      = $this->floatToStr('multAluguel') ; 
+        $data['multIncendio']     = $this->floatToStr('multIncendio') ; 
+        $data['multConteudo']     = $this->floatToStr('multConteudo') ; 
+        $data['multEletrico']     = $this->floatToStr('multEletrico') ; 
+        $data['multVendaval']     = $this->floatToStr('multVendaval') ; 
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();
@@ -337,35 +456,5 @@ class Comissao
         return $data ;
     }
 
-    /** 
-     * Converte a variavel do tipo float para string para exibição
-     * @param String $get com nome do metodo a ser convertido
-     * @param Int $dec quantidade de casas decimais
-     * @return String do numero no formato brasileiro padrão com 2 casas decimais
-     */    
-    public function floatToStr($get,$dec = 2){
-        if($get == ""){
-            return "vazio!!";
-        }
-        $getter  = 'get' . ucwords($get);
-        if(!method_exists($this,$getter)){
-            return "Erro no metodo!!";
-        }
-        $float = call_user_func(array($this,$getter));
-        return number_format($float, $dec, ',','.');
-    }
  
-    /** 
-     * Faz tratamento na variavel string se necessario antes de converte em float
-     * @param String $check variavel a ser convertida se tratada se necessario
-     * @return String $check no formato float para gravação pelo doctrine
-     */    
-    public function strToFloat($check){
-        if(is_string($check)){
-            $check = preg_replace("/[^0-9,]/", "", $check);
-            $check = str_replace(",", ".", $check);
-        }
-        return $check;
-    }
-    
 }

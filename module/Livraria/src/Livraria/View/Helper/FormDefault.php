@@ -61,6 +61,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInpuIcone($options);
                 break;
             
+            case 'iconeLine':
+                $this->renderInpuIconeLine($options);
+                break;
+            
             case "submits":
                 $this->renderInputSubmits($options);
                 break;
@@ -109,6 +113,10 @@ class FormDefault extends AbstractHelper {
             
             case "submit":
                 $this->renderInputSubmit($name);
+                break;
+            
+            case "submitOnly":
+                $this->renderInputSubmitOnly($name);
                 break;
             
             case "calend":
@@ -204,6 +212,15 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputSubmit($options['submit']);
         }
         echo $this->formView->form()->closeTag(),"\n";        
+    }
+
+    /**
+     * Renderiza o input Submit 
+     * @param String $name
+     */
+    public function renderInputSubmitOnly($name) {
+        echo
+            $this->formView->formSubmit($this->form->get($name));
     }
 
     /**
@@ -420,6 +437,30 @@ class FormDefault extends AbstractHelper {
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
+        "</div>\n";
+        if(isset($options['span'])) 
+            echo "<span id='", $options['span'] ,"'></span></font>";    
+        $this->checkError();        
+    }
+
+    /**
+     * Renderiza um input com botão de limpar e outro botão passado por parametro 
+     * Caso exista o parametro span renderiza sua tag
+     * @param array $options
+     */
+    public function renderInpuIconeLine($options) {
+        $element = $this->form->get($options['name']);
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $options['name'] = '';
+        echo
+        '<div class="form-horizontal">',
+        '<div class="input-append control-group" id="pop' . $options['name'] . '">',
+            $this->formView->formLabel($element),
+            $this->formView->formText($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
+            '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
+        "</div>\n",
         "</div>\n";
         if(isset($options['span'])) 
             echo "<span id='", $options['span'] ,"'></span></font>";    

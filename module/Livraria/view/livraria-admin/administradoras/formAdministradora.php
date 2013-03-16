@@ -21,10 +21,10 @@ $this->FormDefault(['legend' => 'Dados Basicos:', 'hidden' => 'id'],'inicio',$th
         $this->FormDefault(['cnpj'], 'text'),
         $this->FormDefault(['status'], 'select'),
     "</td>\n",
+        
 "</tr>\r",
 "</table>\r",
- 
-$this->FormDefault(['legend'=>'Parametros para Seguros'],'fieldIni'),
+ $this->FormDefault(['legend'=>'Parametros para Seguros'],'fieldIni'),
     "<td width='33%'>\r",
         $this->FormDefault(['formaPagto' => 'select']),
     "</td><td width='33%'>\r",
@@ -32,7 +32,7 @@ $this->FormDefault(['legend'=>'Parametros para Seguros'],'fieldIni'),
     "</td><td>\r",
         $this->FormDefault(['tipoCobertura' => 'select']),
     "</td>\r",
-$this->FormDefault([],'fieldFim'),        
+$this->FormDefault([],'fieldFim'),  
         
 $this->FormDefault(['submit' => 'enviar'],'fieldFim');
 
