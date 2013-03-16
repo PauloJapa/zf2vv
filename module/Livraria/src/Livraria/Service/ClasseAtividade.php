@@ -64,6 +64,8 @@ class ClasseAtividade extends AbstractService {
 
         $this->setReferences();
         
+        $this->verificaFimDeVigencia();
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -82,6 +84,48 @@ class ClasseAtividade extends AbstractService {
         parent::logForEdit('classe_atividade');
     }
 
+    public function verificaFimDeVigencia() {
+        // Pega registro do banco
+        $ent = $this->em->find($this->entity, $this->data['id']);
+        // Se houver alteração para menor ou igual na data inicio retorna
+        if($ent->getInicio('obj') >= $this->data['inicio']){
+            return FALSE;
+        }
+        
+        // Se não for vigente retorna
+        if($ent->getFim() != 'vigente'){
+            return FALSE;
+        }
+        
+        //Reconfirma dados para inserção do novo registro
+        $data = $this->data;
+        $data['id']     = '' ;
+        $data['status'] = 'A';
+        $data['fim']    = 'vigente';
+        
+        $auxService = new ClasseAtividade($this->em);
+        $auxService->notValidateNew();
+        $resul = $auxService->insert($data);
+        if($resul !== TRUE){
+            var_dump ($data);
+        }
+        
+        //Refazer dados
+        $this->data = $ent->toArray();
+        
+        //Finalizar vigência e refazer dados do registro atual
+        $this->data['fim'] = clone $data['inicio'];
+        $this->data['fim']->sub(new \DateInterval('P1D')); 
+        $this->data['status'] = 'C';
+        unset($this->data['criadoEm']);
+        unset($this->data['alteradoEm']);
+        
+        //Refazer referencia dos registro
+        $this->setReferences();
+        return TRUE;
+        
+    }
+
     /**
      * Faz a validação do registro no BD antes de incluir
      * Caso de erro retorna um array com os erros para o usuario ver
@@ -89,6 +133,10 @@ class ClasseAtividade extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        // Casos especias as validações estão dispensadas
+        if(!$this->isValid)
+            return TRUE;
+        
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();

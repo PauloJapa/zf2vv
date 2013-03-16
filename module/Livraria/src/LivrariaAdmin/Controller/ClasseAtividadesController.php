@@ -27,7 +27,23 @@ class ClasseAtividadesController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'atividade' => 'ASC'));
+        $this->verificaSeUserAdmin();
+        $orderBy = array('seguradora' => 'ASC', 'atividade' => 'ASC', 'inicio'=>'DESC');
+        if(!$this->render){
+            return parent::indexAction($filtro, $orderBy);
+        }
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setForClasseAtividade();
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction(['status'=>'A'], $orderBy);
+        }
+        $filtro=[];
+        if(!empty($data['atividade'])){
+            $filtro['atividade'] = $data['atividade'];
+        }
+        
+        return parent::indexAction($filtro, $orderBy);
     }
    
     /**
@@ -35,6 +51,7 @@ class ClasseAtividadesController extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */ 
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         $filtroForm = array();
@@ -74,6 +91,7 @@ class ClasseAtividadesController extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         $filtroForm = array();
@@ -82,7 +100,7 @@ class ClasseAtividadesController extends CrudController {
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
-            if(!empty($data['seguradora'])){
+            if(!isset($data['seguradora'])){
                 $filtro['seguradora'] = $entity->getSeguradora()->getId();
                 $filtroForm['seguradora'] = $filtro['seguradora'];
             }

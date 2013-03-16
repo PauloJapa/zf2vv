@@ -9,18 +9,6 @@ namespace LivrariaAdmin\Form;
 class ClasseAtividade extends AbstractForm { 
     
     /**
-     * Objeto para manipular dados do BD
-     * @var Doctrine\ORM\EntityManager
-     */
-    protected $em;
-    
-    /**
-     * Para setar o form corretamente para edição de dados
-     * @var bollean 
-     */
-    protected $isEdit = false;
-    
-    /**
      * Todos os registros de \Livraria\Entity\ClasseTaxa para o select
      * @var array
      */
@@ -34,7 +22,6 @@ class ClasseAtividade extends AbstractForm {
 
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('classeAtividade');
-        
         $this->em = $em;
         $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
         $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
@@ -43,9 +30,6 @@ class ClasseAtividade extends AbstractForm {
         $this->setInputFilter(new ClasseAtividadeFilter);
 
         $this->setInputHidden('id');
-        $this->setInputHidden('subOpcao');
-        $this->setInputHidden('ajaxStatus');
-        $this->setInputHidden('autoComp');
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
         $this->setInputText('inicio', '*Inicio da Vigência', $attributes);
@@ -59,7 +43,15 @@ class ClasseAtividade extends AbstractForm {
 
         $this->setInputHidden('atividade');
 
-        $this->setInputText('atividadeDesc', '*Atividade', ['placeholder' => 'Pesquise digitando a atividade aqui!','onKeyUp' => 'autoCompAtividade();']);
+        $this->setInputText(
+                'atividadeDesc', 
+                '*Atividade', 
+                [
+                    'placeholder'  => 'Pesquise digitando a atividade aqui!',
+                    'onKeyUp'      => 'autoCompAtividade();',
+                    'autoComplete' => 'off'
+                ]
+        );
 
         $attributes = ['onChange'=>'buscaSeguradora()'];
         $this->setInputSelect('seguradora', 'Seguradora', $this->seguradoras, $attributes);

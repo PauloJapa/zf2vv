@@ -13,6 +13,12 @@ use Zend\Authentication\AuthenticationService,
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 abstract class AbstractService {
+    
+    /**
+     * Para Casos em que não se pode validar registro
+     * @var boolean
+     */
+    protected $isValid = TRUE;
 
     /**
      * Objeto para efetuar operações no banco
@@ -59,6 +65,13 @@ abstract class AbstractService {
      */
     public function __construct(EntityManager $em) {
         $this->em = $em;
+    }
+    
+    /**
+     * Para situaçoes em que não se deve validar o regitro no BD
+     */
+    public function notValidateNew(){
+        $this->isValid = FALSE;
     }
  
     /** 

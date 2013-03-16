@@ -20,6 +20,7 @@ class ComissaosController extends CrudController {
     }
     
     public function indexAction(){
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setForAdministradora();
@@ -35,6 +36,7 @@ class ComissaosController extends CrudController {
     }
     
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
@@ -61,6 +63,7 @@ class ComissaosController extends CrudController {
     }
 
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         

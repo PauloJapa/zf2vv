@@ -39,4 +39,17 @@ class Filtros  extends AbstractForm {
         );
     }
     
+    public function setForClasseAtividade(){
+        $this->setInputHidden('atividade');
+        $this->setInputText(
+                'atividadeDesc'
+                , '*Atividade'
+                , [
+                    'placeholder' => 'Pesquise digitando a atividade aqui!'
+                    , 'onKeyUp' => 'autoCompAtividade();'
+                    , 'autoComplete' => 'off'
+                ]
+        );
+    }
+    
 }

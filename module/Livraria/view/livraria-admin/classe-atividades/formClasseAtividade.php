@@ -1,11 +1,13 @@
-<?php if(count($flashMessages)) : ?>
-<div class="control-group error">
-<ul class="help-inline">
-    <?php foreach ($flashMessages as $msg) : ?>
-    <li><?php echo $msg; ?></li>
-    <?php endforeach; ?>
-</ul>
-</div>
+
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
+<?php if (count($flashMessages)) : ?>
+    <div class="control-group error">
+        <ul class="help-inline">
+            <?php foreach ($flashMessages as $msg) : ?>
+                <li><?php echo $msg; ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 <?php endif; ?>
 <?php
 $form->prepare();
@@ -26,6 +28,8 @@ $this->FormDefault(['legend' => 'Dados da Classe Atividade', 'hidden' => 'id'],'
     "</td>\r",
 $this->FormDefault(['submit' => 'enviar'],'fim');
 
+$noFilter=true;
+
 require 'index.phtml';
 ?>
 <script language="javascript">
@@ -36,6 +40,10 @@ require 'index.phtml';
     function salvar(){
         envia(tar,'salvar',formName);
         return false;
+    }
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'',formName);
     }
 
     function autoCompAtividade(){

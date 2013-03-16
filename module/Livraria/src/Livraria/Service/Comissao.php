@@ -24,10 +24,6 @@ class Comissao extends AbstractService {
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
     }
-    
-    public function notValidateNew(){
-        $this->isValid = FALSE;
-    }
 
     /** 
      * Inserir no banco de dados o registro
