@@ -20,10 +20,32 @@ class LocadorsController extends CrudController {
     }
     
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro);
+        $this->verificaSeUserAdmin();
+        $orderBy = array('nome' => 'ASC');
+        if(!$this->render){
+            return parent::indexAction($filtro, $orderBy);
+        }
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction(['status'=>'A'], $orderBy);
+        }
+        $this->formData->setData($data);
+        $filtro=[];
+        if(!empty($data['nome'])){
+            $filtro['nome'] = $data['nome'];
+            $filtro[$data['cpfOuCnpj']] = $data['documento'];
+        }
+        
+        $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->pesquisa($data);
+        
+        return parent::indexAction($filtro, $orderBy, $list);
     }
 
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
@@ -57,6 +79,7 @@ class LocadorsController extends CrudController {
     }
 
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $this->formData->setEdit();
         $data = $this->getRequest()->getPost()->toArray();

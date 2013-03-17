@@ -46,10 +46,12 @@ abstract class CrudController extends AbstractActionController {
      * @param array $orderBy
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = [],array $orderBy = []) {
-        $list = $this->getEm()
-                     ->getRepository($this->entity)
-                     ->findBy($filtro,$orderBy);
+    public function indexAction(array $filtro = [],array $orderBy = [],array &$list = []) {
+        if (empty($list)) {
+            $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->findBy($filtro, $orderBy);
+        }
 
         $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler

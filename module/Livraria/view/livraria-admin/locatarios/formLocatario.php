@@ -1,3 +1,5 @@
+
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
 <?php if(count($flashMessages)) : ?>
 <div class="control-group error">
 <ul class="help-inline">
@@ -29,6 +31,8 @@ require $enderecoFormPath;
 
 $this->FormDefault(['submit' => 'enviar','noField' => true],'fim');
 
+$noFilter=true;
+
 require 'index.phtml';
 
 ?>
@@ -55,6 +59,10 @@ require 'index.phtml';
         
         envia(tar,'salvar',formName);
         return false;
+    }
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'',formName);
     }
     function showTipo(){
         var cnpj = document.getElementById('popcnpj');

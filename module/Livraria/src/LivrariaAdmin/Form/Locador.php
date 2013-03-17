@@ -59,7 +59,7 @@ class Locador extends AbstractEndereco {
      
         $this->setInputHidden('administradora');
 
-        $this->setInputText('administradoraDesc', 'Administradora', ['placeholder' => 'Pesquise digitando a Administradora aqui!','onKeyUp' => 'autoCompAdministradora();']);
+        $this->setInputText('administradoraDesc', 'Administradora', ['placeholder' => 'Pesquise digitando a Administradora aqui!','onKeyUp' => 'autoCompAdministradora();', 'autoComplete' => 'off']);
 
         $this->setInputSubmit('enviar', 'Salvar');
     }   

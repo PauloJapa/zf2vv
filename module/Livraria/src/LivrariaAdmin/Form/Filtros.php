@@ -21,8 +21,20 @@ class Filtros  extends AbstractForm {
         
         $this->setInputText('busca', 'Pesquisa');
         
+        $this->setInputText('nome', 'Nome');
+        
         
         $this->setInputSubmit('enviar', 'Pesquisar', ['onClick' => 'return buscar()']);
+        
+        
+        $this->setInputRadio('cpfOuCnpj', 'Escolha', ['cpf' => 'CPF','cnpj' => 'CNPJ']);
+        $this->get('cpfOuCnpj')->setValue('cpf');
+        
+        $attributes=[];
+        $attributes['placeholder'] = '';
+        $attributes['onKeyUp'] = 'this.value=cpfCnpj(this.value)';
+        $attributes['onblur'] = 'if(this.value != varVazio)checkCPF_CNPJ(this)';
+        $this->setInputText('documento', 'Documento', $attributes);
         
     }
     
