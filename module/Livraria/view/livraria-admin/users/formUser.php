@@ -1,3 +1,5 @@
+
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
 <?php if(count($flashMessages)) : ?>
 <div class="control-group error">
 <ul class="help-inline">
@@ -53,5 +55,9 @@ require 'index.phtml';
         var returns = Array('administradora','administradoraDesc');
         var functionCall = 'buscaAdministradora()';
         autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
+    }
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'',formName);
     }
 </script>

@@ -21,6 +21,6 @@ class Atividade extends AbstractForm {
         $options = ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria'];
         $this->setInputSelect('ocupacao', '*Ocupação', $options);
 
-        $this->setInputSubmit('submit', 'Salvar');
+        $this->setInputSubmit('enviar', 'Salvar');
     }
 }

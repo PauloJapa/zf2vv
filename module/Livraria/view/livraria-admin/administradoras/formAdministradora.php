@@ -1,3 +1,5 @@
+
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
 <?php if(count($flashMessages)) : ?>
 <div class="control-group error">
 <ul class="help-inline">
@@ -55,5 +57,9 @@ require 'index.phtml';
     function salvar(){
         envia(tar,'salvar',formName);
         return false;
+    }
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'',formName);
     }
 </script>
