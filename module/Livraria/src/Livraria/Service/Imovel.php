@@ -27,6 +27,7 @@ class Imovel extends AbstractService {
         $this->idToReference('locador', 'Livraria\Entity\Locador');
         if(empty($this->data['atividade']))$this->data['atividade'] = '5';
         $this->idToReference('atividade', 'Livraria\Entity\Atividade');
+        $this->idToReference('locatario', 'Livraria\Entity\Locatario');
     }
 
     /** 
@@ -106,6 +107,7 @@ class Imovel extends AbstractService {
     public function getDiff($ent){
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
+        $this->dePara .= $this->diffAfterBefore('Locatario', $ent->getLocatario(), $this->data['locatario']);
         $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
         $this->dePara .= $this->diffAfterBefore('Telefone', $ent->getTel(), $this->data['tel']);
         $this->dePara .= $this->diffAfterBefore('Bloco', $ent->getBloco(), $this->data['bloco']);

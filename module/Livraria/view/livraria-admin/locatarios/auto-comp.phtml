@@ -1,7 +1,7 @@
 <?php 
 if($this->resultSet){
     echo "ok|s|";
-    if($this->subOpcao ==''){
+    if($this->subOpcao =='Pesquisar'){
         echo 'X|c|',
              'X|c|',
              'Id|c|',
@@ -24,7 +24,7 @@ if($this->resultSet){
     foreach($this->resultSet as $entity){
         if($cont > 0)echo "|s|";
         $cont++;
-        if($this->subOpcao ==''){
+        if($this->subOpcao =='Pesquisar'){
             echo $entity->getId(), "|c|"; 
             echo $entity->getNome(), "|c|"; 
             echo $entity->getId(), "|c|"; 

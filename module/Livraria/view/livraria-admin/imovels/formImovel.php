@@ -13,20 +13,22 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados do Imovel', 'hidden' => 'id'],'inicio',$this, $form),
-    "<td>\n",
-        $this->FormDefault(['subOpcao','ajaxStatus','autoComp','locador','atividade'], 'hidden'),
+    "<td colspan='3'>",
+        $this->FormDefault(['subOpcao','ajaxStatus','autoComp','locador','atividade','locatario'], 'hidden'),
         $this->FormDefault(['name' => 'locadorDesc','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
-    "</td><td>\n",
-        $this->FormDefault(['name' => 'atividadeDesc','icone' => 'icon-search','js' => 'autoCompAtividade()','span' => "popAtividade' style='position:absolute"],'icone'),
-    "</td><td>\n",
+    "</td>\n",
+"</tr><tr>\n",        
+    "<td colspan='3'>",
+        $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
     "</td>",
 "</tr><tr>\n",        
-    "<td>\n",
+    "<td>",
+        $this->FormDefault(['name' => 'atividadeDesc','icone' => 'icon-search','js' => 'autoCompAtividade()','span' => "popAtividade' style='position:absolute"],'icone'),
+    "</td><td>\n",
         $this->FormDefault(['status'], 'select'),
     "</td><td>\n",
         $this->FormDefault(['tel'], 'text'),
-    "</td><td>\n",
-    "</td>",
+    "</td>\n",
 "</tr><tr>\n",        
         
 $this->FormDefault(['submit' => 'enviar'],'fieldFim'),
@@ -70,6 +72,8 @@ $this->FormDefault(['legend' => 'Endereço:', 'hidden' => 'idEnde'],'fieldIni',$
 $this->FormDefault([],'fieldFim');        
         
 $this->FormDefault(['submit' => 'enviar','noField' => true],'fim');
+
+$noFilter=true;
 
 require 'index.phtml';
 
@@ -125,6 +129,16 @@ require 'index.phtml';
     }
     function buscaLocador(){
         envia(tar,'buscar',formName);
+    }
+
+    function autoCompLocatario(){
+        var locatario = document.getElementById('locatario');
+        document.getElementById('autoComp').value = 'locatarioNome';
+        var filtros = 'locatarioNome,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locatarios','action'=>'autoComp')); ?>";
+        var returns = Array('locatario','locatarioNome');
+        var functionCall = 'setCpfOrCnpj()';
+        autoComp2(filtros,servico,'popLocatario',returns,'2',functionCall,'');
     }
 
     function autoCompAtividade(){

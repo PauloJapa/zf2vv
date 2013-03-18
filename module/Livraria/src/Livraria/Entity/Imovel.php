@@ -103,6 +103,16 @@ class Imovel
      */
     private $locador;
 
+    /**
+     * @var Locatario
+     *
+     * @ORM\ManyToOne(targetEntity="Locatario")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
+     * })
+     */
+    private $locatario;
+
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -312,6 +322,24 @@ class Imovel
     }
 
     /**
+     * Locatario Atual ou ultimo a loca-lo do imovel
+     * @return \Livraria\Entity\Locatario
+     */
+    public function getLocatario() {
+        return $this->locatario;
+    }
+
+    /**
+     * Locatario que esta locando o imovel
+     * @param \Livraria\Entity\Locatario $locatario
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setLocatario(Locatario $locatario) {
+        $this->locatario = $locatario;
+        return $this;
+    }
+
+        /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -324,7 +352,9 @@ class Imovel
         $data['atividadeDesc'] = $this->getAtividade();
         $data['atividade'] = $this->getAtividade()->getId();
         $data['locadorDesc']   = $this->getLocador();
+        $data['locatarioNome']   = $this->getLocatario();
         $data['locador']   = $this->getLocador()->getId();
+        $data['locatario']   = $this->getLocatario()->getId();
         $data['status']    = $this->getStatus();
         return $data ;
     }

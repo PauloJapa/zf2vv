@@ -132,7 +132,9 @@ class LocadorsController extends CrudController {
     public function autoCompAction(){
         
         $subOpcao = $this->getRequest()->getPost('subOpcao','');
-        $locadorNome = trim($this->getRequest()->getPost('locadorNome'));
+        $locadorNome = trim($this->getRequest()->getPost('locadorNome',''));
+        if (empty($locadorNome))
+            $locadorNome = trim($this->getRequest()->getPost('locadorDesc',''));
         $administradora = trim($this->getRequest()->getPost('administradora',''));
         
         $repository = $this->getEm()->getRepository($this->entity);

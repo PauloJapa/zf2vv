@@ -45,11 +45,23 @@ class Imovel extends AbstractEndereco {
         $this->setInputSelect('status', 'Situação', $options);
 
         $this->setInputHidden('atividade');
-        $this->setInputText('atividadeDesc', 'Atividade', ['placeholder' => 'Pesquise digitando a atividade aqui!','onKeyUp' => 'autoCompAtividade();']);
+        $this->setInputText('atividadeDesc', 'Atividade', ['placeholder' => 'Pesquise digitando a atividade aqui!','onKeyUp' => 'autoCompAtividade();', 'autoComplete' => 'off']);
 
+        
+        $attributes = [
+            'placeholder'  => 'Pesquise pelo nome, cpf ou cnpj aqui!',
+            'onKeyUp'      => 'autoCompLocador();',
+            'onClick'      => 'cleanInput(this.id);',
+            'autoComplete' => 'off',
+            'class' => 'input-xmlarge',
+        ];
         $this->setInputHidden('locador');
-        $this->setInputText('locadorDesc', 'Locador', ['placeholder' => 'Pesquise pelo nome, cpf ou cnpj aqui!','onKeyUp' => 'autoCompLocador();']);
+        $this->setInputText('locadorDesc','Locador',$attributes);
 
+        $attributes['onKeyUp'] = 'autoCompLocatario();';
+        $this->setInputHidden('locatario');
+        $this->setInputText('locatarioNome', 'Locatario', $attributes);
+        
         $this->getEnderecoElements($em);
 
         $this->setInputSubmit('enviar', 'Salvar', ['onClick' => 'return salvar()']);

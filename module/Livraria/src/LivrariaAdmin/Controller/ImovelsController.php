@@ -28,7 +28,26 @@ class ImovelsController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('rua' => 'ASC', 'numero' => 'ASC'));
+        $this->verificaSeUserAdmin();
+        $orderBy = array('rua' => 'ASC', 'numero' => 'ASC');
+        if(!$this->render){
+            return parent::indexAction($filtro, $orderBy);
+        }
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction($filtro, $orderBy);
+        }
+        $filtro=[];
+        if(!empty($data['rua'])){
+            $filtro['rua'] = $data['rua'];
+        }
+        
+        $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->pesquisa($data);
+        
+        return parent::indexAction($filtro, $orderBy, $list);
     }
 
     /**

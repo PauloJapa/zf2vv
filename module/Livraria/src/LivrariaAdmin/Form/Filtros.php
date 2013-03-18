@@ -23,6 +23,7 @@ class Filtros  extends AbstractForm {
         
         $this->setInputText('nome', 'Nome');
         
+        $this->setInputText('rua', 'Rua');
         
         $this->setInputSubmit('enviar', 'Pesquisar', ['onClick' => 'return buscar()']);
         

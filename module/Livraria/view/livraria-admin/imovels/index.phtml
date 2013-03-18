@@ -3,7 +3,23 @@
 
 <p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Imovel</span></p>
 <?php
-$coluns = array('ID','Locador','Atividade','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
+
+    if(!isset($noFilter)){
+        $form = $this->form; 
+        $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+        $form->prepare();
+        echo 
+        $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+            "<td>\r",
+                $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp'], 'hidden'),
+                $this->FormDefault(['rua'], 'textLine'),
+            "</td><td style='width:60%;'>\r",
+                $this->FormDefault(['enviar'], 'submitOnly'),
+            "</td>\r",
+        $this->FormDefault([],'fim');
+    }
+
+$coluns = array('ID','Locador','Locatario','Atividade','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
 $td     = array();
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
@@ -12,6 +28,7 @@ foreach($this->data as $entity){
     $linha = array(
         $entity->getId(),
         $entity->getLocador(),
+        $entity->getLocatario(),
         $entity->getAtividade(),
         $entity->getRua(),
         $entity->getNumero(),
@@ -32,6 +49,11 @@ echo $this->ViewIndex('close');
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }  
     function edit(id){
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
