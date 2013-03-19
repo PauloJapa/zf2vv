@@ -32,11 +32,13 @@
 </div>
 <?php endif; ?>
 <?php
+$user = $this->UserIdentity('LivrariaAdmin');
+
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\n",
-        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora','locador','imovel','imovelTel','imovelStatus','locatario','atividade','seguradora','taxa','comissao','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
+        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>\n",
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -60,10 +62,23 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
         $this->FormDefault(['cpf','cnpj'],'text'),
     "</td>\n",
   "</tr>\n",
-"</table>\n",
+"</table>\n";
         
-        
+    // Usuario Administrador pode alterar seguradora e valor da comissão    
+    if ($user->getTipo() != 'admin') {
+        echo $this->FormDefault(['seguradora', 'comissao'], 'hidden');
+    } else {
+        echo 
+        $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
+            "<td>",
+                $this->FormDefault(['comissao' => 'float']),
+            "</td><td>\n",
+                $this->FormDefault(['seguradora' => 'select']),
+            "</td>\n",
+        $this->FormDefault([],'fieldFim');
+    }
 
+echo 
 $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'fieldIni'),
 
     "<td colspan='3' nowrap>\n",

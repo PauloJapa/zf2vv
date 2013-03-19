@@ -84,21 +84,25 @@ class Orcamento extends AbstractService {
         $this->calculaVigencia();
        
         //Comissão da Administradora padrão
-        $this->data['comissao'] = $this->em
-            ->getRepository('Livraria\Entity\Comissao')
-            ->findComissaoVigente($this->data['administradora']->getId())
-            ->floatToStr('comissao');
+        if(empty($this->data['comissao'])){
+            $this->data['comissaoEnt'] = $this->em
+                ->getRepository('Livraria\Entity\Comissao')
+                ->findComissaoVigente($this->data['administradora']->getId(),  $this->data['criadoEm']);
+            $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
+        }else{
+            $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
+        }
         
         $this->data['taxa'] = $this->em
             ->getRepository('Livraria\Entity\Taxa')
-            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId());
+            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId(), $this->data['criadoEm']);
 
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
         
         $this->data['multiplosMinimos'] = $this->em
             ->getRepository('Livraria\Entity\MultiplosMinimos')
-            ->findMultMinVigente($this->data['seguradora']->getId());
+            ->findMultMinVigente($this->data['seguradora']->getId(), $this->data['criadoEm']);
         
         $resul = $this->CalculaPremio();
         
@@ -144,7 +148,7 @@ class Orcamento extends AbstractService {
     public function setImovel(){
         if(empty($this->data['imovel'])){
             $serviceImovel = new Imovel($this->em);
-            $resul = $serviceImovel->insert($this->data);
+            $resul = $serviceImovel->insert(array_merge($this->data,['status'=>'A']));
             if(is_array($resul)){
                 if($resul[0] == "Já existe um imovel neste endereço  registro:"){
                     $this->data['imovel'] = $resul[1];
@@ -267,6 +271,8 @@ class Orcamento extends AbstractService {
         $this->calculaVigencia();
         
         $this->idToEntity('taxa', 'Livraria\Entity\Taxa');
+        
+        $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
         
         $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
 

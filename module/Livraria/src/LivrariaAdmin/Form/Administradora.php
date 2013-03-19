@@ -7,6 +7,10 @@ use Zend\Form\Form,
 
 class Administradora extends AbstractEndereco {
     
+    /**
+     * Array para montar um Select com as seguradoras
+     * @var array
+     */
     protected $seguradoras;    
 
     public function __construct($name = null, $em = null) {

@@ -374,6 +374,16 @@ class Renovacao  extends AbstractSeguro
      * })
      */
     protected $multiplosMinimos;
+
+    /**
+     * @var ComissaoEnt
+     *
+     * @ORM\OneToOne(targetEntity="Comissao")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
+     * })
+     */
+    protected $comissaoEnt;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados

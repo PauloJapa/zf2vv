@@ -10,32 +10,49 @@ use Doctrine\ORM\EntityRepository;
  */
 class TaxaRepository extends EntityRepository {
 
+    /*
+     * Query 
+     *  SELECT * FROM `comissao` 
+        WHERE inicio <= 20130601 
+        AND administradora_id = 1
+        ORDER BY inicio DESC    
+        LIMIT 1 
+     */
     /**
-     * Busca um taxa valida para atividade e seguradora vigente.
-     * @param type $seguradora
-     * @param type $atividade
+     * Busca uma taxa para atividade e seguradora na data $date.
+     * @param string $seguradora
+     * @param string $atividade
+     * @param string $date
      * @return boolean|Entity Livraria\Entity\Taxa
      */
-    public function findTaxaVigente($seguradora, $atividade){
+    public function findTaxaVigente($seguradora, $atividade, $date){
+        //Pegar classeAtividade correspondente vigente na data
+        $classeAtividade = $this->getEntityManager()
+                ->getRepository('Livraria\Entity\ClasseAtividade')
+                ->findClasseVigente($seguradora, $atividade, $date);
+        
+        if(!is_object($classeAtividade)){
+            return FALSE;
+        }
+        //Converter string data em objeto datetime
+        if(!is_object($date)){
+            $date = explode("/", $date);
+            $date = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }
+        
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('t,c,s')
+                ->select('t')
                 ->from('Livraria\Entity\Taxa', 't')
-                ->from('Livraria\Entity\ClasseAtividade', 'ca')
-                ->join('t.classe', 'c')
-                ->join('t.seguradora', 's')
                 ->where(" t.seguradora = :seguradora
-                    AND   t.status = :status
-                    AND   c.seguradora = t.seguradora
-                    AND   ca.classeTaxas = c
-                    AND   ca.status = t.status
-                    AND   ca.atividade = :atividade
-                    AND   ca.seguradora = t.seguradora
+                    AND   t.classe = :classe
+                    AND   t.inicio <= :inicio
                     ")
                 ->setParameter('seguradora', $seguradora)
-                ->setParameter('status', 'A')
-                ->setParameter('atividade', $atividade)
-                ->setMaxResults(10)
+                ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())
+                ->setParameter('inicio', $date)
+                ->setMaxResults(1)
+                ->orderBy('t.inicio', 'DESC')
                 ->getQuery()
                 ;
         $resul = $query->getResult();

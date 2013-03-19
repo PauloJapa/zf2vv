@@ -167,7 +167,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Ano do orcamento
      * @param int $codano
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setCodano($codano) {
         $this->codano = $codano;
@@ -185,7 +185,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Nome do locador
      * @param string $locadorNome
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setLocadorNome($locadorNome) {
         $this->locadorNome = $locadorNome;
@@ -203,7 +203,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Nome do Locatario
      * @param string $locatarioNome
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setLocatarioNome($locatarioNome) {
         $this->locatarioNome = $locatarioNome;
@@ -221,7 +221,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Valor do aluguel base de todo calculo
      * @param string $valorAluguel
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setValorAluguel($valorAluguel) {
         $this->valorAluguel = $this->trataFloat($valorAluguel,8);
@@ -239,7 +239,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
      * @param string $tipoCobertura
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setTipoCobertura($tipoCobertura) {
         $this->tipoCobertura = $tipoCobertura;
@@ -257,7 +257,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Para Locador 01 para locatario 02
      * @param string $seguroEmNome
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setSeguroEmNome($seguroEmNome) {
         $this->seguroEmNome = $seguroEmNome;
@@ -275,7 +275,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Campo de pouco uso e não esta definido no processo provavel para calculo de comissão
      * @param string $codigoGerente
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setCodigoGerente($codigoGerente) {
         $this->codigoGerente = $codigoGerente;
@@ -293,7 +293,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Codigo do imovel na Administradora para busca rapida
      * @param string $refImovel
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setRefImovel($refImovel) {
         $this->refImovel = $refImovel;
@@ -311,7 +311,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Params 01=A vista(no ato), 02=2vezes(1+1), 03=3vezes(1+2)
      * @param string $formaPagto
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setFormaPagto($formaPagto) {
         $this->formaPagto = $formaPagto;
@@ -329,7 +329,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Cobertura para incendio baseado no multiplo incendio da seguradora vezes aluguel
      * @param string $incendio
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setIncendio($incendio) {
         $this->incendio = $this->trataFloat($incendio,8);
@@ -347,7 +347,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Cobertura para conteudo baseado no multiplo conteudo da seguradora vezes aluguel
      * @param string $incendio
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setConteudo($conteudo) {
         $this->conteudo = $this->trataFloat($conteudo,8);
@@ -365,7 +365,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Cobertura para aluguel baseado no multiplo aluguel da seguradora vezes aluguel
      * @param string $aluguel
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setAluguel($aluguel) {
         $this->aluguel = $this->trataFloat($aluguel,8);
@@ -383,7 +383,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Cobertura para danos eletrico baseado no multiplo eletrico da seguradora vezes aluguel
      * @param string $eletrico
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setEletrico($eletrico) {
         $this->eletrico = $this->trataFloat($eletrico,8);
@@ -401,7 +401,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Cobertura para desastres naturais baseado no multiplo vendaval da seguradora vezes aluguel
      * @param string $vendaval
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setVendaval($vendaval) {
         $this->vendaval = $this->trataFloat($vendaval,8);
@@ -419,7 +419,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * nao esta bem definido sua utilização
      * @param int $numeroParcela
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setNumeroParcela($numeroParcela) {
         $this->numeroParcela = $numeroParcela;
@@ -437,7 +437,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Valor liquido do seguro
      * @param string $premioLiquido
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setPremioLiquido($premioLiquido) {
         $this->premioLiquido = $this->trataFloat($premioLiquido,8);
@@ -455,7 +455,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Valor do seguro
      * @param string $premio
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setPremio($premio) {
         $this->premio = $this->trataFloat($premio,8);
@@ -473,7 +473,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Valor total do seguro
      * @param string $premioTotal
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setPremioTotal($premioTotal) {
         $this->premioTotal = $this->trataFloat($premioTotal,8);
@@ -494,7 +494,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Data em que foi cancelado o seguro 
      * @param \DateTime $canceladoEm
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setCanceladoEm(\DateTime $canceladoEm) {
         $this->canceladoEm = $canceladoEm;
@@ -512,7 +512,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Observações do orcamento outro detalhes ficam no log de auditoria
      * @param string $observacao
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setObservacao($observacao) {
         $this->observacao = $observacao;
@@ -530,7 +530,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Não esta bem definido possivel se gerou para exportação
      * @param string(1) $gerado
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setGerado($gerado) {
         $this->gerado = $gerado;
@@ -549,7 +549,7 @@ class AbstractSeguro  extends Filtro {
      * Valor da comissão para Administradora 
      * Preenchido com base na comissão na entity de Comissao
      * @param string $comissao
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setComissao($comissao) {
         $this->comissao = $this->trataFloat($comissao,8);
@@ -567,7 +567,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Mes de aniversario paramentro para seguro fechado
      * @param int $mesNiver
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setMesNiver($mesNiver) {
         $this->mesNiver = $mesNiver;
@@ -585,7 +585,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * 'mensal'|'anual'
      * @param string $validade
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setValidade($validade){
         $this->validade = $validade;
@@ -604,7 +604,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria']
      * @param string $ocupacao
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setOcupacao($ocupacao){
         $this->ocupacao = $ocupacao;
@@ -623,7 +623,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Taxa do IOF
      * @param string $taxaIof
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setTaxaIof($taxaIof) {
         $this->taxaIof = $this->trataFloat($taxaIof,4);
@@ -732,7 +732,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Locador
      * @param \Livraria\Entity\Locador $locador
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setLocador(Locador $locador) {
         $this->locador = $locador;
@@ -750,7 +750,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Locatario
      * @param \Livraria\Entity\Locatario $locatario
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setLocatario(Locatario $locatario) {
         $this->locatario = $locatario;
@@ -768,7 +768,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Imovel
      * @param \Livraria\Entity\Imovel $imovel
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setImovel(Imovel $imovel) {
         $this->imovel = $imovel;
@@ -786,7 +786,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Taxa
      * @param \Livraria\Entity\Taxa $taxa
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setTaxa(Taxa $taxa) {
         $this->taxa = $taxa;
@@ -804,7 +804,7 @@ class AbstractSeguro  extends Filtro {
     /**
       * Entity do Atividade
      * @param \Livraria\Entity\Atividade $atividade
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setAtividade(Atividade $atividade) {
         $this->atividade = $atividade;
@@ -822,7 +822,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Seguradora
      * @param \Livraria\Entity\Seguradora $seguradora
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setSeguradora(Seguradora $seguradora) {
         $this->seguradora = $seguradora;
@@ -840,7 +840,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do Administradora
      * @param \Livraria\Entity\Administradora $administradora
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setAdministradora(Administradora $administradora) {
         $this->administradora = $administradora;
@@ -858,7 +858,7 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do User
      * @param \Livraria\Entity\User $user
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setUser(User $user) {
         $this->user = $user;
@@ -876,10 +876,29 @@ class AbstractSeguro  extends Filtro {
     /**
      * Entity do MultiplosMinimos
      * @param \Livraria\Entity\MultiplosMinimos $multiplosMinimos
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setMultiplosMinimos(MultiplosMinimos $multiplosMinimos) {
         $this->multiplosMinimos = $multiplosMinimos;
+        return $this;
+    }
+    
+    
+    /**
+     * Todos os dados da entity Comissao
+     * @return \Livraria\Entity\Comissao
+     */
+    public function getComissaoEnt() {
+        return $this->comissaoEnt;
+    }
+
+    /**
+     * Entity do MultiplosMinimos
+     * @param \Livraria\Entity\Comissao $multiplosMinimos
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados|Renovacao|Fechados
+     */
+    public function setComissaoEnt(Comissao $comissaoEnt) {
+        $this->comissaoEnt = $comissaoEnt;
         return $this;
     }
     
@@ -936,6 +955,7 @@ class AbstractSeguro  extends Filtro {
         $data['seguradora']     = $this->getSeguradora()->getId();
         $data['administradora'] = $this->getAdministradora()->getId();
         $data['multiplosMinimos'] = $this->getMultiplosMinimos()->getId();
+        $data['comissaoEnt']    = $this->getComissaoEnt()->getId();
         $data['user']           = $this->getUser()->getId();
         $data['mesNiver']       = $this->getMesNiver();
         $data['validade']       = $this->getValidade();

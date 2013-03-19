@@ -10,18 +10,30 @@ use Doctrine\ORM\EntityRepository;
  */
 class ComissaoRepository extends EntityRepository {
 
-    
-    public function findComissaoVigente($administradora){
-                
+    /*
+     * Query que vai trazer a comissão da data passada por parametro
+     *  SELECT * FROM `comissao` 
+        WHERE inicio <= 20130601 
+        AND administradora_id = 1
+        ORDER BY inicio DESC    
+        LIMIT 1 
+     */
+    public function findComissaoVigente($administradora, $date){
+        //Converter string data em objeto datetime
+        if(!is_object($date)){
+            $date = explode("/", $date);
+            $date = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }
+        
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('c')
                 ->from('Livraria\Entity\Comissao', 'c')
                 ->where(" c.administradora = :administradora
-                    AND   c.status = :status
+                    AND   c.inicio <= :inicio
                     ")
                 ->setParameter('administradora', $administradora)
-                ->setParameter('status', 'A')
+                ->setParameter('inicio', $date)
                 ->setMaxResults(1)
                 ->orderBy('c.inicio', 'DESC')
                 ->getQuery()

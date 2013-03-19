@@ -384,19 +384,19 @@ abstract class AbstractService {
         
         //Calcula de coberturas caso estejam zeradas do form
         if($incendio == 0.0)
-            $incendio = $vlrAluguel * $this->data['multiplosMinimos']->getMultIncendio();
+            $incendio = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();
         
         if($conteudo == 0.0)
-            $conteudo = $vlrAluguel * $this->data['multiplosMinimos']->getMultConteudo();
+            $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
         
         if($aluguel == 0.0)
-            $aluguel  = $vlrAluguel * $this->data['multiplosMinimos']->getMultAluguel();
+            $aluguel  = $vlrAluguel * $this->data['comissaoEnt']->getMultAluguel();
         
         if($eletrico == 0.0)
-            $eletrico = $vlrAluguel * $this->data['multiplosMinimos']->getMultEletrico();
+            $eletrico = $vlrAluguel * $this->data['comissaoEnt']->getMultEletrico();
         
         if($vendaval == 0.0)
-            $vendaval = $vlrAluguel * $this->data['multiplosMinimos']->getMultVendaval();
+            $vendaval = $vlrAluguel * $this->data['comissaoEnt']->getMultVendaval();
 
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
@@ -466,6 +466,10 @@ abstract class AbstractService {
             'aluguel'=>$this->data['aluguel'],
             'eletrico'=>$this->data['eletrico'],
             'vendaval'=>$this->data['vendaval'],
+            'taxaIof'=>$this->data['taxaIof'],
+            'taxa'=>$this->data['taxa']->getId(),
+            'user'=>$this->data['user']->getId(),
+            'multiplosMinimos'=>$this->data['multiplosMinimos']->getId(),
         );
     }
 

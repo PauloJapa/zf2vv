@@ -3,8 +3,9 @@
 namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form;
-use Zend\Form\Element;
 
+use Zend\Authentication\AuthenticationService,
+    Zend\Authentication\Storage\Session as SessionStorage;
 /**
  * AbstractForm
  * Abstração dos inputs + usados para montagem do from
@@ -29,6 +30,12 @@ abstract class AbstractForm extends Form {
      * @var bollean 
      */
     protected $isAdmin = false;
+    
+    /**
+     * Objeto que pega os dados do usuario armazenado
+     * @var Zend\Authentication\AuthenticationService
+     */
+    protected $authService;
 
     public function __construct($name = null) {
         parent::__construct($name);
@@ -38,6 +45,8 @@ abstract class AbstractForm extends Form {
         $this->setInputHidden('autoComp');
         $this->setInputHidden('scrolX');
         $this->setInputHidden('scrolY');
+        
+        $this->setIsAdmin();
     }
     
     /**
@@ -202,5 +211,31 @@ abstract class AbstractForm extends Form {
             $retira = array_shift($array);
         
         return $array;
+    }
+ 
+    /** 
+     * Busca os dados do usuario da storage session
+     * Retorna a entity com os dados do usuario
+     * @param Array $data com os campos do registro
+     * @return Livraria\Entity\User | boolean
+     */     
+    public function getIdentidade() { 
+        if (is_object($this->authService)) {
+            return $this->authService->getIdentity();
+        }else{
+            $sessionStorage = new SessionStorage("LivrariaAdmin");
+            $this->authService = new AuthenticationService;
+            $this->authService->setStorage($sessionStorage);
+            if ($this->authService->hasIdentity()) 
+                return $this->authService->getIdentity();
+        }
+        return FALSE;
+    }
+    
+    public function setIsAdmin(){
+        if($this->getIdentidade()->getTipo() == 'admin')
+            $this->isAdmin = TRUE;
+        else
+            $this->isAdmin = FALSE;
     }
 }

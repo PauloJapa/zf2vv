@@ -9,10 +9,10 @@ namespace LivrariaAdmin\Form;
 class Orcamento extends AbstractEndereco { 
     
     /**
-     * Objeto para manipular dados do BD
-     * @var Doctrine\ORM\EntityManager
+     * Array para montar um Select com as seguradoras
+     * @var array
      */
-    protected $em;
+    protected $seguradoras;
     
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('orcamento');
@@ -27,7 +27,6 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('codano');
         $this->setInputHidden('taxa');
         $this->setInputHidden('taxaIof');
-        $this->setInputHidden('comissao');
         $this->setInputHidden('canceladoEm');
         
         $this->setInputHidden('imovel');
@@ -137,7 +136,16 @@ class Orcamento extends AbstractEndereco {
         $this->setInputSelect('mesNiver', 'Mês de aniversário',$options);
         
         $this->setInputHidden('administradora');
-        $this->setInputHidden('seguradora');
+        $this->setInputHidden('comissaoEnt');
+        
+        if ($this->isAdmin) {
+            $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
+            $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
+            $this->setInputText('comissao', 'Comissão da Administradora');
+        } else {
+            $this->setInputHidden('seguradora');
+            $this->setInputHidden('comissao');
+        }       
         
         $this->getEnderecoElements($em);
         

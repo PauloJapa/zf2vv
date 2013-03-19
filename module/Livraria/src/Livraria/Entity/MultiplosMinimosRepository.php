@@ -11,19 +11,23 @@ use Doctrine\ORM\EntityRepository;
 class MultiplosMinimosRepository extends EntityRepository {
 
     
-    public function findMultMinVigente($seguradora){
+    public function findMultMinVigente($seguradora, $date){
+        //Converter string data em objeto datetime
+        if(!is_object($date)){
+            $date = explode("/", $date);
+            $date = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+        }
                 
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('mm,s')
+                ->select('mm')
                 ->from('Livraria\Entity\MultiplosMinimos', 'mm')
-                ->join('mm.seguradora', 's')
                 ->where(" mm.seguradora = :seguradora
-                    AND   mm.multStatus = :status
+                    AND   mm.multVigenciaInicio <= :inicio
                     ")
                 ->setParameter('seguradora', $seguradora)
-                ->setParameter('status', 'A')
-                ->setMaxResults(5)
+                ->setParameter('inicio', $date)
+                ->setMaxResults(1)
                 ->orderBy('mm.multVigenciaInicio', 'DESC')
                 ->getQuery()
                 ;

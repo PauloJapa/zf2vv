@@ -108,12 +108,20 @@ class OrcamentosController extends CrudController {
        
         $data = $this->getRequest()->getPost()->toArray();
         if((!isset($data['subOpcao'])) OR ($data['subOpcao'] == 'novo')){
-            $data['subOpcao'] = '';
+            $data['subOpcao']     = '';
             $data['seguroEmNome'] = '02';
-            $data['pais'] = '1';
+            $data['pais']         = '1';
             if(($this->getIdentidade()->getTipo() == 'admin')and(!isset($sessionContainer->expiraSessaoMontada))){
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'escolheAdm'));
             }
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['seguradora']     = $sessionContainer->seguradora['id'];
+            $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
+            $comissaoEnt = $this->getEm()
+                ->getRepository('Livraria\Entity\Comissao')
+                ->findComissaoVigente($data['administradora'],  $data['criadoEm']);
+            $data['comissaoEnt'] = $comissaoEnt->getId();
+            $data['comissao'] = $comissaoEnt->floatToStr('comissao');
             $data['formaPagto'] = $sessionContainer->administradora['formaPagto'];
             $data['validade'] = $sessionContainer->administradora['validade'];
             $data['tipoCobertura'] = $sessionContainer->administradora['tipoCobertura'];
@@ -121,14 +129,9 @@ class OrcamentosController extends CrudController {
             unset($sessionContainer->expiraSessaoMontada);
         }
         
-        
         if(!isset($sessionContainer->administradora['id'])){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
         }
-        
-        $data['administradora'] = $sessionContainer->administradora['id'];
-        $data['seguradora'] = $sessionContainer->seguradora['id'];
-        $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
         
         $filtroForm = array();
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
