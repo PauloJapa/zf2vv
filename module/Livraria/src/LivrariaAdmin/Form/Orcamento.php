@@ -85,7 +85,8 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyPress'=>'cleanCoberturas()']);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
-        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura);
+        $tipoCob = ['onChange'=>'travaResidencial();'];
+        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura, $tipoCob);
         
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
@@ -99,7 +100,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('seguroEmNome', 'Seguro em nome', ['01' => 'Locador','02' => 'Locatário']);
         
         $options = ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria'];
-        $attributes = ['onClick' => "cleanAtividade()"];
+        $attributes = ['onClick' => "cleanAtividade();travaResidencial();"];
         $this->setInputRadio('ocupacao', 'Ocupação', $options,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
@@ -153,12 +154,15 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small','onchange' => 'limpaImovel();']);
 
-        $this->setInputText('apto', 'Apartamento', ['class'=>'input-small','onchange' => 'limpaImovel();']);
+        $this->setInputText('apto', 'Apartamento', ['placeholder'=>'Apto Numero', 'class'=>'input-small','onchange' => 'limpaImovel();']);
 
         $this->setInputSubmit('enviar', 'Salvar');
         
         $this->setInputSubmit('calcula', 'Calcular',['onClick'=>'return calcular()']);
+        
         $this->setInputSubmit('fecha', 'Fechar Seguro',['onClick'=>'return fechar()']);
+        
+        $this->setInputSubmit('getpdf', 'Imprimir Proposta',['onClick'=>'return printProposta()']);
         
     }
  
@@ -177,6 +181,12 @@ class Orcamento extends AbstractEndereco {
         $this->get('ocupacao')->setAttribute('disabled', 'true');   
         $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+    }
+    
+    public function bloqueiaCampos(){
+        $this->isAdmin = FALSE;
+        
+        $this->get('formaPagto')->setAttribute('disabled', 'true');   
     }
     
 }

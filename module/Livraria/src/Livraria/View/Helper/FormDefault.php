@@ -172,16 +172,16 @@ class FormDefault extends AbstractHelper {
      * @param Array $options 
      */
     public function renderFieldsetIni($options) {
-        echo "<fieldset>\n",
+        echo "<fieldset>", PHP_EOL,
                 "<legend>";
         if(isset($options['legend'])) 
             echo $options['legend'];
-        echo    "</legend>\n";
+        echo    "</legend>", PHP_EOL;
         if(isset($options['hidden'])) 
             $this->renderInputHidden($options['hidden']);
         echo            
-                "<table style='width : 100% ;'>\n",
-                    "<tr valign='top'>\n"; 
+                "<table style='width : 100% ;'>", PHP_EOL,
+                    "<tr valign='top'>", PHP_EOL; 
     }
 
     /**
@@ -191,9 +191,9 @@ class FormDefault extends AbstractHelper {
      */
     public function renderFieldsetFim($options) {
         echo
-                "</tr>\n",
-            "</table>\n",
-        "</fieldset>\n";
+                "</tr>", PHP_EOL,
+            "</table>", PHP_EOL,
+        "</fieldset>", PHP_EOL;
         if(isset($options['submit'])) 
             $this->renderInputSubmit($options['submit']);
     }
@@ -211,7 +211,7 @@ class FormDefault extends AbstractHelper {
             if(isset($options['submit']))
                 $this->renderInputSubmit($options['submit']);
         }
-        echo $this->formView->form()->closeTag(),"\n";        
+        echo $this->formView->form()->closeTag(), PHP_EOL;        
     }
 
     /**
@@ -231,7 +231,7 @@ class FormDefault extends AbstractHelper {
         echo
         "<div align='center'>",
             $this->formView->formSubmit($this->form->get($name)),
-        "</div>\n";
+        "</div>", PHP_EOL;
     }
     
     public function renderInputSubmits($names=[]){
@@ -249,7 +249,7 @@ class FormDefault extends AbstractHelper {
      * @param String $name
      */
     public function renderInputHidden($name) {
-        echo $this->formView->formHidden($this->form->get($name)),"\n";          
+        echo $this->formView->formHidden($this->form->get($name)), PHP_EOL;          
     }
 
     /**
@@ -271,7 +271,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formTextarea($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\n",
+        "</div>", PHP_EOL,
         $this->checkError();
     }
 
@@ -294,7 +294,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\n",
+        "</div>", PHP_EOL,
         $this->checkError();
     }
 
@@ -318,8 +318,8 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\n",
-        "</div>\n",
+        "</div>", PHP_EOL,
+        "</div>", PHP_EOL,
         $this->checkError();
     }
 
@@ -340,7 +340,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="displayCalendar(document.forms[0].', $name ,',dateFormat,this)"><i class="icon-calendar"></i></span>',
-        "</div>\n",
+        "</div>", PHP_EOL,
         $this->checkError();
     }
 
@@ -362,7 +362,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\n",
+        "</div>", PHP_EOL,
         '<script language="javascript">',
         '$(function(){$("#',
                 $name,
@@ -410,8 +410,8 @@ class FormDefault extends AbstractHelper {
             $this->formView->formLabel($element),
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
-        "</div>\n",
-        "</div>\n",
+        "</div>", PHP_EOL,
+        "</div>", PHP_EOL,
         '<script language="javascript">',
         '$(function(){$("#',
                 $name,
@@ -437,7 +437,7 @@ class FormDefault extends AbstractHelper {
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
-        "</div>\n";
+        "</div>", PHP_EOL;
         if(isset($options['span'])) 
             echo "<span id='", $options['span'] ,"'></span></font>";    
         $this->checkError();        
@@ -460,8 +460,8 @@ class FormDefault extends AbstractHelper {
             $this->formView->formText($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
-        "</div>\n",
-        "</div>\n";
+        "</div>", PHP_EOL,
+        "</div>", PHP_EOL;
         if(isset($options['span'])) 
             echo "<span id='", $options['span'] ,"'></span></font>";    
         $this->checkError();        
@@ -483,8 +483,10 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
-        "</div>\n";
+        "</div>", PHP_EOL;
         $this->checkError();
+        if($element->getAttribute('disabled'))
+            echo '<input type="hidden" name="', $name, '" id="', $name, '" value="', $element->getValue() ,'">', PHP_EOL;
     }
 
     /**
@@ -504,9 +506,11 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append control-group" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formSelect($element),
-        "</div>\n";
-        "</div>\n";
+        "</div>", PHP_EOL,
+        "</div>", PHP_EOL;
         $this->checkError();
+        if($element->getAttribute('disabled'))
+            echo '<input type="hidden" name="', $name, '" id="', $name, '" value="', $element->getValue() ,'">', PHP_EOL;
     }
     
     
@@ -525,7 +529,7 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formRadio($element),
-        "</div>\n";
+        "</div>", PHP_EOL;
         if($disabled)
             echo '<script language="javascript">',
                     'setInputDisabledMulti("', $name, '");',
@@ -543,7 +547,7 @@ class FormDefault extends AbstractHelper {
     public function checkError($element = null) {
         if(is_null($element)){
             if($this->inputError){
-                echo $this->inputError, "</div>\n";
+                echo $this->inputError, "</div>", PHP_EOL;
                 $this->inputError = false;
             }
         }else {

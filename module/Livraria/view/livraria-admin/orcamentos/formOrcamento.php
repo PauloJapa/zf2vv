@@ -37,32 +37,32 @@ $user = $this->UserIdentity('LivrariaAdmin');
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
-    "<td>\n",
+    "<td>",
         $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['criadoEm' => 'calend']),
-    "</td>\n",
-  "</tr><tr>\n",
-    "<td>\n",
+    "</td>", PHP_EOL,
+  "</tr><tr>", PHP_EOL,
+    "<td>",
         $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['tipoLoc' => 'select']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['cpfLoc','cnpjLoc'],'text'),
-    "</td>\n",
-  "</tr><tr>\n",
-    "<td>\n",
+    "</td>", PHP_EOL,
+  "</tr><tr>", PHP_EOL,
+    "<td>",
         $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['tipo' => 'select']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['cpf','cnpj'],'text'),
-    "</td>\n",
-  "</tr>\n",
-"</table>\n";
+    "</td>", PHP_EOL,
+  "</tr>", PHP_EOL,
+"</table>", PHP_EOL;
         
     // Usuario Administrador pode alterar seguradora e valor da comissão    
     if ($user->getTipo() != 'admin') {
@@ -72,80 +72,80 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
         $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
             "<td>",
                 $this->FormDefault(['comissao' => 'float']),
-            "</td><td>\n",
+            "</td><td>", PHP_EOL,
                 $this->FormDefault(['seguradora' => 'select']),
-            "</td>\n",
+            "</td>", PHP_EOL,
         $this->FormDefault([],'fieldFim');
     }
 
 echo 
 $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'fieldIni'),
 
-    "<td colspan='3' nowrap>\n",
+    "<td colspan='3' nowrap>", PHP_EOL,
         '<a href="javascript:autoCompImoveis();">Exibir Imoveis desse locador <i class="icon-search"></i></a>',
         '<br /><span id="popImoveis" style="position:absolute"></span>',
         $this->FormDefault(['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
     "</td>",        
-"</tr><tr>\n",        
-    "<td>\n",
+"</tr><tr>", PHP_EOL,       
+    "<td>",
         $this->FormDefault(['ajaxStatus' => 'hidden']),
         $this->FormDefault(['rua' => 'text']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['numero' => 'text']),
-    "</td><td>\n",
-        $this->FormDefault(['bloco'], 'text'),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['apto'], 'text'),
-    "</td>\n",
-"</tr><tr>\n",        
-    "<td colspan='3'>\n",
+    "</td><td>", PHP_EOL,
+        $this->FormDefault(['bloco'], 'text'),
+    "</td>", PHP_EOL,
+"</tr><tr>", PHP_EOL,        
+    "<td colspan='3'>", PHP_EOL,
         $this->FormDefault(['compl' => 'text']),
-    "</td>\n",
-"</tr>\n",   
-"</table>\n",   
-"<table style='width : 100% ;'>\n",        
-"<tr valign='top'>\n",   
-    "<td>\n",
+    "</td>", PHP_EOL,
+"</tr>", PHP_EOL,   
+"</table>", PHP_EOL,   
+"<table style='width : 100% ;'>", PHP_EOL,        
+"<tr valign='top'>", PHP_EOL,   
+    "<td>",
         $this->FormDefault(['bairro' => 'hidden', 'bairroDesc' => 'text']),
         "<br /><span id='popBairro' style='position:absolute'></span>",
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['cidade' => 'hidden', 'cidadeDesc' => 'text']),
         "<br /><span id='popCidade' style='position:absolute'></span>",
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['estado' => 'select']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['pais' => 'select']),
-    "</td>\n",
+    "</td>", PHP_EOL,
 
 $this->FormDefault([],'fieldFim'),  
 
 
-"<table style='width : 100% ;'>\n",        
-"<tr valign='top'>\n",  
-    "<td>\n",
+"<table style='width : 100% ;'>", PHP_EOL,        
+"<tr valign='top'>", PHP_EOL,  
+    "<td>",
         $this->FormDefault(['inicio' => 'calend']),
         $this->FormDefault(['validade' => 'radio']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['fim' => 'calend']),
         $this->FormDefault(['mesNiver' => 'select']),
-    "</td>\n",
-  "</tr><tr>\n",
-    "<td>\n",
+    "</td>", PHP_EOL,
+  "</tr><tr>", PHP_EOL,
+    "<td>",
         $this->FormDefault(['ocupacao' => 'radio']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['name' => 'atividadeDesc','icone' => 'icon-search','js' => 'autoCompAtividade()','span' => "popAtividade' style='position:absolute"],'icone'),
-    "</td>\n",
-  "</tr><tr>\n",
-    "<td>\n",
+    "</td>", PHP_EOL,
+  "</tr><tr>", PHP_EOL,
+    "<td>",
         $this->FormDefault(['codigoGerente' => 'text']),
-    "</td><td>\n",
+    "</td><td>", PHP_EOL,
         $this->FormDefault(['refImovel' => 'text']),
-    "</td>\n",
-  "</tr>\n",
-"</table>\n",
+    "</td>", PHP_EOL,
+  "</tr>", PHP_EOL,
+"</table>", PHP_EOL,
         
 $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
-    "<td>\n",
+    "<td>",
         $this->FormDefault(['tipoCobertura' => 'selectLine']),
         $this->FormDefault(['formaPagto' => 'selectLine']),
         $this->FormDefault(['valorAluguel' => 'moedaLine']),
@@ -158,17 +158,16 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['observacao' => 'textArea']),
-    "</td><td style='vertical-align: middle; width:20%;'>\n",
+    "</td><td style='vertical-align: middle; width:20%;'>", PHP_EOL,
         $this->FormDefault(['calcula'=>'submit']),
-    "</td>\n",        
+    "</td>", PHP_EOL,        
         
 $this->FormDefault([],'fieldFim'),
         
-$this->FormDefault(['enviar','fecha'],'submits');
+$this->FormDefault(['enviar','getpdf','fecha'],'submits');
 
 $this->FormDefault([],'fim');
 
-//require 'index.phtml';
 ?> 
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';
@@ -189,6 +188,12 @@ $this->FormDefault([],'fim');
         if((tipo.value == 'juridica')&&(cnpj.value == "")){
             alert('Deve ser digitado o numero do CNPJ do locador!');
             return false;
+        }
+        if('Apartamento' == document.getElementById('atividadeDesc').value){
+            if('' == document.getElementById('apto').value){
+                alert('Deve ser digitado o numero do Apartamento!');
+                return false;
+            }
         }
         var cnpj = document.getElementById('cnpj');
         var cpf  = document.getElementById('cpf');
@@ -231,6 +236,11 @@ $this->FormDefault([],'fim');
         return false;
     }
 
+    function printProposta(){
+        envia("/admin/orcamentos/printProposta",'printProposta',formName,'new');
+        return false;
+    }
+
     function cleanCoberturas(){
         cleanInputAll('incendio');
         cleanInputAll('conteudo');
@@ -258,6 +268,14 @@ $this->FormDefault([],'fim');
         var returns = Array('atividade','atividadeDesc');
         var functionCall = '';
         autoComp2(filtros,servico,'popAtividade',returns,'2',functionCall);
+    }
+
+    function travaResidencial(){
+        var ocup = document.getElementsByName('ocupacao');
+        if(ocup[1].checked){
+            var tcob = document.getElementById('tipoCobertura');
+            tcob.selectedIndex = 2 ;
+        }
     }
 
     function cleanAtividade(){
@@ -418,6 +436,7 @@ $this->FormDefault([],'fim');
     function setButtonFechaOrc(){
         if(tar.indexOf('edit') === -1){
             document.getElementById('fecha').style.display = 'none';
+            document.getElementById('getpdf').style.display = 'none';
         }
     }
 

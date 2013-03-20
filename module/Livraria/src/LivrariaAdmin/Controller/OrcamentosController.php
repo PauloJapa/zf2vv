@@ -105,6 +105,10 @@ class OrcamentosController extends CrudController {
     public function newAction() {
         
         $sessionContainer = new SessionContainer("LivrariaAdmin");
+        
+        if(!isset($sessionContainer->administradora['id'])){
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
+        }
        
         $data = $this->getRequest()->getPost()->toArray();
         if((!isset($data['subOpcao'])) OR ($data['subOpcao'] == 'novo')){
@@ -117,6 +121,7 @@ class OrcamentosController extends CrudController {
             $data['administradora'] = $sessionContainer->administradora['id'];
             $data['seguradora']     = $sessionContainer->seguradora['id'];
             $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
+            //Buscar paramentros de comissão e seus multiplos
             $comissaoEnt = $this->getEm()
                 ->getRepository('Livraria\Entity\Comissao')
                 ->findComissaoVigente($data['administradora'],  $data['criadoEm']);
@@ -125,17 +130,23 @@ class OrcamentosController extends CrudController {
             $data['formaPagto'] = $sessionContainer->administradora['formaPagto'];
             $data['validade'] = $sessionContainer->administradora['validade'];
             $data['tipoCobertura'] = $sessionContainer->administradora['tipoCobertura'];
+            //Se houver forma de pagamento dafult somente o usuario admin pode alterar
+            if($this->getIdentidade()->getTipo() != 'admin'){
+                if($data['formaPagto'] != ''){
+                    $sessionContainer->userNotAdmin = true;
+                }
+            }
             //Expira montagem da sessao do usuario admin
             unset($sessionContainer->expiraSessaoMontada);
-        }
-        
-        if(!isset($sessionContainer->administradora['id'])){
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
         }
         
         $filtroForm = array();
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
+        //Bloquear campos para os usuarios não Admin
+        if($sessionContainer->userNotAdmin){
+            $this->formData->bloqueiaCampos();
+        }
         
         
         if($data['subOpcao'] == 'calcular'){
@@ -232,6 +243,13 @@ class OrcamentosController extends CrudController {
             $this->formData->setData($data);
         }
         
+        //Se houver forma de pagamento dafult somente o usuario admin pode alterar
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            if($sessionContainer->administradora['formaPagto'] != ''){
+                $this->formData->bloqueiaCampos();
+            }
+        }
+        
         // Verificar se usuario pode editar esse orçamento
         if(($data['administradora'] != $sessionContainer->administradora['id'] && ($this->getIdentidade()->getTipo() != 'admin'))){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
@@ -272,8 +290,14 @@ class OrcamentosController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
     
-    public function imprimiSeguroAction(){
-        $this->getServiceLocator()->get('Livraria\Service\Fechados')->getPdfSeguro('12');
+    
+    public function printPropostaAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        if(!isset($data['id']))
+            $data['id'] = '1';
+        
+        $this->getServiceLocator()->get($this->service)->getPdfOrcamento($data['id']);
     }
 
 }

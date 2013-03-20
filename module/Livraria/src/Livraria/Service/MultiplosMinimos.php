@@ -70,6 +70,8 @@ class MultiplosMinimos extends AbstractService {
         
         $this->setReferences();
         
+        $this->verificaFimDeVigencia();
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -118,6 +120,47 @@ class MultiplosMinimos extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getMultStatus(), $this->data['multStatus']);
     }
 
+    public function verificaFimDeVigencia() {
+        // Pega registro do banco
+        $ent = $this->em->find($this->entity, $this->data['id']);
+        // Se houver alteração para menor ou igual na data inicio retorna
+        if($ent->getMultVigenciaInicio('obj') >= $this->data['multVigenciaInicio']){
+            return FALSE;
+        }
+        
+        // Se não for vigente retorna
+        if($ent->getMultVigenciaFim() != 'vigente'){
+            return FALSE;
+        }
+        
+        //Reconfirma dados para inserção do novo registro
+        $data = $this->data;
+        $data['id']              = '' ;
+        $data['idMultiplos']     = '' ;
+        $data['multStatus']      = 'A';
+        $data['multVigenciaFim'] = 'vigente';
+        
+        $auxService = new MultiplosMinimos($this->em);
+        $auxService->notValidateNew();
+        $resul = $auxService->insert($data);
+        if($resul !== TRUE){
+            var_dump ($data);
+        }
+        
+        //Refazer dados
+        $this->data = $ent->toArray();
+        
+        //Finalizar vigência e refazer dados do registro atual
+        $this->data['multVigenciafim'] = clone $data['multVigenciaInicio'];
+        $this->data['multVigenciafim']->sub(new \DateInterval('P1D')); 
+        $this->data['multStatus'] = 'C';
+        
+        //Refazer referencia dos registro
+        $this->setReferences();
+        return TRUE;
+        
+    }
+
     /**
      * Faz a validação do registro no BD antes de incluir
      * Caso de erro retorna um array com os erros para o usuario ver
@@ -125,6 +168,9 @@ class MultiplosMinimos extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        // Casos especias as validações estão dispensadas
+        if(!$this->isValid)
+            return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $entitys = $repository->findBy(array('seguradora' => $this->data['seguradora'], 'multStatus' => 'A'));

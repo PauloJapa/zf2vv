@@ -3,6 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
+use LivrariaAdmin\Fpdf\ImprimirSeguro;
 
 /**
  * Orcamento
@@ -407,6 +408,76 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
         //Juntar as alterações no imovel se houver
         $this->dePara .= $this->deParaImovel;
+    }
+    
+    /**
+     * Gerar o pdf do Orçamento inserido
+     * @param strin $id
+     * @return PDF file 
+     */
+    public function getPdfOrcamento($id){
+        //Carregar Entity Fechados
+        $seg = $this->em
+            ->getRepository($this->entity)
+            ->find($id);
+        
+        if(!$seg){
+            return ['Não foi encontrado o seguro com esse numero!!!'];
+        }
+        
+        $pdf = new ImprimirSeguro();
+        $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
+        $pdf->setL2($seg->getAdministradora()->getNome());
+        $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
+        $pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
+        //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
+        $pdf->setL6($seg->getAtividade());
+        $pdf->setL7($seg->getObservacao());
+        $pdf->setL8($seg->floatToStr('aluguel'));
+        $pdf->setL9($seg->getAdministradora()->getId(), '0');
+        $pdf->setL10();
+        $vlr = [
+            $seg->floatToStr('incendio'),
+            $seg->floatToStr('cobIncendio'),
+            $seg->floatToStr('eletrico'),
+            $seg->floatToStr('cobEletrico'),
+            $seg->floatToStr('aluguel'),
+            $seg->floatToStr('cobAluguel'),
+            $seg->floatToStr('vendaval'),
+            $seg->floatToStr('cobVendaval'),
+        ];
+        switch ($seg->getTipoCobertura()) {
+            case '01':
+                $label = ' (Prédio)';
+                break;
+            case '02':
+                $label = ' (Conteúdo + prédio)';
+                break;
+            case '03':
+                $label = ' (Conteúdo)';
+                break;
+            default:
+                $label = '';
+                break;
+        }
+        $pdf->setL11($vlr, $label);
+        $tot = [
+            $seg->floatToStr('premio'),
+            $seg->floatToStr('premioLiquido'),
+            $this->strToFloat($seg->getPremioLiquido() * $seg->getTaxaIof()),
+            $seg->floatToStr('premioTotal')
+        ];
+        $pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
+        $par = [
+            $seg->floatToStr('premioTotal'),
+            $this->strToFloat($seg->getPremioTotal() / 2),
+            $this->strToFloat($seg->getPremioTotal() / 3),
+            $this->strToFloat($seg->getPremioTotal() / 12)
+        ];
+        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
+        $pdf->setL14();
+        //$pdf->setObs($obs);
+        $pdf->Output();
     }
     
 }
