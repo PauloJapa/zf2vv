@@ -25,6 +25,7 @@ class Filtros  extends AbstractForm {
         
         $this->setInputText('rua', 'Rua');
         
+        
         $this->setInputSubmit('enviar', 'Pesquisar', ['onClick' => 'return buscar()']);
         
         
@@ -37,6 +38,43 @@ class Filtros  extends AbstractForm {
         $attributes['onblur'] = 'if(this.value != varVazio)checkCPF_CNPJ(this)';
         $this->setInputText('documento', 'Documento', $attributes);
         
+    }
+    
+    public function setOrcamento(){
+        $this->setInputText('orcamento', 'Nº do Orçamento');
+        $this->setDate();
+        $this->setForUsuario();
+    }
+    
+    public function setFechados(){
+        $this->setInputText('fechados', 'Nº do Seguro');
+        $this->setDate();
+        $this->setForUsuario();
+    }
+    
+    public function setRenovacao(){
+        $this->setInputText('renovacao', 'Nº da Renovação');
+        $this->setDate();
+        $this->setForUsuario();
+    }
+
+    public function setDate($names=['dataI','dataF']){        
+        $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)",'class'=>'input-small'];
+        $this->setInputText($names[0], 'Data Inicio', $attributes);
+        $this->setInputText($names[1], 'Data Fim', $attributes);
+    }
+
+    public function setForUsuario(){
+        $this->setInputHidden('user');
+        $this->setInputText(
+                'usuarioNome'
+                , 'Usuario'
+                , [
+                    'placeholder' => 'Pesquise digitando o nome aqui!'
+                    , 'onKeyUp' => 'autoCompUsuario();'
+                    , 'autoComplete' => 'off'
+                ]
+        );
     }
     
     public function setForAdministradora(){

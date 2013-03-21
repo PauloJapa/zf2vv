@@ -31,6 +31,8 @@
     </table>
 </div>
 <?php endif; ?>
+
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
 <?php
 $user = $this->UserIdentity('LivrariaAdmin');
 
@@ -74,6 +76,8 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
                 $this->FormDefault(['comissao' => 'float']),
             "</td><td>", PHP_EOL,
                 $this->FormDefault(['seguradora' => 'select']),
+            "</td><td>", PHP_EOL,
+                $this->FormDefault(['logOrca' => 'submitOnly']),
             "</td>", PHP_EOL,
         $this->FormDefault([],'fieldFim');
     }
@@ -222,6 +226,13 @@ $this->FormDefault([],'fim');
         }
         
         envia(tar,'salvar',formName);
+        return false;
+    }
+
+    function viewLogsOrcamento(){
+        document.getElementById('user').value = '';
+        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logOrcamento')); ?>";
+        envia(target,'',formName);
         return false;
     }
 
@@ -476,6 +487,11 @@ $this->FormDefault([],'fim');
 
     function setOcultar(){
         document.getElementById('poppais').style.display = 'none';
+    }
+
+    function voltar(){
+        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarOrcamentos')); ?>";
+        envia(target,'',formName);
     }
 
     // Verificar cpf ou cnpj do locador e locatario

@@ -164,6 +164,8 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputSubmit('getpdf', 'Imprimir Proposta',['onClick'=>'return printProposta()']);
         
+        $this->setInputSubmit('logOrca', 'Exibir Logs',['onClick'=>'return viewLogsOrcamento()']);
+        
     }
  
     /**

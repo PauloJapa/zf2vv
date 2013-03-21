@@ -63,61 +63,79 @@ class LogsController extends CrudController {
     }
     
     public function indexAction(array $filtro = array()){
+        $this->verificaSeUserAdmin();
         return parent::indexAction($filtro,array('data' => 'DESC'));
     }
     
-    public function logOrcamentoAction($filtro=[]){
+    public function logOrcamentoAction($filtro=[], $operadores=[]){
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setOrcamento();
+        if(isset($data['proposta']))$data['orcamento'] = $data['proposta'];
+        $this->formData->setData($data);
+        $inputs = ['orcamento', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $this->verificaSeUserAdmin();
         $list = $this->getEm()
                      ->getRepository($this->entityOrc)
-                     ->findLogOrcamento($filtro);
+                     ->findLogOrcamento($filtro,$operadores);
         
-        $this->page = $this->params()->fromRoute('page');
-        // Pegar a rota atual do controler
-        $this->route2 = $this->getEvent()->getRouteMatch();
-
-        $this->paginator = new Paginator(new ArrayAdapter($list));
-        $this->paginator->setCurrentPageNumber($this->page);
-        $this->paginator->setDefaultItemCountPerPage(20);
-        $this->paginator->setPageRange(15);
-        if($this->render)
-            return new ViewModel($this->getParamsForView());
+        if(empty($list))$list[0] = FALSE;
+        
+        return parent::indexAction([],[],$list);
     }
     
-    public function logFechadosAction($filtro=[]){
+    public function logFechadosAction($filtro=[], $operadores=[]){
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setFechados();
+        if(isset($data['proposta']))$data['fechados'] = $data['proposta'];
+        $this->formData->setData($data);
+        $inputs = ['fechados', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $this->verificaSeUserAdmin();
         $list = $this->getEm()
                      ->getRepository($this->entityFec)
-                     ->findLogFechados($filtro);
+                     ->findLogFechados($filtro,$operadores);
         
-        $this->page = $this->params()->fromRoute('page');
-        // Pegar a rota atual do controler
-        $this->route2 = $this->getEvent()->getRouteMatch();
-
-        $this->paginator = new Paginator(new ArrayAdapter($list));
-        $this->paginator->setCurrentPageNumber($this->page);
-        $this->paginator->setDefaultItemCountPerPage(20);
-        $this->paginator->setPageRange(15);
-        if($this->render)
-            return new ViewModel($this->getParamsForView());
+        if(empty($list))$list[0] = FALSE;
+        
+        return parent::indexAction([],[],$list);
     }
     
-    public function logRenovacaoAction($filtro=[]){
+    public function logRenovacaoAction($filtro=[], $operadores=[]){
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setRenovacao();
+        if(isset($data['proposta']))$data['renovacao'] = $data['proposta'];
+        $this->formData->setData($data);
+        $inputs = ['renovacao', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $this->verificaSeUserAdmin();
         $list = $this->getEm()
                      ->getRepository($this->entityRen)
-                     ->findLogRenovacao($filtro);
+                     ->findLogRenovacao($filtro,$operadores);
         
-        $this->page = $this->params()->fromRoute('page');
-        // Pegar a rota atual do controler
-        $this->route2 = $this->getEvent()->getRouteMatch();
-
-        $this->paginator = new Paginator(new ArrayAdapter($list));
-        $this->paginator->setCurrentPageNumber($this->page);
-        $this->paginator->setDefaultItemCountPerPage(20);
-        $this->paginator->setPageRange(15);
-        if($this->render)
-            return new ViewModel($this->getParamsForView());
+        if(empty($list))$list[0] = FALSE;
+        
+        return parent::indexAction([],[],$list);
     }
 
+    //Não usa não se inclui registro log pelo front-end
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
@@ -145,7 +163,9 @@ class LogsController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
 
+    //Não usa não se edita registro de log
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form();
         $this->formData->setEdit();
         $data = $this->getRequest()->getPost()->toArray();

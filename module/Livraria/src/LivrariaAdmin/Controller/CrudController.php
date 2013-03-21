@@ -52,6 +52,9 @@ abstract class CrudController extends AbstractActionController {
                     ->getRepository($this->entity)
                     ->findBy($filtro, $orderBy);
         }
+        if ($list[0] == FALSE) {
+            $list = [];
+        }
 
         $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler

@@ -10,9 +10,6 @@ use Doctrine\ORM\EntityManager;
  */
 class Comissao extends AbstractService {
     
-    private $isValid = TRUE;
-            
-
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Comissao";
