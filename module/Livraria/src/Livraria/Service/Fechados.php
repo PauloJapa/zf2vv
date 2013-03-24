@@ -48,7 +48,7 @@ class Fechados extends AbstractService {
         //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
         $pdf->setL6($seg->getAtividade());
         $pdf->setL7($seg->getObservacao());
-        $pdf->setL8($seg->floatToStr('aluguel'));
+        $pdf->setL8($seg->floatToStr('valorAluguel'));
         $pdf->setL9($seg->getAdministradora()->getId(), '0');
         $pdf->setL10();
         $vlr = [
@@ -108,13 +108,16 @@ class Fechados extends AbstractService {
         if($this->Orcamento->getCodFechado() != 0){
             return [FALSE,'Este Orçamento já foi fechado uma vez!!!!'];
         }
-
+        //Verificar se esta ativo
+        if($this->Orcamento->getStatus() == 'C'){
+            return [FALSE,'Este Orçamento foi cancelado!!!!'];
+        }
 
         return TRUE;
     }
 
 
-    public function fechaOrcamento($id){
+    public function fechaOrcamento($id,$pdf=true){
         $resul = $this->validaOrcamento($id);
         if($resul[0] === FALSE){
             return $resul;
@@ -126,7 +129,7 @@ class Fechados extends AbstractService {
         unset($this->data['id']);
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
-        $this->data['criadoEm'] = new \DateTime('now');;
+        $this->data['criadoEm'] = new \DateTime('now');
 
         //Faz inserção do fechado no BD
         $resul = $this->insert();
@@ -138,7 +141,9 @@ class Fechados extends AbstractService {
             $this->em->persist($this->Orcamento);
             $this->em->flush();
             $this->registraLogOrcamento();
-            $this->getPdfSeguro($this->data['id']);
+            if($pdf){
+                $this->getPdfSeguro($this->data['id']);
+            }
         }
 
         return $resul;
@@ -174,6 +179,7 @@ class Fechados extends AbstractService {
         $this->idToReference('taxa', 'Livraria\Entity\Taxa');
         $this->idToReference('user', 'Livraria\Entity\User');
         $this->idToReference('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
+        $this->idToReference('comissaoEnt', 'Livraria\Entity\Comissao');
         //Converter data string em objetos date
         $this->dateToObject('inicio');
         $this->dateToObject('fim');

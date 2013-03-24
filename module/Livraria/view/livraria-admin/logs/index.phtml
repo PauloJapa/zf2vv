@@ -1,6 +1,33 @@
 <h1>Logs</h1>
 <br />
 <?php
+    if(!isset($noFilter)){
+        $form = $this->form; 
+        $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+        $form->prepare();
+        echo 
+        $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+            "<td>\r",
+                $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp','user'], 'hidden'),
+                $this->FormDefault([
+                    'name' => 'usuarioNome',
+                    'icone' => 'icon-search',
+                    'js' => 'autoCompUsuario()',
+                    'span' => "popUser' style='position:absolute"],'icone'),
+            "</td><td>\r",
+                $this->FormDefault(['controller'], 'text'),
+            "</td><td>\r",
+                $this->FormDefault(['tabela'], 'text'),
+            "</td><td>\r",
+                $this->FormDefault(['dataI'], 'calend'),
+            "</td><td>\r",
+                $this->FormDefault(['dataF'], 'calend'),
+            "</td><td>\r",
+            "</td><td style='vertical-align: middle;'>\r",
+                $this->FormDefault(['enviar'], 'submitOnly'),
+            "</td>\r",
+        $this->FormDefault([],'fim');
+    }
 $coluns = array('ID','Usuario','Data Hora','Tabela','ID do Registro','Controller','Ação','Afetados','IP Computador');
 $td     = array('','','','','','','','','');
 echo $this->ViewIndex('table'),
@@ -41,6 +68,23 @@ echo $this->ViewIndex('close');
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        if(document.getElementById('usuarioNome').value == ''){
+            document.getElementById('user').value = '';
+        }
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }  
+    function autoCompUsuario(){
+        document.getElementById('autoComp').value = 'usuarioNome';
+        var filtros = 'autoComp,usuarioNome';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'users','action'=>'autoComp')); ?>";
+        var returns = Array('user','usuarioNome');
+        var functionCall = 'buscar()';
+        autoComp2(filtros,servico,'popUser',returns,'2',functionCall);
+    }
 </script>
 
 <?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

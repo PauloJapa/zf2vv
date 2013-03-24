@@ -8,6 +8,7 @@ use Zend\Paginator\Paginator,
     Zend\Paginator\Adapter\ArrayAdapter;
 use Zend\Authentication\AuthenticationService,
     Zend\Authentication\Storage\Session as SessionStorage;
+use Zend\Session\Container as SessionContainer;
 
 abstract class CrudController extends AbstractActionController {
 
@@ -119,7 +120,7 @@ abstract class CrudController extends AbstractActionController {
         else
             $data = $this->getRequest()->getPost()->toArray();
         
-        $result = $service->delete($data['id']);
+        $result = $service->delete($data['id'],$data);
         if ($result === TRUE){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
         }
@@ -215,6 +216,17 @@ abstract class CrudController extends AbstractActionController {
         $user = $this->getIdentidade();
         if($user->getTipo() != 'admin')
             return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
+    }
+    
+    public function filtrosDaPaginacao(){
+        //Guardar dados dos filtros para paginação
+        $sc = new SessionContainer("LivrariaAdmin");
+        $post = $this->getRequest()->isPost();
+        if(is_int($this->params()->fromRoute('page'))){
+            if($post)
+                $sc->data = $this->getRequest()->getPost()->toArray();
+        }
+        return $sc->data;
     }
 
 }

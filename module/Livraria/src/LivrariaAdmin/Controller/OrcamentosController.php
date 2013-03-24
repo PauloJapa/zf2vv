@@ -3,6 +3,7 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
+use Zend\Http\Header\CacheControl;
 
 use Zend\Session\Container as SessionContainer;
 /**
@@ -11,11 +12,18 @@ use Zend\Session\Container as SessionContainer;
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 class OrcamentosController extends CrudController {
+    
+    /**
+     * Endereço para instaciar serviço de fechados.
+     * @var Objeto
+     */
+    private $serviceFechado;
 
     public function __construct() {
         $this->entity = "Livraria\Entity\Orcamento";
         $this->form = "LivrariaAdmin\Form\Orcamento";
         $this->service = "Livraria\Service\Orcamento";
+        $this->serviceFechado = "Livraria\Service\Fechados";
         $this->controller = "orcamentos";
         $this->route = "livraria-admin";
         
@@ -85,7 +93,7 @@ class OrcamentosController extends CrudController {
      * @param array $filtro
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function listarOrcamentosAction(array $filtro = array()){
+    public function listarOrcamentosAction(array $filtro=[], $operadores=[]){
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
@@ -95,7 +103,25 @@ class OrcamentosController extends CrudController {
             }
             $filtro['administradora'] = $sessionContainer->administradora['id'];
         }
-        return parent::indexAction($filtro,array('criadoEm' => 'DESC'));
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setOrcamento();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        
+        $this->verificaSeUserAdmin();
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findOrcamento($filtro,$operadores);
+        
+        if(empty($list))$list[0] = FALSE;
+        
+        return parent::indexAction($filtro,['criadoEm' => 'DESC'],$list);
     }
    
     /**
@@ -187,6 +213,28 @@ class OrcamentosController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
 
+    public function fecharSegurosAction() {
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar Servico de fechados $sf
+        //Fechar a lista de orçamentos selecionados.
+        foreach ($data['Checkeds'] as $idOrc) {
+            $sf = new $this->serviceFechado($this->getEm());
+            $resul = $sf->fechaOrcamento($idOrc,FALSE);
+            if($resul[0] === TRUE){
+                $fechou = $sf->getEntity();
+                $msg = 'Orçamento ' . $idOrc . ' gerou o fechado nº' . $fechou->getId() . '/' . $fechou->getCodano();
+                $this->flashMessenger()->addMessage($msg);
+            }else{
+                $msg = 'Orçamento ' . $idOrc . ' gerou os seguintes erros!';
+                $this->flashMessenger()->addMessage($msg);
+                unset($resul[0]);
+                foreach ($resul as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }            
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => 'fechados', 'action'=>'listarFechados'));
+    }
     /**
      * Edita o registro, Salva o registro, exibi o registro ou a listagem
      * @return \Zend\View\Model\ViewModel
@@ -212,7 +260,7 @@ class OrcamentosController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if($data['subOpcao'] == 'fechar'){ 
-            $servicoFechado = new \Livraria\Service\Fechados($this->getEm());
+            $servicoFechado = new $this->serviceFechado($this->getEm());
             $resul = $servicoFechado->fechaOrcamento($data['id']);
             if($resul[0] === TRUE){
                 $this->flashMessenger()->addMessage('Registro fechado com sucesso!!!');
@@ -299,5 +347,5 @@ class OrcamentosController extends CrudController {
         
         $this->getServiceLocator()->get($this->service)->getPdfOrcamento($data['id']);
     }
-
+    
 }

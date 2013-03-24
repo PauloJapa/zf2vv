@@ -486,7 +486,7 @@ class AbstractSeguro  extends Filtro {
      */
     public function getCanceladoEm($op = null) {
         if(is_null($op)){
-            return $this->trataData($this->canceladoEm, '00/00/0000');
+            return $this->trataData($this->canceladoEm, '01/01/1000');
         }
         return $this->canceladoEm;
     }

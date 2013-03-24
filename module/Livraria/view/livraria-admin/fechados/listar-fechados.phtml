@@ -1,6 +1,14 @@
 <h1>Seguros Fechados</h1>
 <br />
-
+<?php if(count($flashMessages)) : ?>
+<div class="control-group error">
+<ul class="help-inline">
+    <?php foreach ($flashMessages as $msg) : ?>
+    <li><?php echo $msg; ?></li>
+    <?php endforeach; ?>
+</ul>
+</div>
+<?php endif; ?>
 <?php
 $coluns = array(
     'ID',

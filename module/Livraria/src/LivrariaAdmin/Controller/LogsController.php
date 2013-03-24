@@ -3,8 +3,7 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
-use Zend\Paginator\Paginator,
-    Zend\Paginator\Adapter\ArrayAdapter;
+
 /**
  * Log
  * Recebe requisição e direciona para a ação responsavel depois de validar.
@@ -62,13 +61,36 @@ class LogsController extends CrudController {
         $this->route      = "livraria-admin";
     }
     
-    public function indexAction(array $filtro = array()){
+    public function indexAction(array $filtro=[], $operadores=[]){
         $this->verificaSeUserAdmin();
-        return parent::indexAction($filtro,array('data' => 'DESC'));
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setLogs();
+        $this->formData->setData($data);
+        $inputs = ['controller','tabela', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $operadores['controller'] = 'LIKE';
+        $operadores['tabela'] = 'LIKE';
+        if(isset($filtro['controller']))$filtro['controller'] .= '%';
+        if(isset($filtro['tabela']))    $filtro['tabela']     .= '%';
+        
+        $this->verificaSeUserAdmin();
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findLogs($filtro,$operadores);
+        
+        if(empty($list))$list[0] = FALSE;
+        
+        return parent::indexAction($filtro,['data' => 'DESC'],$list);
     }
     
     public function logOrcamentoAction($filtro=[], $operadores=[]){
-        $data = $this->getRequest()->getPost()->toArray();
+        $this->verificaSeUserAdmin();
+        $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setOrcamento();
         if(isset($data['proposta']))$data['orcamento'] = $data['proposta'];
@@ -86,11 +108,12 @@ class LogsController extends CrudController {
         
         if(empty($list))$list[0] = FALSE;
         
-        return parent::indexAction([],[],$list);
+        return parent::indexAction([],['data' => 'DESC'],$list);
     }
     
     public function logFechadosAction($filtro=[], $operadores=[]){
-        $data = $this->getRequest()->getPost()->toArray();
+        $this->verificaSeUserAdmin();
+        $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setFechados();
         if(isset($data['proposta']))$data['fechados'] = $data['proposta'];
@@ -108,11 +131,12 @@ class LogsController extends CrudController {
         
         if(empty($list))$list[0] = FALSE;
         
-        return parent::indexAction([],[],$list);
+        return parent::indexAction([],['data' => 'DESC'],$list);
     }
     
     public function logRenovacaoAction($filtro=[], $operadores=[]){
-        $data = $this->getRequest()->getPost()->toArray();
+        $this->verificaSeUserAdmin();
+        $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setRenovacao();
         if(isset($data['proposta']))$data['renovacao'] = $data['proposta'];
@@ -130,7 +154,7 @@ class LogsController extends CrudController {
         
         if(empty($list))$list[0] = FALSE;
         
-        return parent::indexAction([],[],$list);
+        return parent::indexAction([],['data' => 'DESC'],$list);
     }
 
     //Não usa não se inclui registro log pelo front-end

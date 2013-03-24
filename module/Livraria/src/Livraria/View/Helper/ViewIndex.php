@@ -18,9 +18,15 @@ class ViewIndex extends AbstractHelper {
     
     /**
      * com a lista do conteudo do cabeçalho.
-     * @var arrya $coluns 
+     * @var array $coluns 
      */
     protected $coluns;
+    
+    /**
+     * com a lista do conteudo da linha.
+     * @var array $data 
+     */
+    protected $data;
     
     /**
      * valor numero da coluna que vai ter os botões para edição.
@@ -153,7 +159,7 @@ class ViewIndex extends AbstractHelper {
             if(($this->editLine !== FALSE)AND($key == $this->editLine)){
                 if(is_callable($this->funcEdit)){
                     $lambda = $this->funcEdit;
-                    $lambda($value);
+                    $lambda($value,$options['data']);
                 }else
                     $this->renderEditLine($value);
             }else{

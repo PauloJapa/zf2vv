@@ -25,9 +25,7 @@ class Filtros  extends AbstractForm {
         
         $this->setInputText('rua', 'Rua');
         
-        
         $this->setInputSubmit('enviar', 'Pesquisar', ['onClick' => 'return buscar()']);
-        
         
         $this->setInputRadio('cpfOuCnpj', 'Escolha', ['cpf' => 'CPF','cnpj' => 'CNPJ']);
         $this->get('cpfOuCnpj')->setValue('cpf');
@@ -40,20 +38,32 @@ class Filtros  extends AbstractForm {
         
     }
     
-    public function setOrcamento(){
-        $this->setInputText('orcamento', 'Nº do Orçamento');
+    public function setLogs(){
+        $this->setInputText('controller', 'Item do menu:',['class'=>'input-small']);
+        $this->setInputText('tabela', 'Arquivo:',['class'=>'input-small']);
         $this->setDate();
         $this->setForUsuario();
     }
     
+    public function setOrcamento(){
+        $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
+        $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','F'=>'Fechados','C'=>'Cancelados']);
+        $this->get('status')->setValue('A'); 
+        $this->setDate();
+        $this->setForUsuario();
+        $this->setForAdministradora();        
+        $this->setInputSubmit('fecharSel', 'Fechar Selecionados', ['onClick' => 'return fecharSelecionados()']);
+    }
+    
     public function setFechados(){
-        $this->setInputText('fechados', 'Nº do Seguro');
+        $this->setInputText('fechados', 'Nº do Seguro',['class'=>'input-small']);
         $this->setDate();
         $this->setForUsuario();
     }
     
     public function setRenovacao(){
-        $this->setInputText('renovacao', 'Nº da Renovação');
+        $this->setInputText('renovacao', 'Nº da Renovação',['class'=>'input-small']);
         $this->setDate();
         $this->setForUsuario();
     }

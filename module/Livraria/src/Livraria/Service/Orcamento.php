@@ -23,6 +23,33 @@ class Orcamento extends AbstractService {
         $this->entity = "Livraria\Entity\Orcamento";
     }
     
+    public function delete($id,$data) {
+        if(parent::delete($id)){
+            $this->logForDelete($id,$data);
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+    
+    /**
+     * Registra a exclusão do registro com seu motivo.
+     * @param type $id
+     * @param type $data
+     */
+    public function logForDelete($id,$data) {
+        //parent::logForDelete($id);
+        //serviço logorcamento
+        $log = new LogOrcamento($this->em);
+        $dataLog['orcamento'] = $id;
+        $dataLog['tabela'] = 'log_orcamento';
+        $dataLog['controller'] = 'orcamentos';
+        $dataLog['action'] = 'delete';
+        $dataLog['mensagem'] = 'Orçamento excluido com numero ' . $this->data['id'];
+        $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
+        $log->insert($dataLog);
+    }
+
     /**
      * @ORM\OneToOne(targetEntity="Locador")
      * @ORM\OneToOne(targetEntity="Locatario")
@@ -403,7 +430,7 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('observacao', $ent->getObservacao(), $this->data['observacao']);
         if(isset($this->data['gerado']))
             $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
-        $this->dePara .= $this->diffAfterBefore('comissao', $ent->getComissao(), $this->data['comissao']);
+        $this->dePara .= $this->diffAfterBefore('comissao', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
         $this->dePara .= $this->diffAfterBefore('codFechado', $ent->getCodFechado(), $this->data['codFechado']);
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
         //Juntar as alterações no imovel se houver
@@ -433,7 +460,7 @@ class Orcamento extends AbstractService {
         //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
         $pdf->setL6($seg->getAtividade());
         $pdf->setL7($seg->getObservacao());
-        $pdf->setL8($seg->floatToStr('aluguel'));
+        $pdf->setL8($seg->floatToStr('valorAluguel'));
         $pdf->setL9($seg->getAdministradora()->getId(), '0');
         $pdf->setL10();
         $vlr = [

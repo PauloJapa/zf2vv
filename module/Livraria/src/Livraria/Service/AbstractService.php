@@ -193,6 +193,33 @@ abstract class AbstractService {
         }
         return FALSE ;
     }
+    
+    /**
+     * 
+     * Grava no logs dados da exclusão do registro
+     * @param string $id
+     * @param string $tabela
+     * @param string $controller
+     * @return void
+     */
+    public function logForDelete($id, $tabela='', $controller='', $obs='Excluiu o Registro!!!'){
+        if(empty($tabela)) 
+            return ;
+        
+        if(empty($controller))
+            $controller = $tabela . 's' ;
+        
+        $log = new Log($this->em);
+        $dataLog['user']       = $this->getIdentidade()->getId();
+        $dataLog['data']       = (new \DateTime('now'))->format('d/m/Y');
+        $dataLog['idDoReg']    = $id;
+        $dataLog['tabela']     = $tabela;
+        $dataLog['controller'] = $controller;
+        $dataLog['action']     = 'delete';
+        $dataLog['dePara']     = $obs;
+        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
+        $log->insert($dataLog);
+    }
  
     /** 
      * Busca os dados do usuario da storage session
