@@ -35,6 +35,8 @@ class Imovel extends AbstractEndereco {
         
         $this->setInputHidden('id');
 
+        $this->setInputText('refImovel', 'Ref. do Imovel');
+        
         $this->setInputText('tel', 'Telefone', ['placeholder' => '(xx) xxxx-xxxx']);
         
         $this->setInputText('bloco', 'Predio Bloco', ['placeholder' => 'Predio Bloco','class'       => 'input-small']);

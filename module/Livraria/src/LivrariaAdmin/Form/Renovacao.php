@@ -22,9 +22,9 @@ class Renovacao extends AbstractForm {
         $this->setInputText('administradoraDesc', 'Pertence a administradora', $attributes); 
 
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
-        $this->setInputText('inicio', '*Periodo inicio', $attributes);
+        $this->setInputText('inicio', '*Inicio', $attributes);
         
-        $this->setInputText('fim', '*Periodo fim', $attributes);
+        $this->setInputText('fim', '*Fim', $attributes);
         
         $this->setInputSubmit('enviar', 'Buscar',['onClick' => 'return buscar()']);
     }

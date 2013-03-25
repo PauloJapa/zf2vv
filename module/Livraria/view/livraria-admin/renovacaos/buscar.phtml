@@ -1,7 +1,7 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Buscar Seguros fechados para Renovação:'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Buscar Seguros fechados para Renovação com base na data fim da vigência:'],'inicio',$this, $form),
     "<td>\r",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
         $this->FormDefault(['inicio' => 'calend']),

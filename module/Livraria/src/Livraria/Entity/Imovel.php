@@ -32,6 +32,13 @@ class Imovel
     private $tel;
 
     /**
+     * @var string $refImovel
+     *
+     * @ORM\Column(name="ref_imovel", type="string", length=30, nullable=true)
+     */
+    private $refImovel;
+
+    /**
      * @var string $rua
      *
      * @ORM\Column(name="rua", type="string", length=150, nullable=true)
@@ -138,6 +145,24 @@ class Imovel
      */ 
     public function setId($id) {
         $this->id = $id;
+        return $this;
+    }
+    
+    /**
+     * Codigo de referencia em outro sistema
+     * @return string
+     */
+    public function getRefImovel() {
+        return is_null($this->refImovel) ? '' : $this->refImovel;
+    }
+
+    /**
+     * Codigo de referencia em outro sistema
+     * @param string $refImovel
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setRefImovel($refImovel) {
+        $this->refImovel = $refImovel;
         return $this;
     }
 
@@ -347,6 +372,7 @@ class Imovel
         $data              = $this->getEndereco()->toArray();
         $data['id']        = $this->getId();
         $data['tel']       = $this->getTel();
+        $data['refImovel'] = $this->getRefImovel();
         $data['bloco']     = $this->getBloco();
         $data['apto']      = $this->getApto();
         $data['atividadeDesc'] = $this->getAtividade();

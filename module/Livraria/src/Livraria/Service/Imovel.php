@@ -108,6 +108,7 @@ class Imovel extends AbstractService {
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
         $this->dePara .= $this->diffAfterBefore('Locatario', $ent->getLocatario(), $this->data['locatario']);
+        $this->dePara .= $this->diffAfterBefore('Ref. Imovel', $ent->getRefImovel(), $this->data['refImovel']);
         $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
         $this->dePara .= $this->diffAfterBefore('Telefone', $ent->getTel(), $this->data['tel']);
         $this->dePara .= $this->diffAfterBefore('Bloco', $ent->getBloco(), $this->data['bloco']);
@@ -140,8 +141,14 @@ class Imovel extends AbstractService {
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
                 if(($this->data['bloco'] == $entity->getBloco()) and ($this->data['apto'] == $entity->getApto())){
-                    $erro[] = 'Já existe um imovel neste endereço  registro:' ;
-                    $erro[] = $entity->getId();
+                    //Se bloco e apto vazio é um imovel se nao é apto
+                    if((empty($this->data['bloco'])) and (empty($this->data['apto']))){
+                        $erro[] = 'Já existe um imovel neste endereço  registro:' ;
+                        $erro[] = $entity->getId();
+                    }else{
+                        $erro[] = 'Já existe um apto neste endereço  registro:' ;
+                        $erro[] = $entity->getId();
+                    }
                 }
             }
         }

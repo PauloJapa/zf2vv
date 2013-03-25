@@ -19,7 +19,7 @@
         $this->FormDefault([],'fim');
     }
 
-$coluns = array('ID','Locador','Locatario','Atividade','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
+$coluns = array('ID','Locador','Locatario','Atividade','Ref.','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
 $td     = array();
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
@@ -30,6 +30,7 @@ foreach($this->data as $entity){
         $entity->getLocador(),
         $entity->getLocatario(),
         $entity->getAtividade(),
+        $entity->getRefImovel(),
         $entity->getRua(),
         $entity->getNumero(),
         $entity->getEndereco()->getCompl(),

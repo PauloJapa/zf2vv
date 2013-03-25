@@ -152,9 +152,9 @@ class Orcamento extends AbstractEndereco {
         
         $this->addAttributeInputs('onchange', 'limpaImovel()');
         
-        $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small','onchange' => 'limpaImovel();']);
+        $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small']);
 
-        $this->setInputText('apto', 'Apartamento', ['placeholder'=>'Apto Numero', 'class'=>'input-small','onchange' => 'limpaImovel();']);
+        $this->setInputText('apto', 'Apartamento', ['placeholder'=>'Apto Numero', 'class'=>'input-small']);
 
         $this->setInputSubmit('enviar', 'Salvar');
         

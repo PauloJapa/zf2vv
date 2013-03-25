@@ -174,21 +174,29 @@ class Orcamento extends AbstractService {
      * @return boolean | array
      */
     public function setImovel(){
-        if(empty($this->data['imovel'])){
-            $serviceImovel = new Imovel($this->em);
-            $resul = $serviceImovel->insert(array_merge($this->data,['status'=>'A']));
-            if(is_array($resul)){
-                if($resul[0] == "Já existe um imovel neste endereço  registro:"){
-                    $this->data['imovel'] = $resul[1];
-                    $this->idToReference('imovel', 'Livraria\Entity\Imovel');
-                }else{
-                    return array_merge(['Erro ao tentar incluir imovel no BD.'],$resul);
-                }
+        //Se tem id busca no banco
+        if(!empty($this->data['imovel'])){
+            //Verificar se esta cadastrando um novo apartamento
+            $this->idToEntity('imovel', 'Livraria\Entity\Imovel');
+            if(($this->data['imovel']->getBloco() == $this->data['bloco']) AND
+               ($this->data['imovel']->getApto()   == $this->data['apto'])){
+                return TRUE;
+            }
+            $this->data['imovel'] = '';
+        }
+        //Se id ta vazio ou apto ou bloco e diferente tentar cadastrar ou encontrar imovel ja cadastrado
+        $serviceImovel = new Imovel($this->em);
+        $resul = $serviceImovel->insert(array_merge($this->data,['status'=>'A']));
+        if(is_array($resul)){
+            if(($resul[0] == "Já existe um imovel neste endereço  registro:") OR
+               ($resul[0] == "Já existe um apto neste endereço  registro:")){
+                $this->data['imovel'] = $resul[1];
+                $this->idToReference('imovel', 'Livraria\Entity\Imovel');
             }else{
-                $this->data['imovel'] = $serviceImovel->getEntity();
+                return array_merge(['Erro ao tentar incluir imovel no BD.'],$resul);
             }
         }else{
-            $this->idToReference('imovel', 'Livraria\Entity\Imovel');
+            $this->data['imovel'] = $serviceImovel->getEntity();
         }
         return TRUE;
     }

@@ -1,4 +1,10 @@
 RewriteEngine On
+ExpiresActive On
+ExpiresDefault "access plus 1 day"
+<IfModule mod_headers.c>
+    Header set Cache-Control "max-age=600, public"
+    Header set Pragma ""
+</IfModule>
 RewriteCond %{REQUEST_FILENAME} -s [OR]
 RewriteCond %{REQUEST_FILENAME} -l [OR]
 RewriteCond %{REQUEST_FILENAME} -d

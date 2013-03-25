@@ -367,9 +367,9 @@ $this->FormDefault([],'fim');
         document.getElementById('autoComp').value = 'locador';
         var filtros = 'locador,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'imovels','action'=>'autoComp')); ?>";
-        var returns = Array('imovel','idEnde','cep','rua','numero','bloco','apto','compl','bairro','bairroDesc','cidade','cidadeDesc','estado','pais','imovelTel','imovelStatus');
+        var returns = Array('imovel','idEnde','cep','rua','numero','bloco','apto','compl','bairro','bairroDesc','cidade','cidadeDesc','estado','pais','imovelTel','imovelStatus','refImovel');
         var functionCall = '';
-        autoComp2(filtros,servico,'popImoveis',returns,'7',functionCall);
+        autoComp2(filtros,servico,'popImoveis',returns,'9',functionCall);
     }
 
     function autoCompBairro(){

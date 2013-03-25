@@ -1,6 +1,35 @@
 <?php 
 if($this->resultSet){
     echo "ok|s|";
+    if($this->subOpcao =='Pesquisar'){
+        echo 'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'X|c|',
+             'End.|c|',
+             'Apto/Blc|c|',
+             'Compl.|c|',
+             'Bairro|c|',
+             'Cidade|c|',
+             'UF|c|',
+             'CEP|c|',
+             'Ref.|c|',
+             'Tel.|c|',
+             "|s|";
+    }
     $cont = 0;
     foreach($this->resultSet as $entity){
         if($cont > 0)echo "|s|";
@@ -21,14 +50,17 @@ if($this->resultSet){
         echo $entity->getEndereco()->getPais()->getId(),     "|c|"; 
         echo $entity->getTel(), "|c|"; 
         echo $entity->getStatus(), "|c|"; 
+        echo $entity->getRefImovel(), "|c|"; 
         
         echo $entity->getRua(), ', n ' , $entity->getNumero(),    "|c|"; 
-        echo $entity->getBloco(), ' ' , $entity->getApto(),    "|c|"; 
+        echo 'apt. ' , $entity->getApto(), ' B.' , $entity->getBloco(),    "|c|"; 
         echo $entity->getEndereco()->getCompl(),  "|c|"; 
         echo $entity->getEndereco()->getBairro(), "|c|"; 
         echo $entity->getEndereco()->getCidade(), "|c|"; 
-        echo $entity->getEndereco()->getEstado(), "|c|"; 
+        echo $entity->getEndereco()->getEstado()->getSigla(), "|c|"; 
         echo $entity->getCep(),    "|c|"; 
+        echo $entity->getRefImovel(),    "|c|"; 
+        echo $entity->getTel(),    "|c|"; 
     }
 }else
     echo "vazio|s|";

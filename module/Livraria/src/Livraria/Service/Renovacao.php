@@ -43,24 +43,29 @@ class Renovacao extends AbstractService {
         $resul = $this->recalculaVigencia();
         if($resul !== TRUE)
             return $resul;
+        
+        //Pegando o locatario atual desse imovel porque o locatario pode ter sido trocado no meio da vigencia do fechado
+        //Quando a troca de locatario é apenas atualizado no imovel.
+        $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
+        $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
 
         //Novo calculo do premio
         //     Comissão da Administradora padrão
-        $this->data['comissao'] = $this->em
+        $this->data['comissaoEnt'] = $this->em
             ->getRepository('Livraria\Entity\Comissao')
-            ->findComissaoVigente($this->fechado->getAdministradora()->getId())
-            ->floatToStr('comissao');
+            ->findComissaoVigente($this->data['administradora'],  $this->data['criadoEm']);
+        $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
         
         $this->data['taxa'] = $this->em
             ->getRepository('Livraria\Entity\Taxa')
-            ->findTaxaVigente($this->fechado->getSeguradora()->getId(), $this->fechado->getAtividade()->getId());
+            ->findTaxaVigente($this->data['seguradora'], $this->data['atividade'],  $this->data['criadoEm']);
 
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigênte nao encontrada!!!'];
         
         $this->data['multiplosMinimos'] = $this->em
             ->getRepository('Livraria\Entity\MultiplosMinimos')
-            ->findMultMinVigente($this->fechado->getSeguradora()->getId());
+            ->findMultMinVigente($this->data['seguradora'],  $this->data['criadoEm']);
         
         $this->data['administradora'] = $this->fechado->getAdministradora()->getObjeto();
         $resul = $this->CalculaPremio();
@@ -100,7 +105,9 @@ class Renovacao extends AbstractService {
             $interval_spec = 'P1Y'; 
         } 
         if(empty($interval_spec)){
-            return ['Campo validade com valor que não existe na lista!!'];
+            $this->data['validade'] = 'anual';
+            $interval_spec = 'P1Y'; 
+            //return ['Campo validade com valor que não existe na lista!!'];
         }
         
         $this->data['inicio']->add(new \DateInterval($interval_spec)); 
@@ -139,6 +146,7 @@ class Renovacao extends AbstractService {
         $this->idToReference('taxa', 'Livraria\Entity\Taxa');
         $this->idToReference('user', 'Livraria\Entity\User');
         $this->idToReference('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
+        $this->idToReference('comissaoEnt', 'Livraria\Entity\Comissao');
         //Converter data string em objetos date
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
