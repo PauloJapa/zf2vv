@@ -66,7 +66,7 @@ class LogsController extends CrudController {
         $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setLogs();
-        $this->formData->setData($data);
+        $this->formData->setData(is_null($data) ? [] : $data);
         $inputs = ['controller','tabela', 'user','dataI','dataF'];
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
@@ -94,7 +94,7 @@ class LogsController extends CrudController {
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setOrcamento();
         if(isset($data['proposta']))$data['orcamento'] = $data['proposta'];
-        $this->formData->setData($data);
+        $this->formData->setData(is_null($data) ? [] : $data);
         $inputs = ['orcamento', 'user','dataI','dataF'];
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
@@ -117,7 +117,7 @@ class LogsController extends CrudController {
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setFechados();
         if(isset($data['proposta']))$data['fechados'] = $data['proposta'];
-        $this->formData->setData($data);
+        $this->formData->setData(is_null($data) ? [] : $data);
         $inputs = ['fechados', 'user','dataI','dataF'];
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
@@ -140,7 +140,7 @@ class LogsController extends CrudController {
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setRenovacao();
         if(isset($data['proposta']))$data['renovacao'] = $data['proposta'];
-        $this->formData->setData($data);
+        $this->formData->setData(is_null($data) ? [] : $data);
         $inputs = ['renovacao', 'user','dataI','dataF'];
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {

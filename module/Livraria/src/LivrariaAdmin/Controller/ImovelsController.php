@@ -137,4 +137,26 @@ class ImovelsController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
 
+    
+    /**
+     * 
+     * Configura um chamada para o repositorio que
+     * Faz uma busca no BD pela requisição Ajax com parametro de busca
+     * Na view retorna os dados no formato texto para o js exibir para o usuario
+     * 
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function autoCompRuaAction(){
+        $subOpcao = $this->getRequest()->getPost('subOpcao','');
+        $autoComp = $this->getRequest()->getPost('autoComp');
+        $param = trim($this->getRequest()->getPost($autoComp,''));
+        $repository = $this->getEm()->getRepository($this->entity);
+        $resultSet = $repository->autoComp($param .'%');
+        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoCompRua('%'. $param .'%');
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
+        $viewModel->setTerminal(true);
+        return $viewModel;
+    }
 }

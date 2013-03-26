@@ -32,6 +32,27 @@ class ImovelRepository extends EntityRepository {
         return $query->getResult();
     }
     
+    public function autoCompRua($rua){
+        if(empty($rua))
+            return false;
+        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('i,e')
+                ->from('Livraria\Entity\Imovel', 'i')
+                ->join('i.endereco', 'e')
+                ->join('e.bairro', 'b')
+                ->join('e.cidade', 'c')
+                ->join('e.estado', 'uf')
+                ->join('e.pais', 'p')
+                ->where("i.rua LIKE :rua")
+                ->setParameter('rua', $rua)
+                ->setMaxResults(20)
+                ->getQuery()
+                ;
+        return $query->getResult();
+    }
+    
     /**
      * Pesquisa conforme paramentro passados:
      * rua

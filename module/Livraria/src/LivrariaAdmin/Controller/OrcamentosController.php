@@ -3,7 +3,6 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
-use Zend\Http\Header\CacheControl;
 
 use Zend\Session\Container as SessionContainer;
 /**
@@ -94,15 +93,6 @@ class OrcamentosController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function listarOrcamentosAction(array $filtro=[], $operadores=[]){
-        $sessionContainer = new SessionContainer("LivrariaAdmin");
-        //usuario admin pode ver tudo os outros são filtrados
-        if($this->getIdentidade()->getTipo() != 'admin'){
-            //Verifica se usuario tem registrado a administradora na sessao
-            if(!isset($sessionContainer->administradora['id'])){
-                $this->verificaUserAction(FALSE);
-            }
-            $filtro['administradora'] = $sessionContainer->administradora['id'];
-        }
         $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setOrcamento();
@@ -113,8 +103,16 @@ class OrcamentosController extends CrudController {
                 $filtro[$input] = $data[$input];
             }
         }
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction(FALSE);
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+        }
         
-        $this->verificaSeUserAdmin();
         $list = $this->getEm()
                      ->getRepository($this->entity)
                      ->findOrcamento($filtro,$operadores);
@@ -123,7 +121,51 @@ class OrcamentosController extends CrudController {
         
         return parent::indexAction($filtro,['criadoEm' => 'DESC'],$list);
     }
-   
+    
+    public function buscarAbertosAction(){
+        $data = $this->filtrosDaPaginacao();
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            var_dump($sessionContainer);die;
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction(FALSE);
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
+        }
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setOrcamento();
+        $this->formData->setLocadorLocatario();
+        $this->formData->setEndereco();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+      //  $this->formData->setIsAdmin(); 
+        $this->formData->setEdit();
+        
+        return new ViewModel(['form'=>$this->formData, 'formName'=>$this->formData->getName()]);        
+    }
+    
+    public function listarAbertosAction(){
+        $data = $this->filtrosDaPaginacao();
+        $inputs = ['id', 'administradora', 'endereco', 'locador', 'locatario', 'user', 'end','dataI','dataF'];
+        $filtro = ['status'=>'A'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findOrcamento($filtro);
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        $viewData = $this->getParamsForView();
+        $viewData['data'] = $list;
+        return new ViewModel($viewData);
+    }
+
     /**
      * Tenta incluir o registro e exibe a listagem ou erros ao incluir
      * @return \Zend\View\Model\ViewModel

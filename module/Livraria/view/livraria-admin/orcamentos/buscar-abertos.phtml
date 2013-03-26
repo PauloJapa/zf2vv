@@ -1,0 +1,107 @@
+<h1>Buscar Orçamentos Abertos</h1>
+<br />
+<?php
+    $form = $this->form; 
+    $form->setAttribute('action', $this->url('livraria-admin',array('controller'=> 'orcamentos','action'=>'listarAbertos')));
+    $form->prepare();
+    echo 
+    $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+        "<td>\r",
+            $this->FormDefault(['ajaxStatus', 'subOpcao', 'autoComp', 'user'], 'hidden'),
+            $this->FormDefault(['id'], 'text'),
+        "</td><td>\r",
+        "</td>\r",
+    "</tr><tr>\r",
+        "<td>\r",
+            $this->FormDefault(['administradora'=>'hidden']),
+            $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
+        "</td><td>\r",
+            $this->FormDefault([ 'name' => 'usuarioNome', 'icone' => 'icon-search', 'js' => 'autoCompUsuario()', 'span' => "popUser' style='position:absolute"], 'icone'),
+        "</td>\r",
+    "</tr><tr>\r",
+        "<td>\r",
+            $this->FormDefault(['dataI'], 'calend'),
+        "</td><td>\r",
+            $this->FormDefault(['dataF'], 'calend'),
+        "</td>\r",
+    "</tr><tr>\r",
+        "<td>\r",
+            $this->FormDefault(['locador'=>'hidden']),
+            $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
+        "</td><td>\r",
+            $this->FormDefault(['locatario'=>'hidden']),
+            $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
+        "</td>\r",
+    "</tr><tr>\r",
+        "<td>\r",
+            $this->FormDefault(['endereco'=>'hidden']),
+            $this->FormDefault(['name' => 'rua','icone' => 'icon-search','js' => 'autoCompEndRua()','span' => "popEndereco' style='position:absolute"],'icone'),
+        "</td><td>\r",
+        "</td>\r",
+        
+        
+
+    $this->FormDefault(['submit'=>'enviar'],'fim');
+
+?>
+<br />
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        if(document.getElementById('usuarioNome').value == ''){
+            document.getElementById('user').value = '';
+        }
+        if(document.getElementById('administradoraDesc').value == ''){
+            document.getElementById('administradora').value = '';
+        }
+        if(document.getElementById('locadorNome').value == ''){
+            document.getElementById('locador').value = '';
+        }
+        if(document.getElementById('locatarioNome').value == ''){
+            document.getElementById('locatario').value = '';
+        }
+        var tar = "<?php echo $this->url('livraria-admin',array('controller'=> 'orcamentos','action'=>'listarAbertos')); ?>";
+        envia(tar,'buscar',formName);
+    }  
+    function autoCompUsuario(){
+        document.getElementById('autoComp').value = 'usuarioNome';
+        var filtros = 'autoComp,usuarioNome';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'users','action'=>'autoComp')); ?>";
+        var returns = Array('user','usuarioNome');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popUser',returns,'2',functionCall);
+    }
+    function autoCompAdministradora(){
+        var filtros = 'administradoraDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'administradoras','action'=>'autoComp')); ?>";
+        var returns = Array('administradora','administradoraDesc');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
+    }  
+    function autoCompLocador(){
+        document.getElementById('autoComp').value = '';
+        var filtros = 'locadorNome,administradora';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locadors','action'=>'autoComp')); ?>";
+        var returns = Array('locador','locadorNome');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popLocador',returns,'4',functionCall);
+    }
+    function autoCompLocatario(){
+        document.getElementById('autoComp').value = 'locatarioNome';
+        var filtros = 'locatarioNome,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locatarios','action'=>'autoComp')); ?>";
+        var returns = Array('locatario','locatarioNome');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popLocatario',returns,'3',functionCall);
+    }
+    function autoCompEndRua(){
+        document.getElementById('endereco').value = '';
+        document.getElementById('autoComp').value = 'rua';
+        var filtros = 'rua,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'imovels','action'=>'autoCompRua')); ?>";
+        var returns = Array('endereco','rua');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popEndereco',returns,'9',functionCall);
+    }
+</script>

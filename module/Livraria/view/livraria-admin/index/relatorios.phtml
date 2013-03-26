@@ -1,0 +1,18 @@
+<?php
+$user = $this->UserIdentity('LivrariaAdmin');
+echo '<p>Bem Vindo, ', $user->getNome(), '.</p>' ;
+echo '<p>Escolha uma das opções de cadastro.</p>' ;
+
+$subMenu = $this->navigation('NavAdmin')->findOneByLabel('Relatórios');
+?>
+
+<div class="nav-collapse">
+<?php if ($user = $this->UserIdentity('LivrariaAdmin')){
+          if($user->getTipo() == 'admin')
+              echo $this->navigation('NavAdmin')->menu()->setUlClass('nav')->renderMenu($subMenu); 
+          else
+              echo $this->navigation('NavUser')->menu()->setUlClass('nav')->renderMenu($subMenu); ; 
+      }else
+          echo $this->navigation('Navigation')->menu()->setUlClass('nav');
+?>    
+</div>

@@ -36,7 +36,7 @@ class OrcamentoRepository extends AbstractRepository {
                     $parameters['dataI'] = $this->dateToObject($filtro);
                     break;
                 case 'dataF':
-                    $where .= ' AND l.fim <= :dataF';
+                    $where .= ' AND l.inicio <= :dataF';
                     $parameters['dataF'] = $this->dateToObject($filtro);
                     break;
                 case 'status':

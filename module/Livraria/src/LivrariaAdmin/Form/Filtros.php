@@ -73,6 +73,23 @@ class Filtros  extends AbstractForm {
         $this->setInputText($names[0], 'Data Inicio', $attributes);
         $this->setInputText($names[1], 'Data Fim', $attributes);
     }
+    
+    public function setLocadorLocatario(){
+        $this->setInputHidden('locador');
+        $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
+                       'onKeyUp' => 'autoCompLocador();',
+                       'autoComplete'=>'off'];        
+        $this->setInputText('locadorNome', 'Locador', $attributes);
+        
+        $this->setInputHidden('locatario');
+        $attributes['onKeyUp'] = 'autoCompLocatario();';        
+        $this->setInputText('locatarioNome', 'Locatario', $attributes);
+    }
+    
+    public function setEndereco(){
+        $this->setInputHidden('endereco');
+        $this->setInputText('rua', 'Endereço', ['placeholder' => 'Endereço','class' => 'input-xmlarge','onKeyUp' => 'autoCompEndRua();', 'autoComplete'=>'off']);
+    }
 
     public function setForUsuario(){
         $this->setInputHidden('user');
@@ -113,4 +130,25 @@ class Filtros  extends AbstractForm {
         );
     }
     
+ 
+    /**
+     * 
+     * Atualiza o form para o modo de edição bloqueando campos se necessario
+     * @param boolean $isAdmin Super usuario pode alterar
+     * @return void
+     */ 
+    public function setEdit($isAdmin=false){
+        $this->isEdit = TRUE;
+        if(($isAdmin)or($this->isAdmin)){
+            $this->isAdmin = TRUE;
+            return ;
+        }
+        
+        $administradora = $this->get('administradora');
+        if($administradora){
+            $administradora->setAttributes(array('readOnly' => 'true'));
+            $this->get('administradoraDesc')->setAttributes(array('readOnly' => 'true', 'onKeyUp' => ''));   
+        }
+        
+    }
 }

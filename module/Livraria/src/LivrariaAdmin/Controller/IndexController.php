@@ -2,12 +2,37 @@
 
 namespace LivrariaAdmin\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController {
+class IndexController extends CrudController {
 
     public function bemVindoAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+    
+    public function cadastroAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+    
+    public function contratosAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+    
+    public function relatoriosAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+    
+    public function auditoriaAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+    
+    public function exportarAction() {
+        $this->verificaSeUserAdmin();
         return new ViewModel(array());
     }
 

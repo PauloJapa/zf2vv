@@ -25,7 +25,8 @@ return array(
             'cadastros' => array(
                 'label' => 'Cadastro',
                 'route' => 'livraria-admin',
-                'controller' => 'seguradoras',
+                'controller' => 'index',
+                'action' => 'cadastro',
                 'pages' => array(
                     'seguradoras' => array(
                         'label' => 'Seguradora',
@@ -175,18 +176,13 @@ return array(
                             ),
                         ),
                     ),
-                //    'endereco' => array(
-                //        'label' => 'Endereço',
-                //        'route' => 'livraria-admin',
-                //        'controller' => 'enderecos',
-                //    ),
                 ),                
-                
             ),
             'contratos' => array(
                 'label' => 'Contratos',
                 'route' => 'livraria-admin',
-                'controller' => 'orcamentos',
+                'controller' => 'index',
+                'action' => 'contratos',
                     'pages' => array(
                         'orcamentos' => array(
                             'label' => 'Orçamento',
@@ -211,32 +207,20 @@ return array(
             'relatorios' => array(
                 'label' => 'Relatórios',
                 'route' => 'livraria-admin',
-                'controller' => 'relatorios',
+                'controller' => 'index',
+                'action' => 'relatorios',
             ),
             'auditoria' => array(
                 'label' => 'Auditoria',
                 'route' => 'livraria-admin',
-                'controller' => 'logs',
+                'controller' => 'index',
+                'action' => 'auditoria',
                 'pages' => array(
                     'logs' => array(
                         'label' => 'Rastreamento',
                         'route' => 'livraria-admin',
                         'controller' => 'logs',
                         'action' => 'index',
-                        'pages' => array(
-                            'logs1' => array(
-                                'label' => 'Listar_Ações',
-                                'route' => 'livraria-admin',
-                                'controller' => 'logs',
-                                'action' => 'index',
-                            ),
-                            'logs2' => array(
-                                'label' => 'Inserir_Ação',
-                                'route' => 'livraria-admin',
-                                'controller' => 'logs',
-                                'action' => 'new',
-                            ),
-                        ),
                     ),
                     'logOrcamento' => array(
                         'label' => 'Logs_de_Orçamento',
@@ -261,7 +245,8 @@ return array(
             'exportar' => array(
                 'label' => 'Exportar',
                 'route' => 'livraria-admin',
-                'controller' => 'exportar',
+                'controller' => 'index',
+                'action' => 'exportar',
             ),
             'logout' => array(
                 'label' => 'Logout',
