@@ -7,10 +7,8 @@
 </ul>
 </div>
 <?php endif; ?>
-<h1>Renovados</h1>
+<h1>Listar Renovados</h1>
 <br />
-
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Orçamento</span></p>
 
 <?php
 $coluns = array(
@@ -72,10 +70,6 @@ echo $this->ViewIndex('close');
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
         envia(tar,'editar');
-    }    
-    function novo(){
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
-        envia(tar,'novo');        
     }    
     function del(id){
         var msg = "Deseja realmente excluir este registro?";

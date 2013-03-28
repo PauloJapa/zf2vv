@@ -265,30 +265,6 @@ class Orcamento extends AbstractService {
         return TRUE;
     }
 
-    /**
-     * Calcula a vigencia do seguro periodo mensal ou anual
-     * @return boolean | array
-     */
-    public function calculaVigencia(){
-        if(!isset($this->data['validade'])){
-            return ['Campo validade não existe!!'];
-        }
-        $this->data['codano'] = $this->data['criadoEm']->format('Y');
-        $this->data['fim'] = clone $this->data['inicio'];
-        $interval_spec = ''; 
-        if($this->data['validade'] == 'mensal'){
-            $interval_spec = 'P1M'; 
-        } 
-        if($this->data['validade'] == 'anual'){
-            $interval_spec = 'P1Y'; 
-        } 
-        if(empty($interval_spec)){
-            return ['Campo validade com valor que não existe na lista!!'];
-        }
-        $this->data['fim']->add(new \DateInterval($interval_spec)); 
-        return TRUE;
-    }
-
     /** 
      * Alterar no banco de dados o registro
      * @param Array $data com os campos do registro
@@ -457,7 +433,7 @@ class Orcamento extends AbstractService {
             ->find($id);
         
         if(!$seg){
-            return ['Não foi encontrado o seguro com esse numero!!!'];
+            return ['Não foi encontrado um orçamento com esse numero!!!'];
         }
         
         $pdf = new ImprimirSeguro();

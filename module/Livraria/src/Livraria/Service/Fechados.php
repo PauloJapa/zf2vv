@@ -24,10 +24,23 @@ class Fechados extends AbstractService {
      */
     protected $Orcamento;
 
+    /**
+     * Entity Renovacao
+     * @var type
+     */
+    protected $Renovacao;
+
+    /**
+     * Orçamento ou Renovação !! para Registro no Log
+     * @var string
+     */
+    protected $origem;
+
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Fechados";
         $this->Orcamento = "Livraria\Entity\Orcamento";
+        $this->Renovacao = "Livraria\Entity\Renovacao";
     }
     
     public function getPdfSeguro($id){
@@ -112,6 +125,8 @@ class Fechados extends AbstractService {
         if($this->Orcamento->getStatus() == 'C'){
             return [FALSE,'Este Orçamento foi cancelado!!!!'];
         }
+        
+        $this->origem = 'orcamentos';
 
         return TRUE;
     }
@@ -148,7 +163,7 @@ class Fechados extends AbstractService {
 
         return $resul;
     }
-
+    
     public function registraLogOrcamento(){
         //Criar serviço logorcamento
         $log = new LogOrcamento($this->em);
@@ -159,6 +174,76 @@ class Fechados extends AbstractService {
         $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
         $fechado   = $this->data['id'] . '/' . $this->data['codano'];
         $dataLog['mensagem']   = 'Fechou o orçamento(' . $orcamento . ') e gerou o fechado de numero ' . $fechado ;
+        $dataLog['dePara']     = '';
+        $log->insert($dataLog);
+    }
+
+    
+    public function fechaRenovacao($id,$pdf=true){
+        $resul = $this->validaRenovacao($id);
+        if($resul[0] === FALSE){
+            return $resul;
+        }
+
+        //Montar dados para tabela de fechados
+        $this->data = $this->Renovacao->toArray();
+        $this->data['renovacaoId'] = $this->data['id'];
+        unset($this->data['id']);
+        $this->data['user'] = $this->getIdentidade()->getId();
+        $this->data['status'] = "A";
+        $this->data['criadoEm'] = new \DateTime('now');
+
+        //Faz inserção do fechado no BD
+        $resul = $this->insert();
+
+        if($resul[0] === TRUE){
+            //Registra o id do fechado de Orçamento
+            $this->Renovacao->setFechadoId($this->data['id']);
+            $this->Renovacao->setStatus('F');
+            $this->em->persist($this->Renovacao);
+            $this->em->flush();
+            $this->registraLogRenovacao();
+            if($pdf){
+                $this->getPdfSeguro($this->data['id']);
+            }
+        }
+
+        return $resul;
+    }
+
+    public function validaRenovacao($id){
+        //Carregar Entity Orcamento
+        $this->Renovacao = $this->em
+            ->getRepository($this->Renovacao)
+            ->find($id);
+
+        if(!$this->Renovacao){
+            return [FALSE,'Registro de Renovação não encontrado!!!'];
+        }
+        //Outras Validações entra aqui
+        if($this->Renovacao->getFechadoId() != 0){
+            return [FALSE,'Esta Renovação já foi fechado uma vez!!!!'];
+        }
+        //Verificar se esta ativo
+        if($this->Renovacao->getStatus() == 'C'){
+            return [FALSE,'Esta Renovação foi cancelada!!!!'];
+        }
+        
+        $this->origem = 'renovacaos';
+
+        return TRUE;
+    }
+
+    public function registraLogRenovacao(){
+        //Criar serviço logorcamento
+        $log = new LogRenovacao($this->em);
+        $dataLog['renovacao']    = $this->Renovacao;
+        $dataLog['tabela']     = 'log_renovacao';
+        $dataLog['controller'] = 'renovacaos' ;
+        $dataLog['action']     = 'fechaOrcamento';
+        $renovacao = $this->Renovacao->getId() . '/' . $this->Renovacao->getCodano();
+        $fechado   = $this->data['id'] . '/' . $this->data['codano'];
+        $dataLog['mensagem']   = 'Fechou a renovação(' . $renovacao . ') e gerou o fechado de numero ' . $fechado ;
         $dataLog['dePara']     = '';
         $log->insert($dataLog);
     }
@@ -218,11 +303,22 @@ class Fechados extends AbstractService {
         $log = new LogFechados($this->em);
         $dataLog['fechados']  = $this->data['id']; 
         $dataLog['tabela']     = 'log_fechados';
-        $dataLog['controller'] = 'orcamentos' ;
+        $dataLog['controller'] = $this->origem ;
         $dataLog['action']     = 'fechar';
-        $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
         $fechado   = $this->data['id'] . '/' . $this->data['codano'];
-        $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' do orçamento n ' . $orcamento;
+        switch ($this->origem) {
+            case 'orcamentos':
+                $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+                $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' do orçamento n ' . $orcamento;
+                break;
+            case 'renovacaos':
+                $renovacao = $this->Renovacao->getId() . '/' . $this->Renovacao->getCodano();
+                $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' da renovação n ' . $renovacao;
+                break;
+            default:
+                $dataLog['mensagem']   = 'Erro Origem desconhecida!!!!!';
+                break;
+        }
         $dataLog['dePara']     = '';
         $log->insert($dataLog);
     }

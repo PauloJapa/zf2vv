@@ -28,6 +28,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('taxa');
         $this->setInputHidden('taxaIof');
         $this->setInputHidden('canceladoEm');
+        $this->setInputHidden('fechadoId');
         
         $this->setInputHidden('imovel');
         $this->setInputHidden('imovelTel');
@@ -189,6 +190,13 @@ class Orcamento extends AbstractEndereco {
         $this->isAdmin = FALSE;
         
         $this->get('formaPagto')->setAttribute('disabled', 'true');   
+    }
+    
+    public function setForRenovacao(){
+        $pdf = $this->get('getpdf');
+        if($pdf){
+            $pdf->setValue('Imprimir Renovação');
+        }
     }
     
 }

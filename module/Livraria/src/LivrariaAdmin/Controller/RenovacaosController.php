@@ -7,10 +7,13 @@ use Zend\Session\Container as SessionContainer;
 
 class RenovacaosController  extends CrudController {
 
+    private $serviceFechado;
+    
     public function __construct() {
         $this->entity = "Livraria\Entity\Renovacao";
-        $this->form = "LivrariaAdmin\Form\Renovacao";
+        $this->form = "LivrariaAdmin\Form\Orcamento";
         $this->service = "Livraria\Service\Renovacao";
+        $this->serviceFechado = "Livraria\Service\Fechados";
         $this->controller = "renovacaos";
         $this->route = "livraria-admin";
     }
@@ -79,6 +82,113 @@ class RenovacaosController  extends CrudController {
     public function getDadosAnterior(){
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         $this->data = $sessionContainer->data;
+    }
+    
+    public function editAction() {
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $sessionContainer = new SessionContainer("LivrariaAdmin");
+        
+        //Verifica se usuario tem registrado a administradora na sessao
+        if(!isset($sessionContainer->administradora['id']) && ($this->getIdentidade()->getTipo() != 'admin')){
+            if(!$this->verificaUserAction(FALSE))
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        }
+        
+        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
+        
+        if($data['subOpcao'] == 'fechar'){ 
+            $servicoFechado = new $this->serviceFechado($this->getEm());
+            $resul = $servicoFechado->fechaRenovacao($data['id']);
+            if($resul[0] === TRUE){
+                $this->flashMessenger()->addMessage('Seguro fechado com sucesso!!!');
+                return;
+            }else{
+                unset($resul[0]);
+                foreach ($resul as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }
+        }
+        
+        $filtroForm = array();
+        
+        if($data['subOpcao'] == 'editar'){ 
+            $repository = $this->getEm()->getRepository($this->entity);
+            $entity = $repository->find($data['id']);
+        }
+        
+        $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
+        $this->formData->setForRenovacao();
+        if($data['subOpcao'] == 'editar'){ 
+            $this->formData->setData($entity->toArray());
+            $data['administradora'] = $entity->getAdministradora()->getId();
+            $data['status'] = $entity->getStatus();
+        }else{
+            $this->formData->setData($data);
+        }
+        
+        //Se houver forma de pagamento dafult somente o usuario admin pode alterar
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            if($sessionContainer->administradora['formaPagto'] != ''){
+                $this->formData->bloqueiaCampos();
+            }
+        }
+        
+        // Verificar se usuario pode editar esse orçamento
+        if(($data['administradora'] != $sessionContainer->administradora['id'] && ($this->getIdentidade()->getTipo() != 'admin'))){
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        }
+        
+        //Metodo que bloqueia campos da edição caso houver
+        $this->formData->setEdit();
+        if($data['subOpcao'] == 'calcular'){
+            if ($this->formData->isValid()){
+                $service = new $this->service($this->getEm());
+                $result = $service->update($data,'OnlyCalc');
+                $this->formData->setData($service->getNewInputs());
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }else{
+                $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');
+            }
+        }
+        
+        if($data['subOpcao'] == 'salvar'){
+            if ($this->formData->isValid()){
+                $service = new $this->service($this->getEm());
+                $result = $service->update($data);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
+                }else{
+                    foreach ($result as $value) {
+                        $this->flashMessenger()->addMessage($value);
+                    }
+                }
+            }  
+        }
+          
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        
+        $param['log']= 'logRenovacao';
+        $param['tar']= '/admin/fechados';
+        $param['prt']= '/admin/renovacaos/printPdf';
+        $param['bak']= 'listarRenovados';
+        
+        return new ViewModel(array_merge($this->getParamsForView(),['param'=>$param])); 
+    }
+    
+    
+    public function printPdfAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        if(!isset($data['id']))
+            $data['id'] = '1';
+        
+        $service = new $this->service($this->getEm());
+        $service->getPdfRenovacao($data['id']);
     }
     
 }

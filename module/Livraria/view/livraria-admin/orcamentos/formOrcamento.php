@@ -25,7 +25,7 @@
                 </div>
             </td>
             <td valign='top'>
-                <a href="javascript:document.getElementById('mensagen').style.display='none';">Fechar <i class="icon-remove-circle"></i></a>
+                <a href="javascript:fecharPop('mensagen');">Fechar <i class="icon-remove-circle"></i></a>
             </td>
         </tr>
     </table>
@@ -40,7 +40,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
-        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
+        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -172,6 +172,10 @@ $this->FormDefault(['enviar','getpdf','fecha'],'submits');
 
 $this->FormDefault([],'fim');
 
+$log = isset($this->param['log']) ? $this->param['log'] : 'logOrcamento';
+$tar = isset($this->param['tar']) ? $this->param['tar'] : '/admin/fechados';
+$prt = isset($this->param['prt']) ? $this->param['prt'] : '/admin/orcamentos/printProposta';
+$bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 ?> 
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';
@@ -231,7 +235,7 @@ $this->FormDefault([],'fim');
 
     function viewLogsOrcamento(){
         document.getElementById('user').value = '';
-        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logOrcamento')); ?>";
+        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>$log)); ?>";
         envia(target,'',formName);
         return false;
     }
@@ -243,12 +247,12 @@ $this->FormDefault([],'fim');
 
     function fechar(){
         envia(tar,'fechar',formName,'new');
-        setTimeout("envia('/admin/fechados','','"+ formName +"','')",1000);
+        setTimeout("envia('<? echo $tar ?>','','"+ formName +"','')",1000);
         return false;
     }
 
     function printProposta(){
-        envia("/admin/orcamentos/printProposta",'printProposta',formName,'new');
+        envia("<? echo $prt ?>",'print',formName,'new');
         return false;
     }
 
@@ -485,12 +489,16 @@ $this->FormDefault([],'fim');
         });
     });
 
+    function fecharPop(id){
+        document.getElementById(id).style.display = 'none';
+    }
+
     function setOcultar(){
         document.getElementById('poppais').style.display = 'none';
     }
 
     function voltar(){
-        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarOrcamentos')); ?>";
+        var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>$bak )); ?>";
         envia(target,'',formName);
     }
 

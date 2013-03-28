@@ -283,7 +283,7 @@ abstract class AbstractService {
      */
     public function idToReference($index, $entity){
         if((!isset($this->data[$index])) OR (empty($this->data[$index]))){
-            echo "erro no indice e nao pode ser carregar entity";
+            echo "erro no indice e nao pode ser carregar entity ", $index;
             return FALSE;
         }
         
@@ -304,7 +304,7 @@ abstract class AbstractService {
      */
     public function idToEntity($index, $entity){
         if((!isset($this->data[$index])) OR (empty($this->data[$index]))){
-            echo "erro no indice e nao pode ser carregar entity";
+            echo "erro no indice e nao pode ser carregar entity ", $index;
             return FALSE;
         }
         
@@ -539,5 +539,29 @@ abstract class AbstractService {
             return $vlrMax;
         // Valor calculado
         return $calc;
+    }
+
+    /**
+     * Calcula a vigencia do seguro periodo mensal ou anual
+     * @return boolean | array
+     */
+    public function calculaVigencia(){
+        if(!isset($this->data['validade'])){
+            return ['Campo validade não existe!!'];
+        }
+        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $interval_spec = ''; 
+        if($this->data['validade'] == 'mensal'){
+            $interval_spec = 'P1M'; 
+        } 
+        if($this->data['validade'] == 'anual'){
+            $interval_spec = 'P1Y'; 
+        } 
+        if(empty($interval_spec)){
+            return ['Campo validade com valor que não existe na lista!!'];
+        }
+        $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        return TRUE;
     }
 }

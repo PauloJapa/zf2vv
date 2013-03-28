@@ -1,0 +1,18 @@
+<h3>Editando Renovação</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'renovacaos','action'=>'edit')));
+
+
+$pastas = explode(DIRECTORY_SEPARATOR, __DIR__);
+$pastas[count($pastas) - 1] = "orcamentos";
+$pastas[] = "formOrcamento.php";
+$enderecoFormPath = implode(DIRECTORY_SEPARATOR, $pastas);
+
+require $enderecoFormPath;
+
+?>

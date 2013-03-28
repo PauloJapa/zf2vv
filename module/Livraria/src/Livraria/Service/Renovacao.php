@@ -3,6 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
+use LivrariaAdmin\Fpdf\ImprimirSeguro;
 
 /**
  * Renovacao
@@ -151,7 +152,9 @@ class Renovacao extends AbstractService {
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
         $this->dateToObject('canceladoEm');
+        $this->dateToObject('criadoEm');
         $this->dateToObject('alteradoEm');
+        return TRUE;
     }
 
     /**
@@ -191,17 +194,36 @@ class Renovacao extends AbstractService {
         $dataLog['dePara']     = '';
         $log->insert($dataLog);
     }
- 
+
     /** 
      * Alterar no banco de dados o registro
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data) {
+    public function update(array $data,$param='') {
         $this->data = $data;
         
-        $this->setReferences();
-       
+        if($data['status'] != 'A')
+            return ['Esta renovação não pode ser editada!','Pois já esta finalizada!!'];
+        
+        $ret = $this->setReferences();
+        if($ret !== TRUE)
+            return $ret;
+        
+        $this->calculaVigencia();
+        
+        $this->idToEntity('taxa', 'Livraria\Entity\Taxa');
+        
+        $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
+        
+        $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
+
+        $resul = $this->CalculaPremio();
+        
+        if($param == 'OnlyCalc'){
+            return ['Calculado com Sucesso !!!']; 
+        }
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -209,7 +231,7 @@ class Renovacao extends AbstractService {
         if(parent::update())
             $this->logForEdit();
         
-        return TRUE;
+        return ['Salvo com Sucesso !!!']; 
     }
     
     /**
@@ -217,7 +239,17 @@ class Renovacao extends AbstractService {
      * @return no return
      */
     public function logForEdit(){
-        parent::logForEdit('renovacao');
+        if(empty($this->dePara)) 
+            return ;
+        
+        $log = new LogRenovacao($this->em);
+        $dataLog['renovacao']  = $this->data['id']; 
+        $dataLog['tabela']     = 'log_renovacao';
+        $dataLog['controller'] = 'renovacaos' ;
+        $dataLog['action']     = 'edit';
+        $dataLog['mensagem']   = 'Alterou renovação de numero ' . $this->data['id'] . '/' . $this->data['codano'] ;
+        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
+        $log->insert($dataLog);
     }
 
     /**
@@ -227,8 +259,41 @@ class Renovacao extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
-        return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
+        $repository = $this->em->getRepository($this->entity);
+        $filtro = array();
+        if(empty($this->data['imovel']))
+            return array('Um imovel deve ser selecionado!');
+        
+        $inicio = $this->data['inicio'];
+        if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
+            return array('A data deve ser preenchida corretamente!');
+            
+        $filtro['imovel'] = $this->data['imovel']->getId();
+        $entitys = $repository->findBy($filtro);
+        $erro = array();
+        foreach ($entitys as $entity) {
+            if($this->data['id'] != $entity->getId()){
+                if(($inicio <= $entity->getFim('obj'))){
+                    if($entity->getStatus() == "A"){
+                        $erro[] = "Alerta!" ;
+                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    }
+                    if($entity->getStatus() == "F"){
+                        $erro[] = "Alerta!" ;
+                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    }
+                }
+            }
+        }
+        
+        if(!empty($erro)){
+            return $erro;
+        }else{
+            return TRUE;
+        }
     }
     
     /**
@@ -237,6 +302,115 @@ class Renovacao extends AbstractService {
      */
     public function getDiff($ent){
         $this->dePara = '';
+        // 10 referencia a outra entity
+        $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
+        $this->dePara .= $this->diffAfterBefore('Locatario', $ent->getLocatario(), $this->data['locatario']);
+        $this->dePara .= $this->diffAfterBefore('Imovel bloco', $ent->getImovel()->getBloco(), $this->data['imovel']->getBloco());
+        $this->dePara .= $this->diffAfterBefore('Imovel apto', $ent->getImovel()->getApto(), $this->data['imovel']->getApto());
+        $this->dePara .= $this->diffAfterBefore('Imovel tel', $ent->getImovel()->getTel(), $this->data['imovel']->getTel());
+        $this->dePara .= $this->diffAfterBefore('Taxa', $ent->getTaxa()->getId(), $this->data['taxa']->getId());
+        $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
+        $this->dePara .= $this->diffAfterBefore('Seguradora', $ent->getSeguradora(), $this->data['seguradora']);
+        $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora(), $this->data['administradora']);
+        // 9 de valores float
+        $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('valorAluguel'), $this->strToFloat($this->data['valorAluguel']));
+        $this->dePara .= $this->diffAfterBefore('Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel'), $this->strToFloat($this->data['aluguel']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico'), $this->strToFloat($this->data['eletrico']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval'), $this->strToFloat($this->data['vendaval']));
+        $this->dePara .= $this->diffAfterBefore('Premio Liquido', $ent->floatToStr('premioLiquido'), $this->strToFloat($this->data['premioLiquido']));
+        $this->dePara .= $this->diffAfterBefore('Premio', $ent->floatToStr('premio'), $this->strToFloat($this->data['premio']));
+        $this->dePara .= $this->diffAfterBefore('Premio Total', $ent->floatToStr('premioTotal'), $this->strToFloat($this->data['premioTotal']));
+        $this->dePara .= $this->diffAfterBefore('Comissao', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
+        // 3 de datas
+        $this->dePara .= $this->diffAfterBefore('Data inicio', $ent->getInicio(), $this->data['inicio']->format('d/m/Y'));
+        $this->dePara .= $this->diffAfterBefore('Data Fim', $ent->getFim(), $this->data['fim']->format('d/m/Y'));
+        $this->dePara .= $this->diffAfterBefore('Cancelado Em', $ent->getCanceladoEm(), $this->data['canceladoEm']->format('d/m/Y'));
+        // 15 campos comuns
+        $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
+        $this->dePara .= $this->diffAfterBefore('Ano Referência', $ent->getCodano(), $this->data['codano']);
+        $this->dePara .= $this->diffAfterBefore('locadorNome', $ent->getLocadorNome(), $this->data['locadorNome']);
+        $this->dePara .= $this->diffAfterBefore('locatarioNome', $ent->getLocatarioNome(), $this->data['locatarioNome']);
+        $this->dePara .= $this->diffAfterBefore('tipoCobertura', $ent->getTipoCobertura(), $this->data['tipoCobertura']);
+        $this->dePara .= $this->diffAfterBefore('seguroEmNome', $ent->getSeguroEmNome(), $this->data['seguroEmNome']);
+        $this->dePara .= $this->diffAfterBefore('codigoGerente', $ent->getCodigoGerente(), $this->data['codigoGerente']);
+        $this->dePara .= $this->diffAfterBefore('refImovel', $ent->getRefImovel(), $this->data['refImovel']);
+        $this->dePara .= $this->diffAfterBefore('formaPagto', $ent->getFormaPagto(), $this->data['formaPagto']);
+        $this->dePara .= $this->diffAfterBefore('numeroParcela', $ent->getNumeroParcela(), $this->data['numeroParcela']);
+        $this->dePara .= $this->diffAfterBefore('observacao', $ent->getObservacao(), $this->data['observacao']);
+        if(isset($this->data['gerado']))
+            $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
+        $this->dePara .= $this->diffAfterBefore('comissao', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
+        $this->dePara .= $this->diffAfterBefore('codFechado', $ent->getFechadoId(), $this->data['fechadoId']);
+        $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
+        //Juntar as alterações no imovel se houver
+        $this->dePara .= $this->deParaImovel;
+    }
+    
+    public function getPdfRenovacao($id){
+        //Carregar Entity Fechados
+        $seg = $this->em
+            ->getRepository($this->entity)
+            ->find($id);
+        
+        if(!$seg){
+            return ['Não foi encontrado uma renovação com esse numero!!!'];
+        }
+        
+        $pdf = new ImprimirSeguro();
+        $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
+        $pdf->setL2($seg->getAdministradora()->getNome());
+        $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
+        $pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
+        //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
+        $pdf->setL6($seg->getAtividade());
+        $pdf->setL7($seg->getObservacao());
+        $pdf->setL8($seg->floatToStr('valorAluguel'));
+        $pdf->setL9($seg->getAdministradora()->getId(), '0');
+        $pdf->setL10();
+        $vlr = [
+            $seg->floatToStr('incendio'),
+            $seg->floatToStr('cobIncendio'),
+            $seg->floatToStr('eletrico'),
+            $seg->floatToStr('cobEletrico'),
+            $seg->floatToStr('aluguel'),
+            $seg->floatToStr('cobAluguel'),
+            $seg->floatToStr('vendaval'),
+            $seg->floatToStr('cobVendaval'),
+        ];
+        switch ($seg->getTipoCobertura()) {
+            case '01':
+                $label = ' (Prédio)';
+                break;
+            case '02':
+                $label = ' (Conteúdo + prédio)';
+                break;
+            case '03':
+                $label = ' (Conteúdo)';
+                break;
+            default:
+                $label = '';
+                break;
+        }
+        $pdf->setL11($vlr, $label);
+        $tot = [
+            $seg->floatToStr('premio'),
+            $seg->floatToStr('premioLiquido'),
+            $this->strToFloat($seg->getPremioLiquido() * $seg->getTaxaIof()),
+            $seg->floatToStr('premioTotal')
+        ];
+        $pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
+        $par = [
+            $seg->floatToStr('premioTotal'),
+            $this->strToFloat($seg->getPremioTotal() / 2),
+            $this->strToFloat($seg->getPremioTotal() / 3),
+            $this->strToFloat($seg->getPremioTotal() / 12)
+        ];
+        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
+        $pdf->setL14();
+        //$pdf->setObs($obs);
+        $pdf->Output();
+        
     }
     
 }
