@@ -254,7 +254,11 @@ class OrcamentosController extends CrudController {
         
         return new ViewModel($this->getParamsForView()); 
     }
-
+    
+    /**
+     * Fecha o orçamento e copia os dados para a tabela de fechados
+     * @return View
+     */
     public function fecharSegurosAction() {
         $data = $this->getRequest()->getPost()->toArray();
         //Pegar Servico de fechados $sf
@@ -388,6 +392,11 @@ class OrcamentosController extends CrudController {
             $data['id'] = '1';
         
         $this->getServiceLocator()->get($this->service)->getPdfOrcamento($data['id']);
+    }
+    
+    public function imprimiSeguroAction(){
+        //Nome diferente mas com a mesma função
+        $this->printPropostaAction();
     }
     
 }

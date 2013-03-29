@@ -88,6 +88,11 @@ $lambda = function($value,&$data){
                     '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
                  "</td>\n";   
         }
+        if($data[10] == "C"){
+            echo "\t<td nowrap>",
+                    '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
+                 "</td>\n";   
+        }
         if($data[10] == "A"){
             echo "\t<td nowrap>",
                     '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
@@ -123,6 +128,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
 <br />
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
+    <input type="hidden" name="orcamento" id="orcamento">
 <div id="delobs">
     <table width="100%">
         <tr>
@@ -149,6 +155,12 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     function novo(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
         envia(tar,'novo');        
+    }
+    function getLogs(id){
+        document.getElementById('id2').value = id ;
+        document.getElementById('orcamento').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logOrcamento')); ?>";
+        envia(tar,id);        
     }
     function del(id){
         var motivo = document.getElementById('delobs');
@@ -225,6 +237,14 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         envia(tar,'novo'); 
         return false;
     }
+
+    function printPdf(id){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'imprimiSeguro')); ?>";
+        document.getElementById('id2').value = id ;
+        envia(tar,id,null,'new');  
+        
+    }
+
     document.getElementById('delobs').style.display = 'none';
     
     $(document).ready(function(){

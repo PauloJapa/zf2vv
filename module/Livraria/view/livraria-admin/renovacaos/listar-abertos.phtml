@@ -1,13 +1,4 @@
-<?php if(count($flashMessages)) : ?>
-<div class="control-group error">
-<ul class="help-inline">
-    <?php foreach ($flashMessages as $msg) : ?>
-    <li><?php echo $msg; ?></li>
-    <?php endforeach; ?>
-</ul>
-</div>
-<?php endif; ?>
-<h1>Listar Renovados</h1>
+<h1>Lista de Renovações</h1>
 <br />
 <style type="text/css">
 #delobs {
@@ -22,12 +13,14 @@
 }
 </style>
 <?php
+echo '<form name="form" id="form" method="POST">';
+
 $coluns = array(
-    'ID',
-    'S',
+    'ID<br><label class="checkbox" onClick="setCheckbox()"><input type="checkbox" id="CheckTodos" value="">Todos</label>',
+    'Seguradora',
     'Administradora',
     'Atividade',
-    'Classe',
+    'Ref Imovél',
     'Inicio',
     'Fim',
     'Locador',
@@ -52,15 +45,11 @@ $td     = array(
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
 
+
 $lambda = function($value,&$data){
         if($data[10] == "F"){
             echo "\t<td nowrap>",
                     '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
-                 "</td>\n";   
-        }
-        if($data[10] == "C"){
-            echo "\t<td nowrap>",
-                    '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
                  "</td>\n";   
         }
         if($data[10] == "A"){
@@ -73,13 +62,14 @@ $lambda = function($value,&$data){
     
 $this->ViewIndex('setFuncEdit',$lambda); 
 
+
 foreach($this->data as $entity){ 
     $linha = array(
-        $entity->getId() .'/'. $entity->getCodAno(),
-        substr($entity->getSeguradora(),0,1),
+        '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $entity->getId() .'/'. $entity->getCodAno() .'</label>',
+        $entity->getSeguradora(),
         $entity->getAdministradora(),
         $entity->getAtividade(),
-        $entity->getTaxa()->getClasse(),
+        $entity->getRefImovel(),
         $entity->getInicio(),
         $entity->getFim(),
         $entity->getLocadorNome(),
@@ -91,12 +81,12 @@ foreach($this->data as $entity){
     echo $this->ViewIndex('line',array('data' => $linha));
 }
 echo $this->ViewIndex('close');
+
 ?>
+<div align='center'><input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Fechar Selecionados" onclick="return fecharSelecionados()"></div>
 <br />
-<form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
-    <input type="hidden" name="renovacao" id="renovacao">
 <div id="delobs">
     <table width="100%">
         <tr>
@@ -112,30 +102,22 @@ echo $this->ViewIndex('close');
             </td>
         </tr>
     </table>
-</div> 
-</form> 
+</div>    
+</form>
 <script language="javascript">
     function edit(id){
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
         envia(tar,'editar');
-    } 
-    function printPdf(id){
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'imprimiSeguro')); ?>";
-        document.getElementById('id2').value = id ;
-        envia(tar,id,null,'new');  
-        
-    }
-    function getLogs(id){
-        document.getElementById('id2').value = id ;
-        document.getElementById('renovacao').value = id ;
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logRenovacao')); ?>";
-        envia(tar,id);        
+    }    
+    function novo(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
+        envia(tar,'novo');        
     }
     function del(id){
         var motivo = document.getElementById('delobs');
         motivo.style.display = 'none';
-        var msg = "Deseja realmente cancelar esta renovação?";
+        var msg = "Deseja realmente cancelar este orçamento?";
         if(!confirm(msg))return;
         motivo.style.display = 'block';
         document.getElementById('id2').value = id ;
@@ -154,6 +136,32 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         envia(tar,id);        
     }
+    function setCheckbox(){
+        var todos = document.getElementById('CheckTodos');
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            elems[i].checked = todos.checked;
+        }
+    }
+    function fecharSelecionados(){
+        //Verificar se algum orcamento foi marcado
+        var aux = false;
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].checked){
+                aux = true;
+                break;
+            }
+        }
+        if(!aux){
+            alert("Nenhum registro foi selecionado!!");
+            return false;
+        }
+    
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharSeguros')); ?>";
+        envia(tar,'novo'); 
+        return false;
+    }
     document.getElementById('delobs').style.display = 'none';
     
     $(document).ready(function(){
@@ -166,5 +174,3 @@ echo $this->ViewIndex('close');
         });
     });
 </script>
-
-<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

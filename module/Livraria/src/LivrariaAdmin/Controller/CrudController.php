@@ -113,7 +113,7 @@ abstract class CrudController extends AbstractActionController {
     }
 
     public function deleteAction() {
-        $service = $this->getServiceLocator()->get($this->service);
+        $service = new $this->service($this->getEm());
         
         if($this->params()->fromRoute('id', 0))
             $data['id'] = $this->params()->fromRoute('id', 0);

@@ -39,10 +39,54 @@ class RenovacaosController  extends CrudController {
             $sessionContainer->data = $this->data;
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'lista'));
         }
-        $this->formData = new $this->form();
+        $this->formData = new \LivrariaAdmin\Form\Renovacao();
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());
+    }
+    
+    public function buscarAbertosAction(){
+        $data = $this->filtrosDaPaginacao();
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            var_dump($sessionContainer);die;
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction(FALSE);
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
+        }
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setOrcamento();
+        $this->formData->setLocadorLocatario();
+        $this->formData->setEndereco();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+      //  $this->formData->setIsAdmin(); 
+        $this->formData->setEdit();
+        
+        return new ViewModel(['form'=>$this->formData, 'formName'=>$this->formData->getName()]);        
+    }
+    
+    public function listarAbertosAction(){
+        $data = $this->filtrosDaPaginacao();
+        $inputs = ['id', 'administradora', 'endereco', 'locador', 'locatario', 'user', 'end','dataI','dataF'];
+        $filtro = ['status'=>'A'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findRenovacao($filtro);
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        $viewData = $this->getParamsForView();
+        $viewData['data'] = $list;
+        return new ViewModel($viewData);
     }
     
     /**
@@ -190,5 +234,36 @@ class RenovacaosController  extends CrudController {
         $service = new $this->service($this->getEm());
         $service->getPdfRenovacao($data['id']);
     }
+    
+    public function imprimiSeguroAction(){
+        //Já existe um metodo para isso com outro nome
+        $this->printPdfAction();
+    }
+    
+    /**
+     * Fecha a renovação e copia os dados para a tabela de fechados
+     * @return View
+     */
+    public function fecharSegurosAction() {
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar Servico de fechados $sf
+        foreach ($data['Checkeds'] as $idRen) {
+            $sf = new $this->serviceFechado($this->getEm());
+            $resul = $sf->fechaRenovacao($idRen,FALSE);
+            if($resul[0] === TRUE){
+                $fechou = $sf->getEntity();
+                $msg = 'Renovação ' . $idRen . ' gerou o fechado nº' . $fechou->getId() . '/' . $fechou->getCodano();
+                $this->flashMessenger()->addMessage($msg);
+            }else{
+                $msg = 'Renovação ' . $idRen . ' gerou os seguintes erros!';
+                $this->flashMessenger()->addMessage($msg);
+                unset($resul[0]);
+                foreach ($resul as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }            
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => 'fechados', 'action'=>'listarFechados'));
+    }    
     
 }

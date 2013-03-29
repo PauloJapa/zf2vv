@@ -358,8 +358,37 @@ class Fechados extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){
-        return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
+        $repository = $this->em->getRepository($this->entity);
+        $filtro = array();
+        if(empty($this->data['imovel']))
+            return array('Um imovel deve ser selecionado!');
+        
+        $inicio = $this->data['inicio'];
+        if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
+            return array('A data deve ser preenchida corretamente!');
+            
+        $filtro['imovel'] = $this->data['imovel']->getId();
+        $entitys = $repository->findBy($filtro);
+        $erro = array();
+        foreach ($entitys as $entity) {
+            $st = $entity->getStatus();
+            if (($st != "A") and ($st != 'R')) {
+                continue;  //so valida registros ativos ou renovados
+            }
+            $ini = $this->data['inicio'];
+            if ($entity->getInicio('obj') >= $ini and $ini <= $entity->getFim('obj')) {
+                $erro[] = "Alerta!";
+                $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                $erro[] = "Já existe um seguro com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            }
+        }
+        
+        if(!empty($erro)){
+            return $erro;
+        }else{
+            return TRUE;
+        }
     }
 
     /**

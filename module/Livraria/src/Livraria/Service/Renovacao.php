@@ -30,6 +30,31 @@ class Renovacao extends AbstractService {
         $this->fechado = "Livraria\Entity\Fechados";
     }
     
+    public function delete($id,$data) {
+        if(parent::delete($id)){
+            $this->logForDelete($id,$data);
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+    
+    /**
+     * Registra a exclusão do registro com seu motivo.
+     * @param type $id
+     * @param type $data
+     */
+    public function logForDelete($id,$data) {
+        $log = new LogRenovacao($this->em);
+        $dataLog['renovacao'] = $id;
+        $dataLog['tabela'] = 'log_renovacao';
+        $dataLog['controller'] = 'renovacaos';
+        $dataLog['action'] = 'delete';
+        $dataLog['mensagem'] = 'Renovação excluida com numero ' . $id;
+        $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
+        $log->insert($dataLog);
+    }
+    
     public function renovar(\Livraria\Entity\Fechados $fechado){
         $this->fechado = $fechado;
         //Montar dados para tabela de renovacao
