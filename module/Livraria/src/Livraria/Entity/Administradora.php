@@ -15,7 +15,6 @@ class Administradora {
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
      * @var int
      */
     protected $id;
@@ -330,20 +329,38 @@ class Administradora {
         return $dateTime;
     }
     
+    /**
+     * Retorna a Entity endereço
+     * @return \Livraria\Entity\Endereco
+     */
     public function getEndereco() {
         return $this->endereco;
     }
 
-    public function setEndereco($endereco) {
+    /**
+     * Entity Endereço da Administradora
+     * @param \Livraria\Entity\Endereco $endereco
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setEndereco(Endereco $endereco) {
         $this->endereco = $endereco;
         return $this;
     }
     
+    /**
+     * Retorna a entity Seguradora
+     * @return \Livraria\Entity\Seguradora
+     */
     public function getSeguradora() {
         return $this->seguradora;
     }
 
-    public function setSeguradora($seguradora) {
+    /**
+     * Seguradora preferencial desta Administradora
+     * @param \Livraria\Entity\Seguradora $seguradora
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setSeguradora(Seguradora $seguradora) {
         $this->seguradora = $seguradora;
         return $this;
     }

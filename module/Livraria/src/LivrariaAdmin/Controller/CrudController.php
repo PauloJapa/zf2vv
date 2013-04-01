@@ -53,7 +53,7 @@ abstract class CrudController extends AbstractActionController {
                     ->getRepository($this->entity)
                     ->findBy($filtro, $orderBy);
         }
-        if ($list[0] == FALSE) {
+        if (isset($list[0]) AND $list[0] == FALSE) {
             $list = [];
         }
 

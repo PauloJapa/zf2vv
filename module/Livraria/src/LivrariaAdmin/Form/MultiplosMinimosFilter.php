@@ -8,9 +8,9 @@ class MultiplosMinimosFilter extends AbstractFilter {
                 
         $this->notEmpty('seguradora');
         
-        $this->notEmpty('multAluguel');
+        $this->notEmpty('minAluguel');
         
-        $this->notEmpty('multIncendio');
+        $this->notEmpty('minIncendio');
         
         $this->notEmpty('multStatus');
         

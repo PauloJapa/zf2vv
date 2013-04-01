@@ -22,7 +22,7 @@ $this->FormDefault(['legend' => 'Dados do Usuário:', 'hidden' => 'id'],'inicio'
         $this->FormDefault(['nome'],'text'),
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
     "</td><td>\r",
-        $this->FormDefault(['tipo','isAdmin'],'select'),
+        $this->FormDefault(['tipo','isAdmin','status'],'select'),
     "</td>\r",
 $this->FormDefault([],'fieldFim');
 

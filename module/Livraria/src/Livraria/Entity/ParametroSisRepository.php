@@ -28,6 +28,10 @@ class ParametroSisRepository extends EntityRepository {
         
         $array = array('' => 'Selecione na lista');
         
+        if(!is_array($entities)){
+            return $array;
+        }
+        
         foreach($entities as $entity) {
             $array[$entity->getConteudo()] = $entity->getDescricao();
         }

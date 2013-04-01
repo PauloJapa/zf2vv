@@ -12,18 +12,35 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Dados Basicos:', 'hidden' => 'id'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Dados Basicos:'],'inicio',$this, $form),
+    "<td>\n",
+        $this->FormDefault(['id'], 'text'),
+    "</td><td>",
+        $this->FormDefault(['seguradora'], 'select'),
+    "</td><td>",
+    "</td>",
+"</tr><tr>",
     "<td>\n",
         $this->FormDefault(['ajaxStatus','subOpcao'],'hidden'),
         $this->FormDefault(['nome','tel'], 'text'),
-        $this->FormDefault(['seguradora'], 'select'),
     "</td><td>",
         $this->FormDefault(['apelido','email'], 'text'),
     "</td><td>",
         $this->FormDefault(['cnpj'], 'text'),
         $this->FormDefault(['status'], 'select'),
-    "</td>\n",
+    "</td>\n";
         
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+            $this->formRow($form->get('content')),
+        "</td><td>",
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td><td>",
+        "</td>\n";
+    }        
+echo        
 "</tr>\r",
 "</table>\r",
  $this->FormDefault(['legend'=>'Parametros para Seguros'],'fieldIni'),
@@ -61,5 +78,10 @@ require 'index.phtml';
     function voltar(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
         envia(tar,'',formName);
+    }
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 </script>

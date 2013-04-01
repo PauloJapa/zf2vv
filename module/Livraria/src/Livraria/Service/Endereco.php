@@ -52,7 +52,7 @@ class Endereco extends AbstractService {
             $this->data['cidade'] = $this->em->getReference("Livraria\Entity\Cidade", $this->data['cidade']);
         }
         
-        if(empty($this->data['estado'])) $this->data['estado'] = "28";
+        if(empty($this->data['estado'])) $this->data['estado'] = "1";
         //Pega uma referencia do registro da tabela estado
         $this->idToReference('estado', "Livraria\Entity\Estado");
         
@@ -61,7 +61,7 @@ class Endereco extends AbstractService {
         $this->idToReference('pais', "Livraria\Entity\Pais");
     }
     
-    public function insert(array $data) {
+    public function insert(array $data, $flush=FALSE) {
         $this->data = $data;
         
         $this->setReferences();
@@ -69,13 +69,15 @@ class Endereco extends AbstractService {
         $entity = new $this->entity($this->data);
         
         $this->em->persist($entity);
-        $this->em->flush();
+        
+        if($flush)
+            $this->em->flush();
         
         return $entity;
         
     }
     
-    public function update(array $data) {
+    public function update(array $data, $flush=FALSE) {
         $this->data = $data;
         unset($this->data['id']);
         
@@ -92,7 +94,9 @@ class Endereco extends AbstractService {
         $entity = Configurator::configure($entity,$this->data);    
         
         $this->em->persist($entity);
-        $this->em->flush();
+        
+        if($flush)
+            $this->em->flush();
         
         return $entity;
     }

@@ -18,6 +18,7 @@ echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
 foreach($this->data as $entity){ 
+    if($entity->getId() == 1)continue; //pula o id 1 ele é uma referencia vazia
     $linha = array(
         $entity->getId(),
         $entity->getNome(),

@@ -54,18 +54,8 @@ class Locatario extends AbstractService {
     /**
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em locatarios
      */
-    public function logForNew(){
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'locatario';
-        $dataLog['controller'] = 'locatarios';
-        $dataLog['action']     = 'new';
-        $dataLog['dePara']     = 'Inseriu um novo registro';
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+    public function logForNew($tabela='locatario'){
+        parent::logForNew($tabela);
     }
  
     /** 
@@ -97,20 +87,8 @@ class Locatario extends AbstractService {
     /**
      * Grava no logs dados da alteção feita em locatarios De/Para
      */
-    public function logForEdit(){
-        if(empty($this->dePara)) 
-            return ;
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'locatario';
-        $dataLog['controller'] = 'locatarios';
-        $dataLog['action']     = 'edit';
-        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+    public function logForEdit($tabela='locatario'){
+        parent::logForEdit($tabela);
     }
     
     /**

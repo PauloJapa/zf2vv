@@ -74,6 +74,48 @@ class Atividade
      */
     private $alteradoEm;
 
+    /**
+     * @var string $status
+     *
+     * @ORM\Column(name="status", type="string", length=10, nullable=false)
+     */
+    private $status;
+
+    /**
+     * @var string $danosEletricos
+     *
+     * @ORM\Column(name="danos_eletricos", type="string", length=1, nullable=false)
+     */
+    private $danosEletricos;
+
+    /**
+     * @var string $equipEletro
+     *
+     * @ORM\Column(name="equip_eletro", type="string", length=1, nullable=false)
+     */
+    private $equipEletro;
+
+    /**
+     * @var string $vendavalFumaca
+     *
+     * @ORM\Column(name="vendaval_fumaca", type="string", length=1, nullable=false)
+     */
+    private $vendavalFumaca;
+
+    /**
+     * @var string $basica
+     *
+     * @ORM\Column(name="basica", type="string", length=10, nullable=false)
+     */
+    private $basica;
+
+    /**
+     * @var string $roubo
+     *
+     * @ORM\Column(name="roubo", type="string", length=10, nullable=false)
+     */
+    private $roubo;
+
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
@@ -268,8 +310,74 @@ class Atividade
         $this->alteradoEm = $alteradoEm;
         return $this;
     }
+    
+    public function getStatus() {
+        return $this->status;
+    }
+
+    public function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
 
     /**
+     * Paramentro para franquia diferenciada 
+     * @return string
+     */
+    public function getDanosEletricos() {
+        return $this->danosEletricos;
+    }
+
+    public function setDanosEletricos($danosEletricos) {
+        $this->danosEletricos = $danosEletricos;
+        return $this;
+    }
+
+    /**
+     * Paramentro para franquia diferenciada 
+     * @return string
+     */
+    public function getEquipEletro() {
+        return $this->equipEletro;
+    }
+
+    public function setEquipEletro($equipEletro) {
+        $this->equipEletro = $equipEletro;
+        return $this;
+    }
+
+    /**
+     * Paramentro para franquia diferenciada 
+     * @return string
+     */
+    public function getVendavalFumaca() {
+        return $this->vendavalFumaca;
+    }
+
+    public function setVendavalFumaca($vendavalFumaca) {
+        $this->vendavalFumaca = $vendavalFumaca;
+        return $this;
+    }
+
+    public function getBasica() {
+        return $this->basica;
+    }
+
+    public function setBasica($basica) {
+        $this->basica = $basica;
+        return $this;
+    }
+
+    public function getRoubo() {
+        return $this->roubo;
+    }
+
+    public function setRoubo($roubo) {
+        $this->roubo = $roubo;
+        return $this;
+    }
+
+        /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -282,6 +390,12 @@ class Atividade
         $data['criadoEm']       = $this->getCriadoEm();
         $data['userIdAlterado'] = $this->getUserIdAlterado();
         $data['alteradoEm']     = $this->getAlteradoEm();
+        $data['status']         = $this->getStatus();
+        $data['danosEletricos'] = $this->getDanosEletricos();
+        $data['equipEletro']    = $this->getEquipEletro();
+        $data['vendavalFumaca'] = $this->getVendavalFumaca();
+        $data['basica']         = $this->getBasica();
+        $data['roubo']          = $this->getRoubo();
         return $data ;
     }
     

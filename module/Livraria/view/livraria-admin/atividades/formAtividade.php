@@ -15,10 +15,24 @@ echo
 $this->FormDefault(['legend' => 'Dados da Atividade', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
         $this->FormDefault(['descricao' => 'text']),
-        $this->FormDefault(['codSeguradora','subOpcao'], 'hidden'),
+        $this->FormDefault(['codSeguradora','subOpcao','danosEletricos','equipEletro','vendavalFumaca','basica','roubo'], 'hidden'),
     "</td><td>\r",
         $this->FormDefault(['ocupacao' => 'select']),
-    "</td>\r",
+    "</td><td>\r",
+        $this->FormDefault(['status' => 'select']),
+    "</td>\r";
+        
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+            $this->formRow($form->get('content')),
+        "</td><td>",
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td><td>",
+        "</td>\n";
+    }        
+echo  
 $this->FormDefault(['submit' => 'enviar'],'fim');
 ?>
 <script language="javascript">
@@ -34,5 +48,10 @@ $this->FormDefault(['submit' => 'enviar'],'fim');
     function voltar(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
         envia(tar,'',formName);
+    }
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 </script>

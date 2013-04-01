@@ -21,7 +21,7 @@ class Administradora extends AbstractEndereco {
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new AdministradoraFilter);
               
-        $this->setInputHidden('id');
+        $this->setInputText('id', 'Codigo');
         $this->setInputText('nome', 'Nome',['placeholder' => 'Entre com o nome']);
         $this->setInputText('apelido', 'Apelido', ['placeholder' => 'Nome fantasia']);
 
@@ -52,6 +52,13 @@ class Administradora extends AbstractEndereco {
         $this->getEnderecoElements($em);
         
         $this->setInputSubmit('enviar', 'Salvar');
+
+        $file = new \Zend\Form\Element\File('content');
+        $file->setLabel('Selecione um arquivo')
+             ->setAttribute('id', 'content');
+        $this->add($file);
+        
+        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
     }
 
 }

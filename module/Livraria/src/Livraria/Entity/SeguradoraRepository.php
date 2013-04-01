@@ -12,6 +12,7 @@ class SeguradoraRepository extends EntityRepository {
         $array = array('' => 'Selecione na lista');
         
         foreach($entities as $entity) {
+            if($entity->getId() == 1)continue; //pula o id 1 ele é uma referencia vazia
             $array[$entity->getId()] = $entity->getNome();
         }
         

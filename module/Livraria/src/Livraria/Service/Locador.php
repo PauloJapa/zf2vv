@@ -54,18 +54,8 @@ class Locador extends AbstractService {
     /**
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em locadors
      */
-    public function logForNew(){
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'locador';
-        $dataLog['controller'] = 'locadors';
-        $dataLog['action']     = 'new';
-        $dataLog['dePara']     = 'Inseriu um novo registro';
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+    public function logForNew($tabela='locador'){
+        parent::logForEdit($tabela);
     }
  
     /** 
@@ -83,7 +73,7 @@ class Locador extends AbstractService {
             return $result;
         }
         
-        //Pegando o servico endereco e inserindo novo endereco do locador
+        //Pegando o servico endereco e atualizando endereco do locador
         $serviceEndereco = new Endereco($this->em);
         $this->data['endereco'] = $serviceEndereco->update($this->data);
         $this->deParaEnd = $serviceEndereco->getDePara();
@@ -98,20 +88,8 @@ class Locador extends AbstractService {
     /**
      * Grava no logs dados da alteção feita em locadors De/Para
      */
-    public function logForEdit(){
-        if(empty($this->dePara)) 
-            return ;
-        $log = new Log($this->em);
-        $dataLog['user']       = $this->getIdentidade()->getId();
-        $data  = new \DateTime('now');
-        $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
-        $dataLog['tabela']     = 'locador';
-        $dataLog['controller'] = 'locadors';
-        $dataLog['action']     = 'edit';
-        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
-        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+    public function logForEdit($tabela='locador'){
+        parent::logForEdit($tabela);
     }
     
     /**

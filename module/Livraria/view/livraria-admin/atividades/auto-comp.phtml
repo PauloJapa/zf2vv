@@ -1,6 +1,11 @@
 <?php 
 if($this->resultSet){
-    echo "ok|s|";
+    echo "ok|s|",
+            'X|c|',
+            'X|c|',
+            'ID|c|',
+            'Atividade/Ocupação|c|',
+            '|s|';
     $cont = 0;
     foreach($this->resultSet as $entity){
         if($cont > 0)echo "|s|";
@@ -8,7 +13,7 @@ if($this->resultSet){
         echo $entity->getId(), "|c|"; 
         echo $entity, "|c|"; 
         echo $entity->getId(), "|c|"; 
-        echo $entity, "|c|"; 
+        echo $entity, '/', $entity->getOcupacao('str'), "|c|"; 
     }
 }else
     echo "vazio|s|";

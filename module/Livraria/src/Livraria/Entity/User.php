@@ -56,6 +56,13 @@ class User {
     protected $isAdmin;
 
     /**
+     * @var string $status
+     *
+     * @ORM\Column(name="status", type="string", length=10, nullable=true)
+     */
+    private $status;
+
+    /**
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
@@ -160,6 +167,20 @@ class User {
         return $this;
     }
 
+    public function getStatus() {
+        return $this->status;
+    }
+
+    /** 
+     * Setar o status do registro ativo bloqueado inativo
+     * @param String $status
+     * @return \Livraria\Entity\User
+     */ 
+    public function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
+
     public function getEndereco() {
         return $this->endereco;
     }
@@ -187,6 +208,7 @@ class User {
         $data['password']       = $this->getPassword();
         $data['salt']           = $this->getSalt();
         $data['isAdmin']        = $this->getIsAdmin();
+        $data['status']         = $this->getStatus();
         $data['administradora'] = $this->getAdministradora()->getId();
         $data['administradoraDesc'] = $this->getAdministradora()->getNome();
         return $data ;

@@ -57,7 +57,7 @@ class MultiplosMinimos extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em multiplosMinimoss
      */
     public function logForNew(){
-        parent::logForNew('multiplos_minimos');
+        parent::logForNew('multiplos_minimos','multiplosMinimos');
     }
  
     /** 
@@ -87,7 +87,7 @@ class MultiplosMinimos extends AbstractService {
      * Grava no logs dados da alteção feita em multiplosMinimoss De/Para
      */
     public function logForEdit(){
-        parent::logForEdit('multiplos_minimos');
+        parent::logForEdit('multiplos_minimos','multiplosMinimos');
     }
     
     /**

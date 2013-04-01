@@ -99,5 +99,81 @@ class AdministradorasController extends CrudController {
         $viewModel->setTerminal(true);
         return $viewModel;
     }
+    
+    public function importarAction(){
+        $data = $this->getRequest()->getFiles()->toArray();
+        //Verificando a existencia do arquivo
+        $content  = file($data['content']['tmp_name']);
+        if(!$content){
+            echo 'arquivo não encontrado!!';
+            return;
+        }
+        // Pegando o serviço para manipular dados
+        $serviceAdm = $this->getServiceLocator()->get($this->service);   
+        $serviceCom = $this->getServiceLocator()->get('Livraria\Service\Comissao');   
+        foreach ($content as $key => $value) {
+            if($key == 0){
+                if(!$this->validaColunas($this->csvToArray($value))){
+                    echo 'Erro titulos da colunas estão incorretos!!';
+                    return;
+                }
+                continue;
+            }
+            $resul = $serviceAdm->insert($this->getDataAdm($value));
+            if($resul === TRUE){
+                $resul = $serviceCom->insert($this->getDataCom($value));
+                if($resul === TRUE){
+                    echo 'Importado; ', $value , '<br>';
+                    continue;
+                }                
+            }
+            var_dump($resul);
+        }        
+    }
+    
+    public function getDataAdm($value){
+        $d = $this->csvToArray($value);
+        return [
+            'id' => $d[0],
+            'nome' => $d[2],
+            'email' => $d[3],
+            'seguradora' => ($d[7] == 'M') ? '2' : '3',
+            'cnpj' => $d[0],
+            'status' => 'A'
+        ];
+    }
+
+    public function getDataCom($value) {
+        $d = $this->csvToArray($value);
+        return [
+            'id' => '',
+            'administradora' => $d[0],
+            'multIncendio' => $d[4],
+            'multConteudo' => $d[5],
+            'multAluguel' => $d[6],
+            'multEletrico' => $d[9],
+            'multVendaval' => $d[8],
+            'inicio' => '01/01/2000',
+            'fim' => '',
+            'comissao' => '50,00',
+            'status' => 'A'
+        ];
+    }
+
+    public function validaColunas($cols){
+        $titStr = 'cod_ue;sen_ue;nome;email;vezes_inc;vezes_inc_con;vezes_alu;cia;vezes_alu_A;vezes_ele_A';
+        $tit = explode(';', $titStr);
+        if($tit !== $cols){
+            var_dump($tit);
+            var_dump($cols);
+            return FALSE;
+        }
+        return TRUE;
+    }
+    
+    public function csvToArray($str){
+        $linha = str_replace("\r\n","",trim($str));
+        return explode(';',  $linha);
+    }
 
 }

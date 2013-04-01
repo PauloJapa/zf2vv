@@ -2,13 +2,13 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
+use Zend\Form\Element\Select;
 
 class User  extends AbstractEndereco {
     
     public function __construct($name = null, $em = null) {
         parent::__construct('user');
+        $this->em = $em;
         
         $this->setAttribute('method', 'post');
         $this->setAttribute('onSubmit', 'return submitvalida(this)');
@@ -45,7 +45,8 @@ class User  extends AbstractEndereco {
         );
         $this->add($isAdmin);
 
-
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', '*Situação', $status);
      
         $this->setInputHidden('administradora');
         $attributes = ['placeholder' => 'Pesquise digitando a Administradora aqui!',

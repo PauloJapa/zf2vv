@@ -13,6 +13,7 @@ class AdministradoraFilter extends EnderecoFilter {
         $this->emptyTrue('validade');
         $this->emptyTrue('tipoCobertura');
 
+        $this->notEmpty('id');
         $this->notEmpty('nome');
         $this->notEmpty('cnpj');
         $this->notEmpty('status');

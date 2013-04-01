@@ -68,7 +68,6 @@ class Orcamento extends AbstractService {
      */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToEntity('atividade', 'Livraria\Entity\Atividade');
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
         $this->idToReference('administradora', 'Livraria\Entity\Administradora');
         $this->idToReference('user', 'Livraria\Entity\User');
@@ -90,6 +89,23 @@ class Orcamento extends AbstractService {
         $locatarioResul = $this->setLocatario();
         if($locatarioResul !== TRUE){
             return $locatarioResul;
+        }
+        $AtividadeResul = $this->setAtividade();
+        if($AtividadeResul !== TRUE){
+            return $AtividadeResul;
+        }
+        return TRUE;
+    }
+    
+    /**
+     * Valida se atividade escolhida esta ativa
+     * Caso não retorna o erro 
+     * @return boolean | array
+     */
+    public function setAtividade(){
+        $this->idToEntity('atividade', 'Livraria\Entity\Atividade');
+        if($this->data['atividade']->getStatus() != "A"){
+            return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
         }
         return TRUE;
     }
