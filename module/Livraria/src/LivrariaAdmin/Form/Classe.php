@@ -10,7 +10,6 @@ class Classe extends AbstractForm {
         parent::__construct('classe');
         
         $this->em = $em;
-        $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ClasseFilter);
@@ -20,7 +19,8 @@ class Classe extends AbstractForm {
         
         $this->setInputText('descricao', 'Descrição', ['placeholder' => 'Descricao da Classe']);
 
-        $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ["onChange"=>"buscaSeguradora()"]);
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', '*Situação', $status);
      
         $this->setInputSubmit('enviar', 'Salvar');
     }

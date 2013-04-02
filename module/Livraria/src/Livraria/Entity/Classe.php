@@ -68,14 +68,11 @@ class Classe
     private $alteradoEm;
 
     /**
-     * @var Seguradora
+     * @var string $status
      *
-     * @ORM\ManyToOne(targetEntity="Seguradora")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $seguradora;
+    private $status;
 
 
  
@@ -210,20 +207,20 @@ class Classe
         return $this;
     }
 
-    public function getSeguradora() {
-        return $this->seguradora;
+    public function getStatus() {
+        return $this->status;
     }
-
 
     /** 
-     * Setar a qual entidade seguradora que pertence esta classe de taxas
-     * @param \Livraria\Entity\Seguradora $seguradora
-     * @return this 
+     * Setar o status do registro ativo bloqueado inativo
+     * @param String $status
+     * @return \Livraria\Entity\Seguradora 
      */ 
-    public function setSeguradora(Seguradora $seguradora) {
-        $this->seguradora = $seguradora;
+    public function setStatus($status) {
+        $this->status = $status;
         return $this;
     }
+
 
     public function toArray() {
         $data['id']             = $this->getId();
@@ -234,6 +231,7 @@ class Classe
         $data['userIdAlterado'] = $this->getUserIdAlterado();
         $data['alteradoEm']     = $this->getAlteradoEm();
         $data['seguradora']     = $this->getSeguradora()->getId(); 
+        $data['status']         = $this->getStatus();
         return $data ;
     }
 

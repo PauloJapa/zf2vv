@@ -14,17 +14,13 @@ class ClasseRepository extends EntityRepository {
      * Buscar no banco todos registros para colocar no select do form
      * @return Array com a lista de registro  
      */ 
-    public function fetchPairs($filtros = null) {
-        if(isset($filtros)){
-            $entities = $this->findBy($filtros);
-        }else{
-            $entities = $this->findAll();
-        }
+    public function fetchPairs(array $filtros=[]) {
+        $entities = $this->findBy($filtros);
         
         $array = array('' => 'Selecione na lista');
         
         foreach($entities as $entity) {
-            $array[$entity->getId()] = $entity->getCod() . ' - ' . $entity->getDescricao();
+            $array[$entity->getId()] = $entity->getDescricao();
         }
         
         return $array;

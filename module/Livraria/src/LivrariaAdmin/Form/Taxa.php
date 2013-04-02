@@ -26,7 +26,6 @@ class Taxa extends AbstractForm {
     public function __construct($name = null, $em = null) {
         parent::__construct('taxa');
         $this->em = $em;
-        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new TaxaFilter);    
@@ -39,53 +38,42 @@ class Taxa extends AbstractForm {
         
         $this->setInputText('fim', '*Fim da Vigência', $attributes);
         
-        $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
-        $this->setInputSelect('status', '*Situação', $options);
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', '*Situação', $status);
 
-        $this->setInputText('incendio', '*Cobertura p/ incêndio', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendio', 'Cobertura p/ incêndio', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioConteudo', '*Cobertura p/ conteúdo', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('incendioConteudo', 'Cob. incêndio conteúdo', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('aluguel', '*Cobertura p/ aluguel', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('aluguel', 'Cobertura p/ aluguel', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('eletrico', '*Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('eletrico', 'Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
         
-        $this->setInputText('desastres', '*Cobertura p/ desastres', ['placeholder' => 'XXX,XX']);
+        $this->setInputText('vendaval', 'Cobertura p/ Vendaval', ['placeholder' => 'XXX,XX']);
 
-        $this->setInputText('incendioMen', '*Cobertura p/ incêndio', ['placeholder' => 'XXX,XX']);
-
-        $this->setInputText('incendioConteudoMen', '*Cobertura p/ conteúdo', ['placeholder' => 'XXX,XX']);
-
-        $this->setInputText('aluguelMen', '*Cobertura p/ aluguel', ['placeholder' => 'XXX,XX']);
+        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
+        $this->setInputSelect('classe', '*Classe', $this->classes, ["onChange" => "buscaClasse()"] );
         
-        $this->setInputText('eletricoMen', '*Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
-        
-        $this->setInputText('desastresMen', '*Cobertura p/ desastres', ['placeholder' => 'XXX,XX']);
-        
-        $options = [];
-        $this->setInputSelect('classe', '*Classe', $options, ["onChange" => "buscaClasse()"] );
-        
+        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
         $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ["onChange" => "buscaSeguradora()"] );
         
+        $validade = $this->getParametroSelect('validade');
+        $this->setInputSelect('validade', '*Validade', $validade);
+        
+        $ocupacao = $this->getParametroSelect('ocupacao');
+        $this->setInputSelect('ocupacao', '*Ocupação', $ocupacao);
+        
+        $comissao = $this->getParametroSelect('comissaoParam');
+        $this->setInputSelect('comissao', '*Comissão', $comissao);
+        
         $this->setInputSubmit('enviar', 'Salvar');
-    }
-    
-    /**
-     * Recarrega o select baseado em filtro
-     * @param array $filtro
-     */
-    public function reloadSelectClasse(array $filtro){
-        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
-        $classe = new Select();
-        $classe->setLabel("*Classe")
-                ->setName("classe")
-                ->setAttribute("id","classe")
-                ->setAttribute("onChange","buscaClasse()")
-                ->setOptions(array('value_options' => $this->classes)
-        );
-        $this->add($classe);
-        if($this->isEdit)
-            $this->setEdit ();
+
+        $file = new \Zend\Form\Element\File('content');
+        $file->setLabel('Selecione um arquivo')
+             ->setAttribute('id', 'content');
+        $this->add($file);
+        
+        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
     }
     
     /**
@@ -96,23 +84,21 @@ class Taxa extends AbstractForm {
      */ 
     public function setEdit($isAdmin=false){
         $this->isEdit = TRUE;
-        if(($isAdmin)or($this->isAdmin)){
-            $this->isAdmin = TRUE;
-            return ;
-        }
+        //if(($isAdmin)or($this->isAdmin)){
+        //    $this->isAdmin = TRUE;
+        //    return ;
+        //}
         $this->get('seguradora')->setAttribute('disabled', 'disabled');   
         $this->get('classe')->setAttribute('disabled', 'disabled');   
+        $this->get('validade')->setAttribute('disabled', 'disabled');   
+        $this->get('ocupacao')->setAttribute('disabled', 'disabled');   
+        $this->get('comissao')->setAttribute('disabled', 'disabled');   
         $this->get('inicio')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('incendio')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('incendioConteudo')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('aluguel')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('eletrico')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('desastres')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));  
-        $this->get('incendioMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('incendioConteudoMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('aluguelMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('eletricoMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('desastresMen')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        $this->get('vendaval')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));  
     }
 
 }

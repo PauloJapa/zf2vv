@@ -21,7 +21,6 @@ class Classe extends AbstractService {
      */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
     }
 
     /** 
@@ -49,7 +48,7 @@ class Classe extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em taxas
      */
     public function logForNew(){
-        parent::logForNew('Classe', 'classes');
+        parent::logForNew('classe');
     }
 
         /** 
@@ -77,13 +76,13 @@ class Classe extends AbstractService {
      * Grava no logs dados da alteção feita em taxas De/Para
      */
     public function logForEdit(){
-        parent::logForEdit('Classe', 'classes');
+        parent::logForEdit('classe');
     }
     
     public function getDiff(\Livraria\Entity\Classe $ent){
         $this->dePara = '';
-        $this->dePara .= $this->diffAfterBefore('Seguradora', $ent->getSeguradora()->getId(), $this->data['seguradora']->getId()); 
         $this->dePara .= $this->diffAfterBefore('Nome da Classe', $ent->getDescricao(), $this->data['descricao']);
+        $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']); 
     }
 
     /**
@@ -96,7 +95,6 @@ class Classe extends AbstractService {
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $entitys = $repository->findBy(array(
-            'seguradora' => $this->data['seguradora'],
             'descricao' => $this->data['descricao']
         ));
         $erro = [] ;

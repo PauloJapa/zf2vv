@@ -15,38 +15,41 @@ echo
 $this->FormDefault(['legend' => 'Dados da Cobertura', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
         $this->FormDefault(['subOpcao' => 'hidden']),
-        $this->FormDefault(['seguradora' => 'select']),
         $this->FormDefault(['inicio' => 'calend']),
+        $this->FormDefault(['seguradora' => 'select']),
+        $this->FormDefault(['comissao' => 'select']),
     "</td><td>\r",
-        $this->FormDefault(['classe' => 'select']),
         $this->FormDefault(['fim' => 'calend']),
-    "</td><td>\r",
+        $this->FormDefault(['classe' => 'select']),
+        $this->FormDefault(['validade' => 'select']),
+    "</td><td><br /><br /><br />\r",
         $this->FormDefault(['status' => 'select']),
-    "</td>\r",
+        $this->FormDefault(['ocupacao' => 'select']),
+    "</td>\r";
+        
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+            $this->formRow($form->get('content')),
+        "</td><td>",
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td><td>",
+        "</td>\n";
+    }        
+echo 
 "</tr>\r",
 "</table>\r",
         
-$this->FormDefault(['legend'=>'Coberturas Anuais'],'fieldIni'),
+$this->FormDefault(['legend'=>'Coberturas'],'fieldIni'),
     "<td>\r",
         $this->FormDefault(['incendio' => 'float4']),
         $this->FormDefault(['eletrico' => 'float4']),
     "</td><td>\r",
-        $this->FormDefault(['aluguel' => 'float4']),
-        $this->FormDefault(['desastres' => 'float4']),
-    "</td><td>\r",
         $this->FormDefault(['incendioConteudo' => 'float4']),
-    "</td>\r",
-$this->FormDefault([],'fieldFim'),
-        
-$this->FormDefault(['legend'=>'Coberturas Mensais'],'fieldIni'),
-    "<td>\r",
-        $this->FormDefault(['incendioMen' => 'float4']),
-        $this->FormDefault(['eletricoMen' => 'float4']),
+        $this->FormDefault(['vendaval' => 'float4']),
     "</td><td>\r",
-        $this->FormDefault(['aluguelMen' => 'float4']),
-        $this->FormDefault(['desastresMen' => 'float4']),
-    "</td><td>\r",
-        $this->FormDefault(['incendioConteudoMen' => 'float4']),
+        $this->FormDefault(['aluguel' => 'float4']),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),
         
@@ -72,5 +75,10 @@ require 'index.phtml';
     function voltar(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
         envia(tar,'',formName);
+    }
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 </script>

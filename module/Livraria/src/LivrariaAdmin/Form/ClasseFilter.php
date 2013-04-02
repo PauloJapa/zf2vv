@@ -8,7 +8,7 @@ class ClasseFilter extends AbstractFilter {
         
         $this->notEmpty('descricao');
         
-        $this->notEmpty('seguradora');
+        $this->notEmpty('status');
         
     }    
     

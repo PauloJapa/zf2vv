@@ -25,7 +25,7 @@ class ClassesController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('seguradora' => 'ASC','descricao' => 'ASC'));
+        return parent::indexAction($filtro);
     }
     
     public function newAction() {
@@ -34,13 +34,8 @@ class ClassesController extends CrudController {
         $filtro = array();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
-        if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
-            $this->formData->setData($data);
-        }
         if($data['subOpcao'] == 'salvar'){
+            $this->formData->setData($data);
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->insert($data);
@@ -70,19 +65,9 @@ class ClassesController extends CrudController {
         switch ($data['subOpcao']){
         case 'editar':    
             $entity = $repository->find($data['id']);
-            $filtro['seguradora'] = $entity->getSeguradora()->getId();
             $this->formData->setData($entity->toArray());
             break;
-        case 'buscar':  
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
-            $this->formData->setData($data);  
-            break;
         case 'salvar': 
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-            }
             $this->formData->setData($data);
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);

@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityRepository;
 
 class SeguradoraRepository extends EntityRepository {
 
-    public function fetchPairs() {
-        $entities = $this->findAll();
+    public function fetchPairs(array $filtros=[]) {
+        $entities = $this->findBy($filtros);
         
         $array = array('' => 'Selecione na lista');
         

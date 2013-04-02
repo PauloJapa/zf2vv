@@ -518,10 +518,7 @@ abstract class AbstractService {
             $fMin = $fTaxa;
 
         //Gera o nome da função a ser chamada na entity taxa
-        if($this->data['validade'] == 'anual')
-            $fTaxa = 'get' . $fTaxa ;
-        else
-            $fTaxa = 'get' . $fTaxa . 'Men';
+        $fTaxa = 'get' . $fTaxa ;
         //Gera o nome da função a ser chamada na entity multiplosMinimos
         $fMax = 'getMax' . $fMin ;
         $fMin = 'getMin' . $fMin ;
