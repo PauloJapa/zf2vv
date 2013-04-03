@@ -116,7 +116,7 @@ class Atividade extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Situação', $ent->getStatus(), $this->data['status']);
         $this->dePara .= $this->diffAfterBefore('Danos Eletricos', $ent->getDanosEletricos(), $this->data['danosEletricos']);
         $this->dePara .= $this->diffAfterBefore('Equipamento eletronico', $ent->getEquipEletro(), $this->data['equipEletro']);
-        $this->dePara .= $this->diffAfterBefore('Vendaval Fumaca', $ent->getVendavalFumaca(), $this->data['vendavalfumaca']);
+        $this->dePara .= $this->diffAfterBefore('Vendaval Fumaca', $ent->getVendavalFumaca(), $this->data['vendavalFumaca']);
         $this->dePara .= $this->diffAfterBefore('Basica', $ent->getBasica(), $this->data['basica']);
         $this->dePara .= $this->diffAfterBefore('Roubo', $ent->getRoubo(), $this->data['roubo']);
     }

@@ -23,26 +23,27 @@ class ClasseAtividade extends AbstractForm {
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('classeAtividade');
         $this->em = $em;
-        $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
-        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new ClasseAtividadeFilter);
 
         $this->setInputHidden('id');
+        $this->setInputHidden('codOld');
+        $this->setInputHidden('codciaOld');
+        $this->setInputHidden('seq');
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
         $this->setInputText('inicio', '*Inicio da Vigência', $attributes);
 
         $this->setInputText('fim', '*Fim da Vigência', $attributes);
 
-        $options = ['A'=>'Ativo','B'=>'Bloqueado','C'=>'Cancelado'];
-        $this->setInputSelect('status', '*Situação', $options);
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', '*Situação', $status);
 
+        $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
         $this->setInputSelect('classeTaxas', '*Classe', $this->classeTaxas);
 
         $this->setInputHidden('atividade');
-
         $this->setInputText(
                 'atividadeDesc', 
                 '*Atividade', 
@@ -53,24 +54,15 @@ class ClasseAtividade extends AbstractForm {
                 ]
         );
 
-        $attributes = ['onChange'=>'buscaSeguradora()'];
-        $this->setInputSelect('seguradora', 'Seguradora', $this->seguradoras, $attributes);
-
         $this->setInputSubmit('enviar', 'Salvar');
+
+        $file = new \Zend\Form\Element\File('content');
+        $file->setLabel('Selecione um arquivo')
+             ->setAttribute('id', 'content');
+        $this->add($file);
+        
+        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
         
     }
     
-    /**
-     * Recarrega o select baseado em filtro
-     * @param array $filtro
-     */
-    public function reloadSelectClasse(array $filtro){
-        $this->classeTaxas = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs($filtro);
-        
-        $this->setInputSelect('classeTaxas', '*Classe', $this->classeTaxas);
-
-        if($this->isEdit)
-            $this->setEdit ();
-    }
-
 }

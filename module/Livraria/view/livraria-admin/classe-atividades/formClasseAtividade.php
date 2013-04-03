@@ -13,19 +13,28 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados da Classe Atividade', 'hidden' => 'id'],'inicio',$this, $form),
-    "<td colpan='3'>\r",
-        $this->FormDefault(['seguradora' => 'select']),
-    "</td>\r",
-"</tr><tr valign='top'>\r",
     "<td>\r",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','atividade'],'hidden'),
+        $this->FormDefault(['codOld','codciaOld','seq'],'hidden'),
         $this->FormDefault(['name' => 'atividadeDesc','icone' => 'icon-search','js' => 'autoCompAtividade()','span' => "popAtividade' style='position:absolute"],'icone'),
         $this->FormDefault(['inicio' => 'calend']),
     "</td><td>\r",
         $this->FormDefault(['classeTaxas' => 'select', 'fim' => 'calend']),
     "</td><td>\r",
         $this->FormDefault(['status' => 'select']),
-    "</td>\r",
+    "</td>\r";
+        
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+            $this->formRow($form->get('content')),
+        "</td><td>",
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td><td>",
+        "</td>\n";
+    }        
+echo 
 $this->FormDefault(['submit' => 'enviar'],'fim');
 
 $noFilter=true;
@@ -57,8 +66,10 @@ require 'index.phtml';
     function buscaAtividade(){
         envia(tar,'buscar',formName);
     }
-    function buscaSeguradora(){
-        envia(tar,'buscar',formName);
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 
 </script>

@@ -28,7 +28,7 @@ class ClasseAtividadesController extends CrudController {
      */
     public function indexAction(array $filtro = array()){
         $this->verificaSeUserAdmin();
-        $orderBy = array('seguradora' => 'ASC', 'atividade' => 'ASC', 'inicio'=>'DESC');
+        $orderBy = array('atividade' => 'ASC', 'inicio'=>'DESC');
         if(!$this->render){
             return parent::indexAction($filtro, $orderBy);
         }
@@ -58,10 +58,6 @@ class ClasseAtividadesController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $data['seguradora'];
-            }
             if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
         }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
@@ -100,18 +96,10 @@ class ClasseAtividadesController extends CrudController {
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
-            if(!isset($data['seguradora'])){
-                $filtro['seguradora'] = $entity->getSeguradora()->getId();
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
             $filtro['atividade']  = $entity->getAtividade()->getId();
         }
         
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['seguradora'])){
-                $filtro['seguradora'] = $data['seguradora'];
-                $filtroForm['seguradora'] = $filtro['seguradora'];
-            }
             if(!empty($data['atividade'])) $filtro['atividade'] = $data['atividade'];
         }
         
@@ -142,6 +130,125 @@ class ClasseAtividadesController extends CrudController {
         $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
+    }
+    
+    public function importarAction(){
+        echo
+        '<html><head>',
+        '<meta http-equiv="content-language" content="pt-br" />',
+        '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
+        '</head><body>';
+        $data = $this->getRequest()->getFiles()->toArray();
+        //Verificando a existencia do arquivo
+        $content  = file($data['content']['tmp_name']);
+        if(!$content){
+            echo 'arquivo não encontrado!!';
+            return;
+        }
+        // Pegando o serviço para manipular dados
+        $service = $this->getServiceLocator()->get($this->service); 
+        $repository = $this->getEm()->getRepository('Livraria\Entity\Atividade');
+        $acumula = [];
+        foreach ($content as $key => $value) {
+            if($key == 0){
+                if(!$this->validaColunas($this->csvToArray($value))){
+                    echo 'Erro titulos da colunas estão incorretos!!';
+                    var_dump($value);
+                    return;
+                }
+                continue;
+            }
+            
+            //Acumulando dado iguais para fazer uma inserção unica!!!
+            $d = $this->csvToArray($value);
+            if(empty($acumula) OR $acumula[0][2] == $d[2]){
+                $acumula[] = $d;
+                continue;
+            }
+            
+            foreach ($acumula as $key => $value) {
+                if(isset($acumula[$key + 1])){
+                    $dd['id'] = '' ;
+                    $dd['inicio'] = $value[5] ;
+                    $dd['fim'] = $acumula[$key + 1][5] ;
+                    $dd['status'] = 'C' ;
+                    if($value[3] == 'EX' or $value[3] == 'SC')$value[3] = 12 ;
+                    $dd['classeTaxas'] = $value[3];
+                    $dd['atividade'] = $this->getAtividade($value,$repository);
+                    $dd['codOld'] =  $value[0];
+                    $dd['codciaOld'] = $value[2] ;
+                    $dd['seq'] = $value[6] ;
+                    $this->inclui($service,$dd);
+                    $acumula = [];
+                    continue;
+                }
+                $dd['id'] = '' ;
+                $dd['inicio'] = $value[5] ;
+                $dd['fim'] = '01/01/0001' ;
+                $dd['status'] = 'A' ;
+                if($value[3] == 'EX' or $value[3] == 'SC')$value[3] = 12 ;
+                $dd['classeTaxas'] = $value[3];
+                $dd['atividade'] = $this->getAtividade($value,$repository);
+                $dd['codOld'] =  $value[0];
+                $dd['codciaOld'] = $value[2] ;
+                $dd['seq'] = $value[6] ;              
+                $this->inclui($service,$dd);
+                $acumula = [];
+            }
+        }        
+    }
+    
+    public function getAtividade(&$d, &$r){
+        $entity = $r->findBy(['codSeguradora' => $d[2]]);
+        if($entity){
+            return $entity[0]->getId();
+        }
+        // Não encontrou entao inclui atividade como excluida
+        $service = $this->getServiceLocator()->get("Livraria\Service\Atividade"); 
+        $dados = [
+            'id' => '',
+            'descricao' => $d[1],
+            'equipEletro' => '',
+            'danosEletricos' => '',
+            'vendavalFumaca' => '',
+            'codSeguradora' => $d[2],
+            'basica' => '',
+            'roubo' => '',
+            'status' => 'C',
+            'ocupacao' => ($d[4] == 'Indústria') ? '03' : '01',
+        ];
+        $rs = $service->insert($dados);
+        if($rs === TRUE){
+            echo 'Importado Atividade; ', implode(';', $dados) , '<br>';
+            return $service->getEntity()->getId();
+        }else                
+            var_dump($rs);
+            return $rs[1]->getId();
+    }
+
+    public function inclui(&$s,&$dd){
+        $resul = $s->insert($dd);
+        if($resul === TRUE){
+            echo 'Importado; ', implode(';', $dd) , '<br>';
+        }else                
+            var_dump($resul);
+    }
+
+    public function validaColunas($cols){
+        $titStr = 'cod;descricao;codcia;classe;tipo;data;sequencia';
+        $tit = explode(';', $titStr);
+        if($tit !== $cols){
+            var_dump($tit);
+            var_dump($cols);
+            return FALSE;
+        }
+        return TRUE;
+    }
+    
+    public function csvToArray($str){
+        //var_dump(utf8_decode($str));
+        $linha = str_replace("\r\n","",trim($str));
+        return explode(';', $linha);
     }
 
 }

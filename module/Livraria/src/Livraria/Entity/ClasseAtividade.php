@@ -95,14 +95,25 @@ class ClasseAtividade
     private $atividade;
 
     /**
-     * @var Seguradora
+     * @var integer $codOld
      *
-     * @ORM\ManyToOne(targetEntity="Seguradora")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="cod_old", type="integer", nullable=true)
      */
-    private $seguradora;
+    private $codOld;
+
+    /**
+     * @var integer $codciaOld
+     *
+     * @ORM\Column(name="codcia_old", type="integer", nullable=true)
+     */
+    private $codciaOld;
+
+    /**
+     * @var string $seq
+     *
+     * @ORM\Column(name="seq", type="string", length=1, nullable=true)
+     */
+    private $seq;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -338,24 +349,60 @@ class ClasseAtividade
     }
     
     /**
-     * Retorna a Entity Seguradora
-     * @return \Livraria\Entity\Seguradora
+     * Manter compatibilidade com BD antigo
+     * @return integer
      */
-    public function getSeguradora() {
-        return $this->seguradora;
+    public function getCodOld() {
+        return $this->codOld;
     }
 
     /**
-     * Define a ligação com a entity Seguradora 
-     * @param \Livraria\Entity\Seguradora $seguradora
+     * Manter compatibilidade com BD antigo
+     * @param integer $codOld
      * @return \Livraria\Entity\ClasseAtividade
      */
-    public function setSeguradora(Seguradora $seguradora) {
-        $this->seguradora = $seguradora;
+    public function setCodOld($codOld) {
+        $this->codOld = $codOld;
+        return $this;
+    }
+    
+    /**
+     * Manter compatibilidade com BD antigo
+     * @return integer
+     */
+    public function getCodciaOld() {
+        return $this->codciaOld;
+    }
+
+    /**
+     * Manter compatibilidade com BD antigo
+     * @param integer $codiciaOld
+     * @return \Livraria\Entity\ClasseAtividade
+     */
+    public function setCodciaOld($codciaOld) {
+        $this->codciaOld = $codciaOld;
         return $this;
     }
 
-        /**
+    /**
+     * Manter compatibilidade com BD antigo
+     * @return string
+     */
+    public function getSeq() {
+        return $this->seq;
+    }
+
+    /**
+     * Manter compatibilidade com BD antigo
+     * @param string $seq
+     * @return \Livraria\Entity\ClasseAtividade
+     */
+    public function setSeq($seq) {
+        $this->seq = $seq;
+        return $this;
+    }
+
+    /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -371,7 +418,9 @@ class ClasseAtividade
         $data['classeTaxas']      = $this->getClasseTaxas()->getId(); 
         $data['atividade']        = $this->getAtividade()->getId(); 
         $data['atividadeDesc']    = $this->getAtividade(); 
-        $data['seguradora']       = $this->getSeguradora()->getId(); 
+        $data['codOld']           = $this->getCodOld(); 
+        $data['codciaOld']        = $this->getCodciaOld(); 
+        $data['seq']              = $this->getSeq(); 
         return $data ;
     }
 
