@@ -427,11 +427,14 @@ abstract class AbstractService {
 
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
-        $txIncendio = $this->calcTaxaMultMinMax($incendio,'Incendio') ;
+        $taxa = ($this->data['tipoCobertura'] == '02') ? 'IncendioConteudo' : 'Incendio' ;
+        $txIncendio = $this->calcTaxaMultMinMax($incendio, $taxa, 'Incendio') ;
         $total += $txIncendio;
         
-        $txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
-        $total += $txConteudo;
+        //Precisa definir melhor a taxa que calcula esse campo.
+        $txConteudo = 0.0;
+        //$txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+        //$total += $txConteudo;
         
         $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
         $total += $txAluguel;
@@ -523,17 +526,17 @@ abstract class AbstractService {
         $fMax = 'getMax' . $fMin ;
         $fMin = 'getMin' . $fMin ;
         
-        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
-        
-        // Se calculado for menor que o minimo retorna o min
+        // Se valor da cobertura for menor que o minimo calcula com o min
         $vlrMin = floatval($this->data['multiplosMinimos']->$fMin());
-        if($calc < $vlrMin)
-            return $vlrMin;
-        
-        // Se calculado for maior que o maximo retorna o max
+        if ($vlrMin != 0.0 AND $vlr < $vlrMin)
+            $vlr = $vlrMin;
+
+        // Se valor da cobertura for maior que o maximo calcula com o max
         $vlrMax = floatval($this->data['multiplosMinimos']->$fMax());
-        if(($vlrMax != 0.0)AND($calc > $vlrMax))
-            return $vlrMax;
+        if (($vlrMax != 0.0) AND ($vlr > $vlrMax))
+            $vlr = $vlrMax;
+        
+        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
         // Valor calculado
         return $calc;
     }

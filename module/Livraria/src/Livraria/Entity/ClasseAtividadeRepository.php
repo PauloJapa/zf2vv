@@ -20,19 +20,17 @@ class ClasseAtividadeRepository extends EntityRepository {
     public function findClasseVigente($seguradora, $atividade, $date){
         //Converter string data em objeto datetime
         if(!is_object($date)){
-            $date = explode("/", $date);
-            $date = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+            $d = explode("/", $date);
+            $date = new \DateTime($d[1] . '/' . $d[0] . '/' . $d[2]);
         }
         
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('ca')
                 ->from('Livraria\Entity\ClasseAtividade', 'ca')
-                ->where(" ca.seguradora = :seguradora
-                    AND   ca.atividade = :atividade
+                ->where(" ca.atividade = :atividade
                     AND   ca.inicio <= :inicio
                     ")
-                ->setParameter('seguradora', $seguradora)
                 ->setParameter('atividade', $atividade)
                 ->setParameter('inicio', $date)
                 ->setMaxResults(1)

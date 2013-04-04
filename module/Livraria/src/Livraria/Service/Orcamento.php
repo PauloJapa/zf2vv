@@ -82,13 +82,13 @@ class Orcamento extends AbstractService {
         if($locadorResul !== TRUE){
             return $locadorResul;
         }
-        $imovelResul = $this->setImovel();
-        if($imovelResul !== TRUE){
-            return $imovelResul;
-        }
         $locatarioResul = $this->setLocatario();
         if($locatarioResul !== TRUE){
             return $locatarioResul;
+        }
+        $imovelResul = $this->setImovel();
+        if($imovelResul !== TRUE){
+            return $imovelResul;
         }
         $AtividadeResul = $this->setAtividade();
         if($AtividadeResul !== TRUE){
@@ -138,8 +138,14 @@ class Orcamento extends AbstractService {
         }
         
         $this->data['taxa'] = $this->em
-            ->getRepository('Livraria\Entity\Taxa')
-            ->findTaxaVigente($this->data['seguradora']->getId(), $this->data['atividade']->getId(), $this->data['criadoEm']);
+                ->getRepository('Livraria\Entity\Taxa')
+                ->findTaxaVigente(
+                    $this->data['seguradora']->getId(), 
+                        $this->data['atividade']->getId(), 
+                        $this->data['criadoEm'], 
+                        $this->data['comissao'],
+                        $this->data['validade']
+        );
 
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];

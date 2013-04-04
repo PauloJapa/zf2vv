@@ -21,11 +21,13 @@ class TaxaRepository extends EntityRepository {
     /**
      * Busca uma taxa para atividade e seguradora na data $date.
      * @param string $seguradora
-     * @param string $atividade
+     * @param string $atividade 
      * @param string $date
+     * @param string $comissao
+     * @param string $validade      mensal|anual
      * @return boolean|Entity Livraria\Entity\Taxa
      */
-    public function findTaxaVigente($seguradora, $atividade, $date){
+    public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual'){
         //Pegar classeAtividade correspondente vigente na data
         $classeAtividade = $this->getEntityManager()
                 ->getRepository('Livraria\Entity\ClasseAtividade')
@@ -36,32 +38,36 @@ class TaxaRepository extends EntityRepository {
         }
         //Converter string data em objeto datetime
         if(!is_object($date)){
-            $date = explode("/", $date);
-            $date = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+            $d = explode("/", $date);
+            $date = new \DateTime($d[1] . '/' . $d[0] . '/' . $d[2]);
         }
         
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('t')
+                ->select('t,s,c')
                 ->from('Livraria\Entity\Taxa', 't')
+                ->join('t.seguradora', 's')
+                ->join('t.classe', 'c')
                 ->where(" t.seguradora = :seguradora
                     AND   t.classe = :classe
                     AND   t.inicio <= :inicio
+                    AND   t.ocupacao <= :ocupacao
+                    AND   t.validade <= :validade
+                    AND   t.comissao <= :comissao
                     ")
                 ->setParameter('seguradora', $seguradora)
                 ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())
                 ->setParameter('inicio', $date)
+                ->setParameter('ocupacao', $classeAtividade->getAtividade()->getOcupacao())
+                ->setParameter('validade', $validade)
+                ->setParameter('comissao', $comissao)
                 ->setMaxResults(1)
                 ->orderBy('t.inicio', 'DESC')
                 ->getQuery()
                 ;
         $resul = $query->getResult();
-        if(empty($resul))
-            return FALSE;
         
-        return $resul[0];
-        //return $query->getSingleResult();
-        
+        return empty($resul) ? FALSE : $resul[0];
     }
 }
 

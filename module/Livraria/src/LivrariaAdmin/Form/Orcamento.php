@@ -100,9 +100,9 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputRadio('seguroEmNome', 'Seguro em nome', ['01' => 'Locador','02' => 'Locatário']);
         
-        $options = ['01'=>'Comércio e Serviços', '02'=>'Residencial', '03'=>'Industria'];
+        $ocupacao = $this->getParametroSelect('ocupacao', TRUE);
         $attributes = ['onClick' => "cleanAtividade();travaResidencial();"];
-        $this->setInputRadio('ocupacao', 'Ocupação', $options,$attributes);
+        $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
         $this->setInputRadio('validade', 'Tipo do Seguro', $validade);
@@ -143,7 +143,8 @@ class Orcamento extends AbstractEndereco {
         if ($this->isAdmin) {
             $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
             $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
-            $this->setInputText('comissao', 'Comissão da Administradora');
+            $comissao = $this->getParametroSelect('comissaoParam', TRUE);
+            $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao);
         } else {
             $this->setInputHidden('seguradora');
             $this->setInputHidden('comissao');

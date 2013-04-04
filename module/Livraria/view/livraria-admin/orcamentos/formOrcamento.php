@@ -73,7 +73,7 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
         echo 
         $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
             "<td>",
-                $this->FormDefault(['comissao' => 'float']),
+                $this->FormDefault(['comissao' => 'select']),
             "</td><td>", PHP_EOL,
                 $this->FormDefault(['seguradora' => 'select']),
             "</td><td>", PHP_EOL,
@@ -291,6 +291,21 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             var tcob = document.getElementById('tipoCobertura');
             tcob.selectedIndex = 2 ;
         }
+    }
+    function setCobertura(){
+        var tcob = document.getElementById('tipoCobertura').value;
+        if(tcob == '02'){
+            document.getElementById('popincendio').style.display = 'none';
+            document.getElementById('popconteudo').style.display = 'block';
+            return;
+        }
+        if(tcob == ''){
+            document.getElementById('popincendio').style.display = 'none';
+            document.getElementById('popconteudo').style.display = 'none';
+            return;
+        }
+        document.getElementById('popincendio').style.display = 'block';
+        document.getElementById('popconteudo').style.display = 'none';
     }
 
     function cleanAtividade(){
