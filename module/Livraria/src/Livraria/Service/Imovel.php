@@ -23,11 +23,16 @@ class Imovel extends AbstractService {
     }
     
     public function setReferences(){
+        if(!isset($this->data['fechadoId']))$this->data['fechadoId'] = '0';
+        if(!isset($this->data['fechadoAno']))$this->data['fechadoAno'] = '0';
+        if(!isset($this->data['vlrAluguel']))$this->data['vlrAluguel'] = '0.0';
+        if(!isset($this->data['fechadoFim']))$this->data['fechadoFim'] = '01/01/0001';
         //Pega uma referencia do registro da tabela classe
         $this->idToReference('locador', 'Livraria\Entity\Locador');
         if(empty($this->data['atividade']))$this->data['atividade'] = '5';
         $this->idToReference('atividade', 'Livraria\Entity\Atividade');
         $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+        $this->dateToObject('fechadoFim');
     }
 
     /** 
@@ -114,6 +119,10 @@ class Imovel extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Bloco', $ent->getBloco(), $this->data['bloco']);
         $this->dePara .= $this->diffAfterBefore('Apartamento', $ent->getApto(), $this->data['apto']);
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
+        $this->dePara .= $this->diffAfterBefore('Fechado Id', $ent->getFechadoId(), $this->data['fechadoId']);
+        $this->dePara .= $this->diffAfterBefore('Fechado Ano', $ent->getFechadoAno(), $this->data['fechadoAno']);
+        $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->getVlrAluguel(), $this->data['vlrAluguel']);
+        $this->dePara .= $this->diffAfterBefore('Final da Vigência', $ent->getFechadoFim(), $this->data['fechadoFim']->format('d/m/Y'));
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
     }

@@ -156,12 +156,32 @@ class Fechados extends AbstractService {
             $this->em->persist($this->Orcamento);
             $this->em->flush();
             $this->registraLogOrcamento();
+            $this->atualizaImovel();
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }
         }
 
         return $resul;
+    }
+    
+    /**
+     * 
+     * @param Livraria\Entity\AbstractSeguro $obj
+     */
+    public function atualizaImovel(){
+        $imovel = $this->em->find('Livraria\Entity\Imovel',  $this->data['imovel']);
+        if($imovel){
+            $imovel->setFechadoId($this->data['id']);
+            $imovel->setFechadoAno($this->data['codano']);
+            $imovel->setVlrAluguel($this->data['valorAluguel']);
+            $imovel->setFechadoFim($this->data['fim']);
+            $servico = new Imovel($this->em);
+            $rs = $servico->update($imovel->toArray());
+            if($rs === TRUE)
+                return;
+            var_dump($rs);
+        }
     }
     
     public function registraLogOrcamento(){
@@ -203,6 +223,7 @@ class Fechados extends AbstractService {
             $this->em->persist($this->Renovacao);
             $this->em->flush();
             $this->registraLogRenovacao();
+            $this->atualizaImovel();
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }

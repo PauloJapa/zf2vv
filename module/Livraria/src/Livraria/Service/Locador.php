@@ -55,7 +55,7 @@ class Locador extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em locadors
      */
     public function logForNew($tabela='locador'){
-        parent::logForEdit($tabela);
+        parent::logForNew($tabela);
     }
  
     /** 

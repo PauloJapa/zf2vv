@@ -3,6 +3,7 @@
 namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form;
+use Zend\Form\Element;
 
 use Zend\Authentication\AuthenticationService,
     Zend\Authentication\Storage\Session as SessionStorage;
@@ -159,6 +160,26 @@ abstract class AbstractForm extends Form {
         }
         
         $this->add($input);        
+    }
+    
+    /**
+     * Monta os paramentro basicos para se fazer um input button
+     * @param string $name
+     * @param string $label
+     * @param array  $attributes
+     */
+    public function setInputButton($name,$label,array $attributes = []){
+        $bt = new Element\Button($name);
+        $bt->setLabel($label);
+        $attrib = array('id' => $name,
+                        'value' => $label,
+                        'class' => 'btn-success');
+        if(empty($attributes)){
+            $bt->setAttributes($attrib);
+        }else{
+            $bt->setAttributes(array_merge($attrib,$attributes));
+        }
+        $this->add($bt);        
     }
     
     public function setInputRadio($name, $label, $options, $attributes=[]){

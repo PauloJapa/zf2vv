@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Entity(repositoryClass="Livraria\Entity\ImovelRepository")
  */
-class Imovel
+class Imovel extends Filtro
 {
     /**
      * @var integer $id
@@ -119,6 +119,34 @@ class Imovel
      * })
      */
     private $locatario;
+
+    /**
+     * @var integer $fechadoId
+     *
+     * @ORM\Column(name="fechados_id", type="integer", nullable=true)
+     */
+    private $fechadoId;
+
+    /**
+     * @var integer $fechadoAno
+     *
+     * @ORM\Column(name="fechados_ano", type="integer", nullable=true)
+     */
+    private $fechadoAno;
+
+    /**
+     * @var float $vlrAluguel
+     *
+     * @ORM\Column(name="vlr_aluguel", type="decimal", nullable=true)
+     */
+    private $vlrAluguel;
+
+    /**
+     * @var \DateTime $fechadoFim
+     *
+     * @ORM\Column(name="fechado_fim", type="datetime", nullable=true)
+     */
+    private $fechadoFim;
 
  
     /** 
@@ -363,8 +391,84 @@ class Imovel
         $this->locatario = $locatario;
         return $this;
     }
+    
+    /**
+     * Codigo do seguro Atual para este imovel
+     * @return integer
+     */
+    public function getFechadoId() {
+        return $this->fechadoId;
+    }
 
-        /**
+    /**
+     * Codigo do seguro Atual para este imovel
+     * @param integer $fechadoId
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setFechadoId($fechadoId) {
+        $this->fechadoId = $fechadoId;
+        return $this;
+    }
+
+    /**
+     * Ano do seguro Atual para este imovel
+     * @return integer
+     */
+    public function getFechadoAno() {
+        return $this->fechadoAno;
+    }
+
+    /**
+     * Ano do seguro Atual para este imovel
+     * @param integer $fechadoAno
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setFechadoAno($fechadoAno) {
+        $this->fechadoAno = $fechadoAno;
+        return $this;
+    }
+
+    /**
+     * Valor Atual do aluguel para este imovel
+     * @return float
+     */
+    public function getVlrAluguel() {
+        return $this->vlrAluguel;
+    }
+
+    /**
+     * Valor Atual do aluguel para este imovel
+     * @param float $vlrAluguel
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setVlrAluguel($vlrAluguel) {
+        $this->vlrAluguel = $this->trataFloat($vlrAluguel);
+        return $this;
+    }
+
+    /**
+     * Data em que vence o seguro atual
+     * @param string $op
+     * @return \DateTime|'d/m/Y'
+     */
+    public function getFechadoFim($op = null) {
+        if($op == 'obj'){
+            return $this->fechadoFim;
+        }
+        return $this->fechadoFim->format('d/m/Y');
+    }
+
+    /**
+     * Data em que vence o seguro atual
+     * @param \DateTime $fechadoFim
+     * @return \Livraria\Entity\Imovel
+     */
+    public function setFechadoFim(\DateTime $fechadoFim) {
+        $this->fechadoFim = $fechadoFim;
+        return $this;
+    }
+
+    /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -376,12 +480,16 @@ class Imovel
         $data['bloco']     = $this->getBloco();
         $data['apto']      = $this->getApto();
         $data['atividadeDesc'] = $this->getAtividade();
-        $data['atividade'] = $this->getAtividade()->getId();
+        $data['atividade']     = $this->getAtividade()->getId();
         $data['locadorDesc']   = $this->getLocador();
-        $data['locatarioNome']   = $this->getLocatario();
-        $data['locador']   = $this->getLocador()->getId();
-        $data['locatario']   = $this->getLocatario()->getId();
-        $data['status']    = $this->getStatus();
+        $data['locatarioNome'] = $this->getLocatario();
+        $data['locador']       = $this->getLocador()->getId();
+        $data['locatario']     = $this->getLocatario()->getId();
+        $data['status']        = $this->getStatus();
+        $data['fechadoId']     = $this->getFechadoId();
+        $data['fechadoAno']    = $this->getFechadoAno();
+        $data['vlrAluguel']    = $this->floatToStr('VlrAluguel');
+        $data['fechadoFim']    = $this->getFechadoFim();
         return $data ;
     }
     

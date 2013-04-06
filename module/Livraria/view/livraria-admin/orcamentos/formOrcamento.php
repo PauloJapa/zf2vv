@@ -77,7 +77,7 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
             "</td><td>", PHP_EOL,
                 $this->FormDefault(['seguradora' => 'select']),
             "</td><td>", PHP_EOL,
-                $this->FormDefault(['logOrca' => 'submitOnly']),
+                $this->FormDefault(['logOrca' => 'buttonOnly']),
             "</td>", PHP_EOL,
         $this->FormDefault([],'fieldFim');
     }
@@ -152,7 +152,7 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
     "<td>",
         $this->FormDefault(['tipoCobertura' => 'selectLine']),
         $this->FormDefault(['formaPagto' => 'selectLine']),
-        $this->FormDefault(['valorAluguel' => 'moedaLine']),
+        $this->FormDefault(['valorAluguel' => 'floatLine']),
         
         $this->FormDefault(['incendio' => 'moedaLine']),
         $this->FormDefault(['conteudo' => 'moedaLine']),
@@ -234,9 +234,11 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function viewLogsOrcamento(){
+        var user = document.getElementById('user').value;
         document.getElementById('user').value = '';
         var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>$log)); ?>";
         envia(target,'',formName);
+        document.getElementById('user').value = user;
         return false;
     }
 
@@ -287,6 +289,11 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
     function travaResidencial(){
         var ocup = document.getElementsByName('ocupacao');
+        if(ocup[0].checked){
+            var tcob = document.getElementById('tipoCobertura');
+            if(tcob.selectedIndex == 0)  
+                tcob.selectedIndex = 1 ;
+        }
         if(ocup[1].checked){
             var tcob = document.getElementById('tipoCobertura');
             tcob.selectedIndex = 2 ;

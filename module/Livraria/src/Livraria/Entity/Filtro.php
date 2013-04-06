@@ -39,9 +39,11 @@ class  Filtro
         }
         $getter  = 'get' . ucwords($get);
         if(!method_exists($this,$getter)){
-            return "Erro no metodo!!";
+            return "Erro no metodo inexistente!!";
         }
         $float = call_user_func(array($this,$getter));
+        if(is_null($float))
+            $float = 0.0;
         return number_format($float, $dec, ',','.');
     }
  

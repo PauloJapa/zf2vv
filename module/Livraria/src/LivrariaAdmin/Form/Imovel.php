@@ -64,6 +64,11 @@ class Imovel extends AbstractEndereco {
         $this->setInputHidden('locatario');
         $this->setInputText('locatarioNome', 'Locatario', $attributes);
         
+        $this->setInputText('fechadoId', 'Numero do Seguro',['readOnly' => 'true']);
+        $this->setInputText('fechadoAno', 'Ano do Seguro',['readOnly' => 'true','class' => 'input-mini']);
+        $this->setInputText('vlrAluguel', 'Valor do Aluguel',['readOnly' => 'true',]);
+        $this->setInputText('fechadoFim', 'Vencimento do Seguro',['readOnly' => 'true']);
+        
         $this->getEnderecoElements($em);
 
         $this->setInputSubmit('enviar', 'Salvar', ['onClick' => 'return salvar()']);

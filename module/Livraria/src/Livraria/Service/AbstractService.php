@@ -27,6 +27,13 @@ abstract class AbstractService {
     protected $em;
     
     /**
+     * Define se vai comitar as alterações do BD 
+     * Para controle de alterações e melhorar desempenho 
+     * @var boolean 
+     */
+    protected $flush;
+    
+    /**
      * Caminho para "Tabela" é nome da tabela em que está sendo tratada.
      * Livraria\Entity\"Tabela" 
      * @var string 
@@ -73,7 +80,28 @@ abstract class AbstractService {
     public function notValidateNew(){
         $this->isValid = FALSE;
     }
- 
+    
+    /**
+     * Se vai comitar as operações do BD.
+     * @param boolen $flush
+     * return this
+     */
+    public function setFlush($flush) {
+        $this->flush = ( $flush ) ? TRUE : FALSE;
+        return $this;
+    }
+    
+    /**
+     * Se vai comitar as operações do BD.
+     * return boolean
+     */
+    public function getFlush() {
+        if (is_null($this->flush)){
+            $this->flush = TRUE ;
+        }
+        return ( $this->flush ) ? TRUE : FALSE ;
+    }
+
     /** 
      * Inserir no banco de dados o registro
      * @param array $data com os campos do registro
@@ -89,7 +117,8 @@ abstract class AbstractService {
         $this->entityReal = new $this->entity($this->data);
         
         $this->em->persist($this->entityReal);
-        $this->em->flush();
+        if($this->getFlush())
+            $this->em->flush();
         
         $this->data['id'] = $this->entityReal->getId();
         
@@ -112,13 +141,13 @@ abstract class AbstractService {
         $dataLog['user']       = $this->getIdentidade()->getId();
         $data  = new \DateTime('now');
         $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
+        $dataLog['idDoReg']    = $this->entityReal->getId();
         $dataLog['tabela']     = $tabela;
         $dataLog['controller'] = $controller ;
         $dataLog['action']     = 'new';
         $dataLog['dePara']     = $obs;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+        $log->setFlush($this->getFlush())->insert($dataLog);
     }
 
     /** 
@@ -145,7 +174,8 @@ abstract class AbstractService {
         $this->entityReal = Configurator::configure($this->entityReal, $this->data);
         
         $this->em->persist($this->entityReal);
-        $this->em->flush();
+        if($this->getFlush())
+            $this->em->flush();
         
         return TRUE;
     }
@@ -166,13 +196,13 @@ abstract class AbstractService {
         $dataLog['user']       = $this->getIdentidade()->getId();
         $data  = new \DateTime('now');
         $dataLog['data']       = $data->format('d/m/Y');
-        $dataLog['idDoReg']    = $this->data['id'];
+        $dataLog['idDoReg']    = $this->entityReal->getId();
         $dataLog['tabela']     = $tabela;
         $dataLog['controller'] = $controller;
         $dataLog['action']     = 'edit';
         $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+        $log->setFlush($this->getFlush())->insert($dataLog);
     }
   
     /** 
@@ -188,7 +218,8 @@ abstract class AbstractService {
             }else{
                 $this->em->remove($this->entityReal);
             }
-            $this->em->flush();
+            if ($this->getFlush())
+                $this->em->flush();
             return TRUE ;
         }
         return FALSE ;
@@ -218,7 +249,7 @@ abstract class AbstractService {
         $dataLog['action']     = 'delete';
         $dataLog['dePara']     = $obs;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
-        $log->insert($dataLog);
+        $log->setFlush($this->getFlush())->insert($dataLog);
     }
  
     /** 

@@ -33,7 +33,21 @@ $this->FormDefault(['legend' => 'Dados do Imovel', 'hidden' => 'id'],'inicio',$t
     "</td><td>\n",
         $this->FormDefault(['tel'], 'text'),
     "</td>\n",
-"</tr><tr>\n",        
+"</tr>\r",
+"</table>\r",
+        
+$this->FormDefault(['legend'=>'Dados do ultimo Seguro.'],'fieldIni'),
+    "<td>\r",
+        $this->FormDefault(['fechadoId' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault(['fechadoAno' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault(['fechadoFim' => 'text']),
+    "</td><td>\r",
+        $this->FormDefault(['vlrAluguel' => 'text']),
+    "</td>\r",
+$this->FormDefault([],'fieldFim'),
+        
         
 $this->FormDefault(['submit' => 'enviar'],'fieldFim'),
 

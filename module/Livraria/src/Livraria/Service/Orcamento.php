@@ -17,7 +17,7 @@ class Orcamento extends AbstractService {
      * @var string 
      */
     protected $deParaImovel;
-
+    
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Orcamento";
@@ -115,8 +115,12 @@ class Orcamento extends AbstractService {
      * @param Array $data com os campos do registro
      * @return entidade 
      */   
-    public function insert(array $data, $param='') { 
-        $this->data = $data;
+    public function insert(array $data, $onlyCalculo=false) { 
+        $this->data        = $data;
+        if($onlyCalculo)
+            $this->setFlush (FALSE);
+        else
+            $this->setFlush (TRUE);
         
         if (empty($this->data['user']))
             $this->data['user'] = $this->getIdentidade()->getId();
@@ -159,8 +163,7 @@ class Orcamento extends AbstractService {
         $this->data['codFechado'] = '0';
         $this->data['status'] = 'A';
         
-        
-        if($param == 'OnlyCalc'){
+        if($onlyCalculo){
             return ['Calculado com Sucesso !!!']; 
         }
         
@@ -208,7 +211,7 @@ class Orcamento extends AbstractService {
         }
         //Se id ta vazio ou apto ou bloco e diferente tentar cadastrar ou encontrar imovel ja cadastrado
         $serviceImovel = new Imovel($this->em);
-        $resul = $serviceImovel->insert(array_merge($this->data,['status'=>'A']));
+        $resul = $serviceImovel->setFlush($this->getFlush())->insert(array_merge($this->data,['status'=>'A']));
         if(is_array($resul)){
             if(($resul[0] == "Já existe um imovel neste endereço  registro:") OR
                ($resul[0] == "Já existe um apto neste endereço  registro:")){
@@ -238,7 +241,7 @@ class Orcamento extends AbstractService {
             $data['cpf'] = $this->data['cpfLoc'];
             $data['cnpj'] = $this->data['cnpjLoc'];
             $data['status'] = 'A';
-            $resul = $serviceLocador->insert($data);
+            $resul = $serviceLocador->setFlush($this->getFlush())->insert($data);
             if($resul === TRUE){
                 $this->data['locador'] = $serviceLocador->getEntity();
             }else{
@@ -246,7 +249,7 @@ class Orcamento extends AbstractService {
                     $this->data['locador'] = $resul[1];
                     $this->idToReference('locador', 'Livraria\Entity\Locador');
                 }else{
-                    return $resul;
+                    return array_merge(['Erro ao tentar incluir Locador no BD.'],$resul);
                 }
             }
         }else{
@@ -261,28 +264,27 @@ class Orcamento extends AbstractService {
      * @return boolean | array
      */
     public function setLocatario(){
-        if(empty($this->data['locatario'])){
-            $serviceLocatario = new Locatario($this->em);
-            $data['id'] = '';
-            $data['nome'] = $this->data['locatarioNome'];
-            $data['tipo'] = $this->data['tipo'];
-            $data['cpf'] = $this->data['cpf'];
-            $data['cnpj'] = $this->data['cnpj'];
-            $data['status'] = 'A';
-            $resul = $serviceLocatario->insert($data);
-            if($resul === TRUE){
-                $this->data['locatario'] = $serviceLocatario->getEntity();
-            }else{
-                if(substr($resul[0], 0, 13) == 'Já existe um'){
-                    $this->data['locatario'] = $resul[1];
-                    $this->idToReference('locatario', 'Livraria\Entity\Locatario');
-                }else{
-                    var_dump(substr($resul[0], 0, 13));
-                    return $resul;
-                }
-            }
-        }else{
+        if(!empty($this->data['locatario'])){
             $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+            return TRUE;
+        }
+        $serviceLocatario = new Locatario($this->em);
+        $data['id'] = '';
+        $data['nome'] = $this->data['locatarioNome'];
+        $data['tipo'] = $this->data['tipo'];
+        $data['cpf'] = $this->data['cpf'];
+        $data['cnpj'] = $this->data['cnpj'];
+        $data['status'] = 'A';
+        $resul = $serviceLocatario->setFlush($this->getFlush())->insert($data);
+        if($resul === TRUE){
+            $this->data['locatario'] = $serviceLocatario->getEntity();
+        }else{
+            if(substr($resul[0], 0, 13) == 'Já existe um'){
+                $this->data['locatario'] = $resul[1];
+                $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+            }else{
+                return array_merge(['Erro ao tentar incluir Locatario no BD.'],$resul);
+            }
         }
         return TRUE;
     }
@@ -292,8 +294,12 @@ class Orcamento extends AbstractService {
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data,$param='') {
-        $this->data = $data;
+    public function update(array $data, $onlyCalculo=false) { 
+        $this->data        = $data;
+        if($onlyCalculo)
+            $this->setFlush (FALSE);
+        else
+            $this->setFlush (TRUE);
         
         if($data['status'] != 'A')
             return ['Este orçamento não pode ser editado!','Pois já esta finalizado!!'];
@@ -314,7 +320,7 @@ class Orcamento extends AbstractService {
         
         $this->idToReference('user', 'Livraria\Entity\User');
         
-        if($param == 'OnlyCalc'){
+        if($onlyCalculo){
             return ['Calculado com Sucesso !!!']; 
         }
         

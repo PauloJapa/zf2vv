@@ -220,7 +220,7 @@ class OrcamentosController extends CrudController {
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
-                $result = $service->insert($data,'OnlyCalc');
+                $result = $service->insert($data, TRUE);
                 $this->formData->setData($service->getNewInputs());
                 foreach ($result as $value) {
                     $this->flashMessenger()->addMessage($value);
@@ -353,10 +353,14 @@ class OrcamentosController extends CrudController {
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
-                $result = $service->update($data,'OnlyCalc');
+                $result = $service->update($data, TRUE);
                 $this->formData->setData($service->getNewInputs());
-                foreach ($result as $value) {
-                    $this->flashMessenger()->addMessage($value);
+                if($result === TRUE){
+                    $this->flashMessenger()->addMessage('Calculado com sucesso!!!');
+                }else{
+                    foreach ($result as $value) {
+                        $this->flashMessenger()->addMessage($value);
+                    }
                 }
             }else{
                 $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');

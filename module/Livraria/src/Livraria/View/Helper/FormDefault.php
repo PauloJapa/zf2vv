@@ -119,6 +119,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputSubmitOnly($name);
                 break;
             
+            case "buttonOnly":
+                $this->renderInputButtonOnly($name);
+                break;
+            
             case "calend":
                 $this->renderInputCalend($name);
                 break;
@@ -129,6 +133,10 @@ class FormDefault extends AbstractHelper {
             
             case "float":
                 $this->renderInputFloat($name);
+                break;
+            
+            case "floatLine":
+                $this->renderInputFloatLine($name);
                 break;
             
             case "float4":
@@ -221,6 +229,15 @@ class FormDefault extends AbstractHelper {
     public function renderInputSubmitOnly($name) {
         echo
             $this->formView->formSubmit($this->form->get($name));
+    }
+
+    /**
+     * Renderiza o input Submit 
+     * @param String $name
+     */
+    public function renderInputButtonOnly($name) {
+        echo
+            $this->formView->formButton($this->form->get($name));
     }
 
     /**
@@ -398,7 +415,7 @@ class FormDefault extends AbstractHelper {
      * Caso exista msg de erro sera exibo em vermelho
      * @param String $name
      */
-    public function renderInputMoedaLine($name) {
+    public function renderInputMoedaLine($name,$symbol='true',$dec='2') {
         $element = $this->form->get($name);
         $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
@@ -415,10 +432,30 @@ class FormDefault extends AbstractHelper {
         '<script language="javascript">',
         '$(function(){$("#',
                 $name,
-        '").maskMoney({symbol:"R$ ", showSymbol:true, thousands:".", decimal:",", symbolStay: true});});',
+        '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay:true, precision:', $dec, '});});',
         '</script>',
          
         $this->checkError();
+    }
+
+    /**
+     * Renderiza o input text no estilo float in Line com um botao para limpar o conteudo  
+     * Adiciona js para mascara de decimal
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputFloatLine($name){
+        $this->renderInputMoedaLine($name,'false');
+    }
+
+    /**
+     * Renderiza o input text no estilo float in Line com um botao para limpar o conteudo  
+     * Adiciona js para mascara de 4 decimal
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputFloat4Line($name){
+        $this->renderInputMoedaLine($name,'false','4');
     }
 
     /**
