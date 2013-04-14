@@ -85,17 +85,17 @@ class Imovel extends AbstractService {
             $this->data['status'] = $this->data['imovelStatus'];
         }
         
-        $result = $this->isValid();
-        if($result !== TRUE){
-            return $result;
-        }
-        
         //Pegando o servico endereco e inserindo novo endereco do imovel
         $serviceEndereco = new Endereco($this->em);
         $this->data['endereco'] = $serviceEndereco->update($this->data);
         $this->deParaEnd = $serviceEndereco->getDePara();
         
         $this->setReferences();
+        
+        $result = $this->isValid();
+        if($result !== TRUE){
+            return $result;
+        }
         
         if(parent::update())
             $this->logForEdit();

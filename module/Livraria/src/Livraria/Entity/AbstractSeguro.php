@@ -341,7 +341,7 @@ class AbstractSeguro  extends Filtro {
      * @return float
      */
     public function getConteudo() {
-        return $this->incendio;
+        return $this->conteudo;
     }
 
     /**

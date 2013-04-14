@@ -17,9 +17,8 @@ class LogRenovacaoRepository extends AbstractRepository {
                     ->select('lr,u')
                     ->from('Livraria\Entity\LogRenovacao', 'lr')
                     ->join('lr.user', 'u')
-                    ->orderBy('lr.data', 'DESC')
-                    ->getQuery();
-            return $query->getResult();
+                    ->orderBy('lr.data', 'DESC');
+            return $query;
         }
 
         $where = 'lr.id IS NOT NULL';
@@ -48,9 +47,8 @@ class LogRenovacaoRepository extends AbstractRepository {
                 ->join('lr.user', 'u')
                 ->where($where)
                 ->setParameters($parameters)
-                ->orderBy('lr.data', 'DESC')
-                ->getQuery();        
-        return $query->getResult();
+                ->orderBy('lr.data', 'DESC');        
+        return $query;
     }
 }
 

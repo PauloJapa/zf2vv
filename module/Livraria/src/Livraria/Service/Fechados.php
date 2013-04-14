@@ -53,7 +53,8 @@ class Fechados extends AbstractService {
             return ['Não foi encontrado o seguro com esse numero!!!'];
         }
         
-        $pdf = new ImprimirSeguro();
+        $num = 'Fechado/' . $seg->getId() . '/' . $seg->getCodano();
+        $pdf = new ImprimirSeguro($num);
         $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $pdf->setL2($seg->getAdministradora()->getNome());
         $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
@@ -64,22 +65,16 @@ class Fechados extends AbstractService {
         $pdf->setL8($seg->floatToStr('valorAluguel'));
         $pdf->setL9($seg->getAdministradora()->getId(), '0');
         $pdf->setL10();
-        $vlr = [
-            $seg->floatToStr('incendio'),
-            $seg->floatToStr('cobIncendio'),
-            $seg->floatToStr('eletrico'),
-            $seg->floatToStr('cobEletrico'),
-            $seg->floatToStr('aluguel'),
-            $seg->floatToStr('cobAluguel'),
-            $seg->floatToStr('vendaval'),
-            $seg->floatToStr('cobVendaval'),
-        ];
         switch ($seg->getTipoCobertura()) {
             case '01':
                 $label = ' (Prédio)';
+                $vlr[] = $seg->floatToStr('incendio');
+                $vlr[] = $seg->floatToStr('cobIncendio');
                 break;
             case '02':
                 $label = ' (Conteúdo + prédio)';
+                $vlr[] = $seg->floatToStr('conteudo');
+                $vlr[] = $seg->floatToStr('cobConteudo');
                 break;
             case '03':
                 $label = ' (Conteúdo)';
@@ -88,6 +83,12 @@ class Fechados extends AbstractService {
                 $label = '';
                 break;
         }
+        $vlr[] = $seg->floatToStr('eletrico');
+        $vlr[] = $seg->floatToStr('cobEletrico');
+        $vlr[] = $seg->floatToStr('aluguel');
+        $vlr[] = $seg->floatToStr('cobAluguel');
+        $vlr[] = $seg->floatToStr('vendaval');
+        $vlr[] = $seg->floatToStr('cobVendaval');
         $pdf->setL11($vlr, $label);
         $tot = [
             $seg->floatToStr('premio'),
@@ -177,11 +178,14 @@ class Fechados extends AbstractService {
             $dados['fechadoAno'] =  $this->data['codano'];
             $dados['vlrAluguel'] =  $this->data['valorAluguel'];
             $dados['fechadoFim'] =  $this->data['fim'];
+            $dados['locatario']  =  $this->data['locatario'];
+            $dados['locador']    =  $this->data['locador'];
             $servico = new Imovel($this->em);
             $rs = $servico->update($dados);
             if($rs === TRUE)
                 return;
-            var_dump($rs);
+            if($this->getIdentidade()->getId() == 2)
+                var_dump($rs);
         }
     }
     

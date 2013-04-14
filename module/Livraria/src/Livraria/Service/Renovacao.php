@@ -83,9 +83,15 @@ class Renovacao extends AbstractService {
         $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
         
         $this->data['taxa'] = $this->em
-            ->getRepository('Livraria\Entity\Taxa')
-            ->findTaxaVigente($this->data['seguradora'], $this->data['atividade'],  $this->data['criadoEm']);
-
+                ->getRepository('Livraria\Entity\Taxa')
+                ->findTaxaVigente(
+                    $this->data['seguradora'], 
+                        $this->data['atividade'], 
+                        $this->data['criadoEm'], 
+                        $this->data['comissao'],
+                        $this->data['validade']
+        );
+        
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigênte nao encontrada!!!'];
         
@@ -382,7 +388,8 @@ class Renovacao extends AbstractService {
             return ['Não foi encontrado uma renovação com esse numero!!!'];
         }
         
-        $pdf = new ImprimirSeguro();
+        $num = 'Renovação/' . $seg->getId() . '/' . $seg->getCodano();
+        $pdf = new ImprimirSeguro($num);
         $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $pdf->setL2($seg->getAdministradora()->getNome());
         $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
@@ -393,22 +400,16 @@ class Renovacao extends AbstractService {
         $pdf->setL8($seg->floatToStr('valorAluguel'));
         $pdf->setL9($seg->getAdministradora()->getId(), '0');
         $pdf->setL10();
-        $vlr = [
-            $seg->floatToStr('incendio'),
-            $seg->floatToStr('cobIncendio'),
-            $seg->floatToStr('eletrico'),
-            $seg->floatToStr('cobEletrico'),
-            $seg->floatToStr('aluguel'),
-            $seg->floatToStr('cobAluguel'),
-            $seg->floatToStr('vendaval'),
-            $seg->floatToStr('cobVendaval'),
-        ];
         switch ($seg->getTipoCobertura()) {
             case '01':
                 $label = ' (Prédio)';
+                $vlr[] = $seg->floatToStr('incendio');
+                $vlr[] = $seg->floatToStr('cobIncendio');
                 break;
             case '02':
                 $label = ' (Conteúdo + prédio)';
+                $vlr[] = $seg->floatToStr('conteudo');
+                $vlr[] = $seg->floatToStr('cobConteudo');
                 break;
             case '03':
                 $label = ' (Conteúdo)';
@@ -417,6 +418,12 @@ class Renovacao extends AbstractService {
                 $label = '';
                 break;
         }
+        $vlr[] = $seg->floatToStr('eletrico');
+        $vlr[] = $seg->floatToStr('cobEletrico');
+        $vlr[] = $seg->floatToStr('aluguel');
+        $vlr[] = $seg->floatToStr('cobAluguel');
+        $vlr[] = $seg->floatToStr('vendaval');
+        $vlr[] = $seg->floatToStr('cobVendaval');
         $pdf->setL11($vlr, $label);
         $tot = [
             $seg->floatToStr('premio'),

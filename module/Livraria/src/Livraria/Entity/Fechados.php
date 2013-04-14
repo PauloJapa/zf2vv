@@ -113,6 +113,13 @@ class Fechados  extends AbstractSeguro
     protected $incendio;
 
     /**
+     * @var float $conteudo
+     *
+     * @ORM\Column(name="conteudo", type="decimal", nullable=true)
+     */
+    protected $conteudo;
+
+    /**
      * @var float $aluguel
      *
      * @ORM\Column(name="aluguel", type="decimal", nullable=false)

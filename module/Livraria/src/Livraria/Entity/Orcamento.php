@@ -106,9 +106,16 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var float $incendio
      *
-     * @ORM\Column(name="incendio", type="decimal", nullable=false)
+     * @ORM\Column(name="incendio", type="decimal", nullable=true)
      */
     protected $incendio;
+
+    /**
+     * @var float $conteudo
+     *
+     * @ORM\Column(name="conteudo", type="decimal", nullable=true)
+     */
+    protected $conteudo;
 
     /**
      * @var float $aluguel

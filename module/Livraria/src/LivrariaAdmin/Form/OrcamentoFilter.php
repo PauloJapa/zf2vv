@@ -17,6 +17,8 @@ class OrcamentoFilter extends EnderecoFilter {
         $this->notEmpty('inicio');
         $this->notEmpty('seguradora');
         $this->notEmpty('administradora');
+        $this->notEmpty('rua');
+        $this->notEmpty('numero');
     }
 
 }

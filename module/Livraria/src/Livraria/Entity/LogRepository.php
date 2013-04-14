@@ -17,9 +17,8 @@ class LogRepository extends AbstractRepository {
                     ->select('l,u')
                     ->from('Livraria\Entity\Log', 'l')
                     ->join('l.user', 'u')
-                    ->orderBy('l.data', 'DESC')
-                    ->getQuery();
-            return $query->getResult();
+                    ->orderBy('l.data', 'DESC');
+            return $query;
         }
         $where = 'l.id IS NOT NULL';
         $parameters = [];
@@ -47,10 +46,9 @@ class LogRepository extends AbstractRepository {
                 ->join('l.user', 'u')
                 ->where($where)
                 ->setParameters($parameters)
-                ->orderBy('l.data', 'DESC')
-                ->getQuery();
+                ->orderBy('l.data', 'DESC');
         
-        return $query->getResult();
+        return $query;
     }
 }
 

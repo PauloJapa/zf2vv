@@ -17,9 +17,8 @@ class LogFechadosRepository extends AbstractRepository {
                     ->from('Livraria\Entity\LogFechados', 'lf')
                     ->join('lf.user', 'u')
                     ->orderBy('lf.data', 'DESC')
-                    ->getQuery()
                     ;
-            return $query->getResult();
+            return $query;
         }
         
         $where = 'lf.id IS NOT NULL';
@@ -48,9 +47,8 @@ class LogFechadosRepository extends AbstractRepository {
                 ->join('lf.user', 'u')
                 ->where($where)
                 ->setParameters($parameters)
-                ->orderBy('lf.data', 'DESC')
-                ->getQuery();
-        return $query->getResult();
+                ->orderBy('lf.data', 'DESC');
+        return $query;
     }
 }
 

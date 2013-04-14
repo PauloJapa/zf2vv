@@ -325,12 +325,12 @@ class Orcamento extends AbstractService {
         
         $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
 
-        $resul = $this->CalculaPremio();
+        $this->CalculaPremio();
         
         $this->idToReference('user', 'Livraria\Entity\User');
         
         if($onlyCalculo){
-            return ['Calculado com Sucesso !!!']; 
+            TRUE; 
         }
         
         $result = $this->isValid();
@@ -428,7 +428,8 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora(), $this->data['administradora']);
         // 9 de valores float
         $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('valorAluguel'), $this->strToFloat($this->data['valorAluguel']));
-        $this->dePara .= $this->diffAfterBefore('Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio + Conteudo', $ent->floatToStr('conteudo'), $this->strToFloat($this->data['conteudo']));
         $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel'), $this->strToFloat($this->data['aluguel']));
         $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico'), $this->strToFloat($this->data['eletrico']));
         $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval'), $this->strToFloat($this->data['vendaval']));
@@ -475,8 +476,8 @@ class Orcamento extends AbstractService {
         if(!$seg){
             return ['Não foi encontrado um orçamento com esse numero!!!'];
         }
-        
-        $pdf = new ImprimirSeguro();
+        $num = 'Orçamento/' . $seg->getId() . '/' . $seg->getCodano();
+        $pdf = new ImprimirSeguro($num);
         $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $pdf->setL2($seg->getAdministradora()->getNome());
         $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
@@ -487,22 +488,16 @@ class Orcamento extends AbstractService {
         $pdf->setL8($seg->floatToStr('valorAluguel'));
         $pdf->setL9($seg->getAdministradora()->getId(), '0');
         $pdf->setL10();
-        $vlr = [
-            $seg->floatToStr('incendio'),
-            $seg->floatToStr('cobIncendio'),
-            $seg->floatToStr('eletrico'),
-            $seg->floatToStr('cobEletrico'),
-            $seg->floatToStr('aluguel'),
-            $seg->floatToStr('cobAluguel'),
-            $seg->floatToStr('vendaval'),
-            $seg->floatToStr('cobVendaval'),
-        ];
         switch ($seg->getTipoCobertura()) {
             case '01':
                 $label = ' (Prédio)';
+                $vlr[] = $seg->floatToStr('incendio');
+                $vlr[] = $seg->floatToStr('cobIncendio');
                 break;
             case '02':
                 $label = ' (Conteúdo + prédio)';
+                $vlr[] = $seg->floatToStr('conteudo');
+                $vlr[] = $seg->floatToStr('cobConteudo');
                 break;
             case '03':
                 $label = ' (Conteúdo)';
@@ -511,6 +506,12 @@ class Orcamento extends AbstractService {
                 $label = '';
                 break;
         }
+        $vlr[] = $seg->floatToStr('eletrico');
+        $vlr[] = $seg->floatToStr('cobEletrico');
+        $vlr[] = $seg->floatToStr('aluguel');
+        $vlr[] = $seg->floatToStr('cobAluguel');
+        $vlr[] = $seg->floatToStr('vendaval');
+        $vlr[] = $seg->floatToStr('cobVendaval');
         $pdf->setL11($vlr, $label);
         $tot = [
             $seg->floatToStr('premio'),

@@ -17,9 +17,8 @@ class LogOrcamentoRepository extends AbstractRepository {
                     ->select('lo,u')
                     ->from('Livraria\Entity\LogOrcamento', 'lo')
                     ->join('lo.user', 'u')
-                    ->orderBy('lo.data', 'DESC')
-                    ->getQuery();
-            return $query->getResult();
+                    ->orderBy('lo.data', 'DESC');
+            return $query;
         }
         $where = 'lo.id IS NOT NULL';
         $parameters = [];
@@ -47,9 +46,8 @@ class LogOrcamentoRepository extends AbstractRepository {
                 ->join('lo.user', 'u')
                 ->where($where)
                 ->setParameters($parameters)
-                ->orderBy('lo.data', 'DESC')
-                ->getQuery();
-        return $query->getResult();
+                ->orderBy('lo.data', 'DESC');
+        return $query;
     }
 }
 
