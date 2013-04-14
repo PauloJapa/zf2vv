@@ -62,6 +62,13 @@ class Locador extends AbstractEndereco {
         $this->setInputText('administradoraDesc', 'Administradora', ['placeholder' => 'Pesquise digitando a Administradora aqui!','onKeyUp' => 'autoCompAdministradora();', 'autoComplete' => 'off']);
 
         $this->setInputSubmit('enviar', 'Salvar');
+
+        $file = new \Zend\Form\Element\File('content');
+        $file->setLabel('Selecione um arquivo')
+             ->setAttribute('id', 'content');
+        $this->add($file);
+        
+        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
     }   
     
     /**

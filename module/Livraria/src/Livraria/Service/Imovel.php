@@ -3,7 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use Livraria\Entity\Configurator;
+use \Livraria\Entity\Configurator;
 /**
  * Imovel
  * Faz o CRUD da tabela Imovel no banco de dados
@@ -29,9 +29,13 @@ class Imovel extends AbstractService {
         if(!isset($this->data['fechadoFim']))$this->data['fechadoFim'] = '01/01/0001';
         //Pega uma referencia do registro da tabela classe
         $this->idToReference('locador', 'Livraria\Entity\Locador');
+        
         if(empty($this->data['atividade']))$this->data['atividade'] = '5';
         $this->idToReference('atividade', 'Livraria\Entity\Atividade');
+        
+        if(empty($this->data['locatario']))$this->data['locatario'] = '1';
         $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+        
         $this->dateToObject('fechadoFim');
     }
 
@@ -42,11 +46,12 @@ class Imovel extends AbstractService {
      */     
     public function insert(array $data) { 
         $this->data = $data;
-        
+/*
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
+ */        
         
         //Pegando o servico endereco e inserindo novo endereco do imovel
         $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);
@@ -54,7 +59,7 @@ class Imovel extends AbstractService {
         $this->setReferences();
 
         if(parent::insert())
-            $this->logForNew();
+//            $this->logForNew();
         
         return TRUE;      
     }
@@ -121,7 +126,7 @@ class Imovel extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
         $this->dePara .= $this->diffAfterBefore('Fechado Id', $ent->getFechadoId(), $this->data['fechadoId']);
         $this->dePara .= $this->diffAfterBefore('Fechado Ano', $ent->getFechadoAno(), $this->data['fechadoAno']);
-        $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->getVlrAluguel(), $this->data['vlrAluguel']);
+        $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('vlrAluguel'), $this->strToFloat($this->data['vlrAluguel']));
         $this->dePara .= $this->diffAfterBefore('Final da Vigência', $ent->getFechadoFim(), $this->data['fechadoFim']->format('d/m/Y'));
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
@@ -134,6 +139,8 @@ class Imovel extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        if(!$this->isValid)
+            return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
@@ -144,6 +151,7 @@ class Imovel extends AbstractService {
             
         $filtro['rua'] = $this->data['rua'];
         $filtro['numero'] = $this->data['numero'];
+        $filtro['locador'] = $this->data['locador']->getId();
         
         $entitys = $repository->findBy($filtro);
         $erro = array();

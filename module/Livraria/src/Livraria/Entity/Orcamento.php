@@ -22,7 +22,6 @@ class Orcamento extends AbstractSeguro {
      *
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id; 
     
@@ -387,8 +386,6 @@ class Orcamento extends AbstractSeguro {
      */    
     public function __construct($options = null) {
         Configurator::configure($this, $options);
-        $this->criadoEm = new \DateTime('now');
-        $this->criadoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
     }

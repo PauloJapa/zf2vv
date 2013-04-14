@@ -3,7 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use Livraria\Entity\Configurator;
+use \Livraria\Entity\Configurator;
 use Zend\Authentication\AuthenticationService,
     Zend\Authentication\Storage\Session as SessionStorage;
 
@@ -35,14 +35,14 @@ abstract class AbstractService {
     
     /**
      * Caminho para "Tabela" é nome da tabela em que está sendo tratada.
-     * Livraria\Entity\"Tabela" 
+     * \Livraria\Entity\"Tabela" 
      * @var string 
      */
     protected $entity;
     
     /**
      * Caminho para "Tabela" é nome da tabela em que está sendo tratada.
-     * Livraria\Entity\"Tabela" 
+     * \Livraria\Entity\"Tabela" 
      * @var string 
      */
     protected $entityReal;
@@ -256,7 +256,7 @@ abstract class AbstractService {
      * Busca os dados do usuario da storage session
      * Retorna a entity com os dados do usuario
      * @param Array $data com os campos do registro
-     * @return Livraria\Entity\User 
+     * @return \Livraria\Entity\User 
      * @return boolean
      */     
     public function getIdentidade() { 
@@ -441,10 +441,10 @@ abstract class AbstractService {
         $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
         
         //Calcula de coberturas caso estejam zeradas do form
-        if($incendio == 0.0)
+        if($incendio == 0.0 and $this->data['tipoCobertura'] == '01')
             $incendio = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();
         
-        if($conteudo == 0.0)
+        if($conteudo == 0.0 and $this->data['tipoCobertura'] == '02')
             $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
         
         if($aluguel == 0.0)
@@ -456,16 +456,23 @@ abstract class AbstractService {
         if($vendaval == 0.0)
             $vendaval = $vlrAluguel * $this->data['comissaoEnt']->getMultVendaval();
 
+        
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
-        $taxa = ($this->data['tipoCobertura'] == '02') ? 'IncendioConteudo' : 'Incendio' ;
-        $txIncendio = $this->calcTaxaMultMinMax($incendio, $taxa, 'Incendio') ;
-        $total += $txIncendio;
+        // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
+        $txIncendio = 0.0;
+        if ($this->data['tipoCobertura'] == '01'){
+            $txIncendio = $this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio') ;
+            $total += $txIncendio;
+        }
         
-        //Precisa definir melhor a taxa que calcula esse campo.
+        // Se o tipo é Cobertura Incendo + Conteudo calcula com a taxa de incendio + conteudo
+        // Campos com nome conteudo ler como Incendio + conteudo.
         $txConteudo = 0.0;
-        //$txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
-        //$total += $txConteudo;
+        if ($this->data['tipoCobertura'] == '02'){
+            $txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+            $total += $txConteudo;
+        }
         
         $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
         $total += $txAluguel;

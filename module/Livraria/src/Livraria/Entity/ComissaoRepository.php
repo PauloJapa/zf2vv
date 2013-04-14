@@ -38,6 +38,28 @@ class ComissaoRepository extends EntityRepository {
                 ->orderBy('c.inicio', 'DESC')
                 ->getQuery()
                 ;
+        $rs = $query->getResult();
+        if(!empty($rs)){
+            return $query->getSingleResult();
+        }
+        
+        echo '<h2>Erro ao procura comissao; </h2>';
+        var_dump($administradora);
+        var_dump($date);
+        
+        //Pesquisar sem data para importação        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('c')
+                ->from('Livraria\Entity\Comissao', 'c')
+                ->where(" c.administradora = :administradora
+                    ")
+                ->setParameter('administradora', $administradora)
+                ->setMaxResults(1)
+                ->orderBy('c.inicio', 'ASC')
+                ->getQuery()
+                ;
+        
         return $query->getSingleResult();
         
     }

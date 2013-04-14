@@ -104,9 +104,9 @@ class Orcamento extends AbstractService {
      */
     public function setAtividade(){
         $this->idToEntity('atividade', 'Livraria\Entity\Atividade');
-        if($this->data['atividade']->getStatus() != "A"){
-            return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
-        }
+//        if($this->data['atividade']->getStatus() != "A"){
+//            return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
+//        }
         return TRUE;
     }
 
@@ -119,17 +119,15 @@ class Orcamento extends AbstractService {
         $this->data        = $data;
         if($onlyCalculo)
             $this->setFlush (FALSE);
-        else
-            $this->setFlush (TRUE);
         
-        if (empty($this->data['user']))
-            $this->data['user'] = $this->getIdentidade()->getId();
+//        if (empty($this->data['user']))
+  //          $this->data['user'] = $this->getIdentidade()->getId();
         
         $ret = $this->setReferences();
         if($ret !== TRUE)
             return $ret;
         
-        $this->calculaVigencia();
+//        $this->calculaVigencia();
        
         //Comissão da Administradora padrão
         if(empty($this->data['comissao'])){
@@ -150,7 +148,7 @@ class Orcamento extends AbstractService {
                         $this->data['comissao'],
                         $this->data['validade']
         );
-
+        
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
         
@@ -158,10 +156,46 @@ class Orcamento extends AbstractService {
             ->getRepository('Livraria\Entity\MultiplosMinimos')
             ->findMultMinVigente($this->data['seguradora']->getId(), $this->data['criadoEm']);
         
-        $resul = $this->CalculaPremio();
+        // IMPORTAÇÃO CALCULO
+        //Coberturas 
+        $incendio = $this->strToFloat($this->data['incendio'], 'float');
+        $conteudo = $this->strToFloat($this->data['conteudo'], 'float');            
+        $aluguel  = $this->strToFloat($this->data['aluguel'],  'float');
+        $eletrico = $this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
         
-        $this->data['codFechado'] = '0';
-        $this->data['status'] = 'A';
+        // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
+        $txIncendio = 0.0;
+        if ($this->data['tipoCobertura'] == '01'){
+            $txIncendio = $incendio * ($this->data['taxa']->getIncendio() / 100);
+        }
+        
+        // Se o tipo é Cobertura Incendo + Conteudo calcula com a taxa de incendio + conteudo
+        // Campos com nome conteudo ler como Incendio + conteudo.
+        $txConteudo = 0.0;
+        if ($this->data['tipoCobertura'] == '02'){
+            $txConteudo = $conteudo * ($this->data['taxa']->getIncendioConteudo() / 100);
+        }
+        
+        $txAluguel = $aluguel * ($this->data['taxa']->getAluguel() / 100);
+        
+        $txEletrico = $eletrico * ($this->data['taxa']->getEletrico() / 100);
+        
+        $txVendaval = $vendaval * ($this->data['taxa']->getVendaval() / 100);
+        
+        $this->data['cobIncendio']   = $this->strToFloat($txIncendio);
+        $this->data['cobConteudo']   = $this->strToFloat($txConteudo);
+        $this->data['cobAluguel']    = $this->strToFloat($txAluguel);
+        $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
+        $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
+        
+        // FIM DA IMPORTAÇÃO DE CALCULOS
+        
+        
+//        $resul = $this->CalculaPremio();
+        
+//        $this->data['codFechado'] = '0';
+//        $this->data['status'] = 'A';
         
         if($onlyCalculo){
             return ['Calculado com Sucesso !!!']; 
@@ -173,7 +207,7 @@ class Orcamento extends AbstractService {
         }
 
         if(parent::insert())
-            $this->logForNew();
+//            $this->logForNew();
         
         return array(TRUE,  $this->data['id']);      
     }   
@@ -199,6 +233,10 @@ class Orcamento extends AbstractService {
      * @return boolean | array
      */
     public function setImovel(){
+        if(is_object($this->data['imovel'])){
+            if($this->data['imovel'] instanceof \Livraria\Entity\Imovel)
+                return TRUE;
+        }
         //Se tem id busca no banco
         if(!empty($this->data['imovel'])){
             //Verificar se esta cadastrando um novo apartamento
@@ -232,6 +270,10 @@ class Orcamento extends AbstractService {
      * @return boolean | array
      */
     public function setLocador(){
+        if(is_object($this->data['locador'])){
+            if($this->data['locador'] instanceof \Livraria\Entity\Locador)
+                return TRUE;
+        }
         if(empty($this->data['locador'])){
             $serviceLocador = new Locador($this->em);
             $data['id'] = '';
@@ -264,6 +306,10 @@ class Orcamento extends AbstractService {
      * @return boolean | array
      */
     public function setLocatario(){
+        if(is_object($this->data['locatario'])){
+            if($this->data['locatario'] instanceof \Livraria\Entity\Locatario)
+                return TRUE;
+        }
         if(!empty($this->data['locatario'])){
             $this->idToReference('locatario', 'Livraria\Entity\Locatario');
             return TRUE;
@@ -361,6 +407,9 @@ class Orcamento extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        if(!$this->isValid){
+            return TRUE;
+        }
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();

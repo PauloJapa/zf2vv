@@ -46,7 +46,19 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inici
         $this->FormDefault(['seguroEmNome' => 'radio']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['criadoEm' => 'calend']),
-    "</td>", PHP_EOL,
+    "</td>", PHP_EOL;
+        
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+            $this->formRow($form->get('content')),
+        "</td><td>",
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td><td>",
+        "</td>\n";
+    }        
+echo 
   "</tr><tr>", PHP_EOL,
     "<td>",
         $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
@@ -522,6 +534,11 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     function voltar(){
         var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>$bak )); ?>";
         envia(target,'',formName);
+    }
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 
     // Verificar cpf ou cnpj do locador e locatario

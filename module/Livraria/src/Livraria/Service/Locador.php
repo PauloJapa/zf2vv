@@ -116,6 +116,8 @@ class Locador extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        if(!$this->isValid)   
+            return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();

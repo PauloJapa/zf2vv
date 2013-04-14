@@ -5,7 +5,8 @@ namespace LivrariaAdmin\Controller;
 use Zend\Mvc\Controller\AbstractActionController,
     Zend\View\Model\ViewModel;
 use Zend\Paginator\Paginator,
-    Zend\Paginator\Adapter\ArrayAdapter;
+    Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator,
+    DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as PaginatorAdapter;
 use Zend\Authentication\AuthenticationService,
     Zend\Authentication\Storage\Session as SessionStorage;
 use Zend\Session\Container as SessionContainer;
@@ -47,21 +48,37 @@ abstract class CrudController extends AbstractActionController {
      * @param array $orderBy
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = [],array $orderBy = [],array &$list = []) {
+    public function indexAction(array $filtro = [],array $orderBy = [], $list = []) {
         if (empty($list)) {
             $list = $this->getEm()
-                    ->getRepository($this->entity)
-                    ->findBy($filtro, $orderBy);
-        }
-        if (isset($list[0]) AND $list[0] == FALSE) {
-            $list = [];
+                    ->createQueryBuilder()
+                    ->select('e')
+                    ->from($this->entity, 'e');
+            //Montar Filtros
+            if(!empty($filtro)){
+                $and = '';
+                $where = '';
+                foreach ($filtro as $key => $value) {
+                    $where .= $and . ' e.' . $key . ' = :' . $key ;
+                    $and = ' AND';
+                }
+                $list->where($where)
+                     ->setParameters($filtro);
+            }
+            //Montar Ordenação
+            foreach ($orderBy as $key => $value) {
+                $list->addOrderBy('e.' . $key,$value);
+            }
         }
 
         $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-
-        $this->paginator = new Paginator(new ArrayAdapter($list));
+        
+        
+        $doctrinePaginator = new DoctrinePaginator($list);
+        $paginatorAdapter = new PaginatorAdapter($doctrinePaginator);
+        $this->paginator = new Paginator($paginatorAdapter);
         $this->paginator->setCurrentPageNumber($this->page);
         $this->paginator->setDefaultItemCountPerPage(20);
         $this->paginator->setPageRange(15);

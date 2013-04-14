@@ -172,12 +172,13 @@ class Fechados extends AbstractService {
     public function atualizaImovel(){
         $imovel = $this->em->find('Livraria\Entity\Imovel',  $this->data['imovel']);
         if($imovel){
-            $imovel->setFechadoId($this->data['id']);
-            $imovel->setFechadoAno($this->data['codano']);
-            $imovel->setVlrAluguel($this->data['valorAluguel']);
-            $imovel->setFechadoFim($this->data['fim']);
+            $dados = $imovel->toArray();
+            $dados['fechadoId']  =  $this->data['id'];
+            $dados['fechadoAno'] =  $this->data['codano'];
+            $dados['vlrAluguel'] =  $this->data['valorAluguel'];
+            $dados['fechadoFim'] =  $this->data['fim'];
             $servico = new Imovel($this->em);
-            $rs = $servico->update($imovel->toArray());
+            $rs = $servico->update($dados);
             if($rs === TRUE)
                 return;
             var_dump($rs);

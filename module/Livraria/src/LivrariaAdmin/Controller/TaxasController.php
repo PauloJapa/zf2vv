@@ -19,7 +19,7 @@ class TaxasController extends CrudController {
         
     }
     
-    public function indexAction(array $filtro = array()){
+    public function indexAction(array $filtro = array('status' => 'A')){
         return parent::indexAction($filtro,array('inicio' => 'DESC','seguradora'=>'ASC','classe'=>'ASC'));
     }
 

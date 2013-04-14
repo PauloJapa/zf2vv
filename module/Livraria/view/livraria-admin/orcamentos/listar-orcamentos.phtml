@@ -93,7 +93,7 @@ $lambda = function($value,&$data){
                     '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
                  "</td>\n";   
         }
-        if($data[10] == "A"){
+        if($data[10] == "A" or $data[10] == "I"){
             echo "\t<td nowrap>",
                     '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                     '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Deletar</span>',

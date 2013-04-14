@@ -80,7 +80,7 @@ class ImovelRepository extends EntityRepository {
         $list = $query->getResult();
         
         if (!empty($list))
-            return $list;
+            return $query;
         
         //Nova pesquisa pesquisando por qualquer ocorrencia        
         $paramentros['rua'] = '%' . $filtros['rua'] . '%';
@@ -95,7 +95,7 @@ class ImovelRepository extends EntityRepository {
                 ->setParameters($paramentros)
                 ->getQuery();
         
-        return $query->getResult();
+        return $query;
     }
     
 }

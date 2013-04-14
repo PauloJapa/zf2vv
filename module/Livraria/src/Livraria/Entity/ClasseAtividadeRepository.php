@@ -37,6 +37,29 @@ class ClasseAtividadeRepository extends EntityRepository {
                 ->orderBy('ca.inicio', 'DESC')
                 ->getQuery()
                 ;
+        
+        $rs = $query->getResult();
+        if(!empty($rs)){
+            return $rs[0];
+        }
+        
+        echo '<h2>Erro ao procurar classe na data especificada</h2>';
+        var_dump($atividade);
+        var_dump($date);
+        
+        //Procurar novamente mas com data de hoje
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('ca')
+                ->from('Livraria\Entity\ClasseAtividade', 'ca')
+                ->where(" ca.atividade = :atividade
+                    ")
+                ->setParameter('atividade', $atividade)
+                ->setMaxResults(1)
+                ->orderBy('ca.inicio', 'ASC')
+                ->getQuery()
+                ;
+        
         return $query->getSingleResult();
     }
 }

@@ -917,12 +917,12 @@ class AbstractSeguro  extends Filtro {
         $data['alteradoEm']     = $this->getAlteradoem();
         $data['codano']         = $this->getCodano();
         $data['locador']        = $this->getLocador()->getId();
-        $data['locadorNome']    = $this->getLocadornome();
+        $data['locadorNome']    = $this->getLocadorNome();
         $data['tipoLoc']        = $this->getLocador()->getTipo();
         $data['cpfLoc']         = $this->getLocador()->getCpf();
         $data['cnpjLoc']        = $this->getLocador()->getCnpj();
         $data['locatario']      = $this->getLocatario()->getId();
-        $data['locatarioNome']  = $this->getLocatarionome();
+        $data['locatarioNome']  = $this->getLocatarioNome();
         $data['tipo']           = $this->getLocatario()->getTipo();
         $data['cpf']            = $this->getLocatario()->getCpf();
         $data['cnpj']           = $this->getLocatario()->getCnpj();
@@ -945,7 +945,6 @@ class AbstractSeguro  extends Filtro {
         $data['observacao']     = $this->getObservacao();
         $data['gerado']         = $this->getGerado();
         $data['comissao']       = $this->floatToStr('comissao');
-        $data['mesNiver']       = $this->getMesniver();
         $data['imovel']         = $this->getImovel()->getId();
         $data['imovelTel']      = $this->getImovel()->getTel();
         $data['imovelStatus']   = $this->getImovel()->getStatus();

@@ -167,6 +167,13 @@ class Orcamento extends AbstractEndereco {
         $this->setInputSubmit('getpdf', 'Imprimir Proposta',['onClick'=>'return printProposta()']);
         
         $this->setInputButton('logOrca', 'Exibir Logs',['onClick'=>'return viewLogsOrcamento()']);
+
+        $file = new \Zend\Form\Element\File('content');
+        $file->setLabel('Selecione um arquivo')
+             ->setAttribute('id', 'content');
+        $this->add($file);
+        
+        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
         
     }
  

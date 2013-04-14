@@ -25,7 +25,7 @@ class LocatariosController extends CrudController {
         if(!$this->render){
             return parent::indexAction($filtro, $orderBy);
         }
-        $data = $this->getRequest()->getPost()->toArray();
+        $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
             return parent::indexAction(['status'=>'A'], $orderBy);

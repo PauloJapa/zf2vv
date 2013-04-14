@@ -25,7 +25,7 @@ class TaxaRepository extends EntityRepository {
      * @param string $date
      * @param string $comissao
      * @param string $validade      mensal|anual
-     * @return boolean|Entity Livraria\Entity\Taxa
+     * @return boolean|Entity \Livraria\Entity\Taxa
      */
     public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual'){
         //Pegar classeAtividade correspondente vigente na data

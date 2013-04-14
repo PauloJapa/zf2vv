@@ -162,7 +162,8 @@ class Locatario
      * @return \Livraria\Entity\Locatario
      */
     public function setCpf($cpf) {
-        $this->cpf = $this->formatarCPF_CNPJ($cpf);
+        //$this->cpf = $this->formatarCPF_CNPJ($cpf);
+        $this->cpf = $cpf;
         return $this;
     }
 
@@ -180,7 +181,8 @@ class Locatario
      * @return \Livraria\Entity\Locatario
      */
     public function setCnpj($cnpj) {
-        $this->cnpj = $this->formatarCPF_CNPJ($cnpj);
+        //$this->cnpj = $this->formatarCPF_CNPJ($cnpj);
+        $this->cnpj = $cnpj;
         return $this;
     }
 

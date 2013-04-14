@@ -17,7 +17,18 @@ $this->FormDefault(['legend' => 'Dados do Locador', 'hidden' => 'id'],'inicio',$
         $this->FormDefault(['ajaxStatus' => 'hidden']),
         $this->FormDefault(['administradora' => 'hidden','administradoraDesc' => 'text']),
         "<br /><span id='popAdministradora' style='position:absolute'></span>",
-    "</td>\n",
+    "</td>\n";
+        
+    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+        echo
+    "</tr><tr>",
+        "<td>\n",
+        "</td><td>",
+            $this->formRow($form->get('content')),
+            $this->FormDefault(['importar'], 'submitOnly'),
+        "</td>\n";
+    }        
+echo 
 "</tr><tr valign='top'>\n",
     "<td>\n",
         $this->FormDefault(['subOpcao' => 'hidden']),
@@ -94,5 +105,10 @@ require 'index.phtml';
     }
     function buscaAdministradora(){
         envia(tar,'buscar',formName);
+    }
+    function importarFile(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
+        envia(tar,'',formName);
+        return false;
     }
 </script>

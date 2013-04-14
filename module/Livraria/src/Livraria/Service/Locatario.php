@@ -3,7 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use Livraria\Entity\Configurator;
+use \Livraria\Entity\Configurator;
 /**
  * Locatario
  * Faz o CRUD da tabela Locatario no banco de dados
@@ -46,7 +46,7 @@ class Locatario extends AbstractService {
         $this->setReferences();
 
         if(parent::insert())
-            $this->logForNew();
+ //           $this->logForNew();
         
         return TRUE;      
     }
@@ -115,6 +115,9 @@ class Locatario extends AbstractService {
      * @return array|boolean
      */
     public function isValid(){ 
+        //Não validar algumas situações especiais
+        if (!$this->isValid)
+            return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();

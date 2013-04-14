@@ -22,10 +22,8 @@ class OrcamentoRepository extends AbstractRepository {
                     ->join('l.administradora', 'ad')
                     ->join('l.atividade', 'at')
                     ->where('l.status = :status')
-                    ->setParameter('status', 'A')
-                    ->orderBy('l.criadoEm', 'DESC')
-                    ->getQuery();
-            return $query->getResult();
+                    ->setParameter('status', 'A');
+            return $query;
         }
         $where = 'l.id IS NOT NULL';
         $parameters = [];
@@ -65,10 +63,9 @@ class OrcamentoRepository extends AbstractRepository {
                 ->join('l.atividade', 'at')
                 ->where($where)
                 ->setParameters($parameters)
-                ->orderBy('l.criadoEm', 'DESC')
-                ->getQuery();
+                ->orderBy('l.criadoEm', 'DESC');
         
-        return $query->getResult();
+        return $query;
     }    
 }
 

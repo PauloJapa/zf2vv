@@ -25,7 +25,7 @@ class LocadorsController extends CrudController {
         if(!$this->render){
             return parent::indexAction($filtro, $orderBy);
         }
-        $data = $this->getRequest()->getPost()->toArray();
+        $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
             return parent::indexAction(['status'=>'A'], $orderBy);
@@ -145,6 +145,86 @@ class LocadorsController extends CrudController {
         $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
         $viewModel->setTerminal(true);
         return $viewModel;
+    }
+
+    
+    public function importarAction(){
+        echo
+        '<html><head>',
+        '<meta http-equiv="content-language" content="pt-br" />',
+        '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
+        '</head><body>';
+        $data = $this->getRequest()->getFiles()->toArray();
+        //Verificando a existencia do arquivo
+        $content  = file($data['content']['tmp_name']);
+        if(!$content){
+            echo 'arquivo não encontrado!!';
+            return;
+        }
+        $list = $this->getEm()->getRepository('Livraria\Entity\Administradora')->findAll();
+        foreach ($list as $ent) {
+            $this->adm[$ent->getId()] = $ent->getNome();
+        }
+        // Pegando o serviço para manipular dados
+        $service = new $this->service($this->getEm()); 
+        $service->notValidateNew();
+        $service->setFlush(FALSE);
+        $cont = 200  ;
+        foreach ($content as $key => $value) {
+            if($key == 0){
+                if(!$this->validaColunas($this->csvToArray($value))){
+                    echo 'Erro titulos da colunas estão incorretos!!';
+                    var_dump($value);
+                    return;
+                }
+                continue;
+            }
+            $resul = $service->insert($this->getData($value));
+            if($resul === TRUE){
+                echo '<p>Importado; ', $value , '</p>';
+                if($cont < $key){
+                    $this->getEm()->flush();
+                    $cont += 400;
+                }
+                continue;
+            }
+            set_time_limit(0);
+            echo '<h2>Erro ao importar; ', $value , '</h2>';
+            var_dump($value);
+            var_dump($resul);
+        }        
+        $this->getEm()->flush();
+    }
+    
+    public function getData($value){
+        $d = $this->csvToArray($value);
+        $data['id']                 = $d[0];
+        $data['nome']               = trim($d[1]);
+        $data['tipo']               = ($d[2] == 'F') ? 'fisica' : 'juridica' ;
+        $data['cpf']                = ($d[2] == 'F') ? $d[3] : '' ;
+        $data['cnpj']               = ($d[2] == 'F') ? '' : $d[3] ;
+        $data['tel']                = '';
+        $data['email']              = '';
+        $data['status']             = $d[5];
+        $data['administradora']     = isset($this->adm[(int)$d[4]]) ? $d[4] : '2022' ;
+        $data['endereco']           = '';
+        return $data ;
+    }
+    
+    public function validaColunas($cols){
+        $titStr = 'cod;cliente;tipo;cpf_cnpj;ue;status';
+        $tit = explode(';', $titStr);
+        if($tit !== $cols){
+            var_dump($tit);
+            var_dump($cols);
+            return FALSE;
+        }
+        return TRUE;
+    }
+    
+    public function csvToArray($str){
+        $linha = str_replace("\r\n","",trim($str));
+        return explode(';',  $linha);
     }
 
 }

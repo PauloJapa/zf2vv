@@ -85,9 +85,9 @@ class LocadorRepository extends EntityRepository {
                 ->from('Livraria\Entity\Locador', 'u')
                 ->where($where)
                 ->orderBy('u.nome')
-                ->setParameters($paramentros)
-                ->getQuery();
-        return $query->getResult();
+                ->setParameters($paramentros);
+        
+        return $query;
     }
     
 }
