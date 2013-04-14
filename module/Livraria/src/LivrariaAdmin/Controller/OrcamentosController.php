@@ -352,8 +352,8 @@ class OrcamentosController extends CrudController {
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data, TRUE);
-                $this->formData->setData($service->getNewInputs());
                 if($result === TRUE){
+                    $this->formData->setData($service->getNewInputs());
                     $this->flashMessenger()->addMessage('Calculado com sucesso!!!');
                 }else{
                     foreach ($result as $value) {
@@ -400,7 +400,7 @@ class OrcamentosController extends CrudController {
         //Nome diferente mas com a mesma função
         $this->printPropostaAction();
     }
-    
+/*                          FUNÇOES DE IMPORTAÇÃO
     public function importarAction(){
         echo
         '<html><head>',
@@ -456,6 +456,7 @@ class OrcamentosController extends CrudController {
             $resul = $service->insert($this->getData($value,$key));
             if($resul[0] === TRUE){
                 if($cont < $key){
+                    echo '<br> fim', date('d/m/Y - h:i');
                     echo '<p>Importado + 1000; ', $cont , '</p>';
                     $this->getEm()->flush();
                     $cont += 1000;
@@ -741,6 +742,8 @@ class OrcamentosController extends CrudController {
         $linha = str_replace("\r\n","",trim($str));
         return explode(';',  $linha);
     }
+ FIM DAS FUNÇOES DE IMPORTAÇÃO
+ */     
 
 
 }

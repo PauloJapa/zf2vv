@@ -3,7 +3,6 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use \Livraria\Entity\Configurator;
 /**
  * Locatario
  * Faz o CRUD da tabela Locatario no banco de dados
@@ -46,7 +45,7 @@ class Locatario extends AbstractService {
         $this->setReferences();
 
         if(parent::insert())
- //           $this->logForNew();
+            $this->logForNew();
         
         return TRUE;      
     }

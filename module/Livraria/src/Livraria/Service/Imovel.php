@@ -46,12 +46,12 @@ class Imovel extends AbstractService {
      */     
     public function insert(array $data) { 
         $this->data = $data;
-/*
+
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
- */        
+        
         
         //Pegando o servico endereco e inserindo novo endereco do imovel
         $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);
@@ -59,7 +59,7 @@ class Imovel extends AbstractService {
         $this->setReferences();
 
         if(parent::insert())
-//            $this->logForNew();
+            $this->logForNew();
         
         return TRUE;      
     }

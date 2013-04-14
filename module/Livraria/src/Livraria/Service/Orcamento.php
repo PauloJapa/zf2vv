@@ -38,7 +38,6 @@ class Orcamento extends AbstractService {
      * @param type $data
      */
     public function logForDelete($id,$data) {
-        //parent::logForDelete($id);
         //serviço logorcamento
         $log = new LogOrcamento($this->em);
         $dataLog['orcamento'] = $id;
@@ -104,9 +103,9 @@ class Orcamento extends AbstractService {
      */
     public function setAtividade(){
         $this->idToEntity('atividade', 'Livraria\Entity\Atividade');
-//        if($this->data['atividade']->getStatus() != "A"){
-//            return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
-//        }
+        if($this->data['atividade']->getStatus() != "A"){
+            return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
+        }
         return TRUE;
     }
 
@@ -120,14 +119,14 @@ class Orcamento extends AbstractService {
         if($onlyCalculo)
             $this->setFlush (FALSE);
         
-//        if (empty($this->data['user']))
-  //          $this->data['user'] = $this->getIdentidade()->getId();
+        if (empty($this->data['user']))
+            $this->data['user'] = $this->getIdentidade()->getId();
         
         $ret = $this->setReferences();
         if($ret !== TRUE)
             return $ret;
         
-//        $this->calculaVigencia();
+        $this->calculaVigencia();
        
         //Comissão da Administradora padrão
         if(empty($this->data['comissao'])){
@@ -156,46 +155,10 @@ class Orcamento extends AbstractService {
             ->getRepository('Livraria\Entity\MultiplosMinimos')
             ->findMultMinVigente($this->data['seguradora']->getId(), $this->data['criadoEm']);
         
-        // IMPORTAÇÃO CALCULO
-        //Coberturas 
-        $incendio = $this->strToFloat($this->data['incendio'], 'float');
-        $conteudo = $this->strToFloat($this->data['conteudo'], 'float');            
-        $aluguel  = $this->strToFloat($this->data['aluguel'],  'float');
-        $eletrico = $this->strToFloat($this->data['eletrico'], 'float');
-        $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
+        $resul = $this->CalculaPremio();
         
-        // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
-        $txIncendio = 0.0;
-        if ($this->data['tipoCobertura'] == '01'){
-            $txIncendio = $incendio * ($this->data['taxa']->getIncendio() / 100);
-        }
-        
-        // Se o tipo é Cobertura Incendo + Conteudo calcula com a taxa de incendio + conteudo
-        // Campos com nome conteudo ler como Incendio + conteudo.
-        $txConteudo = 0.0;
-        if ($this->data['tipoCobertura'] == '02'){
-            $txConteudo = $conteudo * ($this->data['taxa']->getIncendioConteudo() / 100);
-        }
-        
-        $txAluguel = $aluguel * ($this->data['taxa']->getAluguel() / 100);
-        
-        $txEletrico = $eletrico * ($this->data['taxa']->getEletrico() / 100);
-        
-        $txVendaval = $vendaval * ($this->data['taxa']->getVendaval() / 100);
-        
-        $this->data['cobIncendio']   = $this->strToFloat($txIncendio);
-        $this->data['cobConteudo']   = $this->strToFloat($txConteudo);
-        $this->data['cobAluguel']    = $this->strToFloat($txAluguel);
-        $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
-        $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
-        
-        // FIM DA IMPORTAÇÃO DE CALCULOS
-        
-        
-//        $resul = $this->CalculaPremio();
-        
-//        $this->data['codFechado'] = '0';
-//        $this->data['status'] = 'A';
+        $this->data['codFechado'] = '0';
+        $this->data['status'] = 'A';
         
         if($onlyCalculo){
             return ['Calculado com Sucesso !!!']; 
@@ -207,7 +170,7 @@ class Orcamento extends AbstractService {
         }
 
         if(parent::insert())
-//            $this->logForNew();
+            $this->logForNew();
         
         return array(TRUE,  $this->data['id']);      
     }   

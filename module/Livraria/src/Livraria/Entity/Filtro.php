@@ -77,6 +77,43 @@ class  Filtro
             return $valor;
         }
         return FALSE;
+    }    
+
+    /**
+     * Coloca a mascara no campo digitado 
+     * Ou retorna campo limpo livre da formatação
+     * @param string  $campo
+     * @param boolean $formatado
+     * @return string 
+     */
+    public function formatarCPF_CNPJ($campo, $formatado = true){
+	//retira formato
+	$codigoLimpo = ereg_replace("[' '-./ t]",'',$campo);
+	// pega o tamanho da string menos os digitos verificadores
+	$tamanho = (strlen($codigoLimpo) -2);
+	//verifica se o tamanho do código informado é válido
+	if ($tamanho != 9 && $tamanho != 12){
+		return false; 
+	}
+ 
+	if ($formatado){ 
+		// seleciona a máscara para cpf ou cnpj
+		$mascara = ($tamanho == 9) ? '###.###.###-##' : '##.###.###/####-##'; 
+ 
+		$indice = -1;
+		for ($i=0; $i < strlen($mascara); $i++) {
+			if ($mascara[$i]=='#') $mascara[$i] = $codigoLimpo[++$indice];
+		}
+		//retorna o campo formatado
+		$retorno = $mascara;
+ 
+	}else{
+		//se não quer formatado, retorna o campo limpo
+		$retorno = $codigoLimpo;
+	}
+ 
+	return $retorno;
+ 
     }
 }
 

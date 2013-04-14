@@ -114,10 +114,10 @@ class Orcamento extends AbstractEndereco {
         $formaPagto = $this->getParametroSelect('formaPagto');
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto);
         
-        $label = 'Incêndio, raio, explosão e queda de aeronaves(obrigatório)';
+        $label = 'Incêndio, raio, explosão e queda de aeronaves';
         $this->setInputText('incendio', $label);
         
-        $this->setInputText('conteudo', 'Conteúdo - Móveis, Máquinas e utensilios');
+        $this->setInputText('conteudo', 'Incêndio + Conteúdo - Móveis, Máquinas e utensilios');
         
         $this->setInputText('aluguel', 'Perda de aluguel');
         

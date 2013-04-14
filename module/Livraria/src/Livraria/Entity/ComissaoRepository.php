@@ -45,22 +45,7 @@ class ComissaoRepository extends EntityRepository {
         
         echo '<h2>Erro ao procura comissao; </h2>';
         var_dump($administradora);
-        var_dump($date);
-        
-        //Pesquisar sem data para importação        
-        $query = $this->getEntityManager()
-                ->createQueryBuilder()
-                ->select('c')
-                ->from('Livraria\Entity\Comissao', 'c')
-                ->where(" c.administradora = :administradora
-                    ")
-                ->setParameter('administradora', $administradora)
-                ->setMaxResults(1)
-                ->orderBy('c.inicio', 'ASC')
-                ->getQuery()
-                ;
-        
-        return $query->getSingleResult();
+        var_dump($date->format('d/m/Y'));
         
     }
     
