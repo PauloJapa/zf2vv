@@ -62,8 +62,11 @@ class OrcamentoRepository extends AbstractRepository {
                 ->join('l.administradora', 'ad')
                 ->join('l.atividade', 'at')
                 ->where($where)
-                ->setParameters($parameters)
-                ->orderBy('l.criadoEm', 'DESC');
+                ->setParameters($parameters);
+        
+        if(isset($parameters['administradora'])){
+            $query->orderBy('l.criadoEm', 'DESC');
+        }
         
         return $query;
     }    

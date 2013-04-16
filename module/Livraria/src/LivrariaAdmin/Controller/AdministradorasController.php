@@ -16,7 +16,16 @@ class AdministradorasController extends CrudController {
     }
     
     public function indexAction(array $filtro = array()){
-        return parent::indexAction($filtro);
+        $this->verificaSeUserAdmin();
+        $orderBy = ['nome' => 'ASC'];
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setForAdministradora();
+        $this->formData->setData($data);
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction(['status'=> 'A'], $orderBy);
+        }
+        return parent::indexAction(['id' => $data['administradora']]);
     }
     
     public function newAction() {
@@ -41,9 +50,8 @@ class AdministradorasController extends CrudController {
                 }
             }
         }
-        
-        $this->setRender(FALSE);
-        $this->indexAction($filtro);
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
         
         return new ViewModel($this->getParamsForView()); 
     }
@@ -81,10 +89,9 @@ class AdministradorasController extends CrudController {
                 }
             }  
         }
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
             
-        $this->setRender(FALSE);
-        $this->indexAction($filtro);
-
         return new ViewModel($this->getParamsForView()); 
     }
     

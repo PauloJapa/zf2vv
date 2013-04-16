@@ -20,7 +20,7 @@ class  Filtro
     public function trataData(\DateTime $objDate,$op="vigente")
     {
         $check = $objDate->format('d/m/Y');
-        if($check == '01/01/1000'){
+        if($check == '01/01/1000' OR $check == '01/01/0001'){
             return $op;
         }else{
             return $check;

@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="Livraria\Entity\ClasseAtividadeRepository")
  */
-class ClasseAtividade
+class ClasseAtividade extends Filtro
 {
     /**
      * @var integer $id
@@ -193,12 +193,7 @@ class ClasseAtividade
         if($op == 'obj'){
             return $this->fim;
         }
-        $check = $this->fim->format('d/m/Y');
-        if($check == '01/01/1000'){
-            return "vigente";
-        }else{
-            return $check;
-        }
+        return $this->trataData($this->fim);
     }
 
 

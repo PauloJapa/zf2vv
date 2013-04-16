@@ -105,8 +105,14 @@ $this->ViewIndex('setFuncEdit',$lambda);
 
 
 foreach($this->data as $entity){ 
+    $status = $entity->getStatus();
+    if($status == 'A'){
+        $campo1 = '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $entity->getId() .'/'. $entity->getCodAno() .'</label>';        
+    }else{
+        $campo1 = $entity->getId() .'/'. $entity->getCodAno() ;
+    }
     $linha = array(
-        '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $entity->getId() .'/'. $entity->getCodAno() .'</label>',
+        $campo1,
         $entity->getSeguradora(),
         $entity->getAdministradora(),
         $entity->getAtividade(),
@@ -192,6 +198,14 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         }
         if(document.getElementById('administradoraDesc').value == ''){
             document.getElementById('administradora').value = '';
+        }
+        if(document.getElementById('administradora').value == ''){
+            if(document.getElementById('dataI').value == ''){
+                if(document.getElementById('id').value == ''){
+                    alert('Atenção é necessário preencher alguns filtro:\n Ex: Administradora ou Periodo ou Nº do Orçamento!');
+                    return;
+                }
+            }
         }
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarOrcamentos')); ?>";
         envia(tar,'buscar',formName);
