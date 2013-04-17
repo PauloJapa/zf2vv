@@ -7,7 +7,6 @@ use Zend\View\Model\ViewModel;
 class IndexController extends CrudController {
 
     public function bemVindoAction() {
-        $this->verificaSeUserAdmin();
         return new ViewModel(array());
     }
     

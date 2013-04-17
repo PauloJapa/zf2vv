@@ -125,7 +125,6 @@ class OrcamentosController extends CrudController {
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
             $sessionContainer = new SessionContainer("LivrariaAdmin");
-            var_dump($sessionContainer);die;
             //Verifica se usuario tem registrado a administradora na sessao
             if(!isset($sessionContainer->administradora['id'])){
                 $this->verificaUserAction(FALSE);

@@ -256,7 +256,9 @@ return array(
         'user' => array(
             'home' => array(
                 'label' => 'Home',
-                'route' => 'livraria-home',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'bemVindo',
             ),
             'contratos' => array(
                 'label' => 'Contratos',
@@ -267,12 +269,6 @@ return array(
                             'label' => 'Orçamento',
                             'route' => 'livraria-admin',
                             'controller' => 'orcamentos',
-                            'action' => 'index',
-                        ),
-                        'renovacaos' => array(
-                            'label' => 'Renovação',
-                            'route' => 'livraria-admin',
-                            'controller' => 'renovacaos',
                             'action' => 'index',
                         ),
                         'fechados' => array(

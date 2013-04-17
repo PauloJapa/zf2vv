@@ -4,6 +4,8 @@ namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
 
+use Zend\Session\Container as SessionContainer;
+
 class AdministradorasController extends CrudController {
 
     public function __construct() {
@@ -29,6 +31,7 @@ class AdministradorasController extends CrudController {
     }
     
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
@@ -57,6 +60,7 @@ class AdministradorasController extends CrudController {
     }
 
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         $filtroForm = array();
@@ -97,6 +101,18 @@ class AdministradorasController extends CrudController {
     
     public function autoCompAction(){
         $administradora = $this->getRequest()->getPost('administradoraDesc');
+        
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(isset($sessionContainer->administradora['nome'])){
+                $administradora = $sessionContainer->administradora['nome'];
+            }else{
+                return ;
+            }
+        }
+        
         $repository = $this->getEm()->getRepository($this->entity);
         $resultSet = $repository->autoComp($administradora .'%');
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
@@ -108,6 +124,7 @@ class AdministradorasController extends CrudController {
     }
     
     public function importarAction(){
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getFiles()->toArray();
         //Verificando a existencia do arquivo
         $content  = file($data['content']['tmp_name']);
