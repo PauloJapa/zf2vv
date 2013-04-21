@@ -1,4 +1,4 @@
-<style type="text/css">
+i<style type="text/css">
 .form-horizontal .control-group>label{float:left;width:450px;padding-top:5px;text-align:right;}
 #mensagen {
     left:50px;
@@ -409,7 +409,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'imovels','action'=>'autoComp')); ?>";
         var returns = Array('imovel','idEnde','cep','rua','numero','bloco','apto','compl','bairro','bairroDesc','cidade','cidadeDesc','estado','pais','imovelTel','imovelStatus','refImovel');
         var functionCall = '';
-        autoComp2(filtros,servico,'popImoveis',returns,'9',functionCall);
+        autoComp2(filtros,servico,'popImoveis',returns,'12',functionCall);
     }
 
     function autoCompBairro(){

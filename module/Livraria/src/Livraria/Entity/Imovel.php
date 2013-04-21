@@ -455,7 +455,7 @@ class Imovel extends Filtro
         if($op == 'obj'){
             return $this->fechadoFim;
         }
-        return $this->fechadoFim->format('d/m/Y');
+        return $this->trataData($this->fechadoFim, '-');
     }
 
     /**

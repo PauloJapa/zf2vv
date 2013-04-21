@@ -28,6 +28,9 @@ if($this->resultSet){
              'CEP|c|',
              'Ref.|c|',
              'Tel.|c|',
+             'Seguro nº.|c|',
+             'Vigência Fim.|c|',
+             'Aluguel.|c|',
              "|s|";
     }
     $cont = 0;
@@ -61,6 +64,9 @@ if($this->resultSet){
         echo $entity->getCep(),    "|c|"; 
         echo $entity->getRefImovel(),    "|c|"; 
         echo $entity->getTel(),    "|c|"; 
+        echo $entity->getFechadoId() . '/' . $entity->getFechadoAno(),    "|c|"; 
+        echo $entity->getFechadoFim(),    "|c|"; 
+        echo $entity->floatToStr('vlrAluguel'),    "|c|"; 
     }
 }else
     echo "vazio|s|";
