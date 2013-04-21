@@ -66,7 +66,8 @@ class LocadorRepository extends EntityRepository {
         $filtros['cnpj'] = '';
         //Monta parametros se conteudo for vazio ele coloca um espaco e depois acresente o coringa '%'
         $paramentros['locador'] =$filtros['nome'] == '' ? ' ' : $filtros['nome'] . '%';
-        if (!empty($filtros['cpfOuCnpj'])) {
+        $where = '';
+        if (!empty($filtros['documento'])) {
             $filtros[$filtros['cpfOuCnpj']] = $filtros['documento'];
             //Monta clasula where e seus paramentros
             if ($filtros['cpfOuCnpj'] == 'cpf') {
@@ -83,9 +84,10 @@ class LocadorRepository extends EntityRepository {
                 ->createQueryBuilder()
                 ->select('u')
                 ->from('Livraria\Entity\Locador', 'u')
-                ->where($where)
-                ->orderBy('u.nome')
-                ->setParameters($paramentros);
+                ->orderBy('u.nome');
+        
+        if(!empty($where))
+            $query->where($where)->setParameters($paramentros);
         
         return $query;
     }

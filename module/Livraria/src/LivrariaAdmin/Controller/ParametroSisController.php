@@ -26,6 +26,7 @@ class ParametroSisController  extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function indexAction(array $filtro = [],array $orderBy = ['key' => 'ASC']) {
+        $this->verificaSeUserAdmin();
         
         if(empty($filtro))
             $filtro['key'] = '%';
@@ -51,6 +52,7 @@ class ParametroSisController  extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */ 
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         $filtroForm = array();
@@ -86,6 +88,7 @@ class ParametroSisController  extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         $filtroForm = array();

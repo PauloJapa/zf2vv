@@ -55,6 +55,8 @@ $this->FormDefault([],'fieldFim'),
         
 $this->FormDefault(['submit' => 'enviar'],'fim');
 
+$noFilter=true;
+
 require 'index.phtml';
 
 ?>

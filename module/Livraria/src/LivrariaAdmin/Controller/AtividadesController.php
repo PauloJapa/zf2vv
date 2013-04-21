@@ -29,7 +29,22 @@ class AtividadesController extends CrudController {
      */
     public function indexAction(array $filtro = array()){
         $this->verificaSeUserAdmin();
-        return parent::indexAction($filtro,array('descricao'=>'ASC'));
+        $orderBy = ['descricao'=>'ASC'];
+        if(!$this->render){
+            return parent::indexAction($filtro,$orderBy);
+        }
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros([], $this->getEm());
+        $this->formData->setTaxas();
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction(['status'=>'A'], $orderBy);
+        }
+        $this->formData->setData($data);
+        $list = $this->getEm()
+                    ->getRepository($this->entity)
+                    ->pesquisa($data);
+        
+        return parent::indexAction($filtro,$orderBy,$list);
     }
     
     public function newAction() {

@@ -161,7 +161,7 @@ class Orcamento extends AbstractService {
         $this->data['status'] = 'A';
         
         if($onlyCalculo){
-            return ['Calculado com Sucesso !!!']; 
+            return TRUE; 
         }
         
         $result = $this->isValid();

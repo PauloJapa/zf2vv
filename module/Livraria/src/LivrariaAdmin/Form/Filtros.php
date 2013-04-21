@@ -10,8 +10,9 @@ namespace LivrariaAdmin\Form;
 class Filtros  extends AbstractForm {
     
     
-    public function __construct(array $inputs=[]) {
+    public function __construct(array $inputs=[], $em=null) {
         parent::__construct('filtros');
+        $this->em = $em;
         
         $this->setAttribute('method', 'post');
         
@@ -36,6 +37,26 @@ class Filtros  extends AbstractForm {
         $attributes['onblur'] = 'if(this.value != varVazio)checkCPF_CNPJ(this)';
         $this->setInputText('documento', 'Documento', $attributes);
         
+    }
+    
+    public function setTaxas(){
+        $status = $this->getParametroSelect('status');
+        $this->setInputSelect('status', 'Situação', $status);
+
+        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
+        $this->setInputSelect('classe', 'Classe', $this->classes, ["onChange" => "buscaClasse()"] );
+        
+        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
+        $this->setInputSelect('seguradora', 'Seguradora', $this->seguradoras, ["onChange" => "buscaSeguradora()"] );
+        
+        $validade = $this->getParametroSelect('validade');
+        $this->setInputSelect('validade', 'Validade', $validade);
+        
+        $ocupacao = $this->getParametroSelect('ocupacao');
+        $this->setInputSelect('ocupacao', 'Ocupação', $ocupacao);
+        
+        $comissao = $this->getParametroSelect('comissaoParam');
+        $this->setInputSelect('comissao', 'Comissão', $comissao);
     }
     
     public function setLogs(){

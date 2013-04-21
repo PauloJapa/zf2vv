@@ -57,7 +57,7 @@ class LocatarioRepository extends EntityRepository {
         //Monta parametros se conteudo for vazio ele coloca um espaco e depois acresente o coringa '%'
         $paramentros['locatario'] =$filtros['nome'] == '' ? ' ' : $filtros['nome'] . '%';
         $where = '';
-        if (!empty($filtros['cpfOuCnpj'])) {
+        if (!empty($filtros['documento'])) {
             $filtros[$filtros['cpfOuCnpj']] = $filtros['documento'];
             //Monta clasula where e seus paramentros
             if ($filtros['cpfOuCnpj'] == 'cpf') {

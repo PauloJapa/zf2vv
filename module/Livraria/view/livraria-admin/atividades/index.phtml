@@ -5,6 +5,26 @@
     <a href="<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'new')); ?>"><i class="icon-plus"></i>Nova Atividade</a>
 </p>
 <?php
+
+    if(!isset($noFilter)){
+        $form = $this->form; 
+        $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+        $form->prepare();
+        echo 
+        $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+            "<td>\r",
+                $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp'], 'hidden'),
+                $this->FormDefault(['nome' => 'text']),
+            "</td>\r<td>",
+                $this->FormDefault(['ocupacao' => 'select']),
+            "</td>\r<td>",
+                $this->FormDefault(['status' => 'select']),
+            "</td>\r<td style='vertical-align: middle;'>",
+                $this->FormDefault(['enviar'], 'submitOnly'),
+            "</td>\r",
+        $this->FormDefault([],'fim');
+    }
+    
 $coluns = array('ID','Descrição','Ocupação','Criado Em','Status');
 $td     = array();
 echo $this->ViewIndex('table'),
@@ -28,6 +48,11 @@ echo $this->ViewIndex('close');
     <input type="hidden" name="subOpcao" id="subOpcao">
 </form>
 <script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }  
     function edit(id){
         var tar = "<?php echo $this->url('livraria-admin-interna',array('controller'=>'atividades','action'=>'edit','id'=>'')); ?>";
         envia(tar + id);

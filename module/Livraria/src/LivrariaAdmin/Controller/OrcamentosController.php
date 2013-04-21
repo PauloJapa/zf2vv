@@ -218,9 +218,13 @@ class OrcamentosController extends CrudController {
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->insert($data, TRUE);
-                $this->formData->setData($service->getNewInputs());
-                foreach ($result as $value) {
-                    $this->flashMessenger()->addMessage($value);
+                if($result === TRUE){
+                    $this->formData->setData($service->getNewInputs());
+                    $this->flashMessenger()->addMessage('Calculado com Sucesso !!!');
+                }else{
+                    foreach ($result as $value) {
+                        $this->flashMessenger()->addMessage($value);
+                    }
                 }
             }else{
                 $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');
@@ -249,7 +253,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel($this->getParamsForView()); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome']])); 
     }
     
     /**
@@ -382,7 +386,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel($this->getParamsForView()); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome']])); 
     }
     
     

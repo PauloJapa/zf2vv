@@ -32,8 +32,12 @@ class LocatariosController extends CrudController {
         }
         $this->formData->setData($data);
         $filtro=[];
-        if(!empty($data['nome'])){
+        
+        if(isset($data['nome']) AND !empty($data['nome'])){
             $filtro['nome'] = $data['nome'];
+        }
+        
+        if(isset($data['documento']) AND !empty($data['documento'])){
             $filtro[$data['cpfOuCnpj']] = $data['documento'];
         }
         

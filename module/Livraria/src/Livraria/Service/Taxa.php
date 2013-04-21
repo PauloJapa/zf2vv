@@ -105,7 +105,7 @@ class Taxa extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Incêndio Conteúdo', $ent->floatToStr('incendioConteudo'), $this->strToFloat($this->data['incendioConteudo']));
         $this->dePara .= $this->diffAfterBefore('Aluguel', $ent->floatToStr('aluguel'), $this->strToFloat($this->data['aluguel']));
         $this->dePara .= $this->diffAfterBefore('Eletrico', $ent->floatToStr('eletrico'), $this->strToFloat($this->data['eletrico']));
-        $this->dePara .= $this->diffAfterBefore('Desastres', $ent->floatToStr('desastres'), $this->strToFloat($this->data['desastres']));
+        $this->dePara .= $this->diffAfterBefore('Vendaval', $ent->floatToStr('vendaval'), $this->strToFloat($this->data['vendaval']));
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
         $this->dePara .= $this->diffAfterBefore('Validade', $ent->getValidade(), $this->data['validade']);
         $this->dePara .= $this->diffAfterBefore('Ocupação', $ent->getOcupacao(), $this->data['ocupacao']);

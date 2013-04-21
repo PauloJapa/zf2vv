@@ -84,10 +84,10 @@ class Taxa extends AbstractForm {
      */ 
     public function setEdit($isAdmin=false){
         $this->isEdit = TRUE;
-        //if(($isAdmin)or($this->isAdmin)){
-        //    $this->isAdmin = TRUE;
-        //    return ;
-        //}
+        if(($isAdmin)or($this->isAdmin)){
+            $this->isAdmin = TRUE;
+            return ;
+        }
         $this->get('seguradora')->setAttribute('disabled', 'disabled');   
         $this->get('classe')->setAttribute('disabled', 'disabled');   
         $this->get('validade')->setAttribute('disabled', 'disabled');   

@@ -444,8 +444,12 @@ abstract class AbstractService {
         if($incendio == 0.0 and $this->data['tipoCobertura'] == '01')
             $incendio = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();
         
+        // Cobertura incendio + conteudo usa multiplo do incendio para calcular cobertura
         if($conteudo == 0.0 and $this->data['tipoCobertura'] == '02')
-            $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
+            $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();
+        
+        // Multiplo de conteudo não usa no calculo atualmente pois usa o multiplo de incendio manter em stand by
+        //    $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
         
         if($aluguel == 0.0)
             $aluguel  = $vlrAluguel * $this->data['comissaoEnt']->getMultAluguel();
@@ -538,6 +542,11 @@ abstract class AbstractService {
             'taxa'=>$this->data['taxa']->getId(),
             'user'=>$this->data['user']->getId(),
             'multiplosMinimos'=>$this->data['multiplosMinimos']->getId(),
+            'rua'=>$this->data['imovel']->getRua(),
+            'numero'=>$this->data['imovel']->getNumero(),
+            'apto'=>$this->data['imovel']->getApto(),
+            'bloco'=>$this->data['imovel']->getBloco(),
+            'compl'=>$this->data['imovel']->getEndereco()->getCompl(),
         );
     }
 

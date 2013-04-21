@@ -20,10 +20,30 @@ class TaxasController extends CrudController {
     }
     
     public function indexAction(array $filtro = array('status' => 'A')){
-        return parent::indexAction($filtro,array('inicio' => 'DESC','seguradora'=>'ASC','classe'=>'ASC'));
+        $this->verificaSeUserAdmin();
+        $orderBy = ['seguradora'=>'ASC','classe'=>'ASC','comissao'=>'ASC','ocupacao'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
+        if(!$this->render){
+            return parent::indexAction($filtro,$orderBy);
+        }
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros([],  $this->getEm());
+        $this->formData->setTaxas();
+        if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
+            return parent::indexAction(['status'=>'A'], $orderBy);
+        }
+        $this->formData->setData($data);
+        $filtro=[];
+        $campos = ['seguradora','classe','comissao','validade','ocupacao','status'];
+        foreach ($data as $key => $value) {            
+            if(!empty($value) AND in_array($key, $campos))
+                $filtro[$key] = $value;
+        }
+        
+        return parent::indexAction($filtro,$orderBy);
     }
 
     public function newAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
@@ -33,6 +53,8 @@ class TaxasController extends CrudController {
             if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
             if(!empty($data['seguradora']))$filtro['seguradora'] = $data['seguradora'];
             if(!empty($data['ocupacao']))  $filtro['ocupacao']   = $data['ocupacao'];
+            if(!empty($data['comissao']))   $filtro['comissao']   = $data['comissao'];
+            if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
             $this->formData->setData($data);
         }
         if($data['subOpcao'] == 'salvar'){
@@ -57,6 +79,7 @@ class TaxasController extends CrudController {
     }
 
     public function editAction() {
+        $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $this->formData->setEdit($this->getIdentidade()->getIsAdmin());
         $data = $this->getRequest()->getPost()->toArray();
@@ -69,12 +92,16 @@ class TaxasController extends CrudController {
             $filtro['seguradora'] = $entity->getSeguradora()->getId();
             $filtro['classe']     = $entity->getClasse()->getId();
             $filtro['ocupacao']   = $entity->getOcupacao();
+            $filtro['comissao']   = $entity->floatToStr('Comissao');
+            $filtro['validade']   = $entity->getValidade();
             $this->formData->setData($entity->toArray());
             break;
         case 'buscar':  
             if(!empty($data['classe']))     $filtro['classe']     = $data['classe'];
             if(!empty($data['seguradora'])) $filtro['seguradora'] = $data['seguradora'];
             if(!empty($data['ocupacao']))   $filtro['ocupacao']   = $data['ocupacao'];
+            if(!empty($data['comissao']))   $filtro['comissao']   = $data['comissao'];
+            if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
             $this->formData->setData($data);  
             break;
         case 'salvar': 
@@ -100,6 +127,7 @@ class TaxasController extends CrudController {
     }
     
     public function importarAction(){
+        $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getFiles()->toArray();
         //Verificando a existencia do arquivo
         $content  = file($data['content']['tmp_name']);

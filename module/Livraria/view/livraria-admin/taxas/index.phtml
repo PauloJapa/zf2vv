@@ -3,6 +3,34 @@
 
 <p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Cobertura</span></p>
 <?php
+
+    if(!isset($noFilter)){
+        $form = $this->form; 
+        $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+        $form->prepare();
+        echo 
+        $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+            "<td>\r",
+                $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp'], 'hidden'),
+                $this->FormDefault(['seguradora' => 'select']),
+            "</td>\r<td>",
+                $this->FormDefault(['classe' => 'select']),
+            "</td>\r<td>",
+                $this->FormDefault(['comissao' => 'select']),
+            "</td>\r<td style='width:40%; vertical-align: middle;' rowspan='2'>",
+                $this->FormDefault(['enviar'], 'submitOnly'),
+            "</td>\r",
+        "</tr><tr>\r",
+            "<td>",
+                $this->FormDefault(['validade' => 'select']),
+            "</td>\r<td>\r",
+                $this->FormDefault(['ocupacao' => 'select']),
+            "</td>\r<td>\r",
+                $this->FormDefault(['status' => 'select']),
+            "</td>\r",
+        $this->FormDefault([],'fim');
+    }
+    
 $coluns = array(
     'ID',
     'Inicio',
@@ -52,6 +80,11 @@ echo $this->ViewIndex('close');
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }  
     function edit(id){
         try{
             var vlr = document.getElementById('seguradora').value;

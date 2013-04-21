@@ -37,8 +37,9 @@
 $user = $this->UserIdentity('LivrariaAdmin');
 
 $form->prepare();
+//var_dump($form);
 echo 
-$this->FormDefault(['legend' => 'Dados sobre o seguro', 'hidden' => 'id'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora, 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
         $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
@@ -101,6 +102,7 @@ $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'field
         '<a href="javascript:autoCompImoveis();">Exibir Imoveis desse locador <i class="icon-search"></i></a>',
         '<br /><span id="popImoveis" style="position:absolute"></span>',
         $this->FormDefault(['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
+        $this->FormDefault(['editImovel' => 'buttonOnly']),
     "</td>",        
 "</tr><tr>", PHP_EOL,       
     "<td>",
@@ -241,7 +243,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             return false;
         }
         
-        envia(tar,'salvar',formName);
+        envia(tar,'salvar',formName,'');
         return false;
     }
 
@@ -249,13 +251,13 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         var user = document.getElementById('user').value;
         document.getElementById('user').value = '';
         var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>$log)); ?>";
-        envia(target,'',formName);
+        envia(target,'',formName,'');
         document.getElementById('user').value = user;
         return false;
     }
 
     function calcular(){
-        envia(tar,'calcular',formName);
+        envia(tar,'calcular',formName,'');
         return false;
     }
 
@@ -333,7 +335,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function buscaSeguradora(){
-        envia(tar,'buscar',formName);
+        envia(tar,'buscar',formName,'');
     }
 
     function autoCompLocador(){
@@ -533,13 +535,25 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
     function voltar(){
         var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>$bak )); ?>";
-        envia(target,'',formName);
+        envia(target,'',formName,'');
     }
     function importarFile(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'importar')); ?>";
-        envia(tar,'',formName);
+        envia(tar,'',formName,'');
         return false;
-    }
+    } 
+    function editImovel(){
+        var imovel = document.getElementById('imovel');
+        if(imovel.value == ''){
+            alert("Não existe nenhum imovel selecionado!!");
+            return;
+        }
+        var auxid = document.getElementById('id').value;
+        document.getElementById('id').value = imovel.value;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'imovels','action'=>'edit')); ?>";
+        envia(tar,'editar',formName,'imovel');
+        document.getElementById('id').value = auxid ;
+    }  
 
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar

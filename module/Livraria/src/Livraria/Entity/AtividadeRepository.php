@@ -58,5 +58,42 @@ class AtividadeRepository extends EntityRepository {
         
         return $query->getResult();
     }   
+    
+    /**
+     * Pesquisa conforme paramentro passados:
+     * Descrição
+     * @param array $filtros
+     * @return array
+     */
+    public function pesquisa(array $filtros){
+        //Monta busca por descrição acresenta o coringa '%'
+        $where = 'u.id IS NOT NULL';
+        if(isset($filtros['nome']) AND !empty($filtros['nome'])){
+            $where .= ' AND u.descricao LIKE :descricao';
+            $paramentros['descricao'] = '%'. $filtros['nome'] . '%';
+        }
+        
+        if(isset($filtros['ocupacao']) AND !empty($filtros['ocupacao'])){
+            $where .= ' AND u.ocupacao = :ocupacao';
+            $paramentros['ocupacao'] = $filtros['ocupacao'];
+        }
+        
+        if(isset($filtros['status']) AND !empty($filtros['status'])){
+            $where .= ' AND u.status = :status';
+            $paramentros['status'] = $filtros['status'];
+        }
+        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\Atividade', 'u')
+                ->orderBy('u.descricao');
+        
+        if(isset($paramentros)){
+            $query->where($where)->setParameters($paramentros);
+        }
+        
+        return $query;
+    }
 }
 
