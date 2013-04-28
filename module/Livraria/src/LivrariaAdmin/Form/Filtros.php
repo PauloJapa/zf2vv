@@ -57,6 +57,9 @@ class Filtros  extends AbstractForm {
         
         $comissao = $this->getParametroSelect('comissaoParam');
         $this->setInputSelect('comissao', 'Comissão', $comissao);
+        
+        $tipoCobertura = $this->getParametroSelect('tipoCobertura');
+        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura);
     }
     
     public function setLogs(){

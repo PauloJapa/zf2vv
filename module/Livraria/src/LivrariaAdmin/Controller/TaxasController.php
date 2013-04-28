@@ -33,7 +33,7 @@ class TaxasController extends CrudController {
         }
         $this->formData->setData($data);
         $filtro=[];
-        $campos = ['seguradora','classe','comissao','validade','ocupacao','status'];
+        $campos = ['seguradora','classe','comissao','validade','ocupacao','status','tipoCobertura'];
         foreach ($data as $key => $value) {            
             if(!empty($value) AND in_array($key, $campos))
                 $filtro[$key] = $value;
@@ -55,6 +55,7 @@ class TaxasController extends CrudController {
             if(!empty($data['ocupacao']))  $filtro['ocupacao']   = $data['ocupacao'];
             if(!empty($data['comissao']))   $filtro['comissao']   = $data['comissao'];
             if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
+            if(!empty($data['tipoCobertura'])) $filtro['tipoCobertura'] = $data['tipoCobertura'];
             $this->formData->setData($data);
         }
         if($data['subOpcao'] == 'salvar'){
@@ -94,6 +95,7 @@ class TaxasController extends CrudController {
             $filtro['ocupacao']   = $entity->getOcupacao();
             $filtro['comissao']   = $entity->floatToStr('Comissao');
             $filtro['validade']   = $entity->getValidade();
+            $filtro['tipoCobertura']   = $entity->getTipoCobertura();
             $this->formData->setData($entity->toArray());
             break;
         case 'buscar':  
@@ -102,6 +104,7 @@ class TaxasController extends CrudController {
             if(!empty($data['ocupacao']))   $filtro['ocupacao']   = $data['ocupacao'];
             if(!empty($data['comissao']))   $filtro['comissao']   = $data['comissao'];
             if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
+            if(!empty($data['tipoCobertura'])) $filtro['tipoCobertura'] = $data['tipoCobertura'];
             $this->formData->setData($data);  
             break;
         case 'salvar': 

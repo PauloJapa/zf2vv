@@ -25,9 +25,10 @@ class TaxaRepository extends EntityRepository {
      * @param string $date
      * @param string $comissao
      * @param string $validade      mensal|anual
+     * @param string $validade      mensal|anual
      * @return boolean|Entity \Livraria\Entity\Taxa
      */
-    public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual'){
+    public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual', $cob='01'){
         //Pegar classeAtividade correspondente vigente na data
         $classeAtividade = $this->getEntityManager()
                 ->getRepository('Livraria\Entity\ClasseAtividade')
@@ -54,6 +55,7 @@ class TaxaRepository extends EntityRepository {
                     AND   t.ocupacao <= :ocupacao
                     AND   t.validade <= :validade
                     AND   t.comissao <= :comissao
+                    AND   t.tipoCobertura <= :cobertura
                     ")
                 ->setParameter('seguradora', $seguradora)
                 ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())
@@ -61,6 +63,7 @@ class TaxaRepository extends EntityRepository {
                 ->setParameter('ocupacao', $classeAtividade->getAtividade()->getOcupacao())
                 ->setParameter('validade', $validade)
                 ->setParameter('comissao', $comissao)
+                ->setParameter('cobertura', $cob)
                 ->setMaxResults(1)
                 ->orderBy('t.inicio', 'DESC')
                 ->getQuery()

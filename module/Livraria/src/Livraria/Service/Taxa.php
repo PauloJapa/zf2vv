@@ -109,6 +109,7 @@ class Taxa extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
         $this->dePara .= $this->diffAfterBefore('Validade', $ent->getValidade(), $this->data['validade']);
         $this->dePara .= $this->diffAfterBefore('Ocupação', $ent->getOcupacao(), $this->data['ocupacao']);
+        $this->dePara .= $this->diffAfterBefore('Tipo de Cobertura', $ent->getTipoCobertura(), $this->data['tipoCobertura']);
         $this->dePara .= $this->diffAfterBefore('Comissão', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
     }
 
@@ -127,6 +128,7 @@ class Taxa extends AbstractService {
                                              'validade'   => $this->data['validade'],
                                              'ocupacao'   => $this->data['ocupacao'],
                                              'comissao'   => $this->data['comissao'],
+                                             'tipoCobertura' => $this->data['tipoCobertura'],
                                              'status'     => 'A'
                                             )
                                       );

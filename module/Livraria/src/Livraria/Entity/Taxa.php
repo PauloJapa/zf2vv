@@ -110,6 +110,13 @@ class Taxa extends Filtro
     private $seq;
 
     /**
+     * @var string $tipoCobertura
+     *
+     * @ORM\Column(name="tipo_cobertura", type="string", length=2, nullable=false)
+     */
+    protected $tipoCobertura;
+
+    /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
@@ -531,8 +538,42 @@ class Taxa extends Filtro
         $this->seq = $seq;
         return $this;
     }
+    
+    /**
+     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @return string
+     */
+    public function getTipoCobertura($str=null) {
+        if (is_null($str)) {
+            return $this->tipoCobertura;
+        }
+        switch ($this->tipoCobertura) {
+            case '01':
+                return "Prédio";
+                break;
+            case '02':
+                return "Prédio + Conteúdo";
+                break;
+            case '03':
+                return "Conteúdo";
+                break;
+            default:
+                return "";
+                break;
+        }
+    }
 
-        /**
+    /**
+     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @param string $tipoCobertura
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
+     */
+    public function setTipoCobertura($tipoCobertura) {
+        $this->tipoCobertura = $tipoCobertura;
+        return $this;
+    }
+
+    /**
      * 
      * @return \Livraria\Entity\Seguradora
      */

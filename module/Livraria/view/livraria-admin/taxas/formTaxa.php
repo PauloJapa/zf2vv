@@ -13,17 +13,18 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados da Cobertura', 'hidden' => 'id'],'inicio',$this, $form),
-    "<td>\r",
+    "\r<td>",
         $this->FormDefault(['subOpcao' => 'hidden']),
         $this->FormDefault(['inicio' => 'calend']),
         $this->FormDefault(['seguradora' => 'select']),
         $this->FormDefault(['comissao' => 'select']),
-    "</td><td>\r",
+    "</td>\r<td>",
         $this->FormDefault(['fim' => 'calend']),
         $this->FormDefault(['classe' => 'select']),
         $this->FormDefault(['validade' => 'select']),
-    "</td><td><br /><br /><br />\r",
+    "</td>\r<td>",
         $this->FormDefault(['status' => 'select']),
+        $this->FormDefault(['tipoCobertura' => 'select']),
         $this->FormDefault(['ocupacao' => 'select']),
     "</td>\r";
         
