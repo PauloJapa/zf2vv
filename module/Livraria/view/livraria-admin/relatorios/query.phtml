@@ -1,0 +1,128 @@
+<?php
+echo '<h1>Montar Relátorio(Query).</h1>' ;
+
+$form->prepare();
+echo 
+    $this->FormDefault(['legend' => 'Filtro de registros.'],'inicio',$this, $form),
+    "</tr></table>";
+?>
+                                                                                                                                                              
+<table class="table table-bordered">                                                                                                                          
+    <tr>                                                                                                                                                      
+        <th colspan="3">                                                                                                                                      
+            Escolha as colunas.                                                                                                                               
+            <label class="checkbox" onClick="setCheckbox()"><input type="checkbox" checked id="CheckTodos" value="">Todos</label>                             
+        </th>                                                                                                                                                 
+    </tr>                                                                                                                                                     
+    <tr>                                                                                                                                                      
+        <td style="width: 30%;">                                                                                                                              
+            <input type="checkbox" name="campo[]" checked value="o.inicio as c1"                              />Vig&ecirc;ncia Inicial<br />                                     
+            <input type="checkbox" name="campo[]" checked value="o.fim as c2"                                 />Vig&ecirc;ncia Final<br />                                       
+            <input type="checkbox" name="campo[]" checked value="o.locadorNome as c3"                         />Cliente<br />                                                    
+            <input type="checkbox" name="campo[]" checked value="ld.tipo as c4, ld.cpf as c5, ld.cnpj as c6"  />Cliente - CPF/CNPJ<br />                                         
+            <input type="checkbox" name="campo[]" checked value="o.locatarioNome as c7"                       />Locat&aacute;rio<br />                                           
+            <input type="checkbox" name="campo[]" checked value="lc.tipo as c8, lc.cpf as c9, lc.cnpj as c10" />Locat&aacute;rio - CPF/CNPJ<br />                                
+            <input type="checkbox" name="campo[]" checked value="i.rua as c11"                                />Endere&ccedil;o<br />                                            
+            <input type="checkbox" name="campo[]" checked value="i.numero as c12"                             />N&uacute;mero<br />                                              
+            <input type="checkbox" name="campo[]" checked value="b.nome as c13"                               />Bairro<br />                                                     
+        </td>                                                                                                                                                 
+        <td style="width: 30%;">                                                                                                                              
+            <input type="checkbox" name="campo[]" checked value="c.nome as c14"                   />Cidade|Estado<br />                                                   
+            <input type="checkbox" name="campo[]" checked value="o.seguroEmNome as c15"           />Seguro em nome de<br />                                               
+            <input type="checkbox" name="campo[]" checked value="o.incendio as c16"               />Inc&ecirc;ndio, raio, queda Aero<br />                                
+            <input type="checkbox" name="campo[]" checked value="o.aluguel as c17"                />Perda de Aluguel<br />                                                
+            <input type="checkbox" name="campo[]" checked value="o.eletrico as c18"               />Danos El&eacute;tricos<br />                                          
+            <input type="checkbox" name="campo[]" checked value="o.vendaval as c19"               />Vendaval, impacto veiculos<br/>                                       
+            <input type="checkbox" name="campo[]" checked value="o.valorAluguel as c20"           />Valor do aluguel<br />                                                
+            <input type="checkbox" name="campo[]" checked value="at.descricao as c21"             />Ocupa&ccedil;&atilde;o<br />                                          
+            <input type="checkbox" name="campo[]" checked value="o.premioLiquido as c22"          />Pr&ecirc;mio L&iacute;quido<br />                                     
+        </td>                                                                                                                                                      
+        <td style="width: 30%;">                                                                                                                                   
+            <input type="checkbox" name="campo[]" checked value="o.premioTotal as c23"            />Pr&ecirc;mio Total<br />                                              
+<!--                                                                                                                                                               
+            <input type="checkbox" name="campo[]" checked value="orcamento"                       />Or&ccedil;amento<br />                                                
+            <input type="checkbox" name="campo[]" checked value="renovacao"                       />Renovados<br />                                                       
+-->                                                                                                                                                                
+            <input type="checkbox" name="campo[]" checked value="o.fechadoId as c24"             />Fechado<br />                                                         
+            <input type="checkbox" name="campo[]" checked value="s.apelido as c25"                />Cia<br />                                                             
+            <input type="checkbox" name="campo[]" checked value="o.status as c26"                 />Status<br />                                                          
+            <input type="checkbox" name="campo[]" checked value="ad.id as c27"                    />UE<br />                                                              
+            <input type="checkbox" name="campo[]" checked value="o.refImovel as c28"              />Referência do Imóvel<br />                                            
+            <input type="checkbox" name="campo[]" checked value="o.mesNiver as c29"               />M&ecirc;s de Anivers&aacute;rio<br />                                 
+        </td>                                                                                                                                                 
+    </tr>                                                                                                                                                     
+</table> 
+<?php
+echo "<table><tr>",
+    "\r<td colspan='3'>",
+        $this->FormDefault(['subOpcao' => 'hidden']),
+        $this->FormDefault(['mesNiver'], 'select'),
+    "</td>\r",
+    "</tr>\r<tr>",
+    "\r<td>",
+        $this->FormDefault(['filtro[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['comando[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['valor[]'], 'text'),
+    "</td>\r",
+    "</tr>\r<tr>",
+    "\r<td>",
+        $this->FormDefault(['filtro[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['comando[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['valor[]'], 'text'),
+    "</td>\r",
+    "</tr>\r<tr>",
+    "\r<td>",
+        $this->FormDefault(['filtro[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['comando[]'], 'select'),
+    "</td>\r<td>",
+        $this->FormDefault(['valor[]'], 'text'),
+    "</td>\r",
+    "</tr>\r<tr>",
+    "\r<td colspan='3'>",
+        $this->FormDefault(['orderBy'], 'select'),
+    "</td>\r",
+    "</tr>\r<tr>",
+    "\r<td colspan='3'>",
+        $this->FormDefault(['limit'], 'select'),
+    "</td>\r",
+
+$this->FormDefault(['submit' => 'gerar'],'fim');
+
+?>
+<p>*Dicas:<br>
+    - Se escolher buscar pela 'data de vigência' (inicial ou final) favor digitar com as barras. Ex.:01/01/2010<br>
+    - Se escolher buscar pela 'ocupação', escolha 'parecido com'
+    e escreva parte da ocupação. Ex.: Para   ocupação "AÇOUGUE (Comércio e Serviços)" digitar apenas "AÇOUGUE" ou "acougue"<br>
+    - Se escolher buscar por 'status' digite os números: 
+    <font color="#0099FF">1 = Orçamento</font>, 
+    <font color="#009933">2 = Renovação</font>, 
+                  <strong>3 = Fechados</strong>,
+    <font color="#FF0000">4 = Cancelados</font>, 
+    <font color="#9933CC">5 = Não Renovado</font>.
+</p>
+<script language="javascript">
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    
+    function setCheckbox(){
+        var todos = document.getElementById('CheckTodos');
+        var elems = document.getElementsByName('campo[]');
+        for (i=0; i < elems.length; i++){
+            elems[i].checked = todos.checked;
+        }
+    }
+
+    function processa(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarQuery')); ?>";
+        envia(tar,'',formName);        
+        return false;
+    }
+</script>
+
+
+

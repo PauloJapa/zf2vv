@@ -1,0 +1,73 @@
+<h1>Relátorio</h1>
+<br />
+<?php
+
+$coluns = [];
+$td     = [];
+
+if (isset($this->data[0])) {
+    foreach ($this->data[0] as $key => $value) {
+        $coluns[] = $this->label[$key];
+        $td[$key] = 'nowrap';
+    }
+}else{
+    echo '<h1>Nenhum resultado foi encontrado!!!!</h1>';
+}
+
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td));
+     
+foreach($this->data as $arrayCols){
+    if(isset($arrayCols['c1'])){
+        $arrayCols['c1'] = $arrayCols['c1']->format('d/m/Y');
+    }
+    if(isset($arrayCols['c2'])){
+        $arrayCols['c2'] = $arrayCols['c2']->format('d/m/Y');
+    }
+    if(isset($arrayCols['c16'])){
+        $arrayCols['c16'] = number_format($arrayCols['c16'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c17'])){
+        $arrayCols['c17'] = number_format($arrayCols['c17'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c18'])){
+        $arrayCols['c18'] = number_format($arrayCols['c18'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c19'])){
+        $arrayCols['c19'] = number_format($arrayCols['c19'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c20'])){
+        $arrayCols['c20'] = number_format($arrayCols['c20'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c22'])){
+        $arrayCols['c22'] = number_format($arrayCols['c22'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c23'])){
+        $arrayCols['c23'] = number_format($arrayCols['c23'], 2, ',', '.');
+    }
+    echo $this->ViewIndex('line',array('data' => &$arrayCols));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<table width="100%">
+    <tr>
+        <td align='center' width="50%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel" onclick="toExcel()">            
+        </td>
+        <td align='center'>
+            <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            
+        </td>
+    </tr>
+</table>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function toExcel(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcel')); ?>";
+        envia(tar,'editar',null,'excel');
+    }    
+</script>

@@ -220,7 +220,7 @@ class Renovacao  extends AbstractSeguro
      *
      * @ORM\Column(name="fechado_id", type="integer", nullable=false)
      */
-    protected $FechadoId;
+    protected $fechadoId;
 
     /**
      * @var integer $mesNiver
@@ -234,7 +234,7 @@ class Renovacao  extends AbstractSeguro
      *
      * @ORM\Column(name="fechado_origem_id", type="integer", nullable=true)
      */
-    protected $FechadoOrigemId;
+    protected $fechadoOrigemId;
 
     /**
      * @var string $validade
@@ -420,7 +420,7 @@ class Renovacao  extends AbstractSeguro
      * @return integer
      */
     public function getFechadoId() {
-        return $this->FechadoId;
+        return $this->fechadoId;
     }
 
     /**
@@ -429,7 +429,7 @@ class Renovacao  extends AbstractSeguro
      * @return \Livraria\Entity\Renovacao
      */
     public function setFechadoId($FechadoId) {
-        $this->FechadoId = $FechadoId;
+        $this->fechadoId = $FechadoId;
         return $this;
     }
 
@@ -438,7 +438,7 @@ class Renovacao  extends AbstractSeguro
      * @return integer
      */
     public function getFechadoOrigemId() {
-        return $this->FechadoOrigemId;
+        return $this->fechadoOrigemId;
     }
 
     /**
@@ -447,7 +447,7 @@ class Renovacao  extends AbstractSeguro
      * @return \Livraria\Entity\Renovacao
      */
     public function setFechadoOrigemId($FechadoOrigemId) {
-        $this->FechadoOrigemId = $FechadoOrigemId;
+        $this->fechadoOrigemId = $FechadoOrigemId;
         return $this;
     }
 

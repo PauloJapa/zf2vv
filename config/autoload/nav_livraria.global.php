@@ -209,6 +209,14 @@ return array(
                 'route' => 'livraria-admin',
                 'controller' => 'index',
                 'action' => 'relatorios',
+                'pages' => array(
+                    'logs' => array(
+                        'label' => 'Consulta Query',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'query',
+                    ),
+                ),
             ),
             'auditoria' => array(
                 'label' => 'Auditoria',

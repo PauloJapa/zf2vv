@@ -1,0 +1,119 @@
+<?php
+/*
+// As várias propriedades do documento que podemos definir
+$this->excel->getProperties()->setCreator("Autor do Documento")
+ ->setLastModifiedBy("Modificado por...")
+ ->setTitle("O Título")
+ ->setSubject("O Assunto")
+ ->setDescription("A Descrição")
+ ->setKeywords("As Palavras Chave")
+ ->setCategory("A Categoria");
+
+// Inserir dados nas células A1 e A2
+$this->excel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'Título do Exemplo da Classe PHPExcel (vai ficar a negrito)')
+            ->setCellValue('A2', 'uma excelente classe (vai ficar em itálico a azul)');
+
+// Definir a largura da coluna A para automático/auto-ajustar
+$this->excel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+// Formatar a célula A1 a negrito
+$this->excel->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
+// Formatar a célula A2 a itálico
+$this->excel->getActiveSheet()->getStyle('A2')->getFont()->setItalic(true);
+// Formatar a cor do texto da célula A2 a azul
+$this->excel->getActiveSheet()->getStyle('A2')->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_BLUE);
+// Formatar o topo da célula A2 com uma borda
+$this->excel->getActiveSheet()->getStyle('A2')->getBorders()->getTop()->setBorderStyle(PHPExcel_Style_Border::BORDER_THICK);
+// Colocar uma borda em torno da área A1:A5
+$this->excel->getActiveSheet()->getStyle('A1:A5')->getBorders()->getOutline()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+
+// Usar fórmulas
+$this->excel->setActiveSheetIndex(0)
+            ->setCellValue('A3', '15')
+            ->setCellValue('A4', '20')
+            ->setCellValue('A5', '=A3+A4');
+
+// Indicação da criação do ficheiro
+$objWriter = PHPExcel_IOFactory::createWriter($this->excel, 'Excel5');
+
+
+// Encaminhar o ficheiro resultante para abrir no browser ou fazer download
+header('Content-Type: application/vnd.ms-excel');
+header('Content-Disposition: attachment;filename="teste.xls"');
+header('Cache-Control: max-age=0');
+$objWriter->save('php://output');
+
+die;
+ */
+
+//Montar tabela para exibição html ou xls.
+$tabela_dados = "\n<table cellpadding='0' cellspacing='0' border='0' id='table'>\n<thead>\n<tr>\n" ;
+
+if (isset($this->data[0])) {
+    foreach ($this->data[0] as $key => $value) {
+        $tabela_dados .= "<th nowrap>" . $this->label[$key] . "</th>\n";
+    }
+}else{
+    echo '<h1>Nenhum resultado foi encontrado!!!!</h1>';
+    exit();
+}
+
+//Adicionando todas as colunas no vetor para exibição das linhas
+$tabela_dados .= "</tr>\n</thead>\n<tbody>\n";
+$cor = "";
+
+
+foreach($this->data as $arrayCols){
+    if(isset($arrayCols['c1'])){
+        $arrayCols['c1'] = $arrayCols['c1']->format('d/m/Y');
+    }
+    if(isset($arrayCols['c2'])){
+        $arrayCols['c2'] = $arrayCols['c2']->format('d/m/Y');
+    }
+    if(isset($arrayCols['c16'])){
+        $arrayCols['c16'] = number_format($arrayCols['c16'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c17'])){
+        $arrayCols['c17'] = number_format($arrayCols['c17'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c18'])){
+        $arrayCols['c18'] = number_format($arrayCols['c18'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c19'])){
+        $arrayCols['c19'] = number_format($arrayCols['c19'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c20'])){
+        $arrayCols['c20'] = number_format($arrayCols['c20'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c22'])){
+        $arrayCols['c22'] = number_format($arrayCols['c22'], 2, ',', '.');
+    }
+    if(isset($arrayCols['c23'])){
+        $arrayCols['c23'] = number_format($arrayCols['c23'], 2, ',', '.');
+    }
+    // Decide cor da linha
+    if($cor == "background:#B9FFB9;"){
+        $cor = "";
+    }else{
+        $cor = "background:#B9FFB9;";
+    }
+    $tabela_dados .= "<tr>\n" ;
+    foreach ($arrayCols as $cel) {
+        $align = "align='left'";
+        //Colocar um traço para celula vazia
+        if($cel == ""){
+            $cel = "-";
+            $align = "align='center'";
+        }
+        $tabela_dados .= "\t<td nowrap $align style='" . $cor . "'>" . $cel . "</td>\n" ;
+    }
+    $tabela_dados .= "</tr>\n" ;
+}
+//Nome do arquivo
+$filename = "MonteQuery_" . date('d-m-Y_H-i-s');
+//XLS - exibe a tabela pronta em html para XLS
+header("Content-Type:  application/vnd.ms-excel; charset=UTF-8; encoding=UTF-8");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header ("Content-Disposition: attachment; filename=\"".$filename.".xls\"" );
+print(utf8_decode($tabela_dados));

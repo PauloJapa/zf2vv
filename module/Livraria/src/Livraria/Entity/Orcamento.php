@@ -218,9 +218,9 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var integer $codFechado
      *
-     * @ORM\Column(name="cod_fechado", type="integer", nullable=false)
+     * @ORM\Column(name="fechado_id", type="integer", nullable=false)
      */
-    protected $codFechado;
+    protected $fechadoId;
 
     /**
      * @var integer $mesNiver
@@ -409,19 +409,19 @@ class Orcamento extends AbstractSeguro {
 
     /**
      * Campo com id do seguro fechado
-     * @return int
+     * @return int 
      */
-    public function getCodFechado() {
-        return $this->codFechado;
+    public function getFechadoId() {
+        return $this->fechadoId;
     }
 
     /**
      * Se fechar o orçamento preencher este campo com id do seguro fechado
-     * @param type $codFechado
+     * @param string 
      * @return \Livraria\Entity\Orcamento
      */
-    public function setCodFechado($codFechado) {
-        $this->codFechado = $codFechado;
+    public function setFechadoId($codFechado) {
+        $this->fechadoId = $codFechado;
         return $this;
     }
     

@@ -119,7 +119,7 @@ class Fechados extends AbstractService {
             return [FALSE,'Registro Orçamento não encontrado'];
         }
         //Outras Validações entra aqui
-        if($this->Orcamento->getCodFechado() != 0){
+        if($this->Orcamento->getFechadoId() != 0){
             return [FALSE,'Este Orçamento já foi fechado uma vez!!!!'];
         }
         //Verificar se esta ativo
@@ -152,7 +152,7 @@ class Fechados extends AbstractService {
 
         if($resul[0] === TRUE){
             //Registra o id do fechado de Orçamento
-            $this->Orcamento->setCodFechado($this->data['id']);
+            $this->Orcamento->setFechadoId($this->data['id']);
             $this->Orcamento->setStatus('F');
             $this->em->persist($this->Orcamento);
             $this->em->flush();
