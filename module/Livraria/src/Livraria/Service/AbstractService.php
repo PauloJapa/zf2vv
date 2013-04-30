@@ -470,11 +470,10 @@ abstract class AbstractService {
             $total += $txIncendio;
         }
         
-        // Se o tipo é Cobertura Incendo + Conteudo calcula com a taxa de incendio + conteudo
-        // Campos com nome conteudo ler como Incendio + conteudo.
+        // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
         $txConteudo = 0.0;
         if ($this->data['tipoCobertura'] == '02'){
-            $txConteudo = $this->calcTaxaMultMinMax($conteudo,'IncendioConteudo','Conteudo') ;
+            $txConteudo = $this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo') ;
             $total += $txConteudo;
         }
         
@@ -497,6 +496,17 @@ abstract class AbstractService {
             }
         }
         
+        if ($this->data['validade'] == 'mensal'){
+            $diff = $this->data['fim']->diff($this->data['inicio']);
+            var_dump($diff->days);
+            if($diff->days < 31){
+            var_dump($total);
+                $recalculaPeriodo = $total / 31 ;
+                $total = $recalculaPeriodo * $diff->days ;
+            var_dump($total);
+            }
+        }
+        
         $iof = floatval($this->getParametroSis('taxaIof')); 
         
         $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
@@ -508,6 +518,7 @@ abstract class AbstractService {
         }else{
             $this->data['premio']        = $this->strToFloat($total);
         }
+        
         $this->data['premioLiquido'] = $this->strToFloat($total);
         $this->data['premioTotal']   = $this->strToFloat($totalBruto);
         $this->data['incendio']      = $this->strToFloat($incendio);

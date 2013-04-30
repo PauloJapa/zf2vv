@@ -129,7 +129,6 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('premioLiquido');
         $this->setInputHidden('premio');
         $this->setInputText('premioTotal','Pagamento total de :');
-        $this->setInputHidden('codFechado');
         
         $attributes = ['rows' => "8",'class'=>'span8'];
         $this->setInputTextArea('observacao', 'Obs', $attributes);
@@ -168,7 +167,7 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputButton('logOrca', 'Exibir Logs',['onClick'=>'return viewLogsOrcamento()']);
 
-        $this->setInputButton('editImovel', 'Editar Imovel', ['onClick'=>'editImovel();return false;']);
+        $this->setInputButton('edImovel', 'Editar Imovel', ['onClick'=>'editImovel();return false;']);
         
         $file = new \Zend\Form\Element\File('content');
         $file->setLabel('Selecione um arquivo')

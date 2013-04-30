@@ -1,4 +1,4 @@
-i<style type="text/css">
+<style type="text/css">
 .form-horizontal .control-group>label{float:left;width:450px;padding-top:5px;text-align:right;}
 #mensagen {
     left:50px;
@@ -41,7 +41,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora, 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
-        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','codFechado','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
+        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -102,7 +102,7 @@ $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'field
         '<a href="javascript:autoCompImoveis();">Exibir Imoveis desse locador <i class="icon-search"></i></a>',
         '<br /><span id="popImoveis" style="position:absolute"></span>',
         $this->FormDefault(['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
-        $this->FormDefault(['editImovel' => 'buttonOnly']),
+        $this->FormDefault(['edImovel' => 'buttonOnly']),
     "</td>",        
 "</tr><tr>", PHP_EOL,       
     "<td>",

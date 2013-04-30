@@ -427,7 +427,7 @@ class Orcamento extends AbstractSeguro {
     
     public function toArray() {
         $data = parent::toArray();
-        $data['codFechado']     = $this->getCodfechado();
+        $data['fechadoId']     = $this->getFechadoId();
         return $data;
     }
  

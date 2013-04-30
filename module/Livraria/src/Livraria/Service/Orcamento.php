@@ -145,7 +145,8 @@ class Orcamento extends AbstractService {
                         $this->data['atividade']->getId(), 
                         $this->data['criadoEm'], 
                         $this->data['comissao'],
-                        $this->data['validade']
+                        $this->data['validade'],
+                        $this->data['tipoCobertura']
         );
         
         if(!$this->data['taxa'])
@@ -319,7 +320,16 @@ class Orcamento extends AbstractService {
         
         $this->calculaVigencia();
         
-        $this->idToEntity('taxa', 'Livraria\Entity\Taxa');
+        $this->data['taxa'] = $this->em
+                ->getRepository('Livraria\Entity\Taxa')
+                ->findTaxaVigente(
+                    $this->data['seguradora']->getId(), 
+                        $this->data['atividade']->getId(), 
+                        $this->data['criadoEm'], 
+                        $this->data['comissao'],
+                        $this->data['validade'],
+                        $this->data['tipoCobertura']
+        );
         
         $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
         
@@ -330,7 +340,7 @@ class Orcamento extends AbstractService {
         $this->idToReference('user', 'Livraria\Entity\User');
         
         if($onlyCalculo){
-            TRUE; 
+            return TRUE; 
         }
         
         $result = $this->isValid();
