@@ -1,4 +1,4 @@
-<h1>Resultado</h1>
+<h1>Resultado Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
 <br />
 <?php
 $coluns = array(
@@ -92,7 +92,8 @@ echo $this->ViewIndex('close');
     var formName = '<?php echo $this->formName ?>';
     function printProp(adm){
         var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'printProposta')); ?>";
-        envia(tar2, adm, null,'Proposta');
+        envia(tar2, adm);
+        return false;
     }  
     function sendEmail(adm){
         var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmail')); ?>";

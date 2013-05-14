@@ -100,9 +100,10 @@ class RelatoriosController extends CrudController {
         //Guardar dados do resultado 
         $sc = new SessionContainer("LivrariaAdmin");
         $sc->dataOrcareno = $this->paginator;
+        $sc->data         = $data;
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-        return new ViewModel($this->getParamsForView());        
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));        
     }
     
     public function sendEmailAction(){
@@ -113,27 +114,58 @@ class RelatoriosController extends CrudController {
     public function printPropostaAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
-        echo $data['subOpcao'];
                 
         //Ler dados guardados
         $sc = new SessionContainer("LivrariaAdmin");
-        if(!empty($sc->dataOrcareno))
+        if(empty($sc->dataOrcareno))
             return;
 
         $admCod = $data['subOpcao'];
         $srvOrcamento = $this->getServiceLocator()->get("Livraria\Service\Orcamento");
         $srvRenovacao = $this->getServiceLocator()->get("Livraria\Service\Renovacao");
+        $pdfCount = $orcaCount = $renoCount = 0;
+        $pdfObj = null;
+        // Gerar arquivo pdf com todas os orçamento e renovação
         foreach($sc->dataOrcareno as $arrayResul){
             if(!empty($admCod) AND $admCod != $arrayResul['administradora']['id']){
                 continue;
             }
-            // Imprimi orçamento ou renovação
+            // Verifica se o registro é renovação
             if ( isset($arrayResul['fechadoOrigemId'])){
-                $renov ++; $totRenov ++;
+                //Primeiro de todos pega a instacia do pdf
+                if($pdfCount == 0){
+                    $srvRenovacao->getPdfsRenovacao($arrayResul['id']);
+                    $pdfObj = $srvRenovacao->getObjectPdf();
+                }else{
+                    if($renoCount == 0){
+                        //Não é o primeiro de todos mas é o primeiro das renovações passa a instacia do pdf
+                        $srvRenovacao->getPdfsRenovacao($arrayResul['id'], $pdfObj);                        
+                    }else{
+                        // Adiciona pagina no pdf
+                        $srvRenovacao->getPdfsRenovacao($arrayResul['id']);
+                    }
+                }
+                $renoCount++;
             }else{
-                $orcam ++; $totOrcam ++;
+                //Primeiro de todos pega a instacia do pdf
+                if($pdfCount == 0){
+                    $srvOrcamento->getPdfsOrcamento($arrayResul['id']);
+                    $pdfObj = $srvOrcamento->getObjectPdf();
+                }else{
+                    if($orcaCount == 0){
+                        //Não é o primeiro de todos mas é o primeiro dos orçamentos passa a instacia do pdf
+                        $srvOrcamento->getPdfsOrcamento($arrayResul['id'], $pdfObj);                        
+                    }else{
+                        // Adiciona pagina no pdf
+                        $srvOrcamento->getPdfsOrcamento($arrayResul['id']);
+                    }
+                }
+                $orcaCount++;
             }
-        }    
+            $pdfCount++;
+        }
+        // Mandar arquivo para usuario fazer download
+        $pdfObj->Output('Orcamento_Renovacao_' . $sc->data['inicio'] . '_' .  $sc->data['fim'] . '.pdf','D');
     }
     
 }

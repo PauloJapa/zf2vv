@@ -21,6 +21,12 @@ class ImprimirSeguro extends FPDF{
     private $HREF;
 
     public function __construct($numSeguro='',$lg=2) {
+        $this->FPDF();
+        $this->AliasNbPages();
+        $this->novaPagina($numSeguro, $lg);
+    }
+    
+    public function novaPagina($numSeguro='',$lg=2){
         switch ($lg) {
             case 2:
                 $log='logoMaritima.png';
@@ -34,11 +40,10 @@ class ImprimirSeguro extends FPDF{
         }
         $this->logoSeguradora = $log;
         $this->numSeguro =  $numSeguro;
-        $this->FPDF();
-        $this->AliasNbPages();
         $this->AddPage();
+        
     }
-    
+
     public function setL1($refImovel,$iniVig){
         $linha = ['Referência do Imóvel:',$refImovel,'Início da Vigência:',$iniVig];
         $this->set2Cell($linha, 41, 35);
@@ -288,4 +293,12 @@ class ImprimirSeguro extends FPDF{
         $this->SetTextColor(0);
     }
     
+    public function getNumSeguro() {
+        return $this->numSeguro;
+    }
+
+    public function setNumSeguro($numSeguro) {
+        $this->numSeguro = $numSeguro;
+    }
+
 }

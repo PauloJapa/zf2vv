@@ -19,6 +19,12 @@ class Renovacao extends AbstractService {
     protected $deParaImovel;
     
     /**
+     * Para gerar o pdf com orçamento
+     * @var objet 
+     */
+    protected $pdf;
+    
+    /**
      * Entity Orcamento
      * @var type
      */
@@ -378,6 +384,11 @@ class Renovacao extends AbstractService {
         $this->dePara .= $this->deParaImovel;
     }
     
+    /**
+     * Gerar o pdf do Renovação 
+     * @param strin $id
+     * @return PDF file 
+     */
     public function getPdfRenovacao($id){
         //Carregar Entity Fechados
         $seg = $this->em
@@ -389,17 +400,54 @@ class Renovacao extends AbstractService {
         }
         
         $num = 'Renovação/' . $seg->getId() . '/' . $seg->getCodano();
-        $pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
-        $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
-        $pdf->setL2($seg->getAdministradora()->getNome());
-        $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
-        $pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
-        //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
-        $pdf->setL6($seg->getAtividade());
-        $pdf->setL7($seg->getObservacao());
-        $pdf->setL8($seg->floatToStr('valorAluguel'));
-        $pdf->setL9($seg->getAdministradora()->getId(), '0');
-        $pdf->setL10();
+        
+        $this->pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
+        
+        $this->conteudoDaPagina($seg);
+        
+        $this->sendPdf();
+    }
+    
+    /**
+     * Gerar vario pdfs do Orçamento 
+     * @param strin $id
+     * @param objet $objPdf
+     */
+    public function getPdfsRenovacao($id, $objPdf=null){
+        //Carregar Entity Orçamento
+        $seg = $this->em
+            ->getRepository($this->entity)
+            ->find($id);
+        
+        if(!$seg){
+            return ['Não foi encontrado uma renovação com esse numero!!!'];
+        }
+        
+        if(!is_null($objPdf))
+            $this->pdf = $objPdf;
+        
+        $num = 'Renovação/' . $seg->getId() . '/' . $seg->getCodano();
+        
+        if(!is_object($this->pdf))
+            $this->pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
+        else
+            $this->pdf->novaPagina($num, $seg->getSeguradora()->getId());
+        
+        $this->conteudoDaPagina($seg);
+        
+    }
+    
+    public function conteudoDaPagina($seg){
+        $this->pdf->setL1($seg->getRefImovel(), $seg->getInicio());
+        $this->pdf->setL2($seg->getAdministradora()->getNome());
+        $this->pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
+        $this->pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
+        //$this->pdf->setL5($seg->getImovel()->getEnderecoCompleto());
+        $this->pdf->setL6($seg->getAtividade());
+        $this->pdf->setL7($seg->getObservacao());
+        $this->pdf->setL8($seg->floatToStr('valorAluguel'));
+        $this->pdf->setL9($seg->getAdministradora()->getId(), '0');
+        $this->pdf->setL10();
         switch ($seg->getTipoCobertura()) {
             case '01':
                 $label = ' (Prédio)';
@@ -424,25 +472,42 @@ class Renovacao extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
-        $pdf->setL11($vlr, $label);
+        $this->pdf->setL11($vlr, $label);
         $tot = [
             $seg->floatToStr('premio'),
             $seg->floatToStr('premioLiquido'),
             $this->strToFloat($seg->getPremioLiquido() * $seg->getTaxaIof()),
             $seg->floatToStr('premioTotal')
         ];
-        $pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
+        $this->pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
         $par = [
             $seg->floatToStr('premioTotal'),
             $this->strToFloat($seg->getPremioTotal() / 2),
             $this->strToFloat($seg->getPremioTotal() / 3),
             $this->strToFloat($seg->getPremioTotal() / 12)
         ];
-        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
-        $pdf->setL14();
-        //$pdf->setObs($obs);
-        $pdf->Output();
+        $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
+        $this->pdf->setL14();
+        //$this->pdf->setObs($obs);
         
+    }
+    
+    public function sendPdf($opc=''){
+        switch ($opc) {
+            case '':
+                $this->pdf->Output();
+                break;
+            case 'D':
+                $this->pdf->Output($this->pdf->getNumSeguro(),'D');
+                break;
+            default:
+                $this->pdf->Output();
+                break;
+        }
+    }
+    
+    public function getObjectPdf(){
+        return $this->pdf;
     }
     
 }
