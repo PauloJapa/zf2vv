@@ -20,7 +20,18 @@ class ImprimirSeguro extends FPDF{
     private $U;
     private $HREF;
 
-    public function __construct($numSeguro='',$log='logoMaritima.png') {
+    public function __construct($numSeguro='',$lg=2) {
+        switch ($lg) {
+            case 2:
+                $log='logoMaritima.png';
+                break;
+            case 3:
+                $log='logo_allianz.jpg';
+                break;
+            default:
+                $log='logoMaritima.png';
+                break;
+        }
         $this->logoSeguradora = $log;
         $this->numSeguro =  $numSeguro;
         $this->FPDF();

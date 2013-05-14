@@ -1,0 +1,101 @@
+<h1>Resultado</h1>
+<br />
+<?php
+$coluns = array(
+    'Seq',
+    'U.E.',
+    'Administradora',
+    'Renovação',
+    'Orçamento',
+    'Ação'
+    );
+$td     = array(
+    'class="r"',
+    'class="r"',
+    '',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+
+$lambda = function($value,&$data)
+    {
+        echo "\t<td nowrap class='r'>",
+                '<span class="add-on hand" onClick="printProp(\'', $value, '\')"><i class="icon-print"></i> Imprimir Prosposta</span>',
+                '&nbsp;&nbsp;&nbsp;&nbsp;',
+                '<span class="add-on hand" onClick="sendEmail(\'', $value, '\')"><i class="icon-envelope"></i> Enviar Email</span>',
+             "</td>\n";   
+    };
+    
+$this->ViewIndex('setFuncEdit',$lambda); 
+
+
+$admCod = $renov  = $orcam  = $seq =  $totRenov =  $totOrcam = 0;
+$admNome  = '';
+foreach($this->data as $key => $arrayResul){
+    if($admCod == 0){
+        $admCod = $arrayResul['administradora']['id'];
+        $admNome = $arrayResul['administradora']['nome'];
+    }
+    //Adminitrador igual ao anterior acumula resutado
+    if($admCod == $arrayResul['administradora']['id']){
+        //Contagem separando em orçamento e renovação
+        if ( isset($arrayResul['fechadoOrigemId'])){
+            $renov ++; $totRenov ++;
+        }else{
+            $orcam ++; $totOrcam ++;
+        }
+    }else{ // Mudou adm exibe resulta e reseta valores
+        $seq ++;
+        echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $renov, $orcam, $admCod]));
+        $orcam = $renov = 0;
+        $admCod = $arrayResul['administradora']['id'];
+        $admNome = $arrayResul['administradora']['nome'];
+        //Contagem separando em orçamento e renovação 
+        if ( isset($arrayResul['fechadoOrigemId'])){
+            $renov ++; $totRenov ++;
+        }else{
+            $orcam ++; $totOrcam ++;
+        }
+    }
+}
+// ultima linha de registros
+$seq ++;
+echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $renov, $orcam, $admCod]));
+// Totaliza Dados
+echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totRenov, $totOrcam, $totOrcam + $totRenov]));
+
+echo $this->ViewIndex('close');
+
+?>
+<br />
+<table width="100%">
+    <tr>
+        <td align='center' width="33%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Enviar Todos" onclick="sendEmail()">            
+        </td>
+        <td align='center' width="33%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Imprimir Todos" onclick="printProp()">            
+        </td>
+        <td align='center'>
+            <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            
+        </td>
+    </tr>
+</table>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function printProp(adm){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'printProposta')); ?>";
+        envia(tar2, adm, null,'Proposta');
+    }  
+    function sendEmail(adm){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmail')); ?>";
+        envia(tar2, adm, null,'email');
+    }    
+</script>

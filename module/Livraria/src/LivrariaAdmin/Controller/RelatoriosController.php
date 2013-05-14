@@ -79,4 +79,61 @@ class RelatoriosController extends CrudController {
         return $viewModel;
     }
     
+    public function orcarenoAction() {
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $this->data = $this->getRequest()->getPost()->toArray();
+        if ((isset($this->data['subOpcao']))&&($this->data['subOpcao'] == 'buscar'))  {
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            $sessionContainer->data = $this->data;
+        }
+        $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());
+    }
+    
+    public function gerarOrcarenoAction(){
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->orcareno($data);
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->dataOrcareno = $this->paginator;
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());        
+    }
+    
+    public function sendEmailAction(){
+        
+        echo 'buuu';
+    }
+    
+    public function printPropostaAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        echo $data['subOpcao'];
+                
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if(!empty($sc->dataOrcareno))
+            return;
+
+        $admCod = $data['subOpcao'];
+        $srvOrcamento = $this->getServiceLocator()->get("Livraria\Service\Orcamento");
+        $srvRenovacao = $this->getServiceLocator()->get("Livraria\Service\Renovacao");
+        foreach($sc->dataOrcareno as $arrayResul){
+            if(!empty($admCod) AND $admCod != $arrayResul['administradora']['id']){
+                continue;
+            }
+            // Imprimi orçamento ou renovação
+            if ( isset($arrayResul['fechadoOrigemId'])){
+                $renov ++; $totRenov ++;
+            }else{
+                $orcam ++; $totOrcam ++;
+            }
+        }    
+    }
+    
 }

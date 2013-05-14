@@ -168,6 +168,55 @@ class Relatorio extends AbstractService{
         return $query->getQuery()->getArrayResult();
     }
     
+    public function orcareno($data){ 
+        if (empty($data['inicio']) OR empty($data['fim']))
+            return [];
+        
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.fim <= :fim AND o.status = :status';
+        $this->data['inicio'] = $data['inicio'];
+        $this->data['fim']    = $data['fim'];
+        $this->dateToObject('inicio');
+        $this->dateToObject('fim');
+        $this->parameters['inicio'] = $this->data['inicio'];
+        $this->parameters['fim']    = $this->data['fim'];
+        $this->parameters['status'] = 'A';
+        if($data['administradora']){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        
+        $merge = array_merge($this->getOrcareno('Orcamento'), $this->getOrcareno('Renovacao'));
+        foreach ($merge as $key => $value) {
+            $lista[$key] = $value['administradora']['id'];
+        }
+        array_multisort($lista, SORT_ASC, SORT_NUMERIC, $merge);
+        return $merge;
+    }
+    
+    public function getOrcareno($tabela){ 
+        // Monta a dql para fazer consulta no BD
+        $query = $this->em
+                ->createQueryBuilder()
+                ->select('o,ad')
+                ->from('Livraria\Entity\\' . $tabela, 'o')
+                ->join('o.user', 'u')
+                ->join('o.imovel', 'i')
+                ->join('i.endereco', 'e')
+                ->join('e.bairro', 'b')
+                ->join('e.cidade', 'c')
+                ->join('e.estado', 'uf')
+                ->join('o.locador', 'ld')
+                ->join('o.locatario', 'lc')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.seguradora', 's')
+                ->where($this->where)
+                ->setParameters($this->parameters)
+                ->orderBy('o.administradora', 'ASC');
+        
+        // Retorna um array com todo os registros encontrados
+        return $query->getQuery()->getArrayResult();
+    }
+    
 }
-
-

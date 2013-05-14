@@ -135,10 +135,13 @@ class ViewIndex extends AbstractHelper {
      * @param array $options
      */
     public function renderTfoot($options) {
-        $this->foot = $options;
+        $this->foot = $options['data'];
         echo "</tbody>\n<tfoot>\n<tr>\n";        
-        foreach ($this->foot as $value) {
-            echo "\t<td>$value</td>\n";
+        foreach ($this->foot as $key => $value) {
+            if(isset($options['css'][$key]))
+                echo "\t<td ", $options['css'][$key], ">", $value, "</td>", "\n";
+            else
+                echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", "\n";
         }        
         echo "<tr>\n</tfoot>\n";
     }

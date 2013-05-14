@@ -210,11 +210,17 @@ return array(
                 'controller' => 'index',
                 'action' => 'relatorios',
                 'pages' => array(
-                    'logs' => array(
+                    'relatorios1' => array(
                         'label' => 'Consulta Query',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'query',
+                    ),
+                    'relatorios2' => array(
+                        'label' => 'Orçamento/Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'orcareno',
                     ),
                 ),
             ),

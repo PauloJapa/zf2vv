@@ -389,7 +389,7 @@ class Renovacao extends AbstractService {
         }
         
         $num = 'Renovação/' . $seg->getId() . '/' . $seg->getCodano();
-        $pdf = new ImprimirSeguro($num);
+        $pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
         $pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $pdf->setL2($seg->getAdministradora()->getNome());
         $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
