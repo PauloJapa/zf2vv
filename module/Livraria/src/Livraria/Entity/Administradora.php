@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="administradoras")
  * @ORM\Entity(repositoryClass="Livraria\Entity\AdministradoraRepository")
  */
-class Administradora {
+class Administradora extends Filtro {
 
     /**
      * @ORM\Id

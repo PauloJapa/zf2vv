@@ -106,11 +106,6 @@ class RelatoriosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));        
     }
     
-    public function sendEmailAction(){
-        
-        echo 'buuu';
-    }
-    
     public function printPropostaAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
@@ -166,6 +161,88 @@ class RelatoriosController extends CrudController {
         }
         // Mandar arquivo para usuario fazer download
         $pdfObj->Output('Orcamento_Renovacao_' . $sc->data['inicio'] . '_' .  $sc->data['fim'] . '.pdf','D');
+    }
+    
+    public function sendEmailAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+                
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if(empty($sc->dataOrcareno))
+            return;
+
+        $sm = $this->getServiceLocator()->get('Livraria\Service\Email');
+        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        $admCodFiltro = $data['subOpcao'];
+        $admCod = $seq =  $totRenov =  $totOrcam = 0;
+        $admNome  = '';
+        $admEmai  = '';
+        $registros = [];
+        // Enviar email com a Relação de todas os orçamento e renovação não fechados
+        foreach($sc->dataOrcareno as $arrayResul){
+            if(!empty($admCodFiltro) AND $admCodFiltro != $arrayResul['administradora']['id']){
+                continue;
+            }
+            if($admCod != $arrayResul['administradora']['id']){
+                if($admEmai != 'NAO' AND $admCod != 0){
+                    $sm->enviaEmail(['nome' => $admNome, 
+                                     'email' => $admEmai, 
+                                     'subject' => 'E-mail de Seguro Todos Incêndio Locação',
+                                     'data' => $registros]);
+                }
+                $admCod    = $arrayResul['administradora']['id'];
+                $admNome   = $arrayResul['administradora']['nome'];
+                $admEmai   = $arrayResul['administradora']['email'];
+                $registros = [];
+                $seq = 0 ;
+            }
+            $registros[$seq][] = $arrayResul['refImovel'];
+            $registros[$seq][] = $arrayResul['inicio']->format('d/m/Y');
+            $registros[$seq][] = $arrayResul['locadorNome'];
+            $registros[$seq][] = $arrayResul['locatarioNome'];
+            $registros[$seq][] = $arrayResul['imovel']['rua'] . ', ' . $arrayResul['imovel']['numero']. ' ' . $arrayResul['imovel']['bloco']. ' ' . $arrayResul['imovel']['apto'];
+            $registros[$seq][] = isset($formaPagto[$arrayResul['formaPagto']]) ? $formaPagto[$arrayResul['formaPagto']]  : $arrayResul['formaPagto'];
+            $registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
+            $registros[$seq][] = isset($arrayResul['fechadoOrigemId']) ? 'Renovação' : 'Orçamento';
+            $seq++;
+//        var_dump($arrayResul);die;
+        }
+        if($admEmai != 'NAO' AND $admCod != 0){
+            $sm->enviaEmail(['nome' => $admNome, 
+                             'email' => $admEmai, 
+                             'subject' => 'E-mail de Seguro Todos Incêndio Locação',
+                             'data' => $registros]);
+        }
+        echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+    }
+    
+    /**
+     * Tela com filtros para gerar Reltorio exibir em tela e dowload para excel
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function custoRenovacaoAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());
+    }
+    
+    public function gerarCustoRenovacaoAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $this->paginator = $this->getEm()
+                     ->getRepository("Livraria\Entity\Renovacao")
+                     ->getCustoRenovacao($data);
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->dataOrcareno = $this->paginator;
+        $sc->data         = $data;
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));  
     }
     
 }

@@ -4,6 +4,7 @@ return array(
         'DoctrineModule',
         'DoctrineORMModule',
         'Livraria',
+        'SisBase',
     ),
     'module_listener_options' => array(
         'config_glob_paths'    => array(

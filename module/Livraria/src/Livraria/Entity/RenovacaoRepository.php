@@ -111,5 +111,49 @@ class RenovacaoRepository extends EntityRepository {
         
         return $query->getResult();
     }    
+    
+    public function getCustoRenovacao($data){
+        
+        if (empty($data['inicio']) OR empty($data['fim']))
+            return [];
+        
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.fim <= :fim AND o.status = :status';
+        $this->data['inicio'] = $data['inicio'];
+        $this->data['fim']    = $data['fim'];
+        $this->dateToObject('inicio');
+        $this->dateToObject('fim');
+        $this->parameters['inicio'] = $this->data['inicio'];
+        $this->parameters['fim']    = $this->data['fim'];
+        $this->parameters['status'] = 'F';
+        if($data['administradora']){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        
+        // Monta a dql para fazer consulta no BD
+        $query = $this->em
+                ->createQueryBuilder()
+                ->select('o,ad,i')
+                ->from('Livraria\Entity\Renovacao', 'o')
+                ->join('o.user', 'u')
+                ->join('o.imovel', 'i')
+                ->join('i.endereco', 'e')
+                ->join('e.bairro', 'b')
+                ->join('e.cidade', 'c')
+                ->join('e.estado', 'uf')
+                ->join('o.locador', 'ld')
+                ->join('o.locatario', 'lc')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.seguradora', 's')
+                ->where($this->where)
+                ->setParameters($this->parameters)
+                ->orderBy('o.administradora', 'ASC');
+        
+        // Retorna um array com todo os registros encontrados
+        $principalResul = $query->getQuery()->getArrayResult();
+        
+    }
 }
 

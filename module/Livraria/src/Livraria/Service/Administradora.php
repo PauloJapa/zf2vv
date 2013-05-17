@@ -21,6 +21,7 @@ class Administradora extends AbstractService {
     public function setReferences(){
         //Pega uma referencia do registro no doctrine 
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
+        if(!isset($this->data['validade']))$this->data['validade'] = '';
     }
     
     public function insert(array $data) {

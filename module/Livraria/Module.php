@@ -42,6 +42,8 @@ use LivrariaAdmin\Form\Taxa as TaxaFrm;
 use LivrariaAdmin\Form\ClasseAtividade as ClasseAtividadeFrm;
 use LivrariaAdmin\Form\Comissao as ComissaoFrm;
 use Livraria\Auth\Adapter as AuthAdapter;
+use Zend\Mail\Transport\Smtp as SmtpTransport;
+use Zend\Mail\Transport\SmtpOptions;
 
 class Module {
 
@@ -208,6 +210,18 @@ class Module {
                 },
                 'Livraria\Auth\Adapter' => function($service) {
                     return new AuthAdapter($service->get('Doctrine\ORM\EntityManager'));
+                },
+                'Livraria\Mail\Transport' => function($service) {
+                    $config = $service->get('Config');
+                    $transport = new SmtpTransport;
+                    $options = new SmtpOptions($config['mail']);
+                    $transport->setOptions($options);
+                    return $transport;
+                },
+                'Livraria\Service\Email' => function($service) {
+                    return new Service\Email($service->get('Doctrine\ORM\EntityManager'),
+                                             $service->get('Livraria\Mail\Transport'),
+                                             $service->get('View'));
                 },
             ),
         );

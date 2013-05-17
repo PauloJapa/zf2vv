@@ -1,0 +1,50 @@
+<p>
+Bom dia! 
+</p>
+<br />
+<br />
+    <? echo $this->nome;?>,
+<br />
+<br />
+<p>
+Segue relação de seguros não fechados.
+</p>
+<br />
+<br />
+<table style="border-top: solid #000 1px; border-left: solid #000 1px;"  cellspacing="0" cellpadding="0">
+    <thead>
+        <tr style="background-color: #d9d9d9;">
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Imóvel</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Vigência</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locador</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Endereço</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Forma Pagto.</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Premio</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+<? foreach ($this->data as $value) : ?>
+        <tr>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[0]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[1]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[2]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[3]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[5]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[6]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[7]; ?></td>
+        </tr>
+<? endforeach; ?>        
+    </tbody>        
+</table>
+<br />
+<p>
+    Atenciosamente,
+    <br />
+    <br />
+    <b>Vila Velha Corretora de Seguros</b>
+    <br />
+    (11) 3226-9708
+</p>

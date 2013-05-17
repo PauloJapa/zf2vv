@@ -222,6 +222,12 @@ return array(
                         'controller' => 'relatorios',
                         'action' => 'orcareno',
                     ),
+                    'relatorios3' => array(
+                        'label' => 'Custo Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'custoRenovacao',
+                    ),
                 ),
             ),
             'auditoria' => array(

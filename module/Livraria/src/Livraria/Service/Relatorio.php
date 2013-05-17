@@ -198,7 +198,7 @@ class Relatorio extends AbstractService{
         // Monta a dql para fazer consulta no BD
         $query = $this->em
                 ->createQueryBuilder()
-                ->select('o,ad')
+                ->select('o,ad,i')
                 ->from('Livraria\Entity\\' . $tabela, 'o')
                 ->join('o.user', 'u')
                 ->join('o.imovel', 'i')

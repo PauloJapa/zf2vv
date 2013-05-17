@@ -26,6 +26,8 @@ class Renovacao extends AbstractForm {
         
         $this->setInputText('fim', '*Fim', $attributes);
         
+        $this->setInputText('percent', 'Porcentagem', ['placeholder' => '%']);
+        
         $this->setInputSubmit('enviar', 'Buscar',['onClick' => 'return buscar()']);
     }
     
