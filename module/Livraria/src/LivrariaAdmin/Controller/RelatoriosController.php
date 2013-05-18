@@ -245,4 +245,13 @@ class RelatoriosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));  
     }
     
+    public function toExcel2Action(){
+        //ler Dados do cacheado da ultima consulta.
+        $sc = new SessionContainer("LivrariaAdmin");
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('data' => $sc->dataOrcareno));
+        $viewModel->setTerminal(true);
+        return $viewModel;
+    }
+    
 }

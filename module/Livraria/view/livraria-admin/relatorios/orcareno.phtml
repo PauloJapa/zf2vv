@@ -2,16 +2,16 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Busca com base na data inico da vigência:'],'inicio',$this, $form),
-    "<td>\r",
+    "<td>",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
         $this->FormDefault(['inicio' => 'calend']),
     "</td>\r",
 "</tr><tr>\r",
-    "<td>\r",
+    "<td>",
         $this->FormDefault(['fim' => 'calend']),
     "</td>\r",
 "</tr><tr>\r",
-    "<td>\r",
+    "<td>",
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
     "</td>\r",
 

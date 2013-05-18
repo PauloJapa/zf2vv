@@ -1,0 +1,61 @@
+<?php
+//Montar tabela para exibição xls.
+$tabela_dados = "\n<table cellpadding='0' cellspacing='0' border='0' id='table'>\n<thead>\n<tr>\n" ;
+
+if(empty($this->data)){
+    echo '<tr><td>Nenhum resultado foi encontrado!!!!</td></tr></table>';
+    exit();    
+}
+$coluns = array(
+    'Seq',
+    'Cod',
+    'U.E.',
+    'Refer.',
+    'Locador',
+    'Locatario',
+    'Forma Pagto',
+    'Premio',
+    'Premio Total',
+    'Forma Pagto',
+    'Premio',
+    'Premio Total',
+    'Perc.%',
+    'Atividade'
+    );
+
+//Montar cabeçalho
+foreach ($coluns as $value) {
+    $tabela_dados .= "<th nowrap>" . $value . "</th>\n";
+}
+
+//Adicionando todas as colunas no vetor para exibição das linhas
+$tabela_dados .= "</tr>\n</thead>\n<tbody>\n";
+$cor = "";
+
+foreach($this->data as $arrayCols){
+    // Decide cor da linha
+    if($cor == "background:#B9FFB9;"){
+        $cor = "";
+    }else{
+        $cor = "background:#B9FFB9;";
+    }
+    $tabela_dados .= "<tr>\n" ;
+    foreach ($arrayCols as $cel) {
+        $align = "align='left'";
+        //Colocar um traço para celula vazia
+        if($cel == ""){
+            $cel = "-";
+            $align = "align='center'";
+        }
+        $tabela_dados .= "\t<td nowrap $align style='" . $cor . "'>" . $cel . "</td>\n" ;
+    }
+    $tabela_dados .= "</tr>\n" ;
+}
+//Nome do arquivo
+$filename = "Custo_Renovacao_" . date('d-m-Y_H-i-s');
+//XLS - exibe a tabela pronta em html para XLS
+header("Content-Type:  application/vnd.ms-excel; charset=UTF-8; encoding=UTF-8");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header ("Content-Disposition: attachment; filename=\"".$filename.".xls\"" );
+print(utf8_decode($tabela_dados));

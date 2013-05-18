@@ -1,0 +1,69 @@
+<h1>Resultado Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
+<br />
+<?php
+$coluns = array(
+    'Seq',
+    'Cod',
+    'U.E.',
+    'Refer.',
+    'Locador',
+    'Locatario',
+    'Forma Pagto',
+    'Premio',
+    'Premio Total',
+    'Forma Pagto',
+    'Premio',
+    'Premio Total',
+    'Perc.%',
+    'Atividade'
+    );
+$td     = array(
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    '',
+    '',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    'class="r" nowrap',
+    'class="r"',
+    '',
+);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => false));
+
+foreach($this->data as $lines){
+    echo $this->ViewIndex('line',array('data' => $lines));
+}
+// Totaliza Dados
+//echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totRenov, $totOrcam, $totOrcam + $totRenov]));
+
+echo $this->ViewIndex('close');
+
+?>
+<br />
+<table width="100%">
+    <tr>
+        <td align='center' width="50%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel" onclick="toExcel()">            
+        </td>
+        <td align='center'>
+            <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            
+        </td>
+    </tr>
+</table>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function toExcel(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcel2')); ?>";
+        envia(tar,'editar',null,'excel');
+    }    
+</script>

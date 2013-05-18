@@ -26,6 +26,13 @@ class Renovacao extends AbstractForm {
         
         $this->setInputText('fim', '*Fim', $attributes);
         
+        $comando = [
+            "==" => "Extamente Igual a",
+            ">=" => "Igual ou Maior que",
+            "<=" => "Igual ou Menor que",
+        ];
+        $this->setInputSelect('comando', 'Instrução', $comando);
+        
         $this->setInputText('percent', 'Porcentagem', ['placeholder' => '%']);
         
         $this->setInputSubmit('enviar', 'Buscar',['onClick' => 'return buscar()']);

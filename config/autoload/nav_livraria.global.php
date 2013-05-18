@@ -228,6 +228,12 @@ return array(
                         'controller' => 'relatorios',
                         'action' => 'custoRenovacao',
                     ),
+                    'relatorios4' => array(
+                        'label' => 'Mapa de Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'mapaRenovacao',
+                    ),
                 ),
             ),
             'auditoria' => array(
