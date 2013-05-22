@@ -1,0 +1,73 @@
+<h1>Resultado Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
+<br />
+<?php
+$coluns = array(
+    'Seq',
+    'U.E.',
+    'Administradora',
+    'Quant. Seguros',
+    'Prêmio'
+    );
+$td     = array(
+    'class="r"',
+    'class="r"',
+    '',
+    'class="r"',
+    'class="r"',
+);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => false));
+
+$admCod = $fechado = $totFechado = $seq =  $totPremio =  $premio = 0;
+$admNome  = '';
+foreach($this->data as $key => $arrayResul){
+    // Mudou adm exibe resulta e reseta valores
+    if($admCod != $arrayResul['administradora']['id']){
+        if($admCod != 0){
+            $seq ++;
+            echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $fechado, number_format($premio, 2, ',', '.')]));
+        }
+        $fechado = $premio = 0;
+        $admCod  = $arrayResul['administradora']['id'];
+        $admNome = $arrayResul['administradora']['nome'];
+    }
+    //Adminitradora acumula resutado
+    //Contagem separando em orçamento e renovação 
+        $fechado    ++; 
+        $totFechado ++;
+        $premio     += $arrayResul['premioTotal'];
+        $totPremio  += $arrayResul['premioTotal'];
+}
+// ultima linha de registros
+$seq ++;
+echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $fechado, number_format($premio, 2, ',', '.')]));
+// Totaliza Dados
+echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totFechado, number_format($totPremio, 2, ',', '.')]));
+
+echo $this->ViewIndex('close');
+
+?>
+<br />
+<table width="100%">
+    <tr>
+        <td align='center'>
+            <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            
+        </td>
+    </tr>
+</table>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function printProp(adm){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'printProposta')); ?>";
+        envia(tar2, adm);
+        return false;
+    }  
+    function sendEmail(adm){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmail')); ?>";
+        envia(tar2, adm, null,'email');
+    }    
+</script>

@@ -219,4 +219,32 @@ class Relatorio extends AbstractService{
         return $query->getQuery()->getArrayResult();
     }
     
+    public function mapaRenovacao($data){
+        //Trata os filtro para data anual
+        $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
+        $this->dateToObject('inicio');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
+        $this->data['fim']->sub(new \DateInterval('P1D'));
+        
+        //Trata os filtro para data mensal
+        $this->data['mes'] = intval($data['mesFiltro']);
+        $this->data['inicioMensal'] = '01/' . date('m') . '/' . date('Y');
+        $this->dateToObject('inicioMensal');
+        $this->data['fimMensal'] = clone $this->data['inicioMensal'];
+        $this->data['fimMensal']->add(new \DateInterval('P1M'));
+        $this->data['fimMensal']->sub(new \DateInterval('P1D'));
+
+        //Filtro para ambos os casos
+        $this->data['administradora'] = $data['administradora'];
+        $this->data['anual'] = isset($data['anual']) ? TRUE : FALSE;
+        $this->data['mensal'] = isset($data['mensal']) ? TRUE : FALSE;
+        
+        return $this->em->getRepository("Livraria\Entity\Fechados")->getMapaRenovacao($this->data); 
+    }
+    
+    public function getFiltroTratado($index){
+        return isset($this->data[$index]) ? $this->data[$index] : false ;
+    }
+    
 }

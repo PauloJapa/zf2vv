@@ -28,9 +28,17 @@
                   ->prependFile($this->basePath() . '/js/dhtmlgoodies_calendar.js') , "\n";
         ?>
         <script type="text/javascript" src="/js/jquery.maskMoney.js"></script>
+<style type="text/css" media="print">
+    .quebra    { 
+        page-break-before: always ;
+    }
+    .noPrint {
+        display: none;
+    }
+</style>
     </head>
     <body>
-        <div class="navbar navbar-fixed-top">
+        <div class="navbar navbar-fixed-top noPrint">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -54,11 +62,13 @@
         </div>
         <div class="container">
 <?php echo $this->content; ?>
-            <hr>
-            <footer>
-                <p>PC Watakabe Sistemas</p>
-                <? if($user) echo '<p>', $user->getNome(),' ', $user->getEmail(),' ', $user->getTipo(), '</p>' ;  ?>
-            </footer>
+            <div id="footerLayout" class="noPrint">
+                <hr>
+                <footer>
+                    <p>PC Watakabe Sistemas</p>
+                    <? if($user) echo '<p>', $user->getNome(),' ', $user->getEmail(),' ', $user->getTipo(), '</p>' ;  ?>
+                </footer>
+            </div>
         </div> <!-- /container -->
 <?php echo $this->inlineScript() ?>
     </body>

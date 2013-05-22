@@ -161,5 +161,35 @@ class FechadosController extends CrudController {
         
         $this->getServiceLocator()->get($this->service)->getPdfSeguro($data['id']);
     }
+    
+    public function buscarAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());        
+    }
+    
+    public function listarAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $this->data = $this->getRequest()->getPost()->toArray();
+        $sessionContainer = new SessionContainer("LivrariaAdmin");
+        $sessionContainer->data = $this->data;
+        
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        $viewData = $this->getParamsForView();
+        $viewData['data'] = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findFechados($this->data);
+        if(empty($this->data['fim'])){
+            $this->data['fim'] = '1 mês subsequente';
+        }
+        $viewData['date'] = $this->data;
+        return new ViewModel($viewData);
+        
+    }
+            
 
 }

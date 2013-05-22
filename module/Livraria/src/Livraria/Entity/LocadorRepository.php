@@ -64,8 +64,10 @@ class LocadorRepository extends EntityRepository {
         //cria variaveis cpf e cnpj
         $filtros['cpf'] = '';
         $filtros['cnpj'] = '';
+        if(!isset($filtros['nome']))
+            $filtros['nome'] = '';
         //Monta parametros se conteudo for vazio ele coloca um espaco e depois acresente o coringa '%'
-        $paramentros['locador'] =$filtros['nome'] == '' ? ' ' : $filtros['nome'] . '%';
+        $paramentros['locador'] = $filtros['nome'] == '' ? ' ' : $filtros['nome'] . '%';
         $where = '';
         if (!empty($filtros['documento'])) {
             $filtros[$filtros['cpfOuCnpj']] = $filtros['documento'];

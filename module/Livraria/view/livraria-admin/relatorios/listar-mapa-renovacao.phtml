@@ -1,0 +1,141 @@
+<style type="text/css" media="print">
+   @page land {
+     size: landscape;
+   }
+    .F1 {
+        font-size: 10px;
+    }
+</style>
+<style>
+    .Br {
+        border-right:  #333 solid 1px ;
+    }
+    .Bl {
+        border-left:   #333 solid 1px ;
+    }
+    .Bt {
+        border-top:    #333 solid 1px ;
+    }
+    .Bb {
+        border-bottom: #333 solid 1px ;
+    }
+</style>
+<div class="noPrint">
+    <h1>Vencimento de seguro por U.E. (Unidade Externa)</h1>
+</div>
+<?  
+    $itens = 5;
+    $atual =  0;
+    $ate   =  5;
+    $pagCss = '';
+    $admCod =  0;
+    $admNom =  '';
+    $fazTable = false;
+    foreach($this->data as $array): 
+        $atual++;      
+        if($atual == $ate){
+            $ate += $itens;
+            $fazTable = TRUE;
+        }else{
+            $fazTable = FALSE;
+        }
+        if($admCod != $array['administradora']['id'] OR $fazTable):
+            if($admCod != 0){
+                echo '</table>';
+                $pagCss = ' class="quebra"';
+            }  
+            $admCod = $array['administradora']['id'];
+            $admNom = $array['administradora']['nome'];
+            $atual = 0 ;
+            $itens = 8 ;
+            $ate   =  7;
+?>
+<table style="width: 100% ;" <? echo $pagCss ; ?>>
+    <tr>
+        <td><img src="<?php echo $this->basePath(),'/images/logo_vila_velha_seguros.png'; ?>" /></td>
+        <td>
+            <table style="width: 100% ;">
+                <tr>
+                    <td><h2>Vencimento de seguro por U.E.</h2></td>
+                </tr>
+                <tr>                
+                    <td>
+                        <table style="width: 100% ;">
+                            <tr>
+                                <td class="Bl Bb Bt"><strong>Tipo de Seleção</strong><br>Fim da Vigência</td>
+                                <td class="Bl Bb Bt"><strong>Tipo de Cobertua</strong><br>Renovação</td>
+                                <td class="Bl Bb Bt"><strong>Período</strong><br><? echo $this->date['inicio']->format('d/m/Y'), 'a', $this->date['fim']->format('d/m/Y'); ?></td>
+                                <td class="Bl Bb Bt"><strong>Administradora</strong><br><? echo $admCod, ' - ', $admNom; ?></td>
+                                <td class="Bl Bb Bt"><strong>Cód. Ger.</strong><br></td>
+                                <td class="Bl Bb Bt"><strong>U.I.</strong><br></td>
+                                <td class="Bl Bb Bt"><strong>Data</strong><br></td>
+                                <td class="Bl Bb Bt Br"><br></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table class="Bt Bb"  style="width: 100% ;">
+<tr>
+	<th class="Bl">Ref. do Imóvel</th>
+	<th class="Bl">Vigência Inicial</th>
+	<th class="Bl">Local Segurado</th>
+	<th class="Bl">Locatário</th>
+	<th class="Bl">Incêncio Loc.</th>
+	<th class="Bl">Perda Aluguel</th>
+	<th class="Bl">Danos Elétricos</th>
+	<th class="Bl">Vendaval</th>
+	<th class="Bl">Valor Parc.</th>
+	<th class="Bl">Parc.</th>
+	<th class="Bl Br">Prêmio</th>
+<tr>            
+<?  
+        endif;
+?>
+<tr>
+	<td nowrap class="Bl Bb Bt" align="center"><? echo $array['refImovel'] ?></td>
+	<td nowrap class="Bl Bb Bt"><? echo $array['inicio']->format('d/m/Y') ?></td>
+	<td class="Bl Bb Bt F1"><? echo $array['imovel']['rua'] ?></td>
+	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
+        <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['incendio'], 2, ',', '.') ?></td>
+        <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['aluguel'], 2, ',', '.') ?></td>
+        <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['eletrico'], 2, ',', '.') ?></td>
+        <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['vendaval'], 2, ',', '.') ?></td>
+	<td nowrap class="Bl Bb Bt"><? echo $array['formaPagto'] ?></td>
+	<td nowrap class="Bl Bb Bt" align="right"><? echo $array['premioTotal'] ?></td>
+        <td nowrap class="Bl Bb Bt Br" align="right"><? echo number_format($array['premioTotal'], 2, ',', '.') ?></td>
+</tr>  
+<tr>
+	<td nowrap class="Bl">Ref. do Imóvel</td>
+	<td nowrap colspan="2">____________ Valor do Aluguel: <? echo number_format($array['valorAluguel'], 2, ',', '.') ?></td>
+	<td nowrap colspan="2">Valor do Aluguel Corrigido: _________________________</td>
+	<td nowrap class="Br" colspan="6">Imóvel Vago(__) &nbsp;&nbsp;Não Administramos(__) &nbsp;&nbsp;Sem Alteração (__)</td>
+</tr>  
+<tr>
+	<td nowrap class="Bl Bb">Ocupação</td>
+	<td nowrap class="Bb" colspan="2"><? echo $array['atividade']['descricao'] ?></td>
+	<td nowrap class="Br Bb" colspan="8">Ocupação Corrigida: _____________________________________________________</td>
+</tr>  
+<tr>  
+    <td colspan="11"></td>
+</tr>  
+<? endforeach; ?>
+</table>
+
+<div align='center' class="noPrint">
+    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Gerar Mapeamento" onclick="return gerarMapa()">
+</div>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    function gerarMapa(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarMapa')); ?>";
+        envia(tar,'gerar');        
+    }
+</script>

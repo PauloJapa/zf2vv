@@ -112,16 +112,21 @@ class RenovacaoRepository extends AbstractRepository {
     }    
     
     public function getCustoRenovacao($data){
-        
-        if (empty($data['inicio']) OR empty($data['fim']))
+         
+        if (empty($data['inicio']))
             return [];
         
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
         $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
-        $this->parameters['inicio'] = $this->dateToObject($data['inicio']);
-        $this->parameters['fim']    = $this->dateToObject($data['fim']);
+        $this->parameters['inicio']  = $this->dateToObject($data['inicio']);
+        if (!empty($data['fim'])){
+            $this->parameters['fim'] = $this->dateToObject($data['fim']);
+        }else{
+            $this->parameters['fim'] = clone $this->parameters['inicio'];
+            $this->data['fim']->add(new \DateInterval('P1M')); 
+        }
         $this->parameters['status'] = 'F';
-        if($data['administradora']){
+        if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
         }

@@ -254,4 +254,38 @@ class RelatoriosController extends CrudController {
         return $viewModel;
     }
     
+    /**
+     * Tela de filtro para gerar Relatorio do Mapa da renovação
+     * @return \Zend\View\Model\ViewModel
+     */    
+    public function mapaRenovacaoAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
+        $this->formData->setMapaRenovacao();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());        
+    }
+    
+    /**
+     * Tela que Lista os seguros a serem renovados com base nos filtros do usurio
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function listarMapaRenovacaoAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->mapaRenovacao($data);
+        $data['inicio'] = $service->getFiltroTratado('inicio');
+        $data['fim']    = $service->getFiltroTratado('fim');
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->mapaRenovacao = $this->paginator;
+        $sc->data          = $data;
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));  
+    }
+    
 }
