@@ -5,6 +5,7 @@ namespace Livraria\Service;
 use Doctrine\ORM\EntityManager;
 use Zend\Authentication\AuthenticationService,
     Zend\Authentication\Storage\Session as SessionStorage;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * AbstractService
@@ -243,6 +244,96 @@ class Relatorio extends AbstractService{
         return $this->em->getRepository("Livraria\Entity\Fechados")->getMapaRenovacao($this->data); 
     }
     
+    /**
+     * Trata os filtros e carrega os dados do repository
+     * @param array $data
+     * @return array
+     */
+    public function listaImoDesoc($data){
+        $this->data = $data;
+        
+        if(empty($this->data['inicio'])){
+            return array();
+        }
+        
+        $this->dateToObject('inicio');
+        
+        if(empty($this->data['fim'])){
+            $this->data['fim'] = clone $this->data['inicio'];
+            $this->data['fim']->add(new \DateInterval('P1M'));
+            $this->data['fim']->sub(new \DateInterval('P1D'));
+        }else{
+            $this->dateToObject('fim');
+        }
+        
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->ImoveisDesocu = $this->em->getRepository("Livraria\Entity\Fechados")->getImoveisDesocupados($this->data); 
+        $sc->data          = $data;
+        
+        return $sc->ImoveisDesocu;       
+    }
+    
+    /**
+     * Faz envio de email para imobiliaria com os imoveis desocupaos
+     * Recebe o service locator para poder pegar o servido e email com suas dependencias
+     * Recebe Filtro para administradoras
+     * @param object $sl
+     * @param string $admCod
+     * @return boolean
+     */
+    public function sendEmailImoveisDesocupados($sl,$admFiltro='') {
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if (empty($sc->ImoveisDesocu))
+            return FALSE;
+
+        $servEmail = $sl->get('Livraria\Service\Email');
+
+        $admCod  = 0;
+        foreach ($sc->ImoveisDesocu as $value) {
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['nome']) == 'NAO' OR empty($value['administradora']['nome'])){
+                continue; 
+            }
+            //Filtro Administrador
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            //se mudar adm faz envio e reseta os valores
+            if($admCod != $value['administradora']['id']){
+                if($admCod != 0){
+                    $servEmail->enviaEmail(['nome' => $admNom,
+                        'email' => $admEmai,
+                        'subject' => 'Imóveis Desocupados do Incêndio Locação',
+                        'data' => $data],'imovel-desocupado');                     
+                }
+                $admCod  = $value['administradora']['id'];
+                $admNom  = $value['administradora']['nome'];
+                $admEmai = $value['administradora']['email'];
+                $data    = [];              
+                $i       = 0;
+            }
+            //Faz o acumulo dos dados.
+            $data[$i][] = $value['inicio']->format('d/m/Y');
+            $data[$i][] = $value['fim']->format('d/m/Y');
+            $data[$i][] = $value['locatarioNome'];
+            $data[$i][] = $value['locadorNome'];
+            $data[$i][] = $value['imovel']['rua'] . ', n ' . $value['imovel']['numero'] . $value['imovel']['bloco'] . $value['imovel']['apto'];
+            $i++;
+        }
+        
+        //Envia ultima administradora se houver
+        if($admCod != 0){
+            $servEmail->enviaEmail(['nome' => $admNom,
+                'email' => $admEmai,
+                'subject' => 'E-mail de Seguro Todos Incêndio Locação',
+                'data' => $data],'imovel-desocupado');                     
+        }
+        
+        return true;
+    }
+
     public function getFiltroTratado($index){
         return isset($this->data[$index]) ? $this->data[$index] : false ;
     }

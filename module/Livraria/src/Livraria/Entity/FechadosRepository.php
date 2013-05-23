@@ -44,6 +44,27 @@ class FechadosRepository extends AbstractRepository {
     }
     
     /**
+     * Executa a query que é a mesma para Mensal, Anual e Imoveis Desocupados do mapa de renovação.
+     * @return array
+     */
+    public function executaQuery1(){
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,im')
+                ->from('Livraria\Entity\Fechados', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'im')
+                ->where($this->where)
+                ->setParameters($this->parameters)
+                ->orderBy('o.administradora')
+                ->groupBy('o.imovel'); 
+        // Retorna um array com todo os registros encontrados        
+        return $query->getQuery()->getArrayResult();
+    }
+    
+    /**
      * Faz consulta mensal ou anual ou ambas juntando em um unico array reordenado 
      * @param array $data
      * @return array
@@ -104,19 +125,37 @@ class FechadosRepository extends AbstractRepository {
         return $this->executaQueryMapaRenovacao();
     }
     
+    /**
+     * Executa a query que é a mesma para Mensal, Anual do mapa de renovação.
+     * @return array
+     */
     public function executaQueryMapaRenovacao(){
-        // Monta a dql para fazer consulta no BD
-        $query = $this->getEntityManager()
-                ->createQueryBuilder()
-                ->select('o,ad,at,im')
-                ->from('Livraria\Entity\Fechados', 'o')
-                ->join('o.administradora', 'ad')
-                ->join('o.atividade', 'at')
-                ->join('o.imovel', 'im')
-                ->where($this->where)
-                ->setParameters($this->parameters)
-                ->orderBy('o.administradora'); 
         // Retorna um array com todo os registros encontrados        
-        return $query->getQuery()->getArrayResult();
+        return $this->executaQuery1();
+    }
+    
+    public function getImoveisDesocupados($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND (o.atividade = :des1 OR o.atividade = :des2 OR o.atividade = :des3)';
+        $this->parameters['inicio']  = $data['inicio'];
+        $this->parameters['fim']     = $data['fim'];
+        $this->parameters['des1']    = 312;
+        $this->parameters['des2']    =  86;
+        $this->parameters['des3']    =  89;
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQueryImoveisDesocupados();
+    }
+    
+    /**
+     * Executa a query para pegar imoveis desocupados.
+     * @return array
+     */
+    public function executaQueryImoveisDesocupados(){
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery1();
     }
 }

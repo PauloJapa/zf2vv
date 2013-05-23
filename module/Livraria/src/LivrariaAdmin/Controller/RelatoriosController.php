@@ -279,13 +279,63 @@ class RelatoriosController extends CrudController {
         $this->paginator = $service->mapaRenovacao($data);
         $data['inicio'] = $service->getFiltroTratado('inicio');
         $data['fim']    = $service->getFiltroTratado('fim');
+        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
         //Guardar dados do resultado 
         $sc = new SessionContainer("LivrariaAdmin");
         $sc->mapaRenovacao = $this->paginator;
         $sc->data          = $data;
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));  
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));  
+    }
+    
+    /**
+     * Tela inicial para gerar Relatórios de imoveis Desocupados
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function imoveisDesocupadosAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
+        $this->formData->setImovelDesocupado();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());         
+    }
+    
+    public function listarImoveisDesocupadosAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->listaImoDesoc($data);
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));         
+    }
+    
+    public function sendEmailImoDesoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar servico que gerou os registro 
+        $service = new $this->service($this->getEm());
+        //Passa o localizador de serviço para pegar o servico de email e fazer o envio de email
+        $resul = $service->sendEmailImoveisDesocupados($this->getServiceLocator(),$data['id']);
+        if($resul){
+            echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+        }else{
+            echo '<h2>Erro !! Feche esta janela e tente novamente !!</h2>';
+        }        
+    }
+    
+    public function toExcelImoDesoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //ler Dados do cacheado da ultima consulta.
+        $sc = new SessionContainer("LivrariaAdmin");
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('data' => $sc->ImoveisDesocu,'admFiltro' => $data['id']));
+        $viewModel->setTerminal(true);
+        return $viewModel;        
     }
     
 }

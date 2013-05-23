@@ -234,6 +234,18 @@ return array(
                         'controller' => 'relatorios',
                         'action' => 'mapaRenovacao',
                     ),
+                    'relatorios5' => array(
+                        'label' => 'Imóveis Desocupados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'imoveisDesocupados',
+                    ),
+                    'relatorios6' => array(
+                        'label' => 'Fechamento de Seguro',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'fechamentoSeguro',
+                    ),
                 ),
             ),
             'auditoria' => array(

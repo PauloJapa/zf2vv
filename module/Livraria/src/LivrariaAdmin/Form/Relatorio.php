@@ -92,5 +92,19 @@ class Relatorio  extends AbstractForm {
         $this->setInputText('administradoraDesc', 'Administradora', ['placeholder' => 'Pesquise digitando ou em branco para Todas!','onKeyUp' => 'autoCompAdministradora();', 'autoComplete' => 'off']);
         
     }
+    
+    public function setImovelDesocupado(){
+        $this->setInputHidden('administradora');
+        $attributes = ['placeholder' => 'Pesquise digitando a Administradora aqui!',
+                       'onKeyUp' => 'autoCompAdministradora();',
+                       'class' => 'input-xmlarge',
+                       'autoComplete'=>'off'];        
+        $this->setInputText('administradoraDesc', 'Pertence a administradora', $attributes); 
+
+        $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
+        $this->setInputText('inicio', '*Inicio', $attributes);
+        
+        $this->setInputText('fim', '*Fim', $attributes);
+    }
  
 }
