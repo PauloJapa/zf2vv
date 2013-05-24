@@ -293,7 +293,7 @@ class Relatorio extends AbstractService{
         $admCod  = 0;
         foreach ($sc->ImoveisDesocu as $value) {
             //caso venha configurado para nao enviar email ou vazio
-            if(strtoupper($value['administradora']['nome']) == 'NAO' OR empty($value['administradora']['nome'])){
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
                 continue; 
             }
             //Filtro Administrador
@@ -327,13 +327,106 @@ class Relatorio extends AbstractService{
         if($admCod != 0){
             $servEmail->enviaEmail(['nome' => $admNom,
                 'email' => $admEmai,
-                'subject' => 'E-mail de Seguro Todos Incêndio Locação',
+                'subject' => 'Imóveis Desocupados do Incêndio Locação',
                 'data' => $data],'imovel-desocupado');                     
         }
         
         return true;
     }
+    
+    /**
+     * Trata os filtros e faz consulta no BD e cachea o resultado
+     * @param array $data
+     * @return array
+     */
+    public function listaFechaSeguro($data){
+        $this->data = $data;
+        
+        if(empty($this->data['inicio'])){
+            return array();
+        }        
+        $this->dateToObject('inicio');
+        
+        if(empty($this->data['fim'])){
+            $this->data['fim'] = clone $this->data['inicio'];
+            $this->data['fim']->add(new \DateInterval('P1M'));
+            $this->data['fim']->sub(new \DateInterval('P1D'));
+        }else{
+            $this->dateToObject('fim');
+        }        
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->fechaSeguro = $this->em->getRepository("Livraria\Entity\Fechados")->getListaFechaSeguro($this->data); 
+        $sc->data        = $data;
+        
+        return $sc->fechaSeguro;          
+    }
+    
+    /**
+     * Faz envio de email para imobiliaria com os seguros fechados
+     * Recebe o service locator para poder pegar o servido e email com suas dependencias
+     * Recebe Filtro para administradoras
+     * @param object $sl
+     * @param string $admCod
+     * @return boolean
+     */
+    public function sendEmailSegurosFechado($sl,$admFiltro=''){
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if (empty($sc->fechaSeguro))
+            return FALSE;
 
+        $servEmail = $sl->get('Livraria\Service\Email');
+        $formaPagto = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+
+        $admCod  = 0;
+        foreach ($sc->fechaSeguro as $value) {
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
+                continue; 
+            }
+            //Filtro Administrador
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            //se mudar adm faz envio e reseta os valores
+            if($admCod != $value['administradora']['id']){
+                if($admCod != 0){
+                    $servEmail->enviaEmail(['nome' => $admNom,
+                        'email' => $admEmai,
+                        'subject' => 'Seguro(s) Fechado(s) do Incêndio Locação',
+                        'data' => $data],'seguro-fechado');                     
+                }
+                $admCod  = $value['administradora']['id'];
+                $admNom  = $value['administradora']['nome'];
+                $admEmai = $value['administradora']['email'];
+                $data    = [];              
+                $i       = 0;
+            }
+            //Faz o acumulo dos dados.
+            $data[$i][] = $value['id'];
+            $data[$i][] = $value['locatarioNome'];
+            $data[$i][] = $value['inicio']->format('d/m/Y');
+            $data[$i][] = $value['fim']->format('d/m/Y');
+            $data[$i][] = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
+            $data[$i][] = number_format($value['premioTotal'], 2, ',', '.');
+            $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
+            $i++;
+        }
+        
+        //Envia ultima administradora se houver
+        if($admCod != 0){
+            $servEmail->enviaEmail(['nome' => $admNom,
+                'email' => $admEmai,
+                'subject' => 'Seguro(s) Fechado(s) do Incêndio Locação',
+                'data' => $data],'seguro-fechado');                     
+        }
+        
+        return true;
+        
+    }
+
+    
     public function getFiltroTratado($index){
         return isset($this->data[$index]) ? $this->data[$index] : false ;
     }

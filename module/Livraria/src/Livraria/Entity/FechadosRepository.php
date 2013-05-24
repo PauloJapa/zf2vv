@@ -47,7 +47,7 @@ class FechadosRepository extends AbstractRepository {
      * Executa a query que é a mesma para Mensal, Anual e Imoveis Desocupados do mapa de renovação.
      * @return array
      */
-    public function executaQuery1(){
+    public function executaQuery1($orderBy='', $groupBy=''){
         // Monta a dql para fazer consulta no BD
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
@@ -57,9 +57,16 @@ class FechadosRepository extends AbstractRepository {
                 ->join('o.atividade', 'at')
                 ->join('o.imovel', 'im')
                 ->where($this->where)
-                ->setParameters($this->parameters)
-                ->orderBy('o.administradora')
-                ->groupBy('o.imovel'); 
+                ->setParameters($this->parameters);
+        
+        if(!empty($orderBy)){
+            $query->orderBy($orderBy);
+        }
+        
+        if(!empty($groupBy)){
+            $query->groupBy($groupBy);
+        }
+        
         // Retorna um array com todo os registros encontrados        
         return $query->getQuery()->getArrayResult();
     }
@@ -131,9 +138,14 @@ class FechadosRepository extends AbstractRepository {
      */
     public function executaQueryMapaRenovacao(){
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery1();
+        return $this->executaQuery1('o.administradora');
     }
     
+    /**
+     * Fazer pesquisa no BD com os Filtros passados.
+     * @param array $data
+     * @return array
+     */
     public function getImoveisDesocupados($data){
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
         $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND (o.atividade = :des1 OR o.atividade = :des2 OR o.atividade = :des3)';
@@ -156,6 +168,24 @@ class FechadosRepository extends AbstractRepository {
      */
     public function executaQueryImoveisDesocupados(){
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery1();
+        return $this->executaQuery1('o.administradora','o.imovel');
+    }
+
+    /**
+     * Gerar listagem de seguros fechados no periodo passado
+     * @param array $data
+     * @return array
+     */
+    public function getListaFechaSeguro($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim';
+        $this->parameters['inicio'] = $data['inicio'];
+        $this->parameters['fim']    = $data['fim'];
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery1('o.administradora');        
     }
 }

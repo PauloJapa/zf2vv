@@ -1,0 +1,52 @@
+<p>
+Bom dia! 
+</p>
+<br />
+<br />
+    <strong><? echo $this->nome;?>,</strong>
+<br />
+<br />
+<p>
+    Abaixo resumo da próxima faturaa ser paga de incêndion locação, para devida conferência e eventuais alterações, que poderão ser 
+    feitas dentro dos próximos 02 dias a contar da data de envio deste e-mail.
+</p>    
+<br />
+<br />
+<table style="border-top: solid #000 1px; border-left: solid #000 1px;"  cellspacing="0" cellpadding="0">
+    <thead>
+        <tr style="background-color: #d9d9d9;">
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Codigo</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Início Vigência</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Fim Vigência</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Forma Pagto</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Prêmio</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Parcela</th>
+        </tr>
+    </thead>
+    <tbody>
+<? foreach ($this->data as $value) : ?>
+        <tr>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[0]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[1]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[2]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[3]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[5]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[6]; ?></td>
+        </tr>
+<? endforeach; ?>        
+    </tbody>        
+</table>
+<br />
+<br />
+<p>
+    Atenciosamente,
+    <br />
+    <br />
+    <b>Vila Velha Corretora de Seguros</b>
+    <br />
+    Departamento Incêndio Locação
+    <br />
+    (11) 3226-9708
+</p>

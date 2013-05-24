@@ -1,0 +1,42 @@
+<h1>Relátorio de Fechamento Seguro Incêndio Locação.</h1>
+<?php
+$form->prepare();
+echo 
+$this->FormDefault(['legend' => 'Busca com base na data do inicio da vigência:'],'inicio',$this, $form),
+    "<td>",
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
+        $this->FormDefault(['inicio' => 'calend']),
+    "</td>\r",
+"</tr><tr>\r",
+    "<td>",
+        $this->FormDefault(['fim' => 'calend']),
+    "</td>\r",
+"</tr><tr>\r",
+    "<td>",
+        $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
+    "</td>\r",
+
+$this->FormDefault(['submit' => 'gerar'],'fim');
+
+?> 
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    function processa(){
+        if($('#administradoraDesc').val() == ''){
+            $('#administradora').val('');
+        }
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarFechamentoSeguro')); ?>";
+        envia(tar2,'',formName);        
+        return false;
+    }
+    function autoCompAdministradora(){
+        var filtros = 'administradoraDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'administradoras','action'=>'autoComp')); ?>";
+        var returns = Array('administradora','administradoraDesc');
+        var functionCall = 'buscaAdministradora()';
+        autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
+    }
+</script>

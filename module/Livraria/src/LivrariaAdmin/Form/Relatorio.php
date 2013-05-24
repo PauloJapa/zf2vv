@@ -94,6 +94,14 @@ class Relatorio  extends AbstractForm {
     }
     
     public function setImovelDesocupado(){
+        $this->setAdministradoraDataInicioFim();
+    }
+    
+    public function setSeguroFechados(){
+        $this->setAdministradoraDataInicioFim();
+    }
+    
+    public function setAdministradoraDataInicioFim(){
         $this->setInputHidden('administradora');
         $attributes = ['placeholder' => 'Pesquise digitando a Administradora aqui!',
                        'onKeyUp' => 'autoCompAdministradora();',

@@ -1,0 +1,75 @@
+<?php
+//Montar tabela para exibição xls.
+$tabela_dados = "\n<table cellpadding='0' cellspacing='0' border='0' id='table'>\n<thead>\n<tr>\n" ;
+
+if(empty($this->data)){
+    echo '<tr><td>Nenhum resultado foi encontrado!!!!</td></tr></table>';
+    exit();    
+}
+$coluns = array(
+    'Codigo',
+    'U.E.',
+    'Administradora',
+    'E-mail',
+    'Locatário',
+    'Inicio Vigência',
+    'Fim Vigência',
+    'Forma de pagto.',
+    'Prêmio',
+    'Parcela',
+    );
+
+//Montar cabeçalho
+foreach ($coluns as $value) {
+    $tabela_dados .= "<th nowrap>" . $value . "</th>\n";
+}
+
+//Adicionando todas as colunas no vetor para exibição das linhas
+$tabela_dados .= "</tr>\n</thead>\n<tbody>\n";
+$cor = "";
+
+foreach($this->data as $value){
+    if(!empty($this->admFiltro)  AND $this->admFiltro != $value['administradora']['id']){
+        continue;
+    }
+    // Decide cor da linha
+    if($cor == "background:#B9FFB9;"){
+        $cor = "";
+    }else{
+        $cor = "background:#B9FFB9;";
+    }
+    //calcula a parcela
+    $frmPagto = isset($this->formaPagto[$value['formaPagto']]) ? $this->formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
+    $valor = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);
+    $arrayCols = [
+        $value['id'],
+        $value['administradora']['id'],
+        $value['administradora']['nome'],
+        $value['administradora']['email'],
+        $value['locatarioNome'],
+        $value['inicio']->format('d/m/Y'),
+        $value['fim']->format('d/m/Y'),
+        $frmPagto,
+        number_format($value['premioTotal'], 2, ',', '.'),
+        number_format($valor, 2, ',', '.'),
+    ];
+    $tabela_dados .= "<tr>\n" ;
+    foreach ($arrayCols as $cel) {
+        $align = "align='left'";
+        //Colocar um traço para celula vazia
+        if($cel == ""){
+            $cel = "-";
+            $align = "align='center'";
+        }
+        $tabela_dados .= "\t<td nowrap $align style='" . $cor . "'>" . $cel . "</td>\n" ;
+    }
+    $tabela_dados .= "</tr>\n" ;
+}
+//Nome do arquivo
+$filename = "Seguros_Fechados_" . date('d-m-Y_H-i-s');
+//XLS - exibe a tabela pronta em html para XLS
+header("Content-Type:  application/vnd.ms-excel; charset=UTF-8; encoding=UTF-8");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header ("Content-Disposition: attachment; filename=\"".$filename.".xls\"" );
+print(utf8_decode($tabela_dados));

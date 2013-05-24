@@ -302,6 +302,10 @@ class RelatoriosController extends CrudController {
         return new ViewModel($this->getParamsForView());         
     }
     
+    /**
+     * Listar imoveis desocupados com botao para enviar email ou gerar excel
+     * @return \Zend\View\Model\ViewModel
+     */
     public function listarImoveisDesocupadosAction(){
         $this->verificaSeUserAdmin();
         //Pegar os parametros que em de post
@@ -313,6 +317,9 @@ class RelatoriosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));         
     }
     
+    /**
+     * Enviar email dos imoveis desocupados para administradoras verificarem
+     */
     public function sendEmailImoDesoAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
@@ -327,6 +334,10 @@ class RelatoriosController extends CrudController {
         }        
     }
     
+    /**
+     * Enviar excel com listagem dos imoveis desocupados para usuario fazer download.
+     * @return \Zend\View\Model\ViewModel
+     */
     public function toExcelImoDesoAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
@@ -334,6 +345,68 @@ class RelatoriosController extends CrudController {
         $sc = new SessionContainer("LivrariaAdmin");
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('data' => $sc->ImoveisDesocu,'admFiltro' => $data['id']));
+        $viewModel->setTerminal(true);
+        return $viewModel;        
+    }
+    
+    /**
+     * Tela inicio com filtros para usuario montar sue pesquisa
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function fechamentoSeguroAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
+        $this->formData->setSeguroFechados();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());         
+    }
+    
+    /**
+     * Gerar lista de seguros para exibiçao e envio de email
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function listarFechamentoSeguroAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->listaFechaSeguro($data);
+        $data['fim'] = $service->getFiltroTratado('fim')->format('d/m/Y');
+        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));   
+    }
+    
+    /**
+     * Faz o envio de email para administradoras com seguro fechados
+     */
+    public function sendSegFechAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar servico que gerou os registro 
+        $service = new $this->service($this->getEm());
+        //Passa o localizador de serviço para pegar o servico de email e fazer o envio de email
+        $resul = $service->sendEmailSegurosFechado($this->getServiceLocator(),$data['id']);
+        if($resul){
+            echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+        }else{
+            echo '<h2>Erro !! Feche esta janela e tente novamente !!</h2>';
+        }          
+    }
+    
+    /**
+     * Enviar excel com listagem dos seguros fechados para usuario fazer download.
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function toExcelSegFechAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        //ler Dados do cacheado da ultima consulta.
+        $sc = new SessionContainer("LivrariaAdmin");
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('data' => $sc->fechaSeguro,'admFiltro' => $data['id'], 'formaPagto' => $formaPagto));
         $viewModel->setTerminal(true);
         return $viewModel;        
     }
