@@ -21,7 +21,10 @@ class Email extends AbstractService
     }
     
     public function enviaEmail(array $dataEmail, $template='add-user') {
+        $baseUrl = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey('baseUrl')[0]->getDescricao();
         try {
+            $dataEmail['baseUrl'] = $baseUrl;
+            $dataEmail['email'] = 'watakabe98@hotmail.com';
             $mail = new Mail($this->transport, $this->view, $template);
             $mail->setSubject($dataEmail['subject'])
                     ->setTo($dataEmail['email'])

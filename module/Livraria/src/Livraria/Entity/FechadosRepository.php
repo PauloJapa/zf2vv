@@ -86,6 +86,7 @@ class FechadosRepository extends AbstractRepository {
          }
          //Junta os resultados de mensal e anual e um unico array
         $merge = array_merge($this->getMapaRenovacaoMensal($data), $this->getMapaRenovacaoAnual($data));
+        $lista = [];
         foreach ($merge as $key => $value) {
             $lista[$key] = $value['administradora']['id'];
         }
@@ -99,11 +100,13 @@ class FechadosRepository extends AbstractRepository {
      * @return array
      */
     public function getMapaRenovacaoAnual($data) {
+        $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND o.validade = :valido';
+        $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND o.validade = :valido AND o.status = :status';
         $this->parameters['inicio']  = $data['inicio'];
         $this->parameters['fim']     = $data['fim'];
         $this->parameters['valido']  = 'anual';
+        $this->parameters['status']  = 'A';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
@@ -118,6 +121,7 @@ class FechadosRepository extends AbstractRepository {
      * @return array
      */
     public function getMapaRenovacaoMensal($data) {
+        $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
         $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND o.validade = :valido AND o.mesNiver = :niver';
         $this->parameters['inicio']  = $data['inicioMensal'];

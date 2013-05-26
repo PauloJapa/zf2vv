@@ -284,11 +284,44 @@ class RelatoriosController extends CrudController {
         $sc = new SessionContainer("LivrariaAdmin");
         $sc->mapaRenovacao = $this->paginator;
         $sc->data          = $data;
+        $sc->formaPagto    = $formaPagto;
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));  
     }
     
+    public function gerarMapaAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $service = new $this->service($this->getEm());
+        $service->gerarMapa($sc, $data['id']);
+        $this->paginator = $sc->mapaRenovacao;
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $sc->data]));  
+    }
+    
+    /**
+     * Enviar email das renovações a fazer para administradoras verificarem
+     */
+    public function sendEmailMapaAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar servico que gerou os registro 
+        $service = new $this->service($this->getEm());
+        //Passa o localizador de serviço para pegar o servico de email e fazer o envio de email
+        $resul = $service->sendEmailMapaRenovacao($this->getServiceLocator(),$data['id']);
+        if($resul){
+            echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+        }else{
+            echo '<h2>Erro !! Feche esta janela e tente novamente !!</h2>';
+        }          
+    }
+
+
     /**
      * Tela inicial para gerar Relatórios de imoveis Desocupados
      * @return \Zend\View\Model\ViewModel
@@ -301,7 +334,7 @@ class RelatoriosController extends CrudController {
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());         
     }
-    
+
     /**
      * Listar imoveis desocupados com botao para enviar email ou gerar excel
      * @return \Zend\View\Model\ViewModel

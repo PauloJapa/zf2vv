@@ -31,6 +31,30 @@ class Fechados extends AbstractService {
     protected $Renovacao;
 
     /**
+     * Repository da entidade Fechados
+     * @var object
+     */
+    protected $repository;
+
+    /**
+     * Serviço da entidade Orçamento
+     * @var object
+     */
+    protected $servicoOrcamento;
+
+    /**
+     * Serviço da entidade Logs Orçamento
+     * @var object
+     */
+    protected $servicoLogOrcamento;
+
+    /**
+     * Serviço da entidade Logs Fechados
+     * @var object
+     */
+    protected $servicoLogFechado;
+
+    /**
      * Orçamento ou Renovação !! para Registro no Log
      * @var string
      */
@@ -43,6 +67,54 @@ class Fechados extends AbstractService {
         $this->Renovacao = "Livraria\Entity\Renovacao";
     }
     
+    /**
+     * Retorna o Repositorio da entidade Fechados
+     * @return object
+     */
+    public function getRep(){
+        if($this->repository)
+            return $this->repository;
+        
+        $this->repository = $this->em->getRepository($this->entity);
+        return $this->repository;
+    }
+    
+    /**
+     * Retorna o Serviço da entidade Orçamento
+     * @return object
+     */
+    public function getSrvOrca(){
+        if($this->servicoOrcamento)
+            return $this->servicoOrcamento;
+        
+        $this->servicoOrcamento =  new Orcamento($this->em);        
+        return $this->servicoOrcamento;        
+    }
+    
+    /**
+     * Retorna o Serviço da entidade Logs Fechados
+     * @return object
+     */
+    public function getSrvLog(){
+        if($this->servicoLogFechado)
+            return $this->servicoLogFechado;
+        
+        $this->servicoLogFechado =  new LogFechados($this->em);       
+        return $this->servicoLogFechado;        
+    }
+    
+    /**
+     * Retorna o Serviço da entidade Logs Orçamento
+     * @return object
+     */
+    public function getSrvLogOrca(){
+        if($this->servicoLogOrcamento)
+            return $this->servicoLogOrcamento;
+        
+        $this->servicoLogOrcamento =  new LogOrcamento($this->em);       
+        return $this->servicoLogOrcamento;        
+    }
+
     public function getPdfSeguro($id){
         //Carregar Entity Fechados
         $seg = $this->em
@@ -191,7 +263,6 @@ class Fechados extends AbstractService {
     
     public function registraLogOrcamento(){
         //Criar serviço logorcamento
-        $log = new LogOrcamento($this->em);
         $dataLog['orcamento']    = $this->Orcamento;
         $dataLog['tabela']     = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos' ;
@@ -200,7 +271,7 @@ class Fechados extends AbstractService {
         $fechado   = $this->data['id'] . '/' . $this->data['codano'];
         $dataLog['mensagem']   = 'Fechou o orçamento(' . $orcamento . ') e gerou o fechado de numero ' . $fechado ;
         $dataLog['dePara']     = '';
-        $log->insert($dataLog);
+        $this->getSrvLogOrca()->insert($dataLog);
     }
 
     
@@ -423,6 +494,69 @@ class Fechados extends AbstractService {
      */
     public function getDiff($ent){
         $this->dePara = '';
+    }
+    
+    /**
+     * Recebe a chave do seguro a renovar gerar novo orçamento 
+     * Faz lançamento no log dos seguros fechados e tb no log de orçamentos
+     * Complementa a obs do fechado dizendo que gerou um orçamento para renovação
+     * @param int $key
+     * @return array
+     */
+    public function fechadoToOrcamento($key){
+        //Pegando o serviço de fechados        
+        $fechado = $this->getRep()->find($key);
+        
+        $this->data = $fechado->toArray();
+        $this->data['id'] = '';
+        $this->data['user'] = $this->getIdentidade()->getId();
+        $this->data['status'] = "A";
+        $this->data['criadoEm'] = new \DateTime('now');
+        $this->data['inicio'] = $fechado->getFim();
+
+        //Pegando o locatario atual desse imovel porque o locatario pode ter sido trocado no meio da vigencia do fechado
+        //Quando a troca de locatario é apenas atualizado no imovel.
+        $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
+        $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
+        
+        //Faz inserção do fechado no BD
+        $resul = $this->getSrvOrca()->insert($this->data);
+
+        if($resul[0] === TRUE){
+            $fechado->setObservacao($fechado->getObservacao() . '\n Gerou Orçamento para Renovação numero ' . $resul[1]);
+            if($fechado->getValidade() == 'anual'){
+                $fechado->setStatus('R');
+            }
+            $this->em->persist($fechado);
+            $this->em->flush();
+            $this->registraLogFechadoToOrcamento($fechado);
+        }
+        
+        return $resul;
+    }
+
+    /**
+     * Faz a inclusão no log de fechado e tb no log de orçamento.
+     * @param entity $fechado
+     */
+    public function registraLogFechadoToOrcamento($fechado) {
+        $this->Orcamento = $this->getSrvOrca()->getEntity();
+        
+        $dataLog['fechados']    = $fechado;
+        $dataLog['tabela']     = 'log_fechados';
+        $dataLog['controller'] = 'mapaRenovacao' ;
+        $dataLog['action']     = 'gerarMapa';
+        $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+        $dataLog['mensagem']   = 'Fechado gerou orçamento(' . $orcamento . ') para renovação das taxas ';
+        $dataLog['dePara']     = '';
+        $this->getSrvLog()->insert($dataLog);
+        
+        $dataLog['orcamento']    = $this->Orcamento;
+        $dataLog['tabela']     = 'log_orcamento';
+        $fechadoNum   = $fechado->getId() . '/' . $fechado->getCodano();
+        $dataLog['mensagem']   = 'Orçamento(' . $orcamento . ') e gerado a partir do fechado de numero(' . $fechadoNum . ') para renovação.';
+        $dataLog['dePara']     = '';
+        $this->getSrvLogOrca()->insert($dataLog);
     }
 
 }

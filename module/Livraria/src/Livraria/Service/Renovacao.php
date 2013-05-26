@@ -81,8 +81,8 @@ class Renovacao extends AbstractService {
         $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
         $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
 
-        //Novo calculo do premio
-        //     Comissão da Administradora padrão
+        //  Novo calculo do premio
+        //  Comissão da Administradora padrão
         $this->data['comissaoEnt'] = $this->em
             ->getRepository('Livraria\Entity\Comissao')
             ->findComissaoVigente($this->data['administradora'],  $this->data['criadoEm']);

@@ -230,7 +230,9 @@ class Relatorio extends AbstractService{
         
         //Trata os filtro para data mensal
         $this->data['mes'] = intval($data['mesFiltro']);
-        $this->data['inicioMensal'] = '01/' . date('m') . '/' . date('Y');
+        $mes = (date('m') -1 );
+        $mes = ($mes < 10) ? '0' . $mes : $mes ;
+        $this->data['inicioMensal'] = '01/' . $mes . '/' . date('Y');
         $this->dateToObject('inicioMensal');
         $this->data['fimMensal'] = clone $this->data['inicioMensal'];
         $this->data['fimMensal']->add(new \DateInterval('P1M'));
@@ -244,6 +246,99 @@ class Relatorio extends AbstractService{
         return $this->em->getRepository("Livraria\Entity\Fechados")->getMapaRenovacao($this->data); 
     }
     
+    public function gerarMapa($sc, $admFiltro){
+        //Pegando o serviço de orçamento
+        $servico = new Fechados($this->em);
+        $array = $sc->mapaRenovacao;
+        foreach ($array as $key => $value) {
+            //Filtro Administradora
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id']);
+        }
+        $sc->mapaRenovacao = $array;
+    }
+    
+    /**
+     * Faz envio de email para imobiliaria com as renovações a serem feitas
+     * Recebe o service locator para poder pegar o servido e email com suas dependencias
+     * Recebe Filtro para administradoras
+     * @param object $sl
+     * @param string $admCod
+     * @return boolean
+     */
+    public function sendEmailMapaRenovacao($sl,$admFiltro=''){
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if (empty($sc->mapaRenovacao))
+            return FALSE;
+
+        $servEmail = $sl->get('Livraria\Service\Email');
+        $formaPagto = $sc->formaPagto;
+
+        $admCod  = 0;
+        foreach ($sc->mapaRenovacao as $value) {
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
+                continue; 
+            }
+            //Filtro Administrador
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            if($value['resul'][0] !== TRUE){
+                continue;
+            }
+            //se mudar adm faz envio e reseta os valores
+            if($admCod != $value['administradora']['id']){
+                if($admCod != 0){
+                    $servEmail->enviaEmail(['nome' => $admNom,
+                        'cod' => $admCod,
+                        'date' => $sc->data,
+                        'email' => $admEmai,
+                        'subject' => 'Seguro(s) para Renovação Anual do Incêndio Locação',
+                        'data' => $data],'mapa-renovacao');                     
+                }
+                $admCod  = $value['administradora']['id'];
+                $admNom  = $value['administradora']['nome'];
+                $admEmai = $value['administradora']['email'];
+                $data    = [];              
+                $i       = 0;
+            }
+            //Faz o acumulo dos dados.
+            $data[$i][0] = $value['inicio']->format('d/m/Y');
+            $data[$i][1] = $value['fim']->format('d/m/Y');
+            $data[$i][2] = $value['refImovel'];
+            $data[$i][3] = $value['validade'];
+            $data[$i][4] = $value['imovel']['rua'];
+            $data[$i][5] = $value['locatarioNome'];
+            $data[$i][6] = number_format($value['incendio'], 2, ',', '.');
+            $data[$i][7] = number_format($value['aluguel'], 2, ',', '.');
+            $data[$i][8] = number_format($value['eletrico'], 2, ',', '.');
+            $data[$i][9] = number_format($value['vendaval'], 2, ',', '.');
+            $data[$i][10] = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];;
+            $data[$i][11] = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);;
+            $data[$i][12] = number_format($value['premioTotal'], 2, ',', '.');
+            $data[$i][13] = number_format($value['valorAluguel'], 2, ',', '.');
+            $data[$i][14] = $value['atividade']['descricao'];
+            $i++;
+        }
+        
+        //Envia ultima administradora se houver
+        if($admCod != 0){
+            $servEmail->enviaEmail(['nome' => $admNom,
+                'cod' => $admCod,
+                'date' => $sc->data,
+                'email' => $admEmai,
+                'subject' => 'Seguro(s) para Renovação Anual do Incêndio Locação',
+                'data' => $data],'mapa-renovacao');                     
+        }
+        
+        return true;
+        
+    }
+
     /**
      * Trata os filtros e carrega os dados do repository
      * @param array $data

@@ -124,21 +124,31 @@
 	<td nowrap class="Br Bb" colspan="8">Ocupação Corrigida: _____________________________________________________</td>
 </tr>  
 <tr>  
-    <td colspan="11"></td>
+    <td colspan="11">Resultado da Operação:<? 
+        if($array['resul'][0] === TRUE){
+            echo '<p>Gerou novo Orçamento com Sucesso com numero ', $array['resul'][1], '.</p>';
+        }else{
+            foreach ($array['resul'] as $value) {
+                echo '<p>Alerta!! ', $value, '</p>';
+            } 
+        }
+?></td>
 </tr>  
 <? endforeach; ?>
 </table>
 
 <div align='center' class="noPrint">
-    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Gerar Mapeamento" onclick="return gerarMapa()">
+    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Enviar Emails" onclick="return sendMapa()">
 </div>
 <form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">
-    function gerarMapa(){
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarMapa')); ?>";
-        envia(tar,'gerar');        
+    function sendMapa(adm){
+        if(adm == null)adm = '';
+        $('#id2').val(adm);
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmailMapa')); ?>";
+        envia(tar2, adm, null,'email');     
     }
 </script>
