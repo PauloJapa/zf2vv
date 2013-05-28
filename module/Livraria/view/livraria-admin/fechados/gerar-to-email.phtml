@@ -1,0 +1,99 @@
+<h1>Resultado de Seguros Fechados Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
+<br />
+<?php
+$coluns = array(
+    'Codigo',
+    'U.E.',
+    'Administradora',
+    'Locatário',
+    'Inicio Vigência',
+    'Fim Vigência',
+    'Prêmio',
+    'Ação'
+    );
+$td     = array(
+    'class="r"',
+    'class="r"',
+    '',
+    '',
+    'class="r"',
+    'class="r"',
+    'class="r"',
+    '',
+);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+
+$lambda = function($value,&$data)
+    {
+        echo "\t<td nowrap class='r'>",
+                '<span class="add-on hand" onClick="toExcel(\'', $value, '\')"><i class="icon-file"></i> Gerar Excel</span>',
+                '&nbsp;&nbsp;&nbsp;&nbsp;',
+                '<span class="add-on hand" onClick="sendEmail(\'', $value, '\')"><i class="icon-envelope"></i> Enviar Email</span>',
+             "</td>\n";   
+    };
+    
+$this->ViewIndex('setFuncEdit',$lambda); 
+
+$admCod = 0 ;
+foreach($this->data as $key => $value){
+    //calcula a parcela
+    if($admCod != $value['administradora']['id']){
+        echo $this->ViewIndex('line',array('data' => [
+            $value['id'],
+            $value['administradora']['id'],
+            $value['administradora']['nome'] . '<br>' . $value['administradora']['email'],
+            $value['locatarioNome'],
+            $value['inicio']->format('d/m/Y'),
+            $value['fim']->format('d/m/Y'),
+            number_format($value['premioTotal'], 2, ',', '.'),
+            $value['administradora']['id'],
+        ]));
+        $admCod = $value['administradora']['id'];
+    }else{
+        echo $this->ViewIndex('line',array('data' => [
+            $value['id'],
+            '-',
+            '-',
+            $value['locatarioNome'],
+            $value['inicio']->format('d/m/Y'),
+            $value['fim']->format('d/m/Y'),
+            number_format($value['premioTotal'], 2, ',', '.'),
+        ]));
+    }
+}
+echo $this->ViewIndex('close');
+
+?>
+<br />
+<table width="100%">
+    <tr>
+        <td align='center' width="33%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel" onclick="toExcel('')">            
+        </td>
+        <td align='center' width="33%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Todos Email" onclick="sendEmail('')">            
+        </td>
+        <td align='center'>
+            <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            
+        </td>
+    </tr>
+</table>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function toExcel(adm){
+        $('#id2').val(adm);
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcelFat')); ?>";
+        envia(tar2, adm);
+        return false;
+    }  
+    function sendEmail(adm){
+        $('#id2').val(adm);
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmalFat')); ?>";
+        envia(tar2, adm, null,'email');
+    }    
+</script>

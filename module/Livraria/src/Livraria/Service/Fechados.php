@@ -4,6 +4,7 @@ namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
 use LivrariaAdmin\Fpdf\ImprimirSeguro;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Fechados
@@ -557,6 +558,85 @@ class Fechados extends AbstractService {
         $dataLog['mensagem']   = 'Orçamento(' . $orcamento . ') e gerado a partir do fechado de numero(' . $fechadoNum . ') para renovação.';
         $dataLog['dePara']     = '';
         $this->getSrvLogOrca()->insert($dataLog);
+    }
+    
+    public function gerarListaEmail($data){
+        //Trata os filtro para data anual
+        $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
+        $this->dateToObject('inicio');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
+        $this->data['fim']->sub(new \DateInterval('P1D'));
+        //Filtro para Administradora
+        $this->data['administradora'] = $data['administradora'];
+        
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->faturados     = $this->em->getRepository("Livraria\Entity\Fechados")->getListaEmail($this->data); 
+        $sc->data          = $this->data;
+        
+        return $sc->faturados;  
+    }
+    
+    /**
+     * Faz envio de email para imobiliaria com os seguros fechados no mes para confirmação
+     * Recebe o service locator para poder pegar o servido e email com suas dependencias
+     * Recebe Filtro para administradoras
+     * @param object $sl
+     * @param string $admCod
+     * @return boolean
+     */
+    public function sendEmailFaturados($sl,$admFiltro=''){
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if (empty($sc->faturados))
+            return FALSE;
+
+        $servEmail = $sl->get('Livraria\Service\Email');
+
+        $admCod  = 0;
+        foreach ($sc->faturados as $value) {
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
+                continue; 
+            }
+            //Filtro Administrador
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            //se mudar adm faz envio e reseta os valores
+            if($admCod != $value['administradora']['id']){
+                if($admCod != 0){
+                    $servEmail->enviaEmail(['nome' => $admNom,
+                        'email' => $admEmai,
+                        'subject' => 'Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
+                        'data' => $data],'seguro-faturado');                     
+                }
+                $admCod  = $value['administradora']['id'];
+                $admNom  = $value['administradora']['nome'];
+                $admEmai = $value['administradora']['email'];
+                $data    = [];              
+                $i       = 0;
+            }
+            //Faz o acumulo dos dados.
+            $data[$i][] = $value['id'];
+            $data[$i][] = $value['locatarioNome'];
+            $data[$i][] = $value['inicio']->format('d/m/Y');
+            $data[$i][] = $value['fim']->format('d/m/Y');
+            $data[$i][] = number_format($value['premioTotal'], 2, ',', '.');
+            $i++;
+        }
+        
+        //Envia ultima administradora se houver
+        if($admCod != 0){
+            $servEmail->enviaEmail(['nome' => $admNom,
+                'email' => $admEmai,
+                'subject' => 'Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
+                'data' => $data],'seguro-faturado');                     
+        }
+        
+        return true;
+        
     }
 
 }

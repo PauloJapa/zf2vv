@@ -622,4 +622,13 @@ abstract class AbstractService {
         $this->data['fim']->add(new \DateInterval($interval_spec)); 
         return TRUE;
     }
+
+    /**
+     * Retorna um campo do array do data do indice passar por parametro
+     * @param indice $index
+     * @return one item of array
+     */
+    public function getFiltroTratado($index){
+        return isset($this->data[$index]) ? $this->data[$index] : false ;
+    }
 }

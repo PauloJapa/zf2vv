@@ -192,4 +192,18 @@ class FechadosRepository extends AbstractRepository {
         // Retorna um array com todo os registros encontrados        
         return $this->executaQuery1('o.administradora');        
     }
+    
+    public function getListaEmail($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
+        $this->parameters['inicio'] = $data['inicio'];
+        $this->parameters['fim']    = $data['fim'];
+        $this->parameters['status'] = 'A';
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery1('o.administradora');         
+    }
 }

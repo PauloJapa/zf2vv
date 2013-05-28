@@ -444,4 +444,25 @@ class RelatoriosController extends CrudController {
         return $viewModel;        
     }
     
+    public function comissaoSeguroAction(){
+        $this->verificaSeUserAdmin();
+        $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
+        $this->formData->setComissaoSeguro();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());         
+    }
+    
+    public function listarComissaoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->gerarComissao($data);
+        $data['inicio'] = $service->getFiltroTratado('inicio')->format('d/m/Y');
+        $data['fim'] = $service->getFiltroTratado('fim')->format('d/m/Y');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));         
+    }
+    
 }

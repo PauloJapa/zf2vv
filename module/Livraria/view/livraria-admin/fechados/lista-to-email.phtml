@@ -1,0 +1,56 @@
+<h1>Filtros para gerar listar dos seguros fechados a enviar Emails.</h1>
+<?php
+$form->prepare();
+echo 
+$this->FormDefault(['legend' => 'Busca com base na data de inicio da vigência:'],'inicio',$this, $form),
+    "<td valign='middle' align='right' width='15%'>Periodo Fim",
+        $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
+    "</td>\r<td width='15%'>",
+        $this->FormDefault(['mesFiltro' => 'select']),
+    "</td>\r<td width='15%'>",
+        $this->FormDefault(['anoFiltro' => 'select']),
+    "</td>\r<td>",
+    "</td>\r",
+"</tr><tr>\r",
+    "</td>\r<td>",
+    "<td colspan='3'>",
+        $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
+    "</td>\r",
+
+$this->FormDefault(['submit' => 'gerar'],'fim');
+
+?> 
+<script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
+    var formName = '<?php echo $this->formName ?>';
+    function processa(){
+        if($('#administradoraDesc').val() == ''){
+            $('#administradora').val('');
+        }
+        if(!validar()){
+            return false;
+        }
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarToEmail')); ?>";
+        envia(tar2,'',formName);        
+        return false;
+    }
+    function validar(){
+        if($('#mesFiltro').val() == ''){
+            alert('Escolha o Mês por favor!');
+            return false;
+        }
+        if($('#anoFiltro').val() == ''){
+            alert('Escolha o Ano por favor!');
+            return false;
+        }
+        return true;
+    }
+    function autoCompAdministradora(){
+        var filtros = 'administradoraDesc';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'administradoras','action'=>'autoComp')); ?>";
+        var returns = Array('administradora','administradoraDesc');
+        var functionCall = 'buscaAdministradora()';
+        autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
+    }
+</script>

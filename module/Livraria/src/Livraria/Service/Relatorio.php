@@ -520,10 +520,5 @@ class Relatorio extends AbstractService{
         return true;
         
     }
-
-    
-    public function getFiltroTratado($index){
-        return isset($this->data[$index]) ? $this->data[$index] : false ;
-    }
     
 }

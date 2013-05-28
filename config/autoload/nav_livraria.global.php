@@ -246,6 +246,12 @@ return array(
                         'controller' => 'relatorios',
                         'action' => 'fechamentoSeguro',
                     ),
+                    'relatorios7' => array(
+                        'label' => 'Comissão de Seguro',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'comissaoSeguro',
+                    ),
                 ),
             ),
             'auditoria' => array(
