@@ -18,6 +18,11 @@ $this->FormDefault(['legend' => 'Busca com base na data fim da vigência:'],'ini
 "</tr><tr>\r",
     "</td>\r<td>",
     "<td colspan='3'>",
+        $this->FormDefault(['seguradora' => 'select']),
+    "</td>\r",
+"</tr><tr>\r",
+    "</td>\r<td>",
+    "<td colspan='3'>",
         $this->FormDefault(['comissao' => 'select']),
     "</td>\r",
 "</tr><tr>\r",
@@ -48,12 +53,20 @@ $this->FormDefault(['submit' => 'gerar'],'fim');
         return false;
     }
     function validar(){
+        if($('#seguradora').val() == ''){
+            alert('Escolha a seguradora por favor!');
+            return false;
+        }
         if($('#mesFiltro').val() == ''){
             alert('Escolha o Mês por favor!');
             return false;
         }
         if($('#anoFiltro').val() == ''){
             alert('Escolha o Ano por favor!');
+            return false;
+        }
+        if($('#comissao').val() == ''){
+            alert('Escolha o valor da comissão por favor!');
             return false;
         }
         return true;

@@ -465,4 +465,19 @@ class RelatoriosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));         
     }
     
+    /**
+     * Enviar excel com listagem dos seguros fechados separados por comissao para usuario fazer download.
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function toExcelComissaoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //ler Dados do cacheado da ultima consulta.
+        $sc = new SessionContainer("LivrariaAdmin");
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('data' => $sc->comissao,'admFiltro' => $data['id']));
+        $viewModel->setTerminal(true);
+        return $viewModel;        
+    }
+    
 }

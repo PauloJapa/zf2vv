@@ -520,5 +520,30 @@ class Relatorio extends AbstractService{
         return true;
         
     }
-    
+        
+    public function gerarComissao($data){
+        //Trata os filtros para consulta
+        $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
+        $this->dateToObject('inicio');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
+        $this->data['fim']->sub(new \DateInterval('P1D'));
+        $this->data['administradora'] = $data['administradora'];
+        $this->data['seguradora'] = $data['seguradora'];
+        $this->data['comissao'] = $this->strToFloat($data['comissao'],'f');
+        if(isset($data['anual']) AND isset($data['mensal'])){
+            //Ambos selecionados nao usa filtro
+            $this->data['validade'] = '';
+        }else{
+            //Se um tiver selecionado decide o filtro caso nenhum selecionado filtro anual
+            $this->data['validade'] = isset($data['mensal']) ? 'mensal' : 'anual';
+        }
+        
+        //Guardar dados do resultado 
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->comissao      = $this->em->getRepository("Livraria\Entity\Fechados")->getComissao($this->data); 
+        $sc->data          = $this->data;
+        
+        return $sc->comissao; 
+    }
 }

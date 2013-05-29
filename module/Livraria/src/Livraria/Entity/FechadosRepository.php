@@ -72,6 +72,33 @@ class FechadosRepository extends AbstractRepository {
     }
     
     /**
+     * Executa a query que é a mesma para Mensal, Anual e Imoveis Desocupados do mapa de renovação.
+     * @return array
+     */
+    public function executaQuery2($orderBy='', $groupBy=''){
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,s')
+                ->from('Livraria\Entity\Fechados', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.seguradora', 's')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        if(!empty($orderBy)){
+            $query->orderBy($orderBy);
+        }
+        
+        if(!empty($groupBy)){
+            $query->groupBy($groupBy);
+        }
+        
+        // Retorna um array com todo os registros encontrados        
+        return $query->getQuery()->getArrayResult();
+    }
+    
+    /**
      * Faz consulta mensal ou anual ou ambas juntando em um unico array reordenado 
      * @param array $data
      * @return array
@@ -193,6 +220,11 @@ class FechadosRepository extends AbstractRepository {
         return $this->executaQuery1('o.administradora');        
     }
     
+    /**
+     * Gera um lista de seguros fechados para confirmação na ADM
+     * @param array $data
+     * @return array
+     */
     public function getListaEmail($data){
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
         $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
@@ -205,5 +237,30 @@ class FechadosRepository extends AbstractRepository {
         }
         // Retorna um array com todo os registros encontrados        
         return $this->executaQuery1('o.administradora');         
+    }
+    
+    /**
+     * Gera um lista de fechados para verificar comissão paga
+     * @param array $data
+     * @return array
+     */
+    public function getComissao($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status AND o.comissao = :comissao AND o.seguradora = :seguradora';
+        $this->parameters['inicio'] = $data['inicio'];
+        $this->parameters['fim']    = $data['fim'];
+        $this->parameters['status'] = 'A';
+        $this->parameters['comissao']   = $data['comissao'];
+        $this->parameters['seguradora'] = $data['seguradora'];
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        if(!empty($data['validade'])){
+            $this->where .= ' AND o.validade = :validade';
+            $this->parameters['validade']    = $data['validade'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery2('o.administradora');         
     }
 }
