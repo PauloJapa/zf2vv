@@ -85,6 +85,7 @@ return array(
             'multiplosMinimos' => 'LivrariaAdmin\Controller\MultiplosMinimosController',
             'parametroSis' => 'LivrariaAdmin\Controller\ParametroSisController',
             'relatorios' => 'LivrariaAdmin\Controller\RelatoriosController',
+            'exportar' => 'LivrariaAdmin\Controller\ExportarController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

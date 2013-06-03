@@ -1,0 +1,322 @@
+<?php
+
+if(empty($this->data)){
+    echo '<h1>Nenhum resultado foi encontrado!!!!</h1>';
+    exit();    
+}
+
+/*
+    SQL = SQL & "AND ocupacao <> 911 AND ocupacao <> 919 AND forma_pagto = 'ato' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_empresarial_ato.KM2"
+ * 
+    SQL = SQL & "AND ocupacao <> 911 AND ocupacao <> 919 AND forma_pagto = '1-1' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_empresarial_1x1.KM2"
+ * 
+    SQL = SQL & "AND ocupacao <> 911 AND ocupacao <> 919 AND forma_pagto = '1-2' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_empresarial_1x2.KM2"
+ * 
+    SQL = SQL & "AND ocupacao <> 911 AND ocupacao <> 919 AND forma_pagto = 'mensal' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_empresarial_mensal.KM2"
+ * 
+    SQL = SQL & "AND (ocupacao = 911 OR ocupacao = 919) AND forma_pagto = 'ato' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_residencial_ato.KM2"
+ * 
+    SQL = SQL & "AND (ocupacao = 911 OR ocupacao = 919) AND forma_pagto = '1-1' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_residencial_1x1.KM2"
+ * 
+    SQL = SQL & "AND (ocupacao = 911 OR ocupacao = 919) AND forma_pagto = '1-2' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_residencial_1x2.KM2"
+ * 
+    SQL = SQL & "AND (ocupacao = 911 OR ocupacao = 919) AND forma_pagto = 'mensal' "
+    varqtxt = "\\s-1482\Imagem\Incendio_locacao\"&vue&"_residencial_mensal.KM2"
+
+$baseWork = '\\s-1482\Imagem\Incendio_locacao\\';
+$file = $baseWork . $this->admFiltro . '_empresarial_ato.KM2';
+$file = $baseWork . $this->admFiltro . '_empresarial_1x1.KM2';
+$file = $baseWork . $this->admFiltro . '_empresarial_1x2.KM2';
+$file = $baseWork . $this->admFiltro . '_empresarial_1x2.KM2';
+$file = $baseWork . $this->admFiltro . '_residencial_ato.KM2';
+$file = $baseWork . $this->admFiltro . '_residencial_1x1.KM2';
+$file = $baseWork . $this->admFiltro . '_residencial_1x2.KM2';
+$file = $baseWork . $this->admFiltro . '_residencial_mensal.KM2';
+
+
+
+//Montar saida para arquivo de texto
+$saida = "" ;
+
+foreach($this->data as $value){
+    if(!empty($this->admFiltro)  AND $this->admFiltro != $value['administradora']['id']){
+        continue;
+    }
+    //========= Linha 00 com Dados do Orçamento Obrigatorio =======================
+    $saida .= '00';
+    // Ocupação residencial ou comercial
+    if($value['atividade']['codSeguradora'] >= 910 AND $value['atividade']['codSeguradora'] <= 921){
+        $saida .= '11401';
+    }else{
+        $saida .= '11801';
+    }
+    // Numero do orçamento tam 6
+    $saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+    // Data do calculo
+    $saida .= $value['criadoEm']->format('d/m/Y');
+    // Inicio Vigencia
+    $saida .= $value['inicio']->format('d/m/Y');
+    // Fim Vigencia
+    $saida .= $value['fim']->format('d/m/Y');
+    // Proponente tam 60
+    $saida .= str_pad($value['administradora']['nome'], 60);
+    // Tipo Proponente
+    $saida .= 'J';
+    // Fator de calculo tam 5
+    $saida .= '08000';
+    // Percentual agravação tam 5
+    $saida .= '00000';
+    // Print certificado
+    $saida .= 'S';
+    // Print premio no certificado
+    $saida .= 'S';
+    // Tipo de seguro
+    $saida .= 'N';
+    // Nº Apolice tam 10
+    $saida .= '0000000000';
+    // Fim da linha 00
+    $saida .= PHP_EOL;
+    
+    //========= Linha 01 com Dados do Corretor Obrigatorio =======================
+    $saida .= '01';
+    // Cod da Sucursal 2
+    $saida .= '01';
+    // Cod do Corretor 5
+    $saida .= '00225';
+    // Cod do Colaborador 5
+    $saida .= '00000';
+    // Cod Susep 14
+    $saida .= '05952610195766';
+    // tipo de pessoa do corretor 1
+    $saida .= 'J';
+    // nome do corretor 40
+    $saida .= str_pad('Vila Velha Corret. Seguros S/C Ltda', 40);
+    // cod da inspetoria 6
+    $saida .= '000194';
+    // cod do inspetor 6
+    $saida .= '000058';
+    // email corretor 60
+    $saida .= str_pad('vilavelha@vilavelha.com.br', 60);
+    // DD tel 2
+    $saida .= '11';
+    // tel corretor 8
+    $saida .= '32269600';
+    // Incluir automenticamente co-corretagem 1
+    $saida .= 'N';
+    // Fim da linha 01
+    $saida .= PHP_EOL;
+    
+    //========= Linha 02 com DADOS DO CLIENTE Obrigatorio =======================
+    $saida .= '02';
+    // Cod cliente 6
+    $saida .= '000225';
+    // cpf ou cnpj 14
+    $saida .= '47186283000171';
+    // data nasc
+    $saida .= str_pad(' ', 10);
+    // tipo de documento
+    $saida .= str_pad(' ', 1);
+    // RG 15
+    $saida .= str_pad(' ', 15);
+    // orgao expedidor 20
+    $saida .= str_pad(' ', 20);
+    // data expedição 10
+    $saida .= str_pad(' ', 10);
+    // end. de correspondencia 40
+    $saida .= str_pad('AV. IPIRANGA', 40);
+    // num de corresondencia 6
+    $saida .= '000313';
+    // compl. de corresondencia 15
+    $saida .= str_pad(' ', 15);
+    // bairro de corresondencia 20
+    $saida .= str_pad('CENTRO', 20);
+    // cidade de corresondencia 40
+    $saida .= str_pad('SÃO PAULO', 40);
+    // uf de corresondencia 2
+    $saida .= 'SP';
+    // cep de corresondencia 8
+    $saida .= '01045001';
+    // DDD de corresondencia 2
+    $saida .= '11';
+    // Tel de corresondencia 8
+    $saida .= '32269600';
+    // DDD Fax de corresondencia 2
+    $saida .= '11';
+    // Fax de corresondencia 8
+    $saida .= '32269622';
+    // End. de cobrança 40
+    $saida .= str_pad('AV. IPIRANGA', 40);
+    // num. de cobrança 6
+    $saida .= '000313';
+    // Compl. de cobrança 15
+    $saida .= str_pad(' ', 15);
+    // bairro de cobrança 20
+    $saida .= str_pad('CENTRO', 20);
+    // cidade de cobrança 40
+    $saida .= str_pad('SÃO PAULO', 40);
+    // uf de cobrança 2
+    $saida .= 'SP';
+    // cep de cobrança 8
+    $saida .= '01045001';
+    // DDD de cobrança 2
+    $saida .= '11';
+    // Telde cobrança 8
+    $saida .= '32269600';
+    // DDD Fax de cobrança 2
+    $saida .= '11';
+    // Fax de cobrança 8
+    $saida .= '32269622';
+    // nome cliente 40
+    $saida .= str_pad('Vila Velha Corret. Seguros S/C Ltda', 40);
+    // tipo de pessoa do cliente
+    $saida .= 'J';
+    // Fim da linha 02
+    $saida .= PHP_EOL;
+    
+    //========= Linha 03 com DADOS DO LOCAL DE RISCO Obrigatorio =======================
+    $item = 1;
+    $saida .= '03';
+    //Número do Item	6
+    $saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
+    //Nome do Inquilino	60
+    $saida .= str_pad($value['locatario']['nome'], 60);
+    //Tipo de Pessoa do Inquilino	1
+    $tLocatario = strtoupper(substr($value['locatario']['tipo'], 0, 1));
+    $saida .= $tLocatario;
+    //CPF / CNPJ Inquilino	14
+    $saida .= ($tLocatario == 'F')?str_pad($value['locatario']['cpf'], 14):str_pad($value['locatario']['cnpj'], 14);
+    //Nome do Proprietário	60
+    $saida .= str_pad($value['locador']['nome'], 60);
+    //Tipo de Pessoa do Proprietário	1
+    $tLocador = strtoupper(substr($value['locador']['tipo'], 0, 1));
+    $saida .= $tLocador;
+    //CPF / CNPJ Proprietário	14
+    $saida .= ($tLocador == 'F')?str_pad($value['locador']['cpf'], 14):str_pad($value['locador']['cnpj'], 14);
+    //Endereco	40
+    $saida .= str_pad($value['imovel']['rua'], 40);
+    //Número do Endereço	6
+    $saida .= str_pad($value['imovel']['numero'], 6, '0', STR_PAD_LEFT);
+    //Compl. do Endereço	15
+    $saida .= str_pad($value['imovel']['rua'], 15);
+    //Bairro	30
+    $saida .= str_pad($value['imovel']['endereco']['bairro']['nome'], 30);
+    //Cidade	30
+    $saida .= str_pad($value['imovel']['endereco']['cidade']['nome'], 30);
+    //UF	2
+    $saida .= str_pad($value['imovel']['endereco']['estado']['sigla'], 2);
+    //CEP	8
+    $saida .= str_pad($value['imovel']['cep'], 15);
+    //Código da Atividade	4
+    $ativid = $value['atividade']['codSeguradora'];
+    $saida .= str_pad($ativid, 4, '0', STR_PAD_LEFT);
+    //Cobertura	1
+    $saida .= substr($value['tipoCobertura'], 1, 1);
+    //Tipo de Residência	1
+    switch ($ativid) {
+        case 918:
+        case 919:
+        case 920:
+        case 921:
+                $saida .= '2';
+            break;
+        default:
+                $saida .= '1';
+            break;
+    }
+    //Tipo de Moradia	4
+    $saida .= '1101';
+    //Tipo de Construção	1
+    switch ($ativid) {
+        case 910:
+        case 918:
+                $saida .= '1';
+            break;
+        default:
+                $saida .= '2';
+            break;
+    }
+    //Indicador de Assistência	1
+    $saida .= '0';
+    //Número do Orçamento	6
+    $saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+    //Data de Nascimento Inquilino	10
+    $saida .= str_pad(' ', 10);
+    //Observação	254
+    $saida .= str_pad($value['observacao'], 254);
+    //Indicador de Verbas Separadas	1
+    $saida .= ($value['tipoCobertura'] == '04') ? '1' : '0';
+    //Período Indenitário Perda/Pgto. Aluguel	2
+    $saida .= str_pad(' ', 2);
+    // Fim da linha 03
+    $saida .= PHP_EOL;
+    
+    
+    $cobArray = [
+        '011101' => 'incendio',
+        '011103' => 'eletrico',
+        '011117' => 'aluguel',
+        '011131' => 'vendaval',
+    ];
+    foreach ($cobArray as $key => $cob) {
+        //========= Linha 05 com DADOS DA COBERTURA ====================================
+        $saida .= '05';
+        // Número do Item	6
+        $saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
+        // Número do Orçamento	6
+        $saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+        // Código da Cobertura	6
+        $saida .= $key;
+        // Importância Segurada	17
+        $saida .= str_pad(number_format($value[$cob], 2, '', ''), 17, '0', STR_PAD_LEFT);;
+        // Taxa	6
+        $saida .= '000000';
+        // Taxa Informada	1
+        $saida .= '0';
+        // Fim da linha 05
+        $saida .= PHP_EOL;        
+    }
+    
+    //========= Linha 10 CLAUSULA BENEFICIARIA  ====================================
+    $saida .= '10';    
+    // NUMERO DO ITEM DEVER SER BRANCOS	3
+    $saida .= '   ';    
+    // Número de beneficiário	3
+    $saida .= '001';    
+    // Nome	60
+    $saida .= str_pad($value['locador']['nome'], 60);    
+    // Tipo de pessoa	1
+    $saida .= ($tLocador == 'F')? '1' : '2';
+    // CPF/CNPJ	14
+    $saida .= ($tLocador == 'F')?str_pad($value['locador']['cpf'], 14, '0', STR_PAD_LEFT):str_pad($value['locador']['cnpj'], 14, '0', STR_PAD_LEFT);
+    // Cobertura	1
+    $saida .= '0';    
+    // Participação (%)	5
+    $saida .= '100000';    
+    // Número do item	6
+    $saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
+    // Fim da linha 10
+    $saida .= PHP_EOL; 
+    
+    $item ++;
+}
+//Nome do arquivo
+//Txt para download
+header("Content-type: text/plain");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header ("Content-Disposition: attachment; filename=\"".$filename.".txt\"" );
+print(utf8_decode($saida));
+ */
+$filename = "Maritima_" . date('d-m-Y_H-i-s');
+header('Content-type: application/zip');
+header('Content-disposition: attachment; filename="' . $filename . '"');
+readfile($this->data);
+
+unlink($this->data);

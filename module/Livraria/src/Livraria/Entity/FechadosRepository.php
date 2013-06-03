@@ -99,6 +99,41 @@ class FechadosRepository extends AbstractRepository {
     }
     
     /**
+     * Executa a query que é a mesma para Mensal, Anual e Imoveis Desocupados do mapa de renovação.
+     * @return array
+     */
+    public function executaQuery3($orderBy='', $groupBy=''){
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,s,at,lct,imo,lcd,ende,ba,ci,es')
+                ->from('Livraria\Entity\Fechados', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.seguradora', 's')
+                ->join('o.atividade', 'at')
+                ->join('o.locatario', 'lct')
+                ->join('o.locador', 'lcd')
+                ->join('o.imovel', 'imo')
+                ->join('imo.endereco', 'ende')
+                ->join('ende.bairro', 'ba')
+                ->join('ende.cidade', 'ci')
+                ->join('ende.estado', 'es')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        if(!empty($orderBy)){
+            $query->orderBy($orderBy);
+        }
+        
+        if(!empty($groupBy)){
+            $query->groupBy($groupBy);
+        }
+        
+        // Retorna um array com todo os registros encontrados        
+        return $query->getQuery()->getArrayResult();
+    }
+    
+    /**
      * Faz consulta mensal ou anual ou ambas juntando em um unico array reordenado 
      * @param array $data
      * @return array
@@ -262,5 +297,28 @@ class FechadosRepository extends AbstractRepository {
         }
         // Retorna um array com todo os registros encontrados        
         return $this->executaQuery2('o.administradora');         
+    }
+    
+    /**
+     * Gera um lista de seguros fechados para exportação
+     * @param array $data
+     * @return array
+     */
+    public function getListaExporta($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
+        $this->parameters['inicio'] = $data['inicio'];
+        $this->parameters['fim']    = $data['fim'];
+        $this->parameters['status'] = 'A';
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        if(!empty($data['seguradora'])){
+            $this->where .= ' AND o.seguradora = :seguradora';
+            $this->parameters['seguradora']    = $data['seguradora'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery3('o.formaPagto');         
     }
 }

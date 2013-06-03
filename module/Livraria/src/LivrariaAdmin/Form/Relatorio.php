@@ -92,6 +92,13 @@ class Relatorio  extends AbstractForm {
         
     }
     
+    public function setCOL(){        
+        $this->get('gerar')->setValue('Exportar');
+        $this->setMesAnoAdm();
+        $seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
+        $this->setInputSelect('seguradora', '*Seguradora', $seguradoras);
+    }
+    
     public function setMapaRenovacao(){        
         $this->setMesAnoAdm();
     }

@@ -291,6 +291,20 @@ return array(
                 'route' => 'livraria-admin',
                 'controller' => 'index',
                 'action' => 'exportar',
+                'pages' => array(
+                    'exportar1' => array(
+                        'label' => 'Maritima',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'maritima',
+                    ),
+                    'exportar2' => array(
+                        'label' => 'C.O.L.',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'col',
+                    ),
+                ),
             ),
             'logout' => array(
                 'label' => 'Logout',
