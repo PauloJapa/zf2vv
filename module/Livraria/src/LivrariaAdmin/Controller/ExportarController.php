@@ -61,7 +61,7 @@ class ExportarController extends CrudController {
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
         $service = new $this->service($this->getEm());
-        $resul = $service->geraArqsForMaritima();
+        $resul = $service->geraArqsForMaritima($data['id']);
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('data' => $resul,'admFiltro' => $data['id']));
         $viewModel->setTerminal(true);

@@ -39,6 +39,7 @@ class Exporta extends AbstractService{
     protected $fp;
     protected $zip;
     protected $saida;
+    protected $baseWork;
     protected $item;
     protected $tipoLocatario;
     protected $tipoLocador;
@@ -52,6 +53,10 @@ class Exporta extends AbstractService{
         $this->em = $em;
     }
     
+    /**
+     * Retorna Instancia do Session Container
+     * @return object 
+     */
     public function getSc(){
         if($this->sc)
             return $this->sc;
@@ -59,6 +64,11 @@ class Exporta extends AbstractService{
         return $this->sc;
     }
      
+    /**
+     * Recebe e trata os dados do form para fazer a consulta
+     * @param array $data com campos do form
+     * @return array com todos os registros
+     */
     public function listaExptMar($data){
         //Trata os filtro para data anual
         $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
@@ -74,33 +84,75 @@ class Exporta extends AbstractService{
         return$this->getSc()->listaMar;
     }
     
-    public function geraArqsForMaritima(){
-        // Separar Adm em arquivos por tipo de pagamento e tipo de ocupacao
-        $data   = $this->getSc()->data;
-        $admCod = $data['administradora'];
-        //$baseWork = '\\s-1482\Imagem\Incendio_locacao\\';
-        $baseWork = '/var/www/zf2vv/data/work/';
-        $zipFile = $baseWork . $admCod . "_Maritima.zip";
+    /**
+     * Gerar o(s) arquivo(s) para exportação maritima 
+     * Coloca o(s) arquivo(s) dentro do zip 
+     * Retorna caminha absoluto do arquivo zip
+     * @param string $admFiltro
+     * @return string Caminho absoluto para o arquivo zip
+     */
+    public function geraArqsForMaritima($admFiltro){
+        //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\';
+        $this->baseWork = '/var/www/zf2vv/data/work/';
+        $zipFile = $this->baseWork . "Exporta_Maritima.zip";
         $this->openZipFile($zipFile);
-        $file['e01'] = $baseWork . $admCod . '_empresarial_ato.KM2';
-        $file['e02'] = $baseWork . $admCod . '_empresarial_1x1.KM2';
-        $file['e03'] = $baseWork . $admCod . '_empresarial_1x2.KM2';
-        $file['e04'] = $baseWork . $admCod . '_empresarial_mensal.KM2';
-        $file['r01'] = $baseWork . $admCod . '_residencial_ato.KM2';
-        $file['r02'] = $baseWork . $admCod . '_residencial_1x1.KM2';
-        $file['r03'] = $baseWork . $admCod . '_residencial_1x2.KM2';
-        $file['r04'] = $baseWork . $admCod . '_residencial_mensal.KM2';
-        foreach ($file as $key => $arq) {
-            if(!$this->setConteudo($key, $arq)){
-                $this->writeFile();
-                $this->closeFile();  
-                $this->addFileToZip($arq,$baseWork);
-            }
-        }  
+        if(!empty($admFiltro)){
+            $this->prepArqsForMaritima($admFiltro);
+            return $zipFile;            
+        }
+        $admArray = $this->getAdmCods();
+        foreach ($admArray as $admCod) {
+            $this->prepArqsForMaritima($admCod);
+        }        
         $this->zip->close();
         return $zipFile;
     }
     
+    /**
+     * Retorna somente os ids das Administradoras encontrados na consulta
+     * @return array
+     */
+    public function getAdmCods(){
+        $array = [];
+        $auxCod = 0;
+        foreach ($this->getSc()->listaMar as $value) {
+            if ($auxCod == 0 OR $auxCod != $value['administradora']['id']){
+                $array[] = $auxCod = $value['administradora']['id'];
+            }
+        }
+        return $array;
+    }
+    
+    /**
+     * Usa os dados da consulta armazenado em cache
+     * Gera os arquivos separando em empresarial e residencial
+     * Cada ocupação separando pela forma de pagamento
+     * @return string com caminho do arquivo zip
+     */
+    public function prepArqsForMaritima($admCod){
+        // Separar Adm em arquivos por tipo de pagamento e tipo de ocupacao
+        $file['e01'] = $this->baseWork . $admCod . '_empresarial_ato.KM2';
+        $file['e02'] = $this->baseWork . $admCod . '_empresarial_1x1.KM2';
+        $file['e03'] = $this->baseWork . $admCod . '_empresarial_1x2.KM2';
+        $file['e04'] = $this->baseWork . $admCod . '_empresarial_mensal.KM2';
+        $file['r01'] = $this->baseWork . $admCod . '_residencial_ato.KM2';
+        $file['r02'] = $this->baseWork . $admCod . '_residencial_1x1.KM2';
+        $file['r03'] = $this->baseWork . $admCod . '_residencial_1x2.KM2';
+        $file['r04'] = $this->baseWork . $admCod . '_residencial_mensal.KM2';
+        foreach ($file as $key => $arq) {
+            if(!$this->setConteudo($key, $arq)){
+                $this->writeFile();
+                $this->closeFile();  
+                $this->addFileToZip($arq,$this->baseWork);
+            }
+        }  
+    }
+    
+    /**
+     * Instancia um Object Zip e abre o arquivo indicado na string
+     * @param string $zipFile
+     * @return boolean
+     */
     public function openZipFile($zipFile){
         $this->zip = new \ZipArchive;
         if($this->zip->open($zipFile, \ZipArchive::OVERWRITE)  !== true){
@@ -109,23 +161,46 @@ class Exporta extends AbstractService{
         }
     }
 
-    public function addFileToZip($file,$baseWork){
-        $name = substr($file, strlen($baseWork));
+    /**
+     * Adiciona um arquivo no objeto zip aberto 
+     * Preciso do caminho absoluto e a da base do diretorio para separa o nome do arquivo
+     * @param type $file
+     * @param type $this->baseWork
+     */
+    public function addFileToZip($file){
+        $name = substr($file, strlen($this->baseWork));
         $this->zip->addFile($file,$name);
     }
 
+    /**
+     * Abre arquivo para gravar caso já exista limpa seu conteudo
+     * @param string $arq
+     */
     public function openFile($arq) {
         $this->fp = fopen($arq, "w");
     }
 
+    /**
+     * Escreve o conteudo no arquio aberto
+     */
     public function writeFile(){
         fwrite($this->fp, $this->saida);
     }
 
+    /**
+     * Fecha arquivo aberto
+     */
     public function closeFile(){
         fclose($this->fp);
     }
 
+    /**
+     * Gera o todo conteudo a gravar no arquivo 
+     * Filtra pelo tipo ocupação comercial ou residencial e tipo de pagamento
+     * @param string $filtro composto de ocupação e forma de pagamento
+     * @param string $arq nome do arquivo a ser gerado
+     * @return boolean retorna falso caso gere um arquivo
+     */
     public function setConteudo($filtro, $arq){
         $head = TRUE;
         $ocupacao = substr($filtro, 0, 1);
@@ -162,6 +237,9 @@ class Exporta extends AbstractService{
         return $head;
     }
 
+    /**
+     * Monta as 3 linhas do cabeçalho com dados da corretora
+     */
     public function montaHead(&$value){
         $this->setLine00($value);
         $this->setLine01();

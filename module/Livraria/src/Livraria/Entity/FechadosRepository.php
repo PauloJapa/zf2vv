@@ -319,6 +319,6 @@ class FechadosRepository extends AbstractRepository {
             $this->parameters['seguradora']    = $data['seguradora'];            
         }
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery3('o.formaPagto');         
+        return $this->executaQuery3('o.administradora');         
     }
 }
