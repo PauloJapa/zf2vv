@@ -44,7 +44,10 @@ class Exporta extends AbstractService{
     protected $tipoLocatario;
     protected $tipoLocador;
     protected $ativid;
-    
+    protected $qtdExportado;
+    protected $fechadoRepository;
+
+
     /**
      * Contruct recebe EntityManager para manipulação de registros
      * @param \Doctrine\ORM\EntityManager $em
@@ -81,7 +84,12 @@ class Exporta extends AbstractService{
         //Guardar dados do resultado 
         $this->getSc()->listaMar = $this->em->getRepository("Livraria\Entity\Fechados")->getListaExporta($this->data); 
         $this->getSc()->data     = $data;
-        return$this->getSc()->listaMar;
+        $obs = 'Paramentros da pesquisa:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['seguradora']) ? '' : 'Seguradora : ' . $data['seguradora'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $this->logForSis('fechados', '', 'Exportar', 'Listar Registros', $obs);
+        return $this->getSc()->listaMar;
     }
     
     /**
@@ -92,19 +100,29 @@ class Exporta extends AbstractService{
      * @return string Caminho absoluto para o arquivo zip
      */
     public function geraArqsForMaritima($admFiltro){
-        //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\';
-        $this->baseWork = '/var/www/zf2vv/data/work/';
+        $data = $this->getSc()->data; 
+        //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
+        $this->baseWork = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
+        if(!is_dir($this->baseWork)){
+            mkdir($this->baseWork , 0774);
+        }
         $zipFile = $this->baseWork . "Exporta_Maritima.zip";
+        $this->qtdExportado = 0;
+        $this->fechadoRepository = $this->em->getRepository("Livraria\Entity\Fechados");
         $this->openZipFile($zipFile);
         if(!empty($admFiltro)){
             $this->prepArqsForMaritima($admFiltro);
-            return $zipFile;            
-        }
-        $admArray = $this->getAdmCods();
-        foreach ($admArray as $admCod) {
-            $this->prepArqsForMaritima($admCod);
-        }        
+        }else{
+            $admArray = $this->getAdmCods();
+            foreach ($admArray as $admCod) {
+                $this->prepArqsForMaritima($admCod);
+            }    
+        }    
         $this->zip->close();
+        if($this->qtdExportado != 0){
+            $obs = 'Gravou os dados da exportação com sucesso.';
+            $this->logForSis('fechados', '', 'Exportar', 'Exportar Registros', $obs);
+        }
         return $zipFile;
     }
     
@@ -230,11 +248,32 @@ class Exporta extends AbstractService{
                 $head = FALSE;
             }
             $this->item ++;
+            $this->qtdExportado ++;
             $this->setLine03($value);
             $this->setLine05($value);
             $this->setLine10($value);
+            if($this->fechadoRepository->setGerado($value['id'])){
+                $this->logForGerado($value['id'], $value['codano']);
+            }
         }        
         return $head;
+    }
+
+    /**
+     * Registro o log de quando foi exportado e por quem
+     * @param string $id
+     * @param string $ano
+     */
+    public function logForGerado($id,$ano) {
+        //serviço LogFechamento
+        $log = new LogFechados($this->em);
+        $dataLog['fechados']   = $id; 
+        $dataLog['tabela']     = 'log_fechados';
+        $dataLog['controller'] = 'Exporta' ;
+        $dataLog['action']     = 'Exportar Maritima';
+        $dataLog['mensagem']   = 'Foi exportado para arquivo de texto para Maritima numero ' . $id . '/' . $ano;
+        $dataLog['dePara']     = '';
+        $log->insert($dataLog);        
     }
 
     /**

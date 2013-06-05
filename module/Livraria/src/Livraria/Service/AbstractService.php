@@ -630,5 +630,28 @@ abstract class AbstractService {
      */
     public function getFiltroTratado($index){
         return isset($this->data[$index]) ? $this->data[$index] : false ;
+    }  
+    
+    /**
+     * Gravação de log do sistema
+     * @param string $tabela
+     * @param string $id
+     * @param string $controller
+     * @param string $action
+     * @param string $obs
+     * @return no return
+     */
+    public function logForSis($tabela='', $id=0, $controller='', $action='', $obs=''){
+        if(empty($tabela))$tabela = 'Tabela NDN' ;
+        $log = new Log($this->em);
+        $dataLog['user']       = $this->getIdentidade()->getId();
+        $dataLog['data']       = (new \DateTime('now'))->format('d/m/Y');
+        $dataLog['idDoReg']    = $id;
+        $dataLog['tabela']     = $tabela;
+        $dataLog['controller'] = $controller ;
+        $dataLog['action']     = $action;
+        $dataLog['dePara']     = $obs;
+        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
+        $log->setFlush($this->getFlush())->insert($dataLog);
     }
 }
