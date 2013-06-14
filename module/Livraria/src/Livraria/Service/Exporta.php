@@ -72,7 +72,7 @@ class Exporta extends AbstractService{
      * @param array $data com campos do form
      * @return array com todos os registros
      */
-    public function listaExptMar($data){
+    public function listaExpt($data){
         //Trata os filtro para data anual
         $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
         $this->dateToObject('inicio');
@@ -82,14 +82,14 @@ class Exporta extends AbstractService{
         $this->data['administradora'] = $data['administradora'];
         $this->data['seguradora']     = $data['seguradora'];
         //Guardar dados do resultado 
-        $this->getSc()->listaMar = $this->em->getRepository("Livraria\Entity\Fechados")->getListaExporta($this->data); 
+        $this->getSc()->lista = $this->em->getRepository("Livraria\Entity\Fechados")->getListaExporta($this->data); 
         $this->getSc()->data     = $data;
         $obs = 'Paramentros da pesquisa:<br>';
         $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
         $obs .= empty($data['seguradora']) ? '' : 'Seguradora : ' . $data['seguradora'] .'<br>';
         $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
         $this->logForSis('fechados', '', 'Exportar', 'Listar Registros', $obs);
-        return $this->getSc()->listaMar;
+        return $this->getSc()->lista;
     }
     
     /**
@@ -133,7 +133,7 @@ class Exporta extends AbstractService{
     public function getAdmCods(){
         $array = [];
         $auxCod = 0;
-        foreach ($this->getSc()->listaMar as $value) {
+        foreach ($this->getSc()->lista as $value) {
             if ($auxCod == 0 OR $auxCod != $value['administradora']['id']){
                 $array[] = $auxCod = $value['administradora']['id'];
             }
@@ -225,7 +225,7 @@ class Exporta extends AbstractService{
         $formaPgto = substr($filtro, 1, 2);
         $this->item = 0;
         $this->saida = '';
-        foreach ($this->getSc()->listaMar as $value) {
+        foreach ($this->getSc()->lista as $value) {
             $this->ativid = $value['atividade']['codSeguradora'];
             $this->tipoLocatario = strtoupper(substr($value['locatario']['tipo'], 0, 1));
             $this->tipoLocador   = strtoupper(substr($value['locador']['tipo'], 0, 1));

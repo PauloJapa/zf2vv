@@ -1,4 +1,4 @@
-<h1>Resultado de Seguros Fechados para Exportação Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
+<h1>Resultado de Seguros Fechados para Exportação COL Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
 <br />
 <?php
 $coluns = array(
@@ -91,7 +91,7 @@ echo $this->ViewIndex('close');
     var formName = '<?php echo $this->formName ?>';
     function toExporta(adm){
         $('#id2').val(adm);
-        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'geraExporta')); ?>";
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'geraExportaCol')); ?>";
         envia(tar2, adm);
         return false;
     }  
