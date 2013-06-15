@@ -36,9 +36,10 @@ class ExportarController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));         
     }
     
-    public function geraExportaAction(){
+    public function geraExportaColAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
+        $this->service .= "Col";
         $service = new $this->service($this->getEm());
         $resul = $service->geraArqsForCOL($data['id']);
         // instancia uma view sem o layout da tela

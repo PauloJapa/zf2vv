@@ -14,6 +14,12 @@ $this->FormDefault(['legend' => 'Buscar Seguros fechados para Renovação com ba
     "<td>\r",
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
     "</td>\r",
+"</tr><tr>\r",
+    "<td><label class='checkbox'><input type='checkbox' name='validade[]' value='anual' checked>Fechado Anual</label>",
+    "</td>\r",
+"</tr><tr>\r",
+    "<td><label class='checkbox'><input type='checkbox' name='validade[]' value='mensal' checked>Fechado Mensal</label>",
+    "</td>\r",
 
 $this->FormDefault(['submit' => 'enviar'],'fim');
 

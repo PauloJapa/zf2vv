@@ -10,7 +10,7 @@ namespace Livraria\Entity;
 class RenovacaoRepository extends AbstractRepository {
 
     
-    public function findRenovar($ini,$fim,$adm){
+    public function findRenovar($ini,$fim,$adm, $val=null){
         if(!empty($ini)){
             $date = explode("/", $ini);
             $ini  = $date[2] . $date[1] . $date[0];
@@ -19,30 +19,29 @@ class RenovacaoRepository extends AbstractRepository {
             $date = explode("/", $fim);
             $fim  = $date[2] . $date[1] . $date[0];
         }
-        $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb->select('f')
-            ->from('Livraria\Entity\Fechados', 'f');
+           
+        $this->where = ' f.status <> :status AND f.fim BETWEEN :inicio AND :fim';
+        $this->parameters['status']  = 'R';
+        $this->parameters['inicio']  = $ini;
+        $this->parameters['fim']  = $fim;
+        
         if(!empty($adm)){
-            $qb->where(" f.status <> :status
-                    AND   f.administradora = :administradora
-                    AND   f.fim BETWEEN :inicio AND :fim
-                ")
-                ->setParameters([
-                    'status' => 'R',
-                    'administradora' => $adm,
-                    'inicio' => $ini,
-                    'fim' => $fim
-                ]);
-        }else{
-            $qb->where(" f.status <> :status
-                    AND   f.fim BETWEEN :inicio AND :fim
-                ")
-                ->setParameters([
-                    'status' => 'R',
-                    'inicio' => $ini,
-                    'fim' => $fim
-                ]);
+            $this->where .= '  AND f.administradora = :administradora';
+            $this->parameters['administradora']  = $adm;
         }
+        
+        if(isset($val) AND count($val) == 1){
+            $this->where .= '  AND f.validade = :validade';
+            $this->parameters['validade']  = $val[0];            
+        }
+        
+        // Monta a dql para fazer consulta no BD
+        $qb = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('f')
+                ->from('Livraria\Entity\Fechados', 'f')
+                ->where($this->where)
+                ->setParameters($this->parameters); 
         
         return $qb->getQuery()->getResult();
     }

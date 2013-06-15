@@ -98,7 +98,7 @@ class RenovacaosController  extends CrudController {
         $this->getDadosAnterior();
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora']);
+                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora'], $this->data['validade']);
         return new ViewModel(['data' => $fechados]);
     }
     
@@ -107,7 +107,7 @@ class RenovacaosController  extends CrudController {
         $this->getDadosAnterior();
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora']);
+                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora'], $this->data['validade']);
         $service = new $this->service($this->getEm());
         foreach ($fechados as $fechado) {
             $resul = $service->renovar($fechado);
