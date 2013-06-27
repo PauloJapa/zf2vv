@@ -472,7 +472,7 @@ class Orcamento extends AbstractService {
         if(isset($this->data['gerado']))
             $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
         $this->dePara .= $this->diffAfterBefore('comissao', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
-        $this->dePara .= $this->diffAfterBefore('codFechado', $ent->getCodFechado(), $this->data['codFechado']);
+        $this->dePara .= $this->diffAfterBefore('Fechado nº', $ent->getFechadoId(), $this->data['fechadoId']);
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
         //Juntar as alterações no imovel se houver
         $this->dePara .= $this->deParaImovel;

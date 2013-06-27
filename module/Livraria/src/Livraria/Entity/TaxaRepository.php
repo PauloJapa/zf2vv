@@ -52,10 +52,10 @@ class TaxaRepository extends EntityRepository {
                 ->where(" t.seguradora = :seguradora
                     AND   t.classe = :classe
                     AND   t.inicio <= :inicio
-                    AND   t.ocupacao <= :ocupacao
-                    AND   t.validade <= :validade
-                    AND   t.comissao <= :comissao
-                    AND   t.tipoCobertura <= :cobertura
+                    AND   t.ocupacao = :ocupacao
+                    AND   t.validade = :validade
+                    AND   t.comissao = :comissao
+                    AND   t.tipoCobertura = :cobertura
                     ")
                 ->setParameter('seguradora', $seguradora)
                 ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())

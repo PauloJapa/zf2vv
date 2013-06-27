@@ -32,18 +32,16 @@ class LocatariosController extends CrudController {
         }
         $this->formData->setData($data);
         $filtro=[];
-        
-        if(isset($data['nome']) AND !empty($data['nome'])){
+        if(!empty($data['nome'])){
             $filtro['nome'] = $data['nome'];
         }
-        
-        if(isset($data['documento']) AND !empty($data['documento'])){
+        if(!empty($data['documento'])){
             $filtro[$data['cpfOuCnpj']] = $data['documento'];
         }
         
         $list = $this->getEm()
                     ->getRepository($this->entity)
-                    ->pesquisa($data);
+                    ->pesquisa($filtro);
         
         return parent::indexAction($filtro, $orderBy, $list);
     }

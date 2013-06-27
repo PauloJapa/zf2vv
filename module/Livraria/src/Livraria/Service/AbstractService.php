@@ -294,9 +294,15 @@ abstract class AbstractService {
         if((!empty($this->data[$index])) 
                 && ($this->data[$index] != "vigente") 
                 && ($this->data[$index] != "30/11/-0001") 
+                && ($this->data[$index] != "-") 
                 && ($this->data[$index] != "00/00/0000")){
             $date = explode("/", $this->data[$index]);
-            $this->data[$index]    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+            try {
+                $this->data[$index]    = new \DateTime($date[1] . '/' . $date[0] . '/' . $date[2]);
+            }  catch (Exception $e){
+                echo 'exceção: ', $e->getMessage(), "\n Erro no valor da data a ser convertida";
+                var_dump($this->data[$index]);               
+            }
         }else{
             $this->data[$index]    = new \DateTime("01/01/1000");
         }
@@ -498,12 +504,9 @@ abstract class AbstractService {
         
         if ($this->data['validade'] == 'mensal'){
             $diff = $this->data['fim']->diff($this->data['inicio']);
-            var_dump($diff->days);
             if($diff->days < 31){
-            var_dump($total);
                 $recalculaPeriodo = $total / 31 ;
                 $total = $recalculaPeriodo * $diff->days ;
-            var_dump($total);
             }
         }
         

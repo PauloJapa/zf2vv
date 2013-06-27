@@ -49,37 +49,33 @@ class LocatarioRepository extends EntityRepository {
      * @return array
      */
     public function pesquisa(array $filtros){
-        //cria variaveis cpf e cnpj
-        $filtros['cpf'] = '';
-        $filtros['cnpj'] = '';
-        if(!isset($filtros['nome']))
-            $filtros['nome']='';
-        //Monta parametros se conteudo for vazio ele coloca um espaco e depois acresente o coringa '%'
-        $paramentros['locatario'] =$filtros['nome'] == '' ? ' ' : $filtros['nome'] . '%';
-        $where = '';
-        if (!empty($filtros['documento'])) {
-            $filtros[$filtros['cpfOuCnpj']] = $filtros['documento'];
-            //Monta clasula where e seus paramentros
-            if ($filtros['cpfOuCnpj'] == 'cpf') {
-                $where = "(u.nome LIKE :locatario OR u.cpf LIKE :cpf) AND u.tipo = :tipo";
-                $paramentros['cpf'] = $filtros['cpf'] == '' ? ' ' : $filtros['cpf'] . '%';
-                $paramentros['tipo'] = 'fisica';
-            } else {
-                $where = "(u.nome LIKE :locatario OR u.cnpj LIKE :cnpj) AND u.tipo = :tipo";
-                $paramentros['cnpj'] = $filtros['cnpj'] == '' ? ' ' : $filtros['cnpj'] . '%';
-                $paramentros['tipo'] = 'juridica';
-            }
+        // Monta clasula where
+        $this->where = 'u.id <> :id';
+        $this->parameters['id']  = 'null';
+        
+        if(isset($filtros['nome'])){
+            $this->where .= ' AND u.nome LIKE :nome';
+            $this->parameters['nome']  = $filtros['nome'] . '%';            
         }
-        $query = $this->getEntityManager()
+        
+        if(isset($filtros['cpf'])){
+            $this->where .= ' AND u.cpf LIKE :cpf';
+            $this->parameters['cpf']  = ereg_replace("[' '-./ t]",'',$filtros['cpf']) . '%'; 
+        }
+        
+        if(isset($filtros['cnpj'])){
+            $this->where .= ' AND u.cnpj LIKE :cnpj';
+            $this->parameters['cnpj']  = ereg_replace("[' '-./ t]",'',$filtros['cnpj']) . '%'; 
+        }
+        
+        // Retorna uma qb para ser feita a paginação 
+        return  $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('u')
                 ->from('Livraria\Entity\Locatario', 'u')
+                ->where($this->where)
+                ->setParameters($this->parameters)
                 ->orderBy('u.nome');
-        
-        if(!empty($where))
-            $query->where($where)->setParameters($paramentros);
-        
-        return $query;
     }
     
 }
