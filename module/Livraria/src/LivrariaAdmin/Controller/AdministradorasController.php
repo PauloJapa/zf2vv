@@ -18,6 +18,9 @@ class AdministradorasController extends CrudController {
     }
     
     public function indexAction(array $filtro = array()){
+        // Faz chama para atualizar as adm com seu codigo col
+        //$service = $this->getServiceLocator()->get($this->service);;
+        //$service->setCodCol();
         $this->verificaSeUserAdmin();
         $orderBy = ['nome' => 'ASC'];
         $data = $this->getRequest()->getPost()->toArray();

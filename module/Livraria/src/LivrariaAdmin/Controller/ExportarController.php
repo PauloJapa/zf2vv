@@ -41,7 +41,7 @@ class ExportarController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         $this->service .= "Col";
         $service = new $this->service($this->getEm());
-        $resul = $service->geraArqsForCOL($data['id']);
+        $resul = $service->geraExpForCOL($data['id']);
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('data' => $resul,'admFiltro' => $data['id']));
         $viewModel->setTerminal(true);
@@ -56,6 +56,7 @@ class ExportarController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new $this->form($this->getEm());
         $this->formData->setCOL();
+        $this->formData->get('seguradora')->setValue('2');
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());

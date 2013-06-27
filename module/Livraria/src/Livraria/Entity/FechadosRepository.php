@@ -47,12 +47,12 @@ class FechadosRepository extends AbstractRepository {
      * Executa a query que é a mesma para Mensal, Anual e Imoveis Desocupados do mapa de renovação.
      * @return array
      */
-    public function executaQuery1($orderBy='', $groupBy=''){
+    public function executaQuery1($orderBy='', $groupBy='', $tabela='Fechados'){
         // Monta a dql para fazer consulta no BD
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('o,ad,at,im')
-                ->from('Livraria\Entity\Fechados', 'o')
+                ->from('Livraria\Entity\\' . $tabela, 'o')
                 ->join('o.administradora', 'ad')
                 ->join('o.atividade', 'at')
                 ->join('o.imovel', 'im')
@@ -185,17 +185,16 @@ class FechadosRepository extends AbstractRepository {
     public function getMapaRenovacaoMensal($data) {
         $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.fim >= :inicio AND o.fim <= :fim AND o.validade = :valido AND o.mesNiver = :niver';
-        $this->parameters['inicio']  = $data['inicioMensal'];
-        $this->parameters['fim']     = $data['fimMensal'];
+        $this->where = 'o.validade = :valido AND o.mesNiver = :niver AND o.status = :status';
         $this->parameters['valido']  = 'mensal';
         $this->parameters['niver']   = $data['mes'];
+        $this->parameters['status']  = 'F';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
         }
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQueryMapaRenovacao();
+        return $this->executaQuery1('o.administradora','','Orcamento');
     }
     
     /**

@@ -24,6 +24,12 @@ class Administradora extends Filtro {
      * @var string
      */
     protected $nome;
+    
+    /**
+     * @ORM\Column(name="codigo_col", type="integer")
+     * @var int
+     */
+    protected $codigoCol;
 
     /**
      * @ORM\Column(type="text")
@@ -162,6 +168,15 @@ class Administradora extends Filtro {
 
     public function setNome($nome) {
         $this->nome = $nome;
+        return $this;
+    }
+    
+    public function getCodigoCol() {
+        return $this->codigoCol;
+    }
+
+    public function setCodigoCol($codigoCol) {
+        $this->codigoCol = $codigoCol;
         return $this;
     }
 
@@ -369,6 +384,7 @@ class Administradora extends Filtro {
         $data = $this->getEndereco()->toArray();
         $data['id']             = $this->getId();
         $data['nome']           = $this->getNome();
+        $data['codigoCol']      = $this->getCodigoCol();
         $data['apelido']        = $this->getApelido();
         $data['cnpj']           = $this->getCnpj();
         $data['tel']            = $this->getTel();

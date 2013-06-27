@@ -23,6 +23,7 @@ class Administradora extends AbstractEndereco {
               
         $this->setInputText('id', 'Codigo');
         $this->setInputText('nome', 'Nome',['placeholder' => 'Entre com o nome']);
+        $this->setInputText('codigoCol', 'Codigo no Col');
         $this->setInputText('apelido', 'Apelido', ['placeholder' => 'Nome fantasia']);
 
         $attributes=[];

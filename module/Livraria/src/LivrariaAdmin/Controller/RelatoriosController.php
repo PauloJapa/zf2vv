@@ -5,6 +5,8 @@ namespace LivrariaAdmin\Controller;
 use Zend\View\Model\ViewModel;
 use Zend\Session\Container as SessionContainer;
 
+use SisBase\Conexao\Mysql;
+
 require '/var/www/zf2vv/module/Livraria/src/Livraria/Service/PHPExcel.php';
 
 class RelatoriosController extends CrudController {
@@ -259,6 +261,9 @@ class RelatoriosController extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */    
     public function mapaRenovacaoAction(){
+        $mypdo = new Mysql();
+        $data = $mypdo->q('Select * from parametro_sis')->fetch();
+        //var_dump($data);
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
         $this->formData->setMapaRenovacao();

@@ -220,7 +220,6 @@ class OrcamentosController extends CrudController {
                 $result = $service->insert($data, TRUE);
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
-                    $this->flashMessenger()->addMessage('Calculado com Sucesso !!!');
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -237,7 +236,6 @@ class OrcamentosController extends CrudController {
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->insert($data);
                 if($result[0] === TRUE){
-                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
                     $sessionContainer->idOrcamento = $result[1];
                     unset($sessionContainer->administradora);
                     return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
@@ -357,7 +355,6 @@ class OrcamentosController extends CrudController {
                 $result = $service->update($data, TRUE);
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
-                    $this->flashMessenger()->addMessage('Calculado com sucesso!!!');
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -373,7 +370,6 @@ class OrcamentosController extends CrudController {
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data);
                 if($result === TRUE){
-                    $this->flashMessenger()->addMessage('Registro salvo com sucesso!!!');
                     //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
                 }else{
                     foreach ($result as $value) {
