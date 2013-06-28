@@ -118,7 +118,11 @@ class Imovel extends AbstractService {
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
         $this->dePara .= $this->diffAfterBefore('Locatario', $ent->getLocatario(), $this->data['locatario']);
-        $this->dePara .= $this->diffAfterBefore('Ref. Imovel', $ent->getRefImovel(), $this->data['refImovel']);
+        $setRefImovel = $this->diffAfterBefore('Ref. Imovel', $ent->getRefImovel(), $this->data['refImovel']);
+        if(!empty($setRefImovel)){
+            $this->dePara .= $setRefImovel;
+            $this->cascateUpdateRefImovel($ent->getId(), $this->data['refImovel']);
+        }
         $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
         $this->dePara .= $this->diffAfterBefore('Telefone', $ent->getTel(), $this->data['tel']);
         $this->dePara .= $this->diffAfterBefore('Bloco', $ent->getBloco(), $this->data['bloco']);
@@ -174,5 +178,16 @@ class Imovel extends AbstractService {
         }else{
             return TRUE;
         }
+    }
+
+    /**
+     * Faz a atualização de todos os seguros com a nova referencia
+     * @param integer $id
+     * @param string  $setRefImovel
+     */
+    public function cascateUpdateRefImovel($id, $setRefImovel) {
+        $this->em->getRepository("Livraria\Entity\Orcamento")->cascateUpdateRefImovel($id, $setRefImovel);
+        $this->em->getRepository("Livraria\Entity\Fechados")->cascateUpdateRefImovel($id, $setRefImovel);
+        $this->em->getRepository("Livraria\Entity\Renovacao")->cascateUpdateRefImovel($id, $setRefImovel);
     }
 }

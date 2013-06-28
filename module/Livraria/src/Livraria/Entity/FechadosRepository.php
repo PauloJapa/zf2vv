@@ -338,4 +338,29 @@ class FechadosRepository extends AbstractRepository {
         
         return $query;
     }
+    
+    /**
+     * Faz a atualização de todos os seguros com a nova referencia
+     * @param integer $id
+     * @param string  $setRefImovel
+     * @return boolean
+     */
+    public function cascateUpdateRefImovel($id='', $setRefImovel=''){
+        if(empty($id) OR empty($setRefImovel)){
+            return FALSE;
+        }
+        
+        $this->getEntityManager()
+        ->createQueryBuilder()
+        ->update('Livraria\Entity\Fechados', 'o')
+        ->set('o.refImovel', ':ref')
+        ->where('o.imovel = :id')
+        ->setParameter('ref', $setRefImovel)
+        ->setParameter('id', $id)
+        ->getQuery()
+        ->execute();
+        
+        return TRUE;
+        
+    }
 }

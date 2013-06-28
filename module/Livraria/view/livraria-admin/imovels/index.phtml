@@ -1,4 +1,4 @@
-<h1>Imovels</h1>
+<h1>Imóveis</h1>
 <br />
 
 <p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Imovel</span></p>
@@ -11,9 +11,21 @@
         echo 
         $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
             "<td>\r",
+                $this->FormDefault(['rua'], 'text'),
+            "</td>\r<td>",
+                $this->FormDefault(['refImovel'], 'text'),
+            "</td>\r",
+        "</tr><tr>\r",
+            "<td>\r",
+                $this->FormDefault(['locador'=>'hidden']),
+                $this->FormDefault(['name' => 'locadorNome','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),
+            "</td>\r<td>",
+                $this->FormDefault(['locatario'=>'hidden']),
+                $this->FormDefault(['name' => 'locatarioNome','icone' => 'icon-search','js' => 'autoCompLocatario()','span' => "popLocatario' style='position:absolute"],'icone'),
+            "</td>\r",
+        "</tr><tr>\r",
+            "<td colspan=2 align=center>\r",
                 $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp'], 'hidden'),
-                $this->FormDefault(['rua'], 'textLine'),
-            "</td><td style='width:60%;'>\r",
                 $this->FormDefault(['enviar'], 'submitOnly'),
             "</td>\r",
         $this->FormDefault([],'fim');
@@ -53,6 +65,12 @@ echo $this->ViewIndex('close');
     var formName = '<?php echo $this->formName ?>';
     function buscar(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        if($('#locadorNome').val() == ''){
+            $('#locador').val('');
+        }
+        if($('#locatarioNome').val() == ''){
+            $('#locatario').val('');
+        }
         envia(tar,'buscar',formName);
     }  
     function edit(id){
@@ -70,6 +88,22 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         document.getElementById('id2').value = id ;
         envia(tar,id);        
+    }
+    function autoCompLocador(){
+        document.getElementById('autoComp').value = 'locadorNome';
+        var filtros = 'locadorNome,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locadors','action'=>'autoComp')); ?>";
+        var returns = Array('locador','locadorNome');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popLocador',returns,'4',functionCall);
+    }
+    function autoCompLocatario(){
+        document.getElementById('autoComp').value = 'locatarioNome';
+        var filtros = 'locatarioNome,autoComp';
+        var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locatarios','action'=>'autoComp')); ?>";
+        var returns = Array('locatario','locatarioNome');
+        var functionCall = '';
+        autoComp2(filtros,servico,'popLocatario',returns,'3',functionCall);
     }
 </script>
 

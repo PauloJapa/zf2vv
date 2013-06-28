@@ -80,8 +80,8 @@
         autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
     }  
     function autoCompLocador(){
-        document.getElementById('autoComp').value = '';
-        var filtros = 'locadorNome,administradora';
+        document.getElementById('autoComp').value = 'locadorNome';
+        var filtros = 'locadorNome,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'locadors','action'=>'autoComp')); ?>";
         var returns = Array('locador','locadorNome');
         var functionCall = '';

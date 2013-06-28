@@ -12,7 +12,7 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Dados do Imovel', 'hidden' => 'id'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Dados do Imóvel', 'hidden' => 'id'],'inicio',$this, $form),
     "<td colspan='2'>",
         $this->FormDefault(['subOpcao','ajaxStatus','autoComp','locador','atividade','locatario'], 'hidden'),
         $this->FormDefault(['name' => 'locadorDesc','icone' => 'icon-search','js' => 'autoCompLocador()','span' => "popLocador' style='position:absolute"],'icone'),

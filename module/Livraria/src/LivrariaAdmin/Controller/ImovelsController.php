@@ -35,17 +35,29 @@ class ImovelsController extends CrudController {
         }
         $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setLocadorLocatario();
         if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
             return parent::indexAction($filtro, $orderBy);
         }
+        $this->formData->setData($data);
         $filtro=[];
+        
         if(!empty($data['rua'])){
             $filtro['rua'] = $data['rua'];
+        }
+        if(!empty($data['refImovel'])){
+            $filtro['refImovel'] = $data['refImovel'];
+        }
+        if(!empty($data['locador'])){
+            $filtro['locador'] = $data['locador'];
+        }
+        if(!empty($data['locatario'])){
+            $filtro['locatario'] = $data['locatario'];
         }
         
         $list = $this->getEm()
                     ->getRepository($this->entity)
-                    ->pesquisa($data);
+                    ->pesquisa($filtro);
         
         return parent::indexAction($filtro, $orderBy, $list);
     }

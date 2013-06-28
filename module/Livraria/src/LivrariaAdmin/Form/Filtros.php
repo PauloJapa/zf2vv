@@ -26,6 +26,8 @@ class Filtros  extends AbstractForm {
         
         $this->setInputText('rua', 'Rua');
         
+        $this->setInputText('refImovel', 'Referência Imóvel');
+        
         $this->setInputSubmit('enviar', 'Pesquisar', ['onClick' => 'return buscar()']);
         
         $this->setInputRadio('cpfOuCnpj', 'Escolha', ['cpf' => 'CPF','cnpj' => 'CNPJ']);
