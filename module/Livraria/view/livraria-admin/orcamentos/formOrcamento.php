@@ -194,6 +194,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';
     var varVazio = ''; //Var para testar se campo cnpj ou cpf esta vazio
+    var imprime = '<?php echo $this->imprimeProp ?>';
     
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
@@ -247,6 +248,14 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         return false;
     }
 
+    function checkPrintProp(){
+        if(imprime == '1'){
+            printProposta(true);
+        }
+    }
+
+    setTimeout("checkPrintProp()",500);
+
     function viewLogsOrcamento(){
         var user = document.getElementById('user').value;
         document.getElementById('user').value = '';
@@ -267,9 +276,24 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         return false;
     }
 
-    function printProposta(){
-        envia("<? echo $prt ?>",'print',formName,'new');
+    function printProposta(verificaPopup){
+        if(verificaPopup){
+            hasPopupBlocker();
+            setTimeout("sleepPrintProp()",tempoPopup);
+            return false;
+        }
+        doPrintProp();
         return false;
+    }
+
+    function sleepPrintProp(){
+        if(blockTest){
+            doPrintProp();        
+        }
+    }
+
+    function doPrintProp(){
+        envia("<? echo $prt ?>",'print',formName,'new');        
     }
 
     function cleanCoberturas(){

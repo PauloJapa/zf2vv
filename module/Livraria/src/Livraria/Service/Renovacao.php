@@ -94,7 +94,7 @@ class Renovacao extends AbstractService {
                     $this->data['seguradora'], 
                         $this->data['atividade'], 
                         $this->data['criadoEm'], 
-                        $this->data['comissao'],
+                        str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade']
         );
         
@@ -486,9 +486,9 @@ class Renovacao extends AbstractService {
             $this->strToFloat($seg->getPremioTotal() / 3),
             $this->strToFloat($seg->getPremioTotal() / 12)
         ];
-        $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
+        $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto());
         $this->pdf->setL14();
-        //$this->pdf->setObs($obs);
+        $this->pdf->setObsGeral();
         
     }
     

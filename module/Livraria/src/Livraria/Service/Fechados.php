@@ -176,9 +176,9 @@ class Fechados extends AbstractService {
             $this->strToFloat($seg->getPremioTotal() / 3),
             $this->strToFloat($seg->getPremioTotal() / 12)
         ];
-        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false);
+        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto());
         $pdf->setL14();
-        //$pdf->setObs($obs);
+        $pdf->setObsGeral();
         $pdf->Output();
     }
 

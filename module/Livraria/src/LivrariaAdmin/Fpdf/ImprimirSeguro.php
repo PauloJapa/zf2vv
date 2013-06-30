@@ -55,12 +55,12 @@ class ImprimirSeguro extends FPDF{
     }
     
     public function setL3($locatario,$doc){
-        $l3 = ['Locatário:',$locatario,'CGC/CPF:',$doc];
+        $l3 = ['Locatário:',$locatario,'CGC/CPF:',$this->formatarCPF_CNPJ($doc)];
         $this->set2Cell($l3, 20, 21);
     }
     
     public function setL4($locador,$doc){
-        $l4 = ['Locador:',$locador,'CGC/CPF:',$doc];
+        $l4 = ['Locador:',$locador,'CGC/CPF:',  $this->formatarCPF_CNPJ($doc)];
         $this->set2Cell($l4, 20, 21);
     }
     public function setL5($end){
@@ -121,12 +121,17 @@ class ImprimirSeguro extends FPDF{
      * @param array $vlr
      * @param boolean $mensal Decide se exibe ou não valor para pagamento mensal 
      */
-    public function setL13(array $vlr,$mensal=TRUE){
-        $this->set5Cell(['Foma de Pagamento 1(ato)','Parcela(s) de',$vlr[0]]);
-        $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5);
-        $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5);
-        if(!$mensal)
-            $this->set5Cell(['Forma de Pagamento 12 (mensal)','Parcela(s) de',$vlr[3]], 8, 5);
+    public function setL13(array $vlr,$mensal=TRUE, $formaPagto=''){
+        if($mensal){
+            return;
+        }
+        if(!empty($formaPagto)){
+            $fill[$formaPagto] = true;
+        }
+        $this->set5Cell(['Foma de Pagamento 1(ato)','Parcela(s) de',$vlr[0]], 12, 7, isset($fill['01'])?true:false);
+        $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5, isset($fill['02'])?true:false);
+        $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);
+        //$this->set5Cell(['Forma de Pagamento 12 (mensal)','Parcela(s) de',$vlr[3]], 8, 5, isset($fill['04'])?true:false);
         $this->Ln();
     }
     /**
@@ -134,7 +139,7 @@ class ImprimirSeguro extends FPDF{
      */
     public function setL14(){
         $this->SetFont('Times','B',12);
-        $this->Write(7, 'Franquias');
+        $this->Write(6, 'Franquias');
         $this->Ln();
         $this->set4Cell(['Coberturas','Limites'], ['B','B'], ['C','C'], 50);
         $this->set4Cell(['Queda de Raio','10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 700,00'], ['',''], ['','C'], 50, 10);
@@ -142,6 +147,17 @@ class ImprimirSeguro extends FPDF{
         $this->set4Cell(['Vendaval / Granizo / Fumaça','10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 700,00'], ['',''], ['','C'], 50, 10);
         $this->Ln();
     }
+    
+    public function setObsGeral($obs=''){
+        $txt = 'Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 100,00 será';
+        $txt .= '\nconsiderada o prêmio de R$ 100,00 por emissãode apólice.';
+        $this->SetFont('Times','B',12);
+        $this->Cell(190, 6, 'Observação',1,0,'C');
+        $this->Ln();
+        $this->SetFont('Times','',10);
+        $this->MultiCell(0, 4, $txt, 1);
+    }
+    
     /**
      * Coloca Observação do seguros caso houver
      * @param text $obs
@@ -186,13 +202,14 @@ class ImprimirSeguro extends FPDF{
         $this->Cell(190 - $w, 7, $txt[1],1,1,$align[1]);
     }
     
-    public function set5Cell(array $txt,$f=12,$h=7,array $bold=['B','B',''],array $align=['','R','R']){
+    public function set5Cell(array $txt,$f=12,$h=7, $fill=false, array $bold=['B','B',''], array $align=['','R','R']){
+        $this->SetFillColor(224,235,255);
         $this->SetFont('Times',$bold[0],$f);
-        $this->Cell(110, $h, $txt[0],'LTB',0,$align[0]);
+        $this->Cell(110, $h, $txt[0],'LTB',0,$align[0], $fill);
         $this->SetFont('Times',$bold[1],$f);
-        $this->Cell(40, $h, $txt[1],'RTB',0,$align[1]);
+        $this->Cell(40, $h, $txt[1],'RTB',0,$align[1], $fill);
         $this->SetFont('Times',$bold[2],$f);
-        $this->Cell(40, $h, $txt[2],1,1,$align[2]);
+        $this->Cell(40, $h, $txt[2],1,1,$align[2], $fill);
     }
 
         // Page header
@@ -299,6 +316,43 @@ class ImprimirSeguro extends FPDF{
 
     public function setNumSeguro($numSeguro) {
         $this->numSeguro = $numSeguro;
+    }  
+
+    /**
+     * Coloca a mascara no campo digitado 
+     * Ou retorna campo limpo livre da formatação
+     * @param string  $campo
+     * @param boolean $formatado
+     * @return string 
+     */
+    public function formatarCPF_CNPJ($campo, $formatado = true){
+	//retira formato
+	$codigoLimpo = ereg_replace("[' '-./ t]",'',$campo);
+	// pega o tamanho da string menos os digitos verificadores
+	$tamanho = (strlen($codigoLimpo) -2);
+	//verifica se o tamanho do código informado é válido
+	if ($tamanho != 9 && $tamanho != 12){
+		return false; 
+	}
+ 
+	if ($formatado){ 
+		// seleciona a máscara para cpf ou cnpj
+		$mascara = ($tamanho == 9) ? '###.###.###-##' : '##.###.###/####-##'; 
+ 
+		$indice = -1;
+		for ($i=0; $i < strlen($mascara); $i++) {
+			if ($mascara[$i]=='#') $mascara[$i] = $codigoLimpo[++$indice];
+		}
+		//retorna o campo formatado
+		$retorno = $mascara;
+ 
+	}else{
+		//se não quer formatado, retorna o campo limpo
+		$retorno = $codigoLimpo;
+	}
+ 
+	return $retorno;
+ 
     }
 
 }

@@ -281,11 +281,17 @@ function valida(ids){
     return true;
 }
 
+var janelaAberta = null;
 function envia(action,opc,frm,tar){
     if(frm == null)frm = document.getElementById('form'); else frm = document.getElementById(frm);
     if((action == null)||(action == ""))action = "/admin/orcamentos";
     if(opc == null)opc = "";
-    if(tar != null)frm.target = tar;
+    if(tar != null){
+        if(tar != ''){
+            //checkJanela(tar); Abandonado por não funcionario como esperado
+        }
+        frm.target = tar;
+    }
     frm.subOpcao.value = opc;
     frm.action = action ;
     try{
@@ -295,4 +301,55 @@ function envia(action,opc,frm,tar){
         erro = true;
     }
     frm.submit() ;
+}
+
+function checkJanela(tar){
+    // verifica se a janela está aberta
+    if(janelaAberta != null && !janelaAberta.closed){
+        janelaAberta.close();
+    }  
+    janelaAberta = null;
+    janelaAberta = window.open('',tar);
+}
+
+/**
+ * Verifica se existe um bloqueador de popup ativo
+ * blockTest deve ser uma var Global onde será guardado os status do popup
+ */
+
+var blockTest  = false;
+var tempoPopup = 0;
+
+function hasPopupBlocker(){
+    blockTest = false;
+    tempoPopup = 0;
+    var myPopup = window.open("popupTest", "popupTest", "directories=no,height=150,width=150,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
+    if (!myPopup){
+        blockTest = false;
+    }else{
+        if (navigator.userAgent.indexOf("Chrome") != -1) { 
+            tempoPopup = 500;
+            myPopup.onload = function() {
+                setTimeout(function() {
+                    if (myPopup.screenX === 0) {
+                        blockTest = false;
+                    } else {
+                        blockTest = true;
+                        myPopup.close();  
+                    }
+                }, 100);
+            };
+        }else{
+            blockTest = true;
+            myPopup.close(); 
+        } 
+    }
+
+    setTimeout("checkBlocker()",tempoPopup)
+//checkBlocker();
+}
+
+function checkBlocker(){
+    if(!blockTest)
+        alert("Você possui um bloqueador de popup ativo, para exibir a proposta você desabilita-lo por favor !!");    
 }

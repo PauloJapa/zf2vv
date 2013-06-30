@@ -230,7 +230,7 @@ class OrcamentosController extends CrudController {
             }
         }
 
-        
+        $imprimeProp = '0';
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
@@ -239,6 +239,7 @@ class OrcamentosController extends CrudController {
                     $sessionContainer->idOrcamento = $result[1];
                     unset($sessionContainer->administradora);
                     return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
+                    $imprimeProp = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -251,7 +252,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome']])); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp'=>$imprimeProp])); 
     }
     
     /**
@@ -365,12 +366,14 @@ class OrcamentosController extends CrudController {
             }
         }
         
+        $imprimeProp = '0';        
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data);
                 if($result === TRUE){
                     //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+                        $imprimeProp = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -382,7 +385,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome']])); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp'=>$imprimeProp])); 
     }
     
     
@@ -399,7 +402,15 @@ class OrcamentosController extends CrudController {
         //Nome diferente mas com a mesma função
         $this->printPropostaAction();
     }
-/*                          FUNÇOES DE IMPORTAÇÃO
+    
+    public function popupTestAction(){
+        echo "<!DOCTYPE html>",
+             "<html><head></head><body>teste popup</body></html>";
+        die;
+    }
+    
+    
+    /*                          FUNÇOES DE IMPORTAÇÃO
     public function importarAction(){
         echo
         '<html><head>',
