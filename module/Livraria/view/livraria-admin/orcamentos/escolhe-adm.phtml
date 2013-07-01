@@ -13,7 +13,7 @@
 <?php
 $form = $this->form; 
 
-$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'orcamentos','action'=>'edit')));
+$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'orcamentos','action'=>'new')));
 
 $form->prepare();
 echo 
@@ -41,6 +41,11 @@ $this->FormDefault(['submit' => 'enviar'],'fim');
     }
     function buscaAdministradora(){
         envia(tar,'escolher',formName);
+    }
+
+    function salvar(){
+        buscaAdministradora();
+        return false;
     }
 
 </script>

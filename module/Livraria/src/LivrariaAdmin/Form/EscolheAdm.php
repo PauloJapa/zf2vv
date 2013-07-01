@@ -33,7 +33,7 @@ class EscolheAdm extends AbstractForm {
                        'autoComplete'=>'off'];
         $this->setInputText('administradoraDesc', 'Administradora', $attributes);
 
-        $this->setInputSubmit('enviar', 'Enviar');
+        $this->setInputSubmit('enviar', 'Iniciar Orçamento');
         
     }
     

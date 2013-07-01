@@ -182,12 +182,12 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         
 $this->FormDefault([],'fieldFim'),
         
-$this->FormDefault(['enviar','getpdf','fecha'],'submits');
+$this->FormDefault(['enviar','getpdf','fecha','novoOrca'],'submits');
 
 $this->FormDefault([],'fim');
 
 $log = isset($this->param['log']) ? $this->param['log'] : 'logOrcamento';
-$tar = isset($this->param['tar']) ? $this->param['tar'] : '/admin/fechados';
+$tar = isset($this->param['tar']) ? $this->param['tar'] : '/admin/orcamentos/escolheAdm';
 $prt = isset($this->param['prt']) ? $this->param['prt'] : '/admin/orcamentos/printProposta';
 $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 ?> 
@@ -272,7 +272,12 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
     function fechar(){
         envia(tar,'fechar',formName,'new');
-        setTimeout("envia('<? echo $tar ?>','','"+ formName +"','')",1000);
+        setTimeout("envia('<? echo $tar ?>','editar','"+ formName +"','')",1000);
+        return false;
+    }
+
+    function newOrcamento(){
+        envia('<? echo $tar ?>','editar',formName,'');
         return false;
     }
 
@@ -337,6 +342,15 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             tcob.selectedIndex = 2 ;
         }
     }
+
+    function travaFormaPagto(){
+        var vldd = document.getElementsByName('validade');
+        if(vldd[0].checked){
+            var fmPagto = document.getElementById('formaPagto');
+            fmPagto.selectedIndex = 1 ;
+        }
+    }
+
     function setCobertura(){
         var tcob = document.getElementById('tipoCobertura').value;
         if(tcob == '02'){

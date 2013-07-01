@@ -59,17 +59,20 @@ class OrcamentosController extends CrudController {
     public function escolheAdmAction(){
         $user = $this->getIdentidade();
         $data = $this->getRequest()->getPost()->toArray();
+        $sessionContainer = new SessionContainer("LivrariaAdmin");
+        if(!isset($data['subOpcao'])){
+            $data['subOpcao'] =  '';
+        }
         
         if($user->getTipo() != 'admin')
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'verificaUser'));
         
-        if(!empty($data['administradora'])){
+        if(!empty($data['administradora']) AND $data['subOpcao'] != 'editar'){
             $administradora = $this->getEm()->getRepository('Livraria\Entity\Administradora')->findById($data['administradora']);
-            if(empty($administradora))
+            if(empty($administradora)){
                 return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
-            
+            }            
             $seguradora = $this->getEm()->getRepository('Livraria\Entity\Seguradora')->findById($administradora[0]->getSeguradora()->getId());
-            $sessionContainer = new SessionContainer("LivrariaAdmin");
             $sessionContainer->user = $user;
             $sessionContainer->administradora = $administradora[0]->toArray();
             $sessionContainer->seguradora = $seguradora[0]->toArray();
@@ -77,8 +80,12 @@ class OrcamentosController extends CrudController {
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
         }
         
-        $this->form = "LivrariaAdmin\Form\EscolheAdm";
-        $this->formData = new $this->form();        
+        $this->formData = new \LivrariaAdmin\Form\EscolheAdm();        
+        
+        if($data['subOpcao'] == 'editar'){
+            $this->formData->get('administradora')->setValue($sessionContainer->administradora['id']);
+            $this->formData->get('administradoraDesc')->setValue($sessionContainer->administradora['nome']);
+        }
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView()); 
@@ -333,6 +340,7 @@ class OrcamentosController extends CrudController {
             $this->formData->setData($entity->toArray());
             $data['administradora'] = $entity->getAdministradora()->getId();
             $data['status'] = $entity->getStatus();
+            $sessionContainer->administradora = $this->getEm()->getRepository("Livraria\Entity\Administradora")->find($data['administradora'])->toArray();
         }else{
             $this->formData->setData($data);
         }
@@ -372,8 +380,9 @@ class OrcamentosController extends CrudController {
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data);
                 if($result === TRUE){
+                    $this->formData->setData($service->getNewInputs());
+                    $imprimeProp = '1';
                     //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
-                        $imprimeProp = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);

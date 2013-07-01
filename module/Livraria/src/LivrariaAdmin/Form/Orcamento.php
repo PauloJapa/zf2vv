@@ -105,14 +105,14 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
-        $this->setInputRadio('validade', 'Tipo do Seguro', $validade);
+        $this->setInputRadio('validade', 'Tipo do Seguro', $validade, ['onClick' => "travaFormaPagto();"]);
         
         $this->setInputText('codigoGerente', 'Cod. Gerente');
         
         $this->setInputText('refImovel', 'Ref. do Imóvel');
         
         $formaPagto = $this->getParametroSelect('formaPagto');
-        $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto);
+        $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves';
         $this->setInputText('incendio', $label);
@@ -166,6 +166,8 @@ class Orcamento extends AbstractEndereco {
         $this->setInputSubmit('getpdf', 'Imprimir Proposta',['onClick'=>'return printProposta()']);
         
         $this->setInputButton('logOrca', 'Exibir Logs',['onClick'=>'return viewLogsOrcamento()']);
+        
+        $this->setInputButton('novoOrca', 'Novo Orçamento',['onClick'=>'return newOrcamento()']);
 
         $this->setInputButton('edImovel', 'Editar Imovel', ['onClick'=>'editImovel();return false;']);
         
