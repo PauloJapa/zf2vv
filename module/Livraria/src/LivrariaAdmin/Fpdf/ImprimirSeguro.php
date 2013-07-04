@@ -334,7 +334,7 @@ class ImprimirSeguro extends FPDF{
 	$tamanho = (strlen($codigoLimpo) -2);
 	//verifica se o tamanho do código informado é válido
 	if ($tamanho != 9 && $tamanho != 12){
-		return false; 
+		return $campo; 
 	}
  
 	if ($formatado){ 

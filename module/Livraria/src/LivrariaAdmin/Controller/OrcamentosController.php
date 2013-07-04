@@ -162,7 +162,7 @@ class OrcamentosController extends CrudController {
         }
         $list = $this->getEm()
                      ->getRepository($this->entity)
-                     ->findOrcamento($filtro);
+                     ->findOrcamento($filtro)->getQuery()->getResult();
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         $viewData = $this->getParamsForView();

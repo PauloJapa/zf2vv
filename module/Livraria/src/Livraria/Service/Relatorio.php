@@ -174,7 +174,7 @@ class Relatorio extends AbstractService{
             return [];
         
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.fim <= :fim AND o.status = :status';
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
         $this->data['inicio'] = $data['inicio'];
         $this->data['fim']    = $data['fim'];
         $this->dateToObject('inicio');
@@ -188,6 +188,7 @@ class Relatorio extends AbstractService{
         }
         
         $merge = array_merge($this->getOrcareno('Orcamento'), $this->getOrcareno('Renovacao'));
+        $lista=[];
         foreach ($merge as $key => $value) {
             $lista[$key] = $value['administradora']['id'];
         }
