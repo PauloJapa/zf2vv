@@ -20,11 +20,7 @@ class FechadosController extends CrudController {
         $this->route = "livraria-admin";
         
     }
-    
-    public function verificaUserAction(){
-        return new ViewModel();
-    }
-    
+        
     public function indexAction(array $filtro = array()){
         
     }
@@ -34,7 +30,48 @@ class FechadosController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function listarFechadosAction(array $filtro = array()){
-        return parent::indexAction($filtro,array('criadoEm' => 'DESC'));
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setFechadosFull();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction();
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+        }
+        
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findListaFechados($filtro,[]);
+        
+        return parent::indexAction($filtro,[],$list);
+    }
+    
+    /**
+     * Verifica Usuario que não tem permissão admin se tem administradora e carrega na sessão
+     * Caso não encontre redireciona para tela de logon
+     * @return empty | redireciona para tela de logon
+     */
+    public function verificaUserAction(){
+        $sessionContainer = new SessionContainer("LivrariaAdmin");       
+        $user = $this->getEm()->find('Livraria\Entity\User', $this->getIdentidade()->getId());
+        
+        $sessionContainer->administradora = $user->getAdministradora()->toArray();
+        if(!is_array($sessionContainer->administradora))
+            return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
+            
+        $sessionContainer->user = $user;
+        $sessionContainer->seguradora = $user->getAdministradora()->getSeguradora()->toArray();
     }
    
     /**

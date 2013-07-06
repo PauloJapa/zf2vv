@@ -82,6 +82,16 @@ class Filtros  extends AbstractForm {
         $this->setInputSubmit('fecharSel', 'Fechar Selecionados', ['onClick' => 'return fecharSelecionados()']);
     }
     
+    public function setFechadosFull(){
+        $this->setInputText('id', 'Nº do Seguro',['class'=>'input-small']);
+        $this->setInputText('fechado', 'Nº do Seguro',['class'=>'input-small']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','C'=>'Cancelados']);
+        $this->get('status')->setValue('A'); 
+        $this->setDate();
+        $this->setForUsuario();
+        $this->setForAdministradora();        
+    }
+    
     public function setFechados(){
         $this->setInputText('fechados', 'Nº do Seguro',['class'=>'input-small']);
         $this->setDate();

@@ -28,6 +28,14 @@ class OrcamentosController extends CrudController {
         
     }
     
+    /**
+     * Verifica:
+     * Usuario do tipo admin redireciona para tela de escolha de administradora
+     * Usuario nao é admin carrega administradora na sessão e redireciona para fazer novo Orçamento
+     * Caso não encontre os paramentros no usuairo redireciona para tela de logon
+     * @param boolean $redirect
+     * @return boolean | redireciona para  novo orçamento | redireciona para tela de logon
+     */   
     public function verificaUserAction($redirect=true){
         $user = $this->getIdentidade();
         $data = $this->getRequest()->getPost()->toArray();

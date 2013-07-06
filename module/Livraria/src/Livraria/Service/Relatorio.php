@@ -298,7 +298,7 @@ class Relatorio extends AbstractService{
                         'cod' => $admCod,
                         'date' => $sc->data,
                         'email' => $admEmai,
-                        'subject' => 'Seguro(s) para Renovação Anual do Incêndio Locação',
+                        'subject' => $admNom . 'Seguro(s) para Renovação Anual do Incêndio Locação',
                         'data' => $data],'mapa-renovacao');                     
                 }
                 $admCod  = $value['administradora']['id'];
@@ -401,7 +401,7 @@ class Relatorio extends AbstractService{
                 if($admCod != 0){
                     $servEmail->enviaEmail(['nome' => $admNom,
                         'email' => $admEmai,
-                        'subject' => 'Imóveis Desocupados do Incêndio Locação',
+                        'subject' => $admNom . 'Imóveis Desocupados do Incêndio Locação',
                         'data' => $data],'imovel-desocupado');                     
                 }
                 $admCod  = $value['administradora']['id'];

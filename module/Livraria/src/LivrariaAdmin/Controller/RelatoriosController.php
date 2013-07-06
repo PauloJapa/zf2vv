@@ -190,7 +190,7 @@ class RelatoriosController extends CrudController {
                 if($admEmai != 'NAO' AND $admCod != 0){
                     $sm->enviaEmail(['nome' => $admNome, 
                                      'email' => $admEmai, 
-                                     'subject' => 'E-mail de Seguro Todos Incêndio Locação',
+                                     'subject' => $admNome . ' E-mail de Seguro Todos Incêndio Locação',
                                      'data' => $registros]);
                 }
                 $admCod    = $arrayResul['administradora']['id'];

@@ -363,4 +363,57 @@ class FechadosRepository extends AbstractRepository {
         return TRUE;
         
     }
+    
+    public function findListaFechados($filtros=[],$operadores=[]){
+        $where = 'l.id IS NOT NULL';
+        $parameters = [];
+        
+        if(empty($filtros)){
+            $where .= ' AND l.status = :status';
+            $parameters['status'] = 'A';
+        }       
+        
+        foreach ($filtros as $key => $filtro) {
+            switch ($key) {
+                case 'dataI':
+                    $where .= ' AND l.inicio >= :dataI';
+                    $parameters['dataI'] = $this->dateToObject($filtro);
+                    break;
+                case 'dataF':
+                    $where .= ' AND l.inicio <= :dataF';
+                    $parameters['dataF'] = $this->dateToObject($filtro);
+                    break;
+                case 'status':
+                    if($filtro != 'T'){
+                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
+                        $parameters[$key] = $filtro;
+                    }
+                    break;
+                default:
+                    $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                    $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
+                    $parameters[$key] = $filtro;
+                    break;
+            }
+        }
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('l,u,i,ld','lc','ad','at')
+                ->from('Livraria\Entity\Fechados', 'l')
+                ->join('l.user', 'u')
+                ->join('l.imovel', 'i')
+                ->join('l.locador', 'ld')
+                ->join('l.locatario', 'lc')
+                ->join('l.administradora', 'ad')
+                ->join('l.atividade', 'at')
+                ->where($where)
+                ->setParameters($parameters);
+        
+        if(isset($parameters['administradora'])){
+            $query->orderBy('l.criadoEm', 'DESC');
+        }
+        
+        return $query;
+    }
 }
