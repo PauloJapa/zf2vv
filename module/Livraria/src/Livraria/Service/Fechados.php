@@ -218,6 +218,7 @@ class Fechados extends AbstractService {
         unset($this->data['id']);
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
+        $this->data['gerado'] = "N";
         $this->data['criadoEm'] = new \DateTime('now');
 
         //Faz inserção do fechado no BD
@@ -288,6 +289,7 @@ class Fechados extends AbstractService {
         unset($this->data['id']);
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
+        $this->data['gerado'] = "N";
         $this->data['criadoEm'] = new \DateTime('now');
 
         //Faz inserção do fechado no BD

@@ -9,6 +9,7 @@ $coluns = array(
     'Inicio Vigência',
     'Fim Vigência',
     'Prêmio',
+    'Forma',
     'Comi<br>ssão',
     'Seg.',
     'Ação'
@@ -20,6 +21,7 @@ $td     = array(
     '',
     '',
     '',
+    'class="r"',
     'class="r"',
     'class="r"',
     'class="r"',
@@ -50,6 +52,7 @@ foreach($this->data as $key => $value){
             $value['inicio']->format('d/m/Y'),
             $value['fim']->format('d/m/Y'),
             number_format($value['premioTotal'], 2, ',', '.'),
+            $value['formaPagto'],
             number_format($value['comissao'], 0, ',', '.'),
             $value['seguradora']['apelido'],
             $value['administradora']['id'],
@@ -64,6 +67,7 @@ foreach($this->data as $key => $value){
             $value['inicio']->format('d/m/Y'),
             $value['fim']->format('d/m/Y'),
             number_format($value['premioTotal'], 2, ',', '.'),
+            $value['formaPagto'],
             number_format($value['comissao'], 0, ',', '.'),
             $value['seguradora']['apelido'],
         ]));

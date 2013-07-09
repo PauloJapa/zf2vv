@@ -104,7 +104,7 @@ class Exporta extends AbstractService{
         //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
         $this->baseWork = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         if(!is_dir($this->baseWork)){
-            mkdir($this->baseWork , 0774);
+            mkdir($this->baseWork , 0777);
         }
         $zipFile = $this->baseWork . "Exporta_Maritima.zip";
         $this->qtdExportado = 0;
@@ -149,16 +149,32 @@ class Exporta extends AbstractService{
      */
     public function prepArqsForMaritima($admCod){
         // Separar Adm em arquivos por tipo de pagamento e tipo de ocupacao
-        $file['e01'] = $this->baseWork . $admCod . '_empresarial_ato.KM2';
-        $file['e02'] = $this->baseWork . $admCod . '_empresarial_1x1.KM2';
-        $file['e03'] = $this->baseWork . $admCod . '_empresarial_1x2.KM2';
-        $file['e04'] = $this->baseWork . $admCod . '_empresarial_mensal.KM2';
-        $file['r01'] = $this->baseWork . $admCod . '_residencial_ato.KM2';
-        $file['r02'] = $this->baseWork . $admCod . '_residencial_1x1.KM2';
-        $file['r03'] = $this->baseWork . $admCod . '_residencial_1x2.KM2';
-        $file['r04'] = $this->baseWork . $admCod . '_residencial_mensal.KM2';
+        $file['e0130'] = $this->baseWork . $admCod . '_empresarial_ato_30.KM2';
+        $file['e0230'] = $this->baseWork . $admCod . '_empresarial_1x1_30.KM2';
+        $file['e0330'] = $this->baseWork . $admCod . '_empresarial_1x2_30.KM2';
+        $file['e0430'] = $this->baseWork . $admCod . '_empresarial_mensal_30.KM2';
+        $file['e0150'] = $this->baseWork . $admCod . '_empresarial_ato_50.KM2';
+        $file['e0250'] = $this->baseWork . $admCod . '_empresarial_1x1_50.KM2';
+        $file['e0350'] = $this->baseWork . $admCod . '_empresarial_1x2_50.KM2';
+        $file['e0450'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
+        $file['e0169'] = $this->baseWork . $admCod . '_empresarial_ato_69.KM2';
+        $file['e0269'] = $this->baseWork . $admCod . '_empresarial_1x1_69.KM2';
+        $file['e0369'] = $this->baseWork . $admCod . '_empresarial_1x2_69.KM2';
+        $file['e0469'] = $this->baseWork . $admCod . '_empresarial_mensal_69.KM2';        
+        $file['r0130'] = $this->baseWork . $admCod . '_residencial_ato_30.KM2';
+        $file['r0230'] = $this->baseWork . $admCod . '_residencial_1x1_30.KM2';
+        $file['r0330'] = $this->baseWork . $admCod . '_residencial_1x2_30.KM2';
+        $file['r0430'] = $this->baseWork . $admCod . '_residencial_mensal_30.KM2';
+        $file['r0150'] = $this->baseWork . $admCod . '_residencial_ato_50.KM2';
+        $file['r0250'] = $this->baseWork . $admCod . '_residencial_1x1_50.KM2';
+        $file['r0350'] = $this->baseWork . $admCod . '_residencial_1x2_50.KM2';
+        $file['r0450'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
+        $file['r0169'] = $this->baseWork . $admCod . '_residencial_ato_69.KM2';
+        $file['r0269'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
+        $file['r0369'] = $this->baseWork . $admCod . '_residencial_1x2_69.KM2';
+        $file['r0469'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
         foreach ($file as $key => $arq) {
-            if(!$this->setConteudo($key, $arq)){
+            if(!$this->setConteudo($key, $arq, $admCod)){
                 $this->writeFile();
                 $this->closeFile();  
                 $this->addFileToZip($arq,$this->baseWork);
@@ -219,27 +235,37 @@ class Exporta extends AbstractService{
      * @param string $arq nome do arquivo a ser gerado
      * @return boolean retorna falso caso gere um arquivo
      */
-    public function setConteudo($filtro, $arq){
+    public function setConteudo($filtro, $arq, $admCod){
         $head = TRUE;
         $ocupacao = substr($filtro, 0, 1);
         $formaPgto = substr($filtro, 1, 2);
+        $comissao = substr($filtro, 3, 2);
         $this->item = 0;
         $this->saida = '';
         foreach ($this->getSc()->lista as $value) {
+            // Filtrar a Administradora
+            if($admCod != $value['administradora']['id']){
+                continue;
+            }
             $this->ativid = $value['atividade']['codSeguradora'];
             $this->tipoLocatario = strtoupper(substr($value['locatario']['tipo'], 0, 1));
             $this->tipoLocador   = strtoupper(substr($value['locador']['tipo'], 0, 1));
-            if($ocupacao == 'e'){ // apenas empresarial
+            // Filtrar apenas empresarial
+            if($ocupacao == 'e'){ 
                 if($this->ativid == 911 OR $this->ativid == 919){
                     continue; // é residencial entao filtra
                 }
-            }else{ // apenas residencial
+            }else{ // Filtrar apenas residencial
                 if($this->ativid != 911 AND $this->ativid != 919){
                     continue; // não é residencial entao filtra
                 }                
             }
             // Filtra forma de pagamento
             if($formaPgto != $value['formaPagto']){
+                continue;
+            }
+            // Filtra comissão os 2 primeiros digitos
+            if($comissao != substr($value['comissao'], 0, 2)){
                 continue;
             }
             if($head){
