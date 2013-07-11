@@ -9,7 +9,16 @@ namespace Livraria\Entity;
  */
 class RenovacaoRepository extends AbstractRepository {
 
-    
+    /**
+     * Busca Fechados que estão vencendo para renovação
+     * Filtra pela data de final da vigencia, administradora e validade(mensal ou anual)
+     * Filtro automatico para administradoras inseridas no paramentro com a chave nao_gera_renovacao
+     * @param string $ini
+     * @param string $fim
+     * @param string $adm
+     * @param array $val
+     * @return array de entities
+     */
     public function findRenovar($ini,$fim,$adm, $val=null){
         if(!empty($ini)){
             $date = explode("/", $ini);
@@ -28,6 +37,16 @@ class RenovacaoRepository extends AbstractRepository {
         if(!empty($adm)){
             $this->where .= '  AND f.administradora = :administradora';
             $this->parameters['administradora']  = $adm;
+        }else{
+            //Filtrar Adm pelo parametro
+            $admBlock = $this->getEntityManager()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('nao_gera_renovacao');
+            foreach ($admBlock as $key => $value) {
+                if(empty($key)){
+                    continue;
+                }
+                $this->where .= '  AND f.administradora <> :admCod' . $key;  
+                $this->parameters['admCod' . $key]  = $key;                
+            }
         }
         
         if(isset($val) AND count($val) == 1){
@@ -247,7 +266,7 @@ class RenovacaoRepository extends AbstractRepository {
     }
     
     /**
-     * Faz a atualização de todos os seguros com a nova referencia
+     * Faz a atualização de todos os seguros com a nova referencia do imovel
      * @param integer $id
      * @param string  $setRefImovel
      * @return boolean
