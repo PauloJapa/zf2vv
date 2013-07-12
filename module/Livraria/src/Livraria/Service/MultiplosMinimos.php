@@ -96,11 +96,12 @@ class MultiplosMinimos extends AbstractService {
      */
     public function getDiff($ent){
         $this->dePara = '';
-        $this->dePara .= $this->diffAfterBefore('Multiplo Aluguel',  $ent->floatToStr('multAluguel'),   $this->strToFloat($this->data['multAluguel']));
-        $this->dePara .= $this->diffAfterBefore('Multiplo Conteudo', $ent->floatToStr('multConteudo'), $this->strToFloat($this->data['multConteudo']));
-        $this->dePara .= $this->diffAfterBefore('Multiplo Incendio',   $ent->floatToStr('multIncendio'),   $this->strToFloat($this->data['multIncendio']));
-        $this->dePara .= $this->diffAfterBefore('Multiplo Eletrico', $ent->floatToStr('multEletrico'), $this->strToFloat($this->data['multEletrico']));
-        $this->dePara .= $this->diffAfterBefore('Multiplo Vendaval', $ent->floatToStr('multVendaval'), $this->strToFloat($this->data['multVendaval']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Premio Anual',  $ent->floatToStr('minPremioAnual'),   $this->strToFloat($this->data['minPremioAnual']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Premio Mensal',  $ent->floatToStr('minPremioMensal'),   $this->strToFloat($this->data['minPremioMensal']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Apolice Anual',  $ent->floatToStr('minApoliceAnual'),   $this->strToFloat($this->data['minApoliceAnual']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Apolice Mensal',  $ent->floatToStr('minApoliceMensal'),   $this->strToFloat($this->data['minApoliceMensal']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Parcela Anual',  $ent->floatToStr('minParcelaAnual'),   $this->strToFloat($this->data['minParcelaAnual']));
+        $this->dePara .= $this->diffAfterBefore('Minimo Parcela Mensal',  $ent->floatToStr('minParcelaMensal'),   $this->strToFloat($this->data['minParcelaMensal']));
         $this->dePara .= $this->diffAfterBefore('Minimo Aluguel',  $ent->floatToStr('minAluguel'),   $this->strToFloat($this->data['minAluguel']));
         $this->dePara .= $this->diffAfterBefore('Minimo Conteudo', $ent->floatToStr('minConteudo'), $this->strToFloat($this->data['minConteudo']));
         $this->dePara .= $this->diffAfterBefore('Minimo Incendio',   $ent->floatToStr('minIncendio'),   $this->strToFloat($this->data['minIncendio']));

@@ -586,6 +586,16 @@ abstract class AbstractService {
         //Gera o nome da função a ser chamada na entity multiplosMinimos
         $fMax = 'getMax' . $fMin ;
         $fMin = 'getMin' . $fMin ;
+        // Seta as variavies de comparação dos paramentros da seguradora
+        if($this->data['validade'] == 'anual'){
+            $premioMin = $this->data['multiplosMinimos']->getMinPremioAnual();
+            $apoliceMin = $this->data['multiplosMinimos']->getMinApoliceAnual();
+            $parcelaMin = $this->data['multiplosMinimos']->getMinParcelaAnual();
+        }else{
+            $premioMin = $this->data['multiplosMinimos']->getMinPremioMensal();
+            $apoliceMin = $this->data['multiplosMinimos']->getMinApoliceMensal();
+            $parcelaMin = $this->data['multiplosMinimos']->getMinParcelaMensal();            
+        }
         
         // Se valor da cobertura for menor que o minimo calcula com o min
         $vlrMin = floatval($this->data['multiplosMinimos']->$fMin());
@@ -597,8 +607,13 @@ abstract class AbstractService {
         if (($vlrMax != 0.0) AND ($vlr > $vlrMax))
             $vlr = $vlrMax;
         
-        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
         // Valor calculado
+        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
+        
+        if($calc < $premioMin){
+            $calc = $premioMin;
+        }  
+        
         return $calc;
     }
 

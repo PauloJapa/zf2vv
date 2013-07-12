@@ -25,40 +25,48 @@ class MultiplosMinimos extends Filtro
      */
     private $idMultiplos;
 
-    /**
-     * @var integer $multAluguel
-     *
-     * @ORM\Column(name="mult_aluguel", type="integer", nullable=false)
-     */
-    private $multAluguel;
 
     /**
-     * @var integer $multConteudo
+     * @var float $minPremioAnual
      *
-     * @ORM\Column(name="mult_conteudo", type="integer", nullable=true)
+     * @ORM\Column(name="min_premio_anual", type="decimal", nullable=true)
      */
-    private $multConteudo;
+    private $minPremioAnual;
 
     /**
-     * @var integer $multIncendio
+     * @var float $minPremioMensal
      *
-     * @ORM\Column(name="mult_incendio", type="integer", nullable=true)
+     * @ORM\Column(name="min_premio_mensal", type="decimal", nullable=true)
      */
-    private $multIncendio;
+    private $minPremioMensal;
 
     /**
-     * @var integer $multEletrico
+     * @var float $minApoliceAnual
      *
-     * @ORM\Column(name="mult_eletrico", type="integer", nullable=true)
+     * @ORM\Column(name="min_apolice_anual", type="decimal", nullable=true)
      */
-    private $multEletrico;
+    private $minApoliceAnual;
 
     /**
-     * @var integer $multVendaval
+     * @var float $minApoliceMensal
      *
-     * @ORM\Column(name="mult_vendaval", type="integer", nullable=true)
+     * @ORM\Column(name="min_apolice_mensal", type="decimal", nullable=true)
      */
-    private $multVendaval;
+    private $minApoliceMensal;
+
+    /**
+     * @var float $minParcelaAnual
+     *
+     * @ORM\Column(name="min_parcela_anual", type="decimal", nullable=true)
+     */
+    private $minParcelaAnual;
+
+    /**
+     * @var float $minParcelaMensal
+     *
+     * @ORM\Column(name="min_parcela_mensal", type="decimal", nullable=true)
+     */
+    private $minParcelaMensal;
 
     /**
      * @var float $minAluguel
@@ -182,101 +190,57 @@ class MultiplosMinimos extends Filtro
         return $this->getIdMultiplos();
     }
 
-    /**
-     * 
-     * @param integer $idMultiplos
-     * @return \Livraria\Entity\MultiplosMinimos
-     */
-    public function setIdMultiplos($idMultiplos) {
-        $this->idMultiplos = $idMultiplos;
-        return $this;
-    }
-    public function setId($id){
-        return $this->setIdMultiplos($id);
+    public function getMinPremioAnual() {
+        return $this->minPremioAnual;
     }
 
-    /**
-     * 
-     * @return integer
-     */
-    public function getMultAluguel() {
-        return $this->multAluguel;
-    }
-
-    /**
-     * 
-     * @param integer $multAluguel
-     * @return \Livraria\Entity\MultiplosMinimos
-     */
-    public function setMultAluguel($multAluguel) {
-        $this->multAluguel = $this->trataFloat($multAluguel);
+    public function setMinPremioAnual($minPremioAnual) {
+        $this->minPremioAnual = $this->trataFloat($minPremioAnual);
         return $this;
     }
 
-    /**
-     * 
-     * @return integer
-     */
-    public function getMultConteudo() {
-        return $this->multConteudo;
+    public function getMinPremioMensal() {
+        return $this->minPremioMensal;
     }
 
-    /**
-     * 
-     * @param integer $multConteudo
-     * @return \Livraria\Entity\MultiplosMinimos
-     */
-    public function setMultConteudo($multConteudo) {
-        $this->multConteudo = $this->trataFloat($multConteudo);
+    public function setMinPremioMensal($minPremioMensal) {
+        $this->minPremioMensal = $this->trataFloat($minPremioMensal);
         return $this;
     }
 
-    /**
-     * 
-     * @return integer
-     */
-    public function getMultIncendio() {
-        return $this->multIncendio;
+    public function getMinApoliceAnual() {
+        return $this->minApoliceAnual;
     }
 
-    public function setMultIncendio($multIncendio) {
-        $this->multIncendio = $this->trataFloat($multIncendio);
+    public function setMinApoliceAnual($minApoliceAnual) {
+        $this->minApoliceAnual = $this->trataFloat($minApoliceAnual);
         return $this;
     }
 
-    /**
-     * 
-     * @return integer
-     */
-    public function getMultEletrico() {
-        return $this->multEletrico;
+    public function getMinApoliceMensal() {
+        return $this->minApoliceMensal;
     }
 
-    /**
-     * 
-     * @param integer $multEletrico
-     * @return \Livraria\Entity\MultiplosMinimos
-     */
-    public function setMultEletrico($multEletrico) {
-        $this->multEletrico = $this->trataFloat($multEletrico);
+    public function setMinApoliceMensal($minApoliceMensal) {
+        $this->minApoliceMensal = $this->trataFloat($minApoliceMensal);
         return $this;
     }
 
-    /**
-     * 
-     * @return integer
-     */
-    public function getMultVendaval() {
-        return $this->multVendaval;
+    public function getMinParcelaAnual() {
+        return $this->minParcelaAnual;
     }
 
-    /**
-     * 
-     * @param integer $multVendaval
-     * @return \Livraria\Entity\MultiplosMinimos
-     */
-    public function setMultVendaval($multVendaval) {
-        $this->multVendaval = $this->trataFloat($multVendaval);
+    public function setMinParcelaAnual($minParcelaAnual) {
+        $this->minParcelaAnual = $this->trataFloat($minParcelaAnual);
+        return $this;
+    }
+
+    public function getMinParcelaMensal() {
+        return $this->minParcelaMensal;
+    }
+
+    public function setMinParcelaMensal($minParcelaMensal) {
+        $this->minParcelaMensal = $this->trataFloat($minParcelaMensal);
         return $this;
     }
 
@@ -547,18 +511,19 @@ class MultiplosMinimos extends Filtro
     
     public function toArray(){
         $data['idMultiplos']        = $this->getIdMultiplos() ; 
-        $data['multAluguel']         = $this->floatToStr('multAluguel') ; 
-        $data['multIncendio']          = $this->floatToStr('multIncendio') ; 
-        $data['multConteudo']        = $this->floatToStr('multConteudo') ; 
-        $data['multEletrico']        = $this->floatToStr('multEletrico') ; 
-        $data['multVendaval']        = $this->floatToStr('multVendaval') ; 
+        $data['minPremioAnual']     = $this->floatToStr('minPremioAnual') ; 
+        $data['minPremioMensal']    = $this->floatToStr('minPremioMensal') ; 
+        $data['minApoliceAnual']    = $this->floatToStr('minApoliceAnual') ; 
+        $data['minApoliceMensal']   = $this->floatToStr('minApoliceMensal') ; 
+        $data['minParcelaAnual']    = $this->floatToStr('minParcelaAnual') ; 
+        $data['minParcelaMensal']   = $this->floatToStr('minParcelaMensal') ; 
         $data['minAluguel']         = $this->floatToStr('minAluguel') ; 
-        $data['minIncendio']          = $this->floatToStr('minIncendio') ; 
+        $data['minIncendio']        = $this->floatToStr('minIncendio') ; 
         $data['minConteudo']        = $this->floatToStr('minConteudo') ; 
         $data['minEletrico']        = $this->floatToStr('minEletrico') ; 
         $data['minVendaval']        = $this->floatToStr('minVendaval') ; 
         $data['maxAluguel']         = $this->floatToStr('maxAluguel') ; 
-        $data['maxIncendio']          = $this->floatToStr('maxIncendio') ; 
+        $data['maxIncendio']        = $this->floatToStr('maxIncendio') ; 
         $data['maxConteudo']        = $this->floatToStr('maxConteudo') ; 
         $data['maxEletrico']        = $this->floatToStr('maxEletrico') ; 
         $data['maxVendaval']        = $this->floatToStr('maxVendaval') ; 

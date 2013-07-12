@@ -12,7 +12,7 @@ class MultiplosMinimos extends AbstractForm {
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('taxa');
         $this->em = $em;
-        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs($filtro);
+        $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
 
         $this->setAttribute('method', 'post');
         $this->setInputFilter(new MultiplosMinimosFilter);  
@@ -22,21 +22,14 @@ class MultiplosMinimos extends AbstractForm {
         $this->setInputHidden('ajaxStatus');
         $this->setInputHidden('autoComp'); 
         
-        $this->setInputHidden('multAluguel');  
-        $this->setInputHidden('multConteudo');  
-        $this->setInputHidden('multIncendio');  
-        $this->setInputHidden('multEletrico');  
-        $this->setInputHidden('multVendaval');  
-
         $attributos = ['class'=>'input-small'];
-        /*
-         * 
-        $this->setInputText('multAluguel', 'Multiplo para Aluguel',$attributos);
-        $this->setInputText('multConteudo', 'Multiplo para Conteudo',$attributos);
-        $this->setInputText('multIncendio', 'Multiplo para Incendio',$attributos);
-        $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
-        $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
-         */
+          
+        $this->setInputText('minPremioAnual', 'Minimo Premio Anual',$attributos);
+        $this->setInputText('minPremioMensal', 'Minimo Premio Mensal',$attributos);
+        $this->setInputText('minApoliceAnual', 'Minimo Apolice Anual',$attributos);
+        $this->setInputText('minApoliceMensal', 'Minimo Apolice Mensal',$attributos);
+        $this->setInputText('minParcelaAnual', 'Minimo Parcela Anual',$attributos);
+        $this->setInputText('minParcelaMensal', 'Minimo Parcela Mensal',$attributos);
         
         $this->setInputText('minAluguel', 'Minimo para Aluguel',$attributos);
         $this->setInputText('minConteudo', 'Min. p/ Incêndio Conteúdo',$attributos);

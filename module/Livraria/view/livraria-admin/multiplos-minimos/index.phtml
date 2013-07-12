@@ -9,13 +9,13 @@ $coluns = array(
     'Seguradora',
     'Inicio',
     'Fim',
-    /*
-    'Mult Aluguel',
-    'Mult Incêndio',
-    'Mult Conteúdo',
-    'Mult Eletrico',
-    'Mult Vendaval',
-     */
+    'Min Prêmio Anual',
+    'Min Prêmio Mensal',
+    'Min Apolice Anual',
+    'Min Apolice Mensal',
+    'Min Parcela Anual',
+    'Min Parcela Mensal',
+    
     'Min Aluguel',
     'Min Incêndio',
     'Min Incên. Conteúdo',
@@ -30,7 +30,28 @@ $coluns = array(
     'Status',
     'Ação'
     );
-$td     = array();
+$td     = array(
+    ''
+    ,''
+    ,''
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+    ,'class="r"'
+);
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
@@ -40,13 +61,12 @@ foreach($this->data as $entity){
         $entity->getSeguradora(),
         $entity->getMultVigenciaInicio(),
         $entity->getMultVigenciaFim(),
-        /*
-        $entity->floatToStr('multAluguel'),
-        $entity->floatToStr('multIncendio'),
-        $entity->floatToStr('multConteudo'),
-        $entity->floatToStr('multEletrico'),
-        $entity->floatToStr('multVendaval'),
-         */
+        $entity->floatToStr('minPremioAnual'),
+        $entity->floatToStr('minPremioMensal'),
+        $entity->floatToStr('minApoliceAnual'),
+        $entity->floatToStr('minApoliceMensal'),
+        $entity->floatToStr('minParcelaAnual'),
+        $entity->floatToStr('minParcelaMensal'),
         $entity->floatToStr('minAluguel'),
         $entity->floatToStr('minIncendio'),
         $entity->floatToStr('minConteudo'),
