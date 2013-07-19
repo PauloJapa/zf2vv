@@ -108,6 +108,7 @@ echo $this->ViewIndex('close');
 </form>
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';
+    var formName = '<?php echo $this->formName ?>';
     function edit(id){
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
@@ -144,7 +145,26 @@ echo $this->ViewIndex('close');
         var returns = Array('administradora','administradoraDesc');
         var functionCall = 'buscar()';
         autoComp2(filtros,servico,'popAdministradora',returns,'2',functionCall);
-    }  
+    }
+    function buscar(){
+        if(document.getElementById('usuarioNome').value == ''){
+            document.getElementById('user').value = '';
+        }
+        if(document.getElementById('administradoraDesc').value == ''){
+            document.getElementById('administradora').value = '';
+        }
+        if(document.getElementById('administradora').value == ''){
+            if(document.getElementById('dataI').value == ''){
+                if(document.getElementById('id').value == ''){
+                    alert('Atenção é necessário preencher alguns filtro:\n Ex: Administradora ou Periodo ou Nº do Orçamento!');
+                    return false;
+                }
+            }
+        }
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarFechados')); ?>";
+        envia(tar,'buscar',formName);
+        return false;
+    }   
 </script>
 
 <?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

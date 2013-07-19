@@ -501,26 +501,32 @@ class Fechados extends AbstractService {
     
     /**
      * Recebe a chave do seguro a renovar gerar novo orçamento 
+     * Caso receber o parametro de reajuste o Aluguel
      * Faz lançamento no log dos seguros fechados e tb no log de orçamentos
      * Complementa a obs do fechado dizendo que gerou um orçamento para renovação
      * @param int $key
+     * @param int $reajuste
      * @return array
      */
-    public function fechadoToOrcamento($key){
+    public function fechadoToOrcamento($key,$reajuste=0){
         //Pegando o serviço de fechados        
         $fechado = $this->getRep()->find($key);
         
         $this->data = $fechado->toArray();
+        
+        $this->data['fechadoOrigemId'] = $this->data['id'];
         $this->data['id'] = '';
         $this->data['user'] = $this->getIdentidade()->getId();
-        $this->data['status'] = "A";
+        $this->data['status'] = "R";
         $this->data['criadoEm'] = new \DateTime('now');
-        $this->data['inicio'] = $fechado->getFim();
-
+        $this->data['inicio'] = $fechado->getFim('obj');
         //Pegando o locatario atual desse imovel porque o locatario pode ter sido trocado no meio da vigencia do fechado
         //Quando a troca de locatario é apenas atualizado no imovel.
         $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
-        $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
+        
+        if($reajuste != 0){
+            $this->data['valorAluguel'] = $this->data['valorAluguel'] * (1 + $reajuste / 100 );
+        }
         
         //Faz inserção do fechado no BD
         $resul = $this->getSrvOrca()->insert($this->data);

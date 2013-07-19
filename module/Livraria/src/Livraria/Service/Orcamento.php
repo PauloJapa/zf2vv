@@ -164,8 +164,11 @@ class Orcamento extends AbstractService {
         
         $resul = $this->CalculaPremio();
         
-        $this->data['codFechado'] = '0';
-        $this->data['status'] = 'A';
+        $this->data['fechadoId'] = '0';
+        
+        if(!isset($this->data['status'])){
+            $this->data['status'] = 'A';
+        }
         
         if($onlyCalculo){
             return TRUE; 
@@ -404,7 +407,7 @@ class Orcamento extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                if(($inicio <= $entity->getFim('obj'))){
+                if(($inicio < $entity->getFim('obj'))){
                     if($entity->getStatus() == "A"){
                         $erro[] = "Alerta!" ;
                         $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
@@ -414,6 +417,11 @@ class Orcamento extends AbstractService {
                         $erro[] = "Alerta!" ;
                         $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    }
+                    if($entity->getStatus() == "R"){
+                        $erro[] = "Alerta!" ;
+                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                 }
             }

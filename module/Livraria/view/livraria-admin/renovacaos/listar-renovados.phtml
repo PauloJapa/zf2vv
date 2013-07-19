@@ -21,7 +21,43 @@
     border: solid #000 1px;
 }
 </style>
+
 <?php
+    $form = $this->form; 
+    $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+    $form->prepare();
+    echo 
+    $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+        "<td>\r",
+            $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp','user'], 'hidden'),
+            $this->FormDefault([
+                'name' => 'usuarioNome',
+                'icone' => 'icon-search',
+                'js' => 'autoCompUsuario()',
+                'span' => "popUser' style='position:absolute"],'icone'),
+        "</td><td>\r",
+            $this->FormDefault(['id'], 'text'),
+        "</td><td>\r",
+            $this->FormDefault(['dataI'], 'calend'),
+        "</td><td>\r",
+            $this->FormDefault(['dataF'], 'calend'),
+        "</td><td>\r",
+        "</td><td style='vertical-align: middle;' rowspan='2'>\r",
+            $this->FormDefault(['enviar'], 'submitOnly'),
+        "</td>\r",
+    "</tr><tr>\r",
+        "<td>\r",
+            $this->FormDefault(['administradora'=>'hidden']),
+            $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
+        "</td><td>\r",
+            $this->FormDefault(['status'=>'radio']),
+        "</td><td>\r",
+            $this->FormDefault(['validade'=>'radio']),
+        "</td><td>\r",
+        "</td>\r",
+
+    $this->FormDefault([],'fim');
+
 $coluns = array(
     'Ação',
     'ID',
@@ -115,6 +151,8 @@ echo $this->ViewIndex('close');
 </div> 
 </form> 
 <script language="javascript">
+    var dateFormat = 'dd/mm/yyyy';
+    var formName = '<?php echo $this->formName ?>';
     function edit(id){
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
@@ -165,6 +203,26 @@ echo $this->ViewIndex('close');
             );
         });
     });
+
+    function buscar(){
+        if(document.getElementById('usuarioNome').value == ''){
+            document.getElementById('user').value = '';
+        }
+        if(document.getElementById('administradoraDesc').value == ''){
+            document.getElementById('administradora').value = '';
+        }
+        if(document.getElementById('administradora').value == ''){
+            if(document.getElementById('dataI').value == ''){
+                if(document.getElementById('id').value == ''){
+                    alert('Atenção é necessário preencher alguns filtro:\n Ex: Administradora ou Periodo ou Nº do Orçamento!');
+                    return false;
+                }
+            }
+        }
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarRenovados')); ?>";
+        envia(tar,'buscar',formName);
+        return false;
+    }  
 </script>
 
 <?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>

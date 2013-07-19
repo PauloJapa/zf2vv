@@ -2,23 +2,15 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Buscar Seguros fechados para Renovação com base na data fim da vigência:'],'inicio',$this, $form),
-    "<td>\r",
+    "<td>",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
-        $this->FormDefault(['inicio' => 'calend']),
+        $this->FormDefault(['mesNiver' => 'select']),
+    "</td>\r<td>",
+        $this->FormDefault(['anoFiltro' => 'select']),
     "</td>\r",
 "</tr><tr>\r",
-    "<td>\r",
-        $this->FormDefault(['fim' => 'calend']),
-    "</td>\r",
-"</tr><tr>\r",
-    "<td>\r",
+    "<td colspan='2'>\r",
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
-    "</td>\r",
-"</tr><tr>\r",
-    "<td><label class='checkbox'><input type='checkbox' name='validade[]' value='anual' checked>Fechado Anual</label>",
-    "</td>\r",
-"</tr><tr>\r",
-    "<td><label class='checkbox'><input type='checkbox' name='validade[]' value='mensal' checked>Fechado Mensal</label>",
     "</td>\r",
 
 $this->FormDefault(['submit' => 'enviar'],'fim');

@@ -1,27 +1,8 @@
-<style type="text/css" media="print">
-   @page land {
-     size: landscape;
-   }
-    .F1 {
-        font-size: 10px;
-    }
-</style>
-<style>
-    .Br {
-        border-right:  #333 solid 1px ;
-    }
-    .Bl {
-        border-left:   #333 solid 1px ;
-    }
-    .Bt {
-        border-top:    #333 solid 1px ;
-    }
-    .Bb {
-        border-bottom: #333 solid 1px ;
-    }
-</style>
 <p>
-Bom dia! 
+<?
+$hr = date(" H "); 
+echo ($hr <= 12)?'Bom dia!':'Boa tarde!'; 
+?> 
 </p>
 <br />
 <br />
@@ -29,90 +10,43 @@ Bom dia!
 <br />
 <br />
 <p>
-    Abaixo os seguros para renovação que estão vencendo do incêndio locação, 
-    para devida conferência e eventuais alterações, que poderão ser feitas.
+Abaixo relatório de Renovação para que seja providenciado as devidas atualizações.
+Favor atualizar em nosso sistema ou nos enviar dados para atualização até o dia 10/<? echo $this->mesPrazo; ?>
+ para que possamos dar andamento no processo de Renovação.
+</p>    
+ 
+<p>
+Inserir valor do aluguel atualizado na coluna do lado direito, assim iremos calcular e encaminhar as propostas com novos valores.
+</p>    
+ 
+<p>
+Qualquer dúvida favor entrar em contato. 
 </p>    
 <br />
 <br />
-
-<h1>Vencimento de seguro por U.E. (Unidade Externa)</h1>
-
-<table style="width: 100% ;" cellspacing="0" cellpadding="0">
-    <tr>
-        <td><img src="<?php echo $this->baseUrl, 'images/logo_vila_velha_seguros.png'; ?>" /></td>
-        <td>
-            <table style="width: 100% ;">
-                <tr>
-                    <td><h2>Vencimento de seguro por U.E.</h2></td>
-                </tr>
-                <tr>                
-                    <td>
-                        <table style="width: 100% ; border-top: solid #000 1px; border-left: solid #000 1px;" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <td class="Bl Bb Bt"><strong>Tipo de Seleção</strong><br>Fim da Vigência</td>
-                                <td class="Bl Bb Bt"><strong>Tipo de Cobertua</strong><br>Renovação</td>
-                                <td class="Bl Bb Bt"><strong>Período</strong><br><? echo $this->date['inicio']->format('d/m/Y'), 'a', $this->date['fim']->format('d/m/Y'); ?></td>
-                                <td class="Bl Bb Bt"><strong>Administradora</strong><br><? echo $this->admCod, ' - ', $this->admNom; ?></td>
-                                <td class="Bl Bb Bt"><strong>Cód. Ger.</strong><br></td>
-                                <td class="Bl Bb Bt"><strong>U.I.</strong><br></td>
-                                <td class="Bl Bb Bt"><strong>Data</strong><br></td>
-                                <td class="Bl Bb Bt Br"><br></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-
-<table style="width: 100% ; border-top: solid #000 1px;"  cellspacing="0" cellpadding="0">
-<tr>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px; border-left: solid #000 1px;">Ref. do Imóvel</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Vigência Inicial</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Local Segurado</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Incêncio Loc.</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Perda Aluguel</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Danos Elétricos</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Vendaval</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Valor Parc.</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Parc.</th>
-	<th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Prêmio</th>
-<tr>  
-
-
-<?  
-    foreach($this->data as $array): 
-?>          
-<tr>
-	<td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px; border-left: solid #000 1px;" align="center"><? echo $array[2] ?></td>
-	<td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $array[0], ' - ', $array[3] ?></td>
-	<td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;font-size: 10px;"><? echo $array[4] ?></td>
-	<td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;font-size: 10px;"><? echo $array[5] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[6] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[7] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[8] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[9] ?></td>
-	<td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $array[10] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[11] ?></td>
-        <td nowrap style="border-bottom: solid #000 1px; border-right:  solid #000 1px;" align="right"><? echo $array[12] ?></td>
-</tr>  
-<tr>
-	<td nowrap style="border-left: solid #000 1px;">Ref. do Imóvel</td>
-	<td nowrap colspan="2">____________ Valor do Aluguel: <? echo $array[13] ?></td>
-	<td nowrap colspan="2">Valor do Aluguel Corrigido: _________________________</td>
-	<td nowrap style="border-right: solid #000 1px;" colspan="6">Imóvel Vago(__) &nbsp;&nbsp;Não Administramos(__) &nbsp;&nbsp;Sem Alteração (__)</td>
-</tr>  
-<tr>
-	<td nowrap style="border-bottom: solid #000 1px; border-left: solid #000 1px;">Ocupação</td>
-	<td nowrap style="border-bottom: solid #000 1px;" colspan="2"><? echo $array[14] ?></td>
-	<td nowrap style="border-bottom: solid #000 1px; border-right: solid #000 1px;" colspan="8">Ocupação Corrigida: _____________________________________________________</td>
-</tr>  
-<tr>  
-    <td colspan="11" style="border-bottom: solid #000 1px;"><br></td>
-</tr>  
-<? endforeach; ?>
+<table style="border-top: solid #000 1px; border-left: solid #000 1px;"  cellspacing="0" cellpadding="0">
+    <thead>
+        <tr style="background-color: #d9d9d9;">
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Início Vigência</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Tipo</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Endereço</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Forma Pagto</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Valor do Aluguel atualizado</th>
+        </tr>
+    </thead>
+    <tbody>
+<? foreach ($this->data as $value) : ?>
+        <tr>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[0]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[3]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[5]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[10]; ?></td>
+            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"></td>
+        </tr>
+<? endforeach; ?>        
+    </tbody>        
 </table>
 <br />
 <br />

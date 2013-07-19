@@ -290,6 +290,7 @@ class RelatoriosController extends CrudController {
         $sc->mapaRenovacao = $this->paginator;
         $sc->data          = $data;
         $sc->formaPagto    = $formaPagto;
+        $data['upAluguel'] = empty($data['upAluguel']) ? 1 : 1 + ($service->strToFloat($data['upAluguel'], 'float') / 100);
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));  

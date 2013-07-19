@@ -66,9 +66,10 @@ class Renovacao extends AbstractService {
         //Montar dados para tabela de renovacao
         $this->data = $this->fechado->toArray();
         $this->data['fechadoOrigemId'] = $this->data['id'];
-        unset($this->data['id']);
+        $this->data['id'] = '';
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
+        $this->data['mensalSeq']++;
         $this->data['criadoEm'] = new \DateTime('now');
         $this->data['inicio'] = $this->fechado->getInicio('obj');
         //Nova Vigência
@@ -95,7 +96,8 @@ class Renovacao extends AbstractService {
                         $this->data['atividade'], 
                         $this->data['criadoEm'], 
                         str_replace(',', '.', $this->data['comissao']),
-                        $this->data['validade']
+                        $this->data['validade'],
+                        $this->data['tipoCobertura']
         );
         
         if(!$this->data['taxa'])
@@ -258,7 +260,7 @@ class Renovacao extends AbstractService {
         $resul = $this->CalculaPremio();
         
         if($param == 'OnlyCalc'){
-            return ['Calculado com Sucesso !!!']; 
+            return []; 
         }
         
         $result = $this->isValid();

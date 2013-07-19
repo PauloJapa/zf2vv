@@ -101,6 +101,8 @@ class Relatorio  extends AbstractForm {
     
     public function setMapaRenovacao(){        
         $this->setMesAnoAdm();
+        
+        $this->setInputText('upAluguel', 'Reajustar em %', ['placeholder' => '%']);
     }
     
     public function setImovelDesocupado(){

@@ -251,12 +251,14 @@ class Relatorio extends AbstractService{
         //Pegando o serviço de orçamento
         $servico = new Fechados($this->em);
         $array = $sc->mapaRenovacao;
+        $data = $sc->data;
+        $reajuste = $this->strToFloat($data['upAluguel'], 'float');
         foreach ($array as $key => $value) {
             //Filtro Administradora
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
                 continue;
             }
-            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id']);
+            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $reajuste);
         }
         $sc->mapaRenovacao = $array;
     }
@@ -277,7 +279,14 @@ class Relatorio extends AbstractService{
 
         $servEmail = $sl->get('Livraria\Service\Email');
         $formaPagto = $sc->formaPagto;
-
+        $mesPrazo = intval($sc->data['mesFiltro']);
+        if($mesPrazo == 1){
+            $mesPrazo = '12';
+        }else{
+            $mesPrazo--;
+            $mesPrazo = ($mesPrazo < 10) ? '0'. $mesPrazo : $mesPrazo;            
+        }
+        $reajuste = empty($sc->data['upAluguel']) ? 1 : 1 + ($this->strToFloat($sc->data['upAluguel'], 'float') / 100);
         $admCod  = 0;
         foreach ($sc->mapaRenovacao as $value) {
             //caso venha configurado para nao enviar email ou vazio
@@ -298,6 +307,7 @@ class Relatorio extends AbstractService{
                         'cod' => $admCod,
                         'date' => $sc->data,
                         'email' => $admEmai,
+                        'mesPrazo' => $mesPrazo,
                         'subject' => $admNom . 'Seguro(s) para Renovação Anual do Incêndio Locação',
                         'data' => $data],'mapa-renovacao');                     
                 }
@@ -312,7 +322,7 @@ class Relatorio extends AbstractService{
             $data[$i][1] = $value['fim']->format('d/m/Y');
             $data[$i][2] = $value['refImovel'];
             $data[$i][3] = $value['validade'];
-            $data[$i][4] = $value['imovel']['rua'];
+            $data[$i][4] = $value['imovel']['rua'] . ' n-' . $value['imovel']['numero']. ' ' . $value['imovel']['apto']. ' ' . $value['imovel']['bloco'];
             $data[$i][5] = $value['locatarioNome'];
             $data[$i][6] = number_format($value['incendio'], 2, ',', '.');
             $data[$i][7] = number_format($value['aluguel'], 2, ',', '.');
@@ -323,6 +333,7 @@ class Relatorio extends AbstractService{
             $data[$i][12] = number_format($value['premioTotal'], 2, ',', '.');
             $data[$i][13] = number_format($value['valorAluguel'], 2, ',', '.');
             $data[$i][14] = $value['atividade']['descricao'];
+            $data[$i][15] = ($reajuste == 1)? '': number_format($value['valorAluguel'] * $reajuste, 2, ',', '.');
             $i++;
         }
         
@@ -332,6 +343,7 @@ class Relatorio extends AbstractService{
                 'cod' => $admCod,
                 'date' => $sc->data,
                 'email' => $admEmai,
+                'mesPrazo' => $mesPrazo,
                 'subject' => 'Seguro(s) para Renovação Anual do Incêndio Locação',
                 'data' => $data],'mapa-renovacao');                     
         }

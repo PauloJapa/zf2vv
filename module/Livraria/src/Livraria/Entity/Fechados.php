@@ -393,6 +393,13 @@ class Fechados  extends AbstractSeguro
      * })
      */
     protected $comissaoEnt;
+
+    /**
+     * @var integer $mensalSeq
+     *
+     * @ORM\Column(name="mensal_seq", type="integer", nullable=true)
+     */
+    protected $mensalSeq;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -452,6 +459,24 @@ class Fechados  extends AbstractSeguro
         $this->renovacaoId = $renovacaoId;
         return $this;
     }
+    
+    /**
+     * Qtd de vezes renovados
+     * @return int
+     */
+    public function getMensalSeq() {
+        return $this->mensalSeq;
+    }
+
+    /**
+     * Qtd de vezes renovados
+     * @param type $mensalSeq
+     * @return \Livraria\Entity\Fechados
+     */
+    public function setMensalSeq($mensalSeq) {
+        $this->mensalSeq = $mensalSeq;
+        return $this;
+    }
 
     /**
      * 
@@ -459,8 +484,9 @@ class Fechados  extends AbstractSeguro
      */
     public function toArray() {
         $data = parent::toArray();
-        $data['orcamentoId']    = $this->getOrcamentoId();
-        $data['renovacaoId']    = $this->getRenovacaoId();
+        $data['orcamentoId'] = $this->getOrcamentoId();
+        $data['renovacaoId'] = $this->getRenovacaoId();
+        $data['mensalSeq']   = $this->getMensalSeq();
         return $data ;
     }
 }

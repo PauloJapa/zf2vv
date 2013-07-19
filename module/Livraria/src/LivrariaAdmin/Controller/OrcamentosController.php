@@ -112,7 +112,7 @@ class OrcamentosController extends CrudController {
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setOrcamento();
         $this->formData->setData((is_null($data)) ? [] : $data);
-        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF'];
+        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF','validade'];
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
                 $filtro[$input] = $data[$input];

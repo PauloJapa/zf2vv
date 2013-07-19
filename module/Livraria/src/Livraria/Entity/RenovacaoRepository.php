@@ -19,21 +19,22 @@ class RenovacaoRepository extends AbstractRepository {
      * @param array $val
      * @return array de entities
      */
-    public function findRenovar($ini,$fim,$adm, $val=null){
-        if(!empty($ini)){
-            $date = explode("/", $ini);
-            $ini  = $date[2] . $date[1] . $date[0];
-        }
-        if(!empty($fim)){
-            $date = explode("/", $fim);
-            $fim  = $date[2] . $date[1] . $date[0];
-        }
-           
-        $this->where = ' f.status <> :status AND f.fim BETWEEN :inicio AND :fim';
-        $this->parameters['status']  = 'R';
-        $this->parameters['inicio']  = $ini;
-        $this->parameters['fim']  = $fim;
+    public function findRenovar($mesFiltro,$ano,$adm){
+        //Trata os filtro para data mensal
+        $mes = (date('m') -1 );
+        $mes = ($mes < 10) ? '0' . $mes : $mes ;
+        $ini = $ano . $mes . '01';
+        $fim = $ano . $mes . '31';
         
+        $ini = $ano . $mesFiltro . '01';
+        $fim = $ano . $mesFiltro . '31';
+        
+        $this->where = ' f.status <> :status AND f.inicio BETWEEN :inicio AND :fim AND f.validade = :validade AND f.mesNiver = :niver';
+        $this->parameters['status']   = 'R';
+        $this->parameters['inicio']   = $ini;
+        $this->parameters['fim']      = $fim;
+        $this->parameters['validade'] = 'mensal';
+        $this->parameters['niver']    = $mesFiltro;
         if(!empty($adm)){
             $this->where .= '  AND f.administradora = :administradora';
             $this->parameters['administradora']  = $adm;
@@ -49,11 +50,6 @@ class RenovacaoRepository extends AbstractRepository {
             }
         }
         
-        if(isset($val) AND count($val) == 1){
-            $this->where .= '  AND f.validade = :validade';
-            $this->parameters['validade']  = $val[0];            
-        }
-        
         // Monta a dql para fazer consulta no BD
         $qb = $this->getEntityManager()
                 ->createQueryBuilder()
@@ -67,23 +63,9 @@ class RenovacaoRepository extends AbstractRepository {
     
     
     
-    public function findRenovacao($filtros=[],$operadores=[]){
+    public function findRenovacao($filtros=[],$operadores=[],$retQuery=false){
         if(empty($filtros)){
-            $query = $this->getEntityManager()
-                    ->createQueryBuilder()
-                    ->select('l,u,i,ld','lc','ad','at')
-                    ->from('Livraria\Entity\Renovacao', 'l')
-                    ->join('l.user', 'u')
-                    ->join('l.imovel', 'i')
-                    ->join('l.locador', 'ld')
-                    ->join('l.locatario', 'lc')
-                    ->join('l.administradora', 'ad')
-                    ->join('l.atividade', 'at')
-                    ->where('l.status = :status')
-                    ->setParameter('status', 'A')
-                    ->orderBy('l.criadoEm', 'DESC')
-                    ->getQuery();
-            return $query->getResult();
+            $filtros['status'] = 'A';
         }
         $where = 'l.id IS NOT NULL';
         $parameters = [];
@@ -126,6 +108,9 @@ class RenovacaoRepository extends AbstractRepository {
                 ->orderBy('l.criadoEm', 'DESC')
                 ->getQuery();
         
+        if($retQuery){
+            return $query;
+        }
         return $query->getResult();
     }    
     

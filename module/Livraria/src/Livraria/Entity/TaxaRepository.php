@@ -33,7 +33,6 @@ class TaxaRepository extends EntityRepository {
         $classeAtividade = $this->getEntityManager()
                 ->getRepository('Livraria\Entity\ClasseAtividade')
                 ->findClasseVigente($seguradora, $atividade, $date);
-        
         if(!is_object($classeAtividade)){
             return FALSE;
         }
@@ -69,7 +68,16 @@ class TaxaRepository extends EntityRepository {
                 ->getQuery()
                 ;
         $resul = $query->getResult();
-        
+        /*
+        var_dump($seguradora);
+        var_dump($classeAtividade->getClasseTaxas()->getId());
+        var_dump($date);
+        var_dump($classeAtividade->getAtividade()->getOcupacao());
+        var_dump($validade);
+        var_dump($comissao);
+        var_dump($cob);
+        var_dump($resul);
+         */
         return empty($resul) ? FALSE : $resul[0];
     }
 }

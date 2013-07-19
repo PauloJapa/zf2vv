@@ -385,6 +385,13 @@ class Orcamento extends AbstractSeguro {
      * })
      */
     protected $comissaoEnt;
+
+    /**
+     * @var integer $FechadoOrigemId
+     *
+     * @ORM\Column(name="fechado_origem_id", type="integer", nullable=true)
+     */
+    protected $fechadoOrigemId;
     
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -424,10 +431,33 @@ class Orcamento extends AbstractSeguro {
         $this->fechadoId = $codFechado;
         return $this;
     }
-    
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @return integer
+     */
+    public function getFechadoOrigemId() {
+        return $this->fechadoOrigemId;
+    }
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @param integer $FechadoOrigemId
+     * @return \Livraria\Entity\Renovacao
+     */
+    public function setFechadoOrigemId($FechadoOrigemId) {
+        $this->fechadoOrigemId = $FechadoOrigemId;
+        return $this;
+    }
+
+    /**
+     * 
+     * @return array com todos os campos formatados para o form
+     */
     public function toArray() {
         $data = parent::toArray();
         $data['fechadoId']     = $this->getFechadoId();
+        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         return $data;
     }
  

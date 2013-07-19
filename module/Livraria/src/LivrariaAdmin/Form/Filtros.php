@@ -74,7 +74,20 @@ class Filtros  extends AbstractForm {
     public function setOrcamento(){
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Novos', 'R'=>'Renovação de Reajuste','F'=>'Fechados','C'=>'Cancelados']);
+        $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
+        $this->get('status')->setValue('A'); 
+        $this->setDate();
+        $this->setForUsuario();
+        $this->setForAdministradora();        
+        $this->setInputSubmit('fecharSel', 'Fechar Selecionados', ['onClick' => 'return fecharSelecionados()']);
+    }
+    
+    public function setRenovado(){
+        $this->setInputText('id', 'Nº do Renovação',['class'=>'input-small']);
+        $this->setInputText('renovado', 'Nº do Renovação',['class'=>'input-small']);
         $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','F'=>'Fechados','C'=>'Cancelados']);
+        $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();
         $this->setForUsuario();
@@ -85,7 +98,8 @@ class Filtros  extends AbstractForm {
     public function setFechadosFull(){
         $this->setInputText('id', 'Nº do Seguro',['class'=>'input-small']);
         $this->setInputText('fechado', 'Nº do Seguro',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','C'=>'Cancelados']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Novos', 'R'=>'Renovados','C'=>'Cancelados']);
+        $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();
         $this->setForUsuario();

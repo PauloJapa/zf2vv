@@ -25,6 +25,7 @@ class Email extends AbstractService
         try {
             $dataEmail['baseUrl'] = $baseUrl;
             $dataEmail['email'] = 'marisa@vilavelha.com.br';
+            $dataEmail['email'] = 'watakabe98@hotmail.com';
             $mail = new Mail($this->transport, $this->view, $template);
             $mail->setSubject($dataEmail['subject'])
                     ->setTo($dataEmail['email'])

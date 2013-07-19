@@ -115,7 +115,7 @@
 <tr>
 	<td nowrap class="Bl">Ref. do Imóvel</td>
 	<td nowrap colspan="2">____________ Valor do Aluguel: <? echo number_format($array['valorAluguel'], 2, ',', '.') ?></td>
-	<td nowrap colspan="2">Valor do Aluguel Corrigido: _________________________</td>
+	<td nowrap colspan="2">Valor do Aluguel Corrigido: <? echo number_format($array['valorAluguel'] * $this->date['upAluguel'], 2, ',', '.') ?>___________________</td>
 	<td nowrap class="Br" colspan="6">Imóvel Vago(__) &nbsp;&nbsp;Não Administramos(__) &nbsp;&nbsp;Sem Alteração (__)</td>
 </tr>  
 <tr>

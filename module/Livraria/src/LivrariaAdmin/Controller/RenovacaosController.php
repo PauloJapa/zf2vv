@@ -23,11 +23,37 @@ class RenovacaosController  extends CrudController {
         return new ViewModel();
     }
     
-    public function listarRenovadosAction() { 
+    public function listarRenovadosAction(array $filtro=[], $operadores=[]) { 
         $this->verificaSeUserAdmin();
-        $this->setRender(FALSE);
-        parent::indexAction();
-        return new ViewModel($this->getParamsForView());
+        //$this->setRender(FALSE);
+        //parent::indexAction();
+        //return new ViewModel($this->getParamsForView());
+        
+        $data = $this->filtrosDaPaginacao();
+        $this->formData = new \LivrariaAdmin\Form\Filtros();
+        $this->formData->setRenovado();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF', 'validade'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
+        //usuario admin pode ver tudo os outros são filtrados
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $this->verificaUserAction(FALSE);
+            }
+            $filtro['administradora'] = $sessionContainer->administradora['id'];
+        }
+        
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findRenovacao($filtro,$operadores,true);
+        
+        return parent::indexAction($filtro,[],$list);    
     }
     
     public function buscarAction() { 
@@ -98,7 +124,7 @@ class RenovacaosController  extends CrudController {
         $this->getDadosAnterior();
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora'], $this->data['validade']);
+                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);
         return new ViewModel(['data' => $fechados]);
     }
     
@@ -107,7 +133,7 @@ class RenovacaosController  extends CrudController {
         $this->getDadosAnterior();
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['inicio'], $this->data['fim'], $this->data['administradora'], $this->data['validade']);
+                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);
         $service = new $this->service($this->getEm());
         foreach ($fechados as $fechado) {
             $resul = $service->renovar($fechado);
