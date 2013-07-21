@@ -901,6 +901,24 @@ class AbstractSeguro  extends Filtro {
         $this->comissaoEnt = $comissaoEnt;
         return $this;
     }
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @return integer
+     */
+    public function getFechadoOrigemId() {
+        return $this->fechadoOrigemId;
+    }
+
+    /**
+     * Key do registro fechados que originou esta renovação
+     * @param integer $FechadoOrigemId
+     * @return \Livraria\Entity\Renovacao
+     */
+    public function setFechadoOrigemId($FechadoOrigemId) {
+        $this->fechadoOrigemId = $FechadoOrigemId;
+        return $this;
+    }
     
     /**
      * 
@@ -965,6 +983,7 @@ class AbstractSeguro  extends Filtro {
         $data['cobAluguel']     = $this->floatToStr('cobAluguel');
         $data['cobEletrico']    = $this->floatToStr('cobEletrico');
         $data['cobVendaval']    = $this->floatToStr('cobVendaval');
+        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         return $data ;
     }
     

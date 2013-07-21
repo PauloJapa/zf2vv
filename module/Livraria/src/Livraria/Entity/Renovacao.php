@@ -439,24 +439,6 @@ class Renovacao  extends AbstractSeguro
         $this->fechadoId = $FechadoId;
         return $this;
     }
-
-    /**
-     * Key do registro fechados que originou esta renovação
-     * @return integer
-     */
-    public function getFechadoOrigemId() {
-        return $this->fechadoOrigemId;
-    }
-
-    /**
-     * Key do registro fechados que originou esta renovação
-     * @param integer $FechadoOrigemId
-     * @return \Livraria\Entity\Renovacao
-     */
-    public function setFechadoOrigemId($FechadoOrigemId) {
-        $this->fechadoOrigemId = $FechadoOrigemId;
-        return $this;
-    }
     
     /**
      * Qtd de vezes renovados
@@ -483,7 +465,6 @@ class Renovacao  extends AbstractSeguro
     public function toArray() {
         $data = parent::toArray();
         $data['fechadoId']      = $this->getFechadoId();
-        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['mensalSeq']      = $this->getMensalSeq();
         return $data ;
     }

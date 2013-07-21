@@ -304,6 +304,12 @@ return array(
                         'controller' => 'exportar',
                         'action' => 'col',
                     ),
+                    'exportar3' => array(
+                        'label' => 'Emissão_de_Cartão',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'cartao',
+                    ),
                 ),
             ),
             'logout' => array(

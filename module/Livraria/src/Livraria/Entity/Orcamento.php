@@ -433,31 +433,12 @@ class Orcamento extends AbstractSeguro {
     }
 
     /**
-     * Key do registro fechados que originou esta renovação
-     * @return integer
-     */
-    public function getFechadoOrigemId() {
-        return $this->fechadoOrigemId;
-    }
-
-    /**
-     * Key do registro fechados que originou esta renovação
-     * @param integer $FechadoOrigemId
-     * @return \Livraria\Entity\Renovacao
-     */
-    public function setFechadoOrigemId($FechadoOrigemId) {
-        $this->fechadoOrigemId = $FechadoOrigemId;
-        return $this;
-    }
-
-    /**
      * 
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {
         $data = parent::toArray();
         $data['fechadoId']     = $this->getFechadoId();
-        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         return $data;
     }
  

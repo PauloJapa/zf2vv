@@ -94,4 +94,47 @@ class ExportarController extends CrudController {
         return $viewModel;           
     }
     
+    /**
+     * Filtros para gerar arquivo para emissão de cartão tela de seleção de filtros
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function cartaoAction() {
+        $this->verificaSeUserAdmin();
+        $this->formData = new $this->form($this->getEm());
+        $this->formData->setCartao();
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());  
+    }
+    
+    /**
+     * Exibir listagem para verificação do usuario baseado nos filtros escolhidos.
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function listaCartaoAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->listaCartao($data);
+        $data['inicio'] = $service->getFiltroTratado('inicio')->format('d/m/Y');
+        $data['fim']    = $service->getFiltroTratado('fim')->format('d/m/Y');
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data]));        
+    }
+    
+    /**
+     * Gera um arquivo texto com os registros dos cartão a serem gerados
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function geraCartaoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = new $this->service($this->getEm());
+        $resul = $service->geraArqsForCartao($data['id']);
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array('data' => $resul,'admFiltro' => $data['id']));
+        $viewModel->setTerminal(true);
+        return $viewModel;           
+    }
 }

@@ -400,6 +400,13 @@ class Fechados  extends AbstractSeguro
      * @ORM\Column(name="mensal_seq", type="integer", nullable=true)
      */
     protected $mensalSeq;
+
+    /**
+     * @var integer $FechadoOrigemId
+     *
+     * @ORM\Column(name="fechado_origem_id", type="integer", nullable=true)
+     */
+    protected $fechadoOrigemId;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados

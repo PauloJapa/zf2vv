@@ -1,0 +1,20 @@
+<?php
+
+if(!$this->data){
+    echo '<h1>Nenhum resultado foi encontrado!!!!</h1>';
+    exit();    
+}
+
+$type = filetype($this->data);
+$size = filesize($this->data);
+$file = basename($this->data);
+
+// Colocar arquivo para usuario fazer o Download
+header("Content-Description: File Transfer");
+header("Content-type: {$type}");
+header("Content-length: {$size}");
+header ("Content-Disposition: attachment; filename=$file" );
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+readfile($this->data);
+exit();

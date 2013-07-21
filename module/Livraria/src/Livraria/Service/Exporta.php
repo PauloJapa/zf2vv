@@ -91,8 +91,131 @@ class Exporta extends AbstractService{
         $this->logForSis('fechados', '', 'Exportar', 'Listar Registros', $obs);
         return $this->getSc()->lista;
     }
+     
+    /**
+     * Recebe e trata os dados do form para fazer a lista para exibir para usuario confirmar a geração do arquivo emissão cartão.
+     * @param array $data com campos do form
+     * @return array com todos os registros
+     */
+    public function listaCartao($data){
+        //Trata os filtro para data anual
+        $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
+        $this->dateToObject('inicio');
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
+        $this->data['fim']->sub(new \DateInterval('P1D'));
+        $this->data['administradora'] = $data['administradora'];
+        //Guardar dados do resultado 
+        $this->getSc()->lista = $this->em->getRepository("Livraria\Entity\Fechados")->getListaCartao($this->data); 
+        $this->getSc()->data     = $data;
+        $obs = 'Paramentros da pesquisa:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $this->logForSis('fechados', '', 'Exportar', 'Emissão de Cartão', $obs);
+        return $this->getSc()->lista;
+    }
     
     /**
+     * Gerar o(s) arquivo(s) para exportação para emissão de cartao 
+     * Retorna arquivos de texto para usuario fazer download
+     * @param string $admFiltro
+     * @return string Caminho absoluto para o arquivo texto
+     */
+    public function geraArqsForCartao($admFiltro){
+        $data = $this->getSc()->data; 
+        $this->baseWork = '/var/www/zf2vv/data/work/' ;
+        if(!is_dir($this->baseWork)){
+            mkdir($this->baseWork , 0777);
+        }
+        $File = $this->baseWork . 'Cartoes_' . $data['mesFiltro'] . $data['anoFiltro'] . '.txt';
+        $this->qtdExportado = 0;
+        $this->openFile($File);
+        
+        $this->prepArqsForCartao($admFiltro);
+        
+        $this->closeFile();
+        if($this->qtdExportado != 0){
+            $obs = 'Gravou os dados do arquivo texto para emissão de cartão com sucesso.';
+            $this->logForSis('fechados', '', 'Exportar', 'Gera Arquivo Cartão', $obs);
+            return $File;
+        }
+        return FALSE;
+    }
+    
+    /**
+     * Varre o dados do cache e monta arquivo texto para exportação 
+     * Retorna caminho absoluto para o arquivo gerado
+     * @param type $admFiltro
+     */
+    public function prepArqsForCartao($admFiltro) {        
+        $this->item = 0;
+        $this->saida = '';
+        foreach ($this->getSc()->lista as $value) {
+            // Filtrar a Administradora
+            if($admFiltro == $value['administradora']['id']){
+                continue;
+            }
+            //locatario nome
+            $this->addSaida($value['locatario']['nome'], 100);
+            //locatario documento
+            if($value['locatario']['tipo'] == 'fisica'){
+                $this->addSaida($value['locatario']['cpf'], 15, '0', 'STR_PAD_LEFT');                
+            }else{
+                $this->addSaida($value['locatario']['cnpj'], 15, '0', 'STR_PAD_LEFT');                                
+            }
+            //endereço
+            $end = $value['imovel']['rua'] . ', ' . $value['imovel']['numero'];
+            if(!empty($value['imovel']['apto'])){
+                $end .= ' - AP ' . $value['imovel']['apto'];                
+            }
+            if(!empty($value['imovel']['bloco'])){
+                $end .= ' - BL ' . $value['imovel']['bloco'];                
+            }
+            if(!empty($value['imovel']['endereco']['compl'])){
+                $end .= ' - ' . $value['imovel']['endereco']['compl'];                
+            }
+            $this->addSaida($end, 66);
+            // Bairro
+            $this->addSaida($value['imovel']['endereco']['bairro']['nome'], 100);
+            // Cidade
+            $this->addSaida($value['imovel']['endereco']['cidade']['nome'], 50);
+            // Estado
+            $this->addSaida($value['imovel']['endereco']['estado']['sigla'], 2);
+            // CEP
+            $this->addSaida($value['imovel']['cep'], 8, '0', 'STR_PAD_LEFT');
+            // Inicio Vigencia
+            $this->saida .= $value['inicio']->format('dmY');
+            // Fim Vigencia
+            $this->saida .= $value['fim']->format('dmY');
+            // Locador nome
+            $this->addSaida($value['locador']['nome'], 100);
+            // Locador documento
+            if($value['locador']['tipo'] == 'fisica'){
+                $this->addSaida($value['locador']['cpf'], 15, '0', 'STR_PAD_LEFT');                
+            }else{
+                $this->addSaida($value['locador']['cnpj'], 15, '0', 'STR_PAD_LEFT');                                
+            }
+            // Administradora
+            $this->addSaida($value['administradora']['nome'], 40);
+            // Desconhecido
+            $this->addSaida('', 40);
+            // Fim da linha 
+            $this->saida .= PHP_EOL;  
+            $this->item ++;
+            $this->qtdExportado ++;
+        }     
+        $this->writeFile();
+    }
+    
+    public function addSaida($conteudo,$tam,$compl='',$opt=''){
+        if(empty($opt)){
+            $this->saida .= str_pad(utf8_decode($conteudo), $tam);
+        }else{
+            $this->saida .= str_pad(utf8_decode($conteudo), $tam, $compl, STR_PAD_LEFT);            
+        }
+    }
+
+        /**
      * Gerar o(s) arquivo(s) para exportação maritima 
      * Coloca o(s) arquivo(s) dentro do zip 
      * Retorna caminha absoluto do arquivo zip

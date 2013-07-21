@@ -322,6 +322,25 @@ class FechadosRepository extends AbstractRepository {
         return $this->executaQuery3('o.administradora');         
     }
     
+    /**
+     * Gera um lista de seguros fechados novos para geração de cartão
+     * @param array $data
+     * @return array
+     */
+    public function getListaCartao($data){
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status <> :status AND o.fechadoOrigemId IS NULL';
+        $this->parameters['inicio'] = $data['inicio'];
+        $this->parameters['fim']    = $data['fim'];
+        $this->parameters['status'] = 'C';
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        // Retorna um array com todo os registros encontrados        
+        return $this->executaQuery3('o.administradora');         
+    }
+    
     public function setGerado($id=false){
         if(!$id)
             return FALSE;

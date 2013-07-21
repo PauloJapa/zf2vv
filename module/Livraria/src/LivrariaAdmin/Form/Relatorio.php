@@ -105,6 +105,14 @@ class Relatorio  extends AbstractForm {
         $this->setInputText('upAluguel', 'Reajustar em %', ['placeholder' => '%']);
     }
     
+    /**
+     * Inputs do form para filtrar dados na geração do arquivo de emissão de cartãos.
+     */
+    public function setCartao(){        
+        $this->get('gerar')->setValue('Exportar');
+        $this->setMesAnoAdm();
+    }
+    
     public function setImovelDesocupado(){
         $this->setAdministradoraDataInicioFim();
     }
