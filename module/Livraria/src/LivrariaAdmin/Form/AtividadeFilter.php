@@ -8,6 +8,8 @@ class AtividadeFilter extends AbstractFilter {
         
         $this->notEmpty('descricao');
         
+        $this->notEmpty('seguradoraId');
+        
     }    
     
 }

@@ -86,6 +86,7 @@ return array(
             'parametroSis' => 'LivrariaAdmin\Controller\ParametroSisController',
             'relatorios' => 'LivrariaAdmin\Controller\RelatoriosController',
             'exportar' => 'LivrariaAdmin\Controller\ExportarController',
+            'importar' => 'LivrariaAdmin\Controller\ImportarController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

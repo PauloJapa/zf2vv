@@ -82,12 +82,13 @@ class AtividadesController extends CrudController {
      * @return \Zend\View\Model\ViewModel
      */
     public function autoCompAction(){
+        $seguradora = trim($this->getRequest()->getPost('seguradora'));
         $descricao = trim($this->getRequest()->getPost('atividadeDesc'));
         $ocupacao = trim($this->getRequest()->getPost('autoComp'));
         $repository = $this->getEm()->getRepository($this->entity);
-        $resultSet = $repository->autoComp($descricao .'%',$ocupacao);
+        $resultSet = $repository->autoComp($descricao .'%',$ocupacao, $seguradora);
         if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $descricao .'%', $ocupacao);
+            $resultSet = $repository->autoComp('%'. $descricao .'%', $ocupacao, $seguradora);
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('resultSet' => $resultSet));
         $viewModel->setTerminal(true);

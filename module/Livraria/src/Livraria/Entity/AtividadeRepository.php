@@ -32,29 +32,26 @@ class AtividadeRepository extends EntityRepository {
      * @param string $atividade
      * @return \Livraria\Entity\Atividade
      */
-    public function autoComp($atividade,$ocupacao=''){
+    public function autoComp($atividade,$ocupacao='',$seguradora=''){
+        $where = 'u.descricao LIKE :atividade';
+        $param['atividade'] = $atividade;
         if(!empty($ocupacao)){
-            $query = $this
-                ->getEntityManager()
-                ->createQueryBuilder()
-                ->select('u')
-                ->from('Livraria\Entity\Atividade', 'u')
-                ->where("u.descricao LIKE :atividade AND u.ocupacao LIKE :ocupacao")
-                ->setParameter('ocupacao', $ocupacao)
-                ->setParameter('atividade', $atividade)
-                ->setMaxResults(20)
-                ->getQuery();
-        }else{
-            $query = $this
-                ->getEntityManager()
-                ->createQueryBuilder()
-                ->select('u')
-                ->from('Livraria\Entity\Atividade', 'u')
-                ->where("u.descricao LIKE :atividade")
-                ->setParameter('atividade', $atividade)
-                ->setMaxResults(20)
-                ->getQuery();
+            $where .= ' AND u.ocupacao LIKE :ocupacao';
+            $param['ocupacao'] = $ocupacao;
         }
+        if(!empty($seguradora)){
+            $where .= ' AND u.seguradoraId = :seguradora';
+            $param['seguradora'] = $seguradora;
+        }
+        $query = $this
+            ->getEntityManager()
+            ->createQueryBuilder()
+            ->select('u')
+            ->from('Livraria\Entity\Atividade', 'u')
+            ->where($where)
+            ->setParameters($param)
+            ->setMaxResults(20)
+            ->getQuery();
         
         return $query->getResult();
     }   
@@ -81,6 +78,11 @@ class AtividadeRepository extends EntityRepository {
         if(isset($filtros['status']) AND !empty($filtros['status'])){
             $where .= ' AND u.status = :status';
             $paramentros['status'] = $filtros['status'];
+        }
+        
+        if(isset($filtros['seguradoraId']) AND !empty($filtros['seguradoraId'])){
+            $where .= ' AND u.seguradoraId = :seguradoraId';
+            $paramentros['seguradoraId'] = $filtros['seguradoraId'];
         }
         
         $query = $this->getEntityManager()

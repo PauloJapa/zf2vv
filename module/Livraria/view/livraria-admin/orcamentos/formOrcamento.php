@@ -319,11 +319,11 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             }
         }
         if(!teste){
-            alert('Antes de escolher a atividade deve-se a ocupação!!');
+            alert('Antes de escolher a atividade deve-se escolher a ocupação!!');
             return;
         }
         document.getElementById('autoComp').value = teste;
-        var filtros = 'ocupacao,atividadeDesc,autoComp';
+        var filtros = 'seguradora,ocupacao,atividadeDesc,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'autoComp')); ?>";
         var returns = Array('atividade','atividadeDesc');
         var functionCall = '';

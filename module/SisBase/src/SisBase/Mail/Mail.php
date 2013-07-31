@@ -73,7 +73,8 @@ class Mail
         $this->message->addFrom($config['connection_config']['from'])
                 ->addTo($this->to)
                 ->setSubject($this->subject)
-                ->setBody($this->body);
+                ->setBody($this->body)
+                ->setEncoding('UTF-8');
         
         return $this;
     }

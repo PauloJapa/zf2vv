@@ -155,8 +155,15 @@ class Orcamento extends AbstractService {
                         $this->data['tipoCobertura']
         );
         
-        if(!$this->data['taxa'])
+        if(!$this->data['taxa']){
+            var_dump($this->data['seguradora']->getId());
+            var_dump($this->data['atividade']->getId());
+            var_dump($this->data['criadoEm']);
+            var_dump(str_replace(',', '.', $this->data['comissao']));
+            var_dump($this->data['validade']);
+            var_dump($this->data['tipoCobertura']);
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
+        }
         
         $this->data['multiplosMinimos'] = $this->em
             ->getRepository('Livraria\Entity\MultiplosMinimos')
@@ -166,7 +173,7 @@ class Orcamento extends AbstractService {
         
         $this->data['fechadoId'] = '0';
         
-        if(!isset($this->data['status'])){
+        if(!isset($this->data['status']) OR empty($this->data['status'])){
             $this->data['status'] = 'A';
         }
         
@@ -320,7 +327,7 @@ class Orcamento extends AbstractService {
         else
             $this->setFlush (TRUE);
         
-        if($data['status'] != 'A')
+        if($data['status'] != 'A' AND $data['status'] != 'R')
             return ['Este orçamento não pode ser editado!','Pois já esta finalizado!!'];
         
         $ret = $this->setReferences();
@@ -340,6 +347,10 @@ class Orcamento extends AbstractService {
                         $this->data['tipoCobertura']
         );
         
+        if(!$this->data['taxa'])
+            return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
+        
+        
         $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
         
         $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
@@ -347,7 +358,7 @@ class Orcamento extends AbstractService {
         $this->CalculaPremio();
         
         $this->idToReference('user', 'Livraria\Entity\User');
-        
+
         if($onlyCalculo){
             return TRUE; 
         }
@@ -410,17 +421,17 @@ class Orcamento extends AbstractService {
                 if(($inicio < $entity->getFim('obj'))){
                     if($entity->getStatus() == "A"){
                         $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                     if($entity->getStatus() == "F"){
                         $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                     if($entity->getStatus() == "R"){
                         $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                 }

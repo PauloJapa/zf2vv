@@ -35,4 +35,9 @@ class IndexController extends CrudController {
         return new ViewModel(array());
     }
 
+    public function importarAction() {
+        $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+
 }

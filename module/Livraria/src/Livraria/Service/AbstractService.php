@@ -454,8 +454,9 @@ abstract class AbstractService {
         if($conteudo == 0.0 and $this->data['tipoCobertura'] == '02')
             $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();
         
-        // Multiplo de conteudo não usa no calculo atualmente pois usa o multiplo de incendio manter em stand by
-        //    $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
+        // Multiplo de conteudo usado somente quando existe valor nesse campo e a cobertura for incen. + cont.
+        if($conteudo == 0.0 and $this->data['tipoCobertura'] == '02' AND $this->data['comissaoEnt']->getMultConteudo() != 0)
+            $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
         
         if($aluguel == 0.0)
             $aluguel  = $vlrAluguel * $this->data['comissaoEnt']->getMultAluguel();
@@ -489,7 +490,7 @@ abstract class AbstractService {
         $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
         $total += $txEletrico;
         
-        $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Desastres','Vendaval') ;
+        $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Vendaval') ;
         $total += $txVendaval;
         
         //Verificar Se administradora tem total de cobertura minima e compara

@@ -19,6 +19,8 @@ $this->FormDefault(['legend' => 'Dados da Atividade', 'hidden' => 'id'],'inicio'
     "</td><td>\r",
         $this->FormDefault(['ocupacao' => 'select']),
     "</td><td>\r",
+        $this->FormDefault(['seguradoraId' => 'select']),
+    "</td><td>\r",
         $this->FormDefault(['status' => 'select']),
     "</td>\r";
         

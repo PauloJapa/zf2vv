@@ -1,0 +1,80 @@
+<h1>Verificar status dos registro importados.</h1>
+<br />
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
+<?php
+
+if(!$this->data){
+    echo '<h2>Nenhum registro encontrado</h2>';
+    exit();
+}
+$td     = array(
+    '',
+    '',
+    '',
+    '',
+    '',
+    'nowrap',
+    '',
+    'nowrap',
+    '',
+    '',
+    'nowrap',
+    '',
+    'nowrap',
+);
+$qtd    = sizeof($this->data[0]);
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $this->data[0], 'tdopt' => $td,'editLine' => FALSE));
+     
+foreach($this->data as $key => $linha){ 
+    if($key == 0){
+        continue;
+    }
+    if(isset($linha['result'])){
+        if($linha['result'][0] === TRUE){
+            echo '<tr><td colspan="', $qtd, '"><div class="alert alert-success">Gerou Orçamento de numero de ',$linha['result'][1] ;
+            continue;
+        }
+        echo '<tr><td colspan="', $qtd, '"><div class="alert alert-danger">Não importou lista de motivos Abaixo:<br>';
+        foreach ($linha['result'] as $resul) {
+            echo $resul, '<br />';
+        }
+        echo '</div></td></tr>'; 
+        continue;
+    }  
+    if(empty($linha[0])){
+        continue;
+    }      
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+<div align='center' class="noPrint">
+    <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel" onclick="toExcel()"> 
+    <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel dos Erros" onclick="toExcelErros()"> 
+</div>
+</form>
+<br />
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function toExcel(){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcelImpResul')); ?>";
+        envia(tar2);
+        return false;
+    } 
+    function toExcelErros(){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcelImpResulErr')); ?>";
+        envia(tar2);
+        return false;
+    } 
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'selecionar')); ?>";
+        envia(tar);
+        return false;
+    }
+</script>

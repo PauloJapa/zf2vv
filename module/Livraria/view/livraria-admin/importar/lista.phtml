@@ -1,0 +1,45 @@
+<h1>Conferência dos registros a serem importados</h1>
+<br />
+<p><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
+<?php
+
+if(!$this->data){
+    echo '<h2>Nenhum registro encontrado</h2>';
+    exit();
+}
+$td     = array();
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $this->data[0], 'tdopt' => $td,'editLine' => FALSE));
+     
+foreach($this->data as $key => $linha){ 
+    if($key == 0){
+        continue;
+    }
+    if(empty($linha[0])){
+        continue;
+    }
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+<div align='center' class="noPrint">
+    <input type="submit" name="importar" id="importar" class="btn-success" value="Gerar Orçamentos" onclick="return gerarOrcamento()">
+</div>
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function gerarOrcamento(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarOrcamento')); ?>";
+        envia(tar);
+        return false;
+    } 
+    function voltar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'selecionar')); ?>";
+        envia(tar);
+        return false;
+    }
+</script>

@@ -390,7 +390,10 @@ class FechadosRepository extends AbstractRepository {
         if(empty($filtros)){
             $where .= ' AND l.status = :status';
             $parameters['status'] = 'A';
-        }       
+            $mes = date('m');
+            $filtros['dataI'] = '01/' . $mes . '/' . date('Y');
+            $filtros['dataF'] = '31/' . $mes . '/' . date('Y');
+        }   
         
         foreach ($filtros as $key => $filtro) {
             switch ($key) {

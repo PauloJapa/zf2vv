@@ -116,6 +116,13 @@ class Atividade
      */
     private $roubo;
 
+    /**
+     * @var integer $seguradoraId
+     *
+     * @ORM\Column(name="seguradora_id", type="integer", nullable=true)
+     */
+    private $seguradoraId;
+
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
@@ -130,7 +137,7 @@ class Atividade
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
         $this->userIdCriado = 1 ;
     }
-     
+
     /**
      * Executa antes de salvar o registro atualizando assim a data de alteradoEm
      * @ORM\PreUpdate
@@ -376,6 +383,16 @@ class Atividade
         $this->roubo = $roubo;
         return $this;
     }
+    
+    
+    public function getSeguradoraId() {
+        return $this->seguradoraId;
+    }
+
+    public function setSeguradoraId($seguradoraId) {
+        $this->seguradoraId = $seguradoraId;
+        return $this;
+    }
 
         /**
      * 
@@ -396,6 +413,7 @@ class Atividade
         $data['vendavalFumaca'] = $this->getVendavalFumaca();
         $data['basica']         = $this->getBasica();
         $data['roubo']          = $this->getRoubo();
+        $data['seguradoraId']   = $this->getSeguradoraId();
         return $data ;
     }
     

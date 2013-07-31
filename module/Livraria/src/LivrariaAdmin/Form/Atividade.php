@@ -4,7 +4,7 @@ namespace LivrariaAdmin\Form;
 
 class Atividade extends AbstractForm {
     
-    protected $classes;    
+    protected $seguradoras;    
 
     public function __construct($name = null, $em = null) {
         $this->em = $em;
@@ -28,6 +28,9 @@ class Atividade extends AbstractForm {
         
         $status = $this->getParametroSelect('status');
         $this->setInputSelect('status', 'Situação', $status);
+        
+        $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
+        $this->setInputSelect('seguradoraId', '*Seguradora', $this->seguradoras);
 
         $this->setInputSubmit('enviar', 'Salvar');
 

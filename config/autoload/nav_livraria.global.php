@@ -312,6 +312,20 @@ return array(
                     ),
                 ),
             ),
+            'importar' => array(
+                'label' => 'Importar',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'importar',
+                'pages' => array(
+                    'importar1' => array(
+                        'label' => 'Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'importar',
+                        'action' => 'selecionar',
+                    ),
+                ),
+            ),
             'logout' => array(
                 'label' => 'Logout',
                 'route' => 'livraria-admin-logout',
