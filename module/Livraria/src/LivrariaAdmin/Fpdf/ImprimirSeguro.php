@@ -96,6 +96,11 @@ class ImprimirSeguro extends FPDF{
      * @param string $label 'Prédio + Conteudo'
      */
     public function setL11(array $vlr,$label=''){
+        $ind = [0,2,4,6];
+        foreach ($ind as $value) {
+            if($vlr[$value] == 'Não Calcular')
+                $vlr[$value] = '0,00';
+        }
         $this->set3Cell(['Incêndio Locação' . $label,$vlr[0],$vlr[1]]);
         $this->set3Cell(['Danos Eletricos',$vlr[2],$vlr[3]]);
         $this->set3Cell(['Perda Aluguel',$vlr[4],$vlr[5]]);

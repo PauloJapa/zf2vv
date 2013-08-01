@@ -185,9 +185,13 @@ class Orcamento extends AbstractService {
         if($result !== TRUE){
             return $result;
         }
+        
+        $this->trocaNaoCalcula();
 
         if(parent::insert())
             $this->logForNew();
+        
+        $this->trocaNaoCalcula(true);
         
         return array(TRUE,  $this->data['id']);      
     }   
@@ -367,8 +371,13 @@ class Orcamento extends AbstractService {
         if($result !== TRUE){
             return $result;
         }
+        
+        $this->trocaNaoCalcula();
+        
         if(parent::update())
             $this->logForEdit();
+        
+        $this->trocaNaoCalcula(true);
         
         return TRUE;
     }
@@ -463,11 +472,11 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora(), $this->data['administradora']);
         // 9 de valores float
         $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('valorAluguel'), $this->strToFloat($this->data['valorAluguel']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio + Conteudo', $ent->floatToStr('conteudo'), $this->strToFloat($this->data['conteudo']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel'), $this->strToFloat($this->data['aluguel']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico'), $this->strToFloat($this->data['eletrico']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval'), $this->strToFloat($this->data['vendaval']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio', $ent->floatToStr('incendio',4), $this->strToFloat($this->data['incendio'],4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio + Conteudo', $ent->floatToStr('conteudo',4), $this->strToFloat($this->data['conteudo'],4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel',4), $this->strToFloat($this->data['aluguel'],4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico',4), $this->strToFloat($this->data['eletrico'],4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval',4), $this->strToFloat($this->data['vendaval'],4));
         $this->dePara .= $this->diffAfterBefore('Premio Liquido', $ent->floatToStr('premioLiquido'), $this->strToFloat($this->data['premioLiquido']));
         $this->dePara .= $this->diffAfterBefore('Premio', $ent->floatToStr('premio'), $this->strToFloat($this->data['premio']));
         $this->dePara .= $this->diffAfterBefore('Premio Total', $ent->floatToStr('premioTotal'), $this->strToFloat($this->data['premioTotal']));

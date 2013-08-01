@@ -42,6 +42,8 @@ class  Filtro
             return "Erro no metodo inexistente!!";
         }
         $float = call_user_func(array($this,$getter));
+        if($float == 0.0001)
+            return 'Não Calcular';
         if(is_null($float))
             $float = 0.0;
         return number_format($float, $dec, ',','.');

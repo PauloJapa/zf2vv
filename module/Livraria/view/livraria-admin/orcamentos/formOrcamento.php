@@ -168,11 +168,16 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         $this->FormDefault(['formaPagto' => 'selectLine']),
         $this->FormDefault(['valorAluguel' => 'floatLine']),
         
-        $this->FormDefault(['incendio' => 'moedaLine']),
-        $this->FormDefault(['conteudo' => 'moedaLine']),
-        $this->FormDefault(['aluguel' => 'moedaLine']),
-        $this->FormDefault(['eletrico' => 'moedaLine']),
-        $this->FormDefault(['vendaval' => 'moedaLine']),
+        $this->FormDefault(['name' => 'incendio','icone' => 'icon-pencil','js' => "setEmpty('incendio')"],'iconeLine'),
+        $this->FormDefault(['name' => 'conteudo','icone' => 'icon-pencil','js' => "setEmpty('conteudo')"],'iconeLine'),
+        $this->FormDefault(['name' => 'aluguel','icone' => 'icon-pencil','js' => "setEmpty('aluguel')"],'iconeLine'),
+        $this->FormDefault(['name' => 'eletrico','icone' => 'icon-pencil','js' => "setEmpty('eletrico')"],'iconeLine'),
+        $this->FormDefault(['name' => 'vendaval','icone' => 'icon-pencil','js' => "setEmpty('vendaval')"],'iconeLine'),
+        //$this->FormDefault(['incendio' => 'moedaLine']),
+        //$this->FormDefault(['conteudo' => 'moedaLine']),
+        //$this->FormDefault(['aluguel' => 'moedaLine']),
+        //$this->FormDefault(['eletrico' => 'moedaLine']),
+        //$this->FormDefault(['vendaval' => 'moedaLine']),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['observacao' => 'textArea']),
@@ -192,6 +197,9 @@ $prt = isset($this->param['prt']) ? $this->param['prt'] : '/admin/orcamentos/pri
 $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 ?> 
 <script language="javascript">
+    function setEmpty(id){
+        $('#' + id).val('Não Calcular');
+    }
     var dateFormat = 'dd/mm/yyyy';
     var varVazio = ''; //Var para testar se campo cnpj ou cpf esta vazio
     var imprime = '<?php echo $this->imprimeProp ?>';

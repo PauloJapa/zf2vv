@@ -440,11 +440,11 @@ abstract class AbstractService {
         $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
         
         //Coberturas 
-        $incendio = $this->strToFloat($this->data['incendio'], 'float');
-        $conteudo = $this->strToFloat($this->data['conteudo'], 'float');            
-        $aluguel  = $this->strToFloat($this->data['aluguel'],  'float');
-        $eletrico = $this->strToFloat($this->data['eletrico'], 'float');
-        $vendaval = $this->strToFloat($this->data['vendaval'], 'float');
+        $incendio = ($this->data['incendio']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['incendio'], 'float');
+        $conteudo = ($this->data['conteudo']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['conteudo'], 'float');            
+        $aluguel  = ($this->data['aluguel']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['aluguel'],  'float');
+        $eletrico = ($this->data['eletrico']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval = ($this->data['vendaval']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['vendaval'], 'float');
         
         //Calcula de coberturas caso estejam zeradas do form
         if($incendio == 0.0 and $this->data['tipoCobertura'] == '01')
@@ -472,26 +472,35 @@ abstract class AbstractService {
         $total = 0.0 ;
         // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
         $txIncendio = 0.0;
-        if ($this->data['tipoCobertura'] == '01'){
+        if ($this->data['tipoCobertura'] == '01' AND $incendio != 0.0001){
             $txIncendio = $this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio') ;
             $total += $txIncendio;
         }
         
         // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
         $txConteudo = 0.0;
-        if ($this->data['tipoCobertura'] == '02'){
+        if ($this->data['tipoCobertura'] == '02' AND $conteudo != 0.0001){
             $txConteudo = $this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo') ;
             $total += $txConteudo;
         }
         
-        $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
-        $total += $txAluguel;
+        $txAluguel = 0.0;
+        if ($aluguel != 0.0001){
+            $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
+            $total += $txAluguel;
+        }
         
-        $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
-        $total += $txEletrico;
+        $txEletrico = 0.0;
+        if ($eletrico != 0.0001){
+            $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
+            $total += $txEletrico;
+        }
         
-        $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Vendaval') ;
-        $total += $txVendaval;
+        $txVendaval = 0.0;
+        if ($vendaval != 0.0001){
+            $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Vendaval') ;
+            $total += $txVendaval;
+        }
         
         //Verificar Se administradora tem total de cobertura minima e compara
         $coberturaMinAdm = $this->getParametroSis($this->data['administradora']->getId() . '_cob_min');
@@ -525,18 +534,32 @@ abstract class AbstractService {
         
         $this->data['premioLiquido'] = $this->strToFloat($total);
         $this->data['premioTotal']   = $this->strToFloat($totalBruto);
-        $this->data['incendio']      = $this->strToFloat($incendio);
+        $this->data['incendio']      = ($incendio == 0.0001) ? 'Não Calcular' : $this->strToFloat($incendio);
         $this->data['cobIncendio']   = $this->strToFloat($txIncendio);
-        $this->data['conteudo']      = $this->strToFloat($conteudo);
+        $this->data['conteudo']      = ($conteudo == 0.0001) ? 'Não Calcular' : $this->strToFloat($conteudo);
         $this->data['cobConteudo']   = $this->strToFloat($txConteudo);
-        $this->data['aluguel']       = $this->strToFloat($aluguel);
+        $this->data['aluguel']       = ($aluguel == 0.0001) ? 'Não Calcular' : $this->strToFloat($aluguel);
         $this->data['cobAluguel']    = $this->strToFloat($txAluguel);
-        $this->data['eletrico']      = $this->strToFloat($eletrico);
+        $this->data['eletrico']      = ($eletrico == 0.0001) ? 'Não Calcular' : $this->strToFloat($eletrico);
         $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
-        $this->data['vendaval']      = $this->strToFloat($vendaval);
+        $this->data['vendaval']      = ($vendaval == 0.0001) ? 'Não Calcular' : $this->strToFloat($vendaval);
         $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
         
         return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
+    }
+    
+    /**
+     * Casos em que é suspenso ou ignorado o calculo do multiplo padrão recebem o valor de identificação 0.0001
+     */
+    public function trocaNaoCalcula($inverte=false){
+        //Coberturas 
+        $txt=($inverte)? '0,0001'       : 'Não Calcular' ;
+        $vlr=($inverte)? 'Não Calcular' : '0,0001'       ;
+        if($this->data['incendio']==$txt) $this->data['incendio'] = $vlr;
+        if($this->data['conteudo']==$txt) $this->data['conteudo'] = $vlr;
+        if($this->data['aluguel'] ==$txt) $this->data['aluguel']  = $vlr;
+        if($this->data['eletrico']==$txt) $this->data['eletrico'] = $vlr;
+        if($this->data['vendaval']==$txt) $this->data['vendaval'] = $vlr;
     }
 
     /**
