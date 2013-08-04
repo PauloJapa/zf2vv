@@ -56,7 +56,7 @@ class Orcamento extends AbstractEndereco {
         $attributes['placeholder'] = 'xx.xxx.xxx/xxxx-xx';
         $this->setInputText('cnpjLoc', 'CNPJ', $attributes); 
         
-        //Dados do Locatario
+        //Dados do Locatarioc
         $this->setInputHidden('locatario');
         $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
                        'onKeyUp' => 'autoCompLocatario();',
@@ -83,7 +83,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('atividadeDesc', 'Atividade', $attributes);
      
         $this->setInputText('proposta', 'Proposta',['readOnly'=>'true']);
-        $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyPress'=>'cleanCoberturas()']);
+        $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyUp'=>'cleanCoberturas()']);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
         $tipoCob = ['onChange'=>'travaResidencial();'];

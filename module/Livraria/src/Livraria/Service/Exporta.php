@@ -197,8 +197,8 @@ class Exporta extends AbstractService{
             }
             // Administradora
             $this->addSaida($value['administradora']['nome'], 40);
-            // Desconhecido
-            $this->addSaida('', 40);
+            // Referencia do imovel
+            $this->addSaida($value['imovel']['refImovel'], 40);
             // Fim da linha 
             $this->saida .= PHP_EOL;  
             $this->item ++;

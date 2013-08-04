@@ -40,9 +40,15 @@ return array(
                                 'action' => 'index',
                             ),
                             'taxas1' => array(
-                                'label' => 'Coberturas',
+                                'label' => 'Taxa_Coberturas',
                                 'route' => 'livraria-admin',
                                 'controller' => 'taxas',
+                                'action' => 'index',
+                            ),
+                            'Mult_Min1' => array(
+                                'label' => 'Limites_de_Contratação',
+                                'route' => 'livraria-admin',
+                                'controller' => 'multiplosMinimos',
                                 'action' => 'index',
                             ),
                         ),
@@ -59,7 +65,7 @@ return array(
                                 'action' => 'index',
                             ),
                             'administradora2' => array(
-                                'label' => 'Comissões',
+                                'label' => 'Comissão_Paramentros',
                                 'route' => 'livraria-admin',
                                 'controller' => 'comissaos',
                                 'action' => 'index',
@@ -146,19 +152,6 @@ return array(
                                 'label' => 'Imoveis',
                                 'route' => 'livraria-admin',
                                 'controller' => 'imovels',
-                                'action' => 'index',
-                            ),
-                        ),
-                    ),
-                    'Mult_Min' => array(
-                        'label' => 'Limites de Contratação',
-                        'route' => 'livraria-admin',
-                        'controller' => 'multiplosMinimos',
-                        'pages' => array(
-                            'Mult_Min1' => array(
-                                'label' => 'Limites_de_Contratação',
-                                'route' => 'livraria-admin',
-                                'controller' => 'multiplosMinimos',
                                 'action' => 'index',
                             ),
                         ),

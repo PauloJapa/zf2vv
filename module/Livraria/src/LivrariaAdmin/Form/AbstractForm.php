@@ -77,9 +77,9 @@ abstract class AbstractForm extends Form {
         $input['options'] = array('type' => 'text','label' => $label);
         
         if(empty($attributes)){
-            $input['attributes'] = array('id' => $name); 
+            $input['attributes'] = array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)', 'onBlur' => 'toUp(this)'); 
         }else{
-            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+            $input['attributes'] = array_merge(array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)', 'onBlur' => 'toUp(this)'),$attributes); 
         }
         
         $this->add($input);
@@ -100,9 +100,9 @@ abstract class AbstractForm extends Form {
         $input['options'] = array('label' => $label,'rows'=>'6','cols'=>'200');
         
         if(empty($attributes)){
-            $input['attributes'] = array('id' => $name); 
+            $input['attributes'] = array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)', 'onBlur' => 'toUp(this)'); 
         }else{
-            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+            $input['attributes'] = array_merge(array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)', 'onBlur' => 'toUp(this)'),$attributes); 
         }
         
         $this->add($input);
@@ -121,9 +121,9 @@ abstract class AbstractForm extends Form {
         $input['name'] = $name;
         
         if(empty($attributes)){
-            $input['attributes'] = array('id' => $name); 
+            $input['attributes'] = array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)'); 
         }else{
-            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+            $input['attributes'] = array_merge(array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)'),$attributes); 
         }
         
         $input['options'] = array(
@@ -188,9 +188,9 @@ abstract class AbstractForm extends Form {
         $input['name'] = $name;
         
         if(empty($attributes)){
-            $input['attributes'] = array('id' => $name); 
+            $input['attributes'] = array('id' => $name,'onKeyPress' => 'return changeEnterToTab(this,event)'); 
         }else{
-            $input['attributes'] = array_merge(array('id' => $name),$attributes); 
+            $input['attributes'] = array_merge(array('id' => $name,'onKeyPress' => 'return changeEnterToTab(this,event)'),$attributes); 
         }
         
         $input['options'] = array(

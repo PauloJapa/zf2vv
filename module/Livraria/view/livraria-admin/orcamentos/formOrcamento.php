@@ -474,19 +474,16 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         autoComp2(filtros,servico,'popCidade',returns,'2',functionCall);
     }
 
-    function submitenter(obj,e){
-        var keycode;
-        if (window.event) 
-            keycode = window.event.keyCode;
-        else if (e) 
-            keycode = e.which;
-        else 
-            return true;
-        if (keycode == 13){
-            buscarEndCep();
-            return false;
+    function pressEnterOrTab(obj,e){
+        n = obj.name;
+        switch(n){
+            case 'cep':
+                buscarEndCep();
+                break;
+            case 'valorAluguel':
+                calcular();
+                break;
         }
-        return true;
     }
     function buscarEndCep(){
         cleanInputAll('bairro');

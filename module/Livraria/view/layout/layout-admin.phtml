@@ -24,10 +24,10 @@
                   ->prependFile($this->basePath() . '/js/ajax.js')
                   ->prependFile($this->basePath() . '/js/ajaxCep.js')
                   ->prependFile($this->basePath() . '/js/ajaxAutoComp.js')
-                  ->prependFile($this->basePath() . '/js/funcoes.js')
+                  ->offsetSetFile(99, $this->basePath() . '/js/jquery.maskMoney.js')
+                  ->offsetSetFile(100, $this->basePath() . '/js/funcoes.js')
                   ->prependFile($this->basePath() . '/js/dhtmlgoodies_calendar.js') , "\n";
         ?>
-        <script type="text/javascript" src="/js/jquery.maskMoney.js"></script>
 <style type="text/css" media="print">
     .quebra    { 
         page-break-before: always ;

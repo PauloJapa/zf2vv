@@ -53,6 +53,9 @@ function popula_cep(resul){
         carregando_cep('checar','CEP não encontrado!');
         break;
     }
+    toUp('rua');
+    toUp('bairroDesc');
+    toUp('cidadeDesc');
     setTimeout("carregando_cep('checar','')", 3000);
 }
 

@@ -612,13 +612,13 @@ abstract class AbstractService {
         $fMin = 'getMin' . $fMin ;
         // Seta as variavies de comparação dos paramentros da seguradora
         if($this->data['validade'] == 'anual'){
-            $premioMin = $this->data['multiplosMinimos']->getMinPremioAnual();
-            $apoliceMin = $this->data['multiplosMinimos']->getMinApoliceAnual();
-            $parcelaMin = $this->data['multiplosMinimos']->getMinParcelaAnual();
+            $premioMin = floatval($this->data['multiplosMinimos']->getMinPremioAnual());
+            $apoliceMin = floatval($this->data['multiplosMinimos']->getMinApoliceAnual());
+            $parcelaMin = floatval($this->data['multiplosMinimos']->getMinParcelaAnual());
         }else{
-            $premioMin = $this->data['multiplosMinimos']->getMinPremioMensal();
-            $apoliceMin = $this->data['multiplosMinimos']->getMinApoliceMensal();
-            $parcelaMin = $this->data['multiplosMinimos']->getMinParcelaMensal();            
+            $premioMin = floatval($this->data['multiplosMinimos']->getMinPremioMensal());
+            $apoliceMin = floatval($this->data['multiplosMinimos']->getMinApoliceMensal());
+            $parcelaMin = floatval($this->data['multiplosMinimos']->getMinParcelaMensal());            
         }
         
         // Se valor da cobertura for menor que o minimo calcula com o min

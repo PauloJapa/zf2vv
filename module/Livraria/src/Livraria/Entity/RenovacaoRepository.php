@@ -26,15 +26,16 @@ class RenovacaoRepository extends AbstractRepository {
         $ini = $ano . $mes . '01';
         $fim = $ano . $mes . '31';
         
-        $ini = $ano . $mesFiltro . '01';
-        $fim = $ano . $mesFiltro . '31';
+        $ini = '2012' . $mesFiltro . '01';
+        $fim = '2012' . $mesFiltro . '31';
         
         $this->where = ' f.status <> :status AND f.inicio BETWEEN :inicio AND :fim AND f.validade = :validade AND f.mesNiver = :niver';
-        $this->parameters['status']   = 'R';
+        $this->where = ' f.fim BETWEEN :inicio AND :fim AND f.validade = :validade';
+        //$this->parameters['status']   = 'R';
         $this->parameters['inicio']   = $ini;
         $this->parameters['fim']      = $fim;
         $this->parameters['validade'] = 'mensal';
-        $this->parameters['niver']    = $mesFiltro;
+        //$this->parameters['niver']    = $mesFiltro;
         if(!empty($adm)){
             $this->where .= '  AND f.administradora = :administradora';
             $this->parameters['administradora']  = $adm;

@@ -28,7 +28,7 @@ abstract class AbstractEndereco extends AbstractForm {
 
         $this->setInputText('compl', 'Complemento');
 
-        $this->setInputText('cep', '*CEP', ['onKeyPress' => 'return submitenter(this,event)']);
+        $this->setInputText('cep', '*CEP');
 
         $this->setInputText('bairroDesc', 'Bairro', ['placeholder' => 'Pesquise digitando o bairro aqui!','onKeyUp' => 'autoCompBairro();']);
 

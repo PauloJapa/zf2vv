@@ -353,3 +353,112 @@ function checkBlocker(){
     if(!blockTest)
         alert("Você possui um bloqueador de popup ativo, para exibir a proposta você desabilita-lo por favor !!");    
 }
+
+// Alterar valor digitado para maiusculo
+function toUp(obj) {
+    try{
+        obj.value = obj.value.toUpperCase();
+    }catch(e){
+        try{
+            obj = document.getElementById(obj);
+            obj.value = obj.value.toUpperCase();
+        }catch(e){
+            alert('erro ao converter para maiusculo');
+        }
+    }
+}
+
+// Evita que Acidentalmente a tecla backspace execute a função voltar do navegador
+$(function () {
+    var rx = /INPUT|TEXTAREA/i;
+    var rxT = /RADIO|CHECKBOX|SUBMIT/i;
+
+    $(document).bind("keydown keypress", function (e) {
+        var preventKeyPress;
+        if (e.keyCode == 8) {
+            var d = e.srcElement || e.target;
+            if (rx.test(e.target.tagName)) {
+                var preventPressBasedOnType = false;
+                if (d.attributes["type"]) {
+                    preventPressBasedOnType = rxT.test(d.attributes["type"].value);
+                }
+                preventKeyPress = d.readOnly || d.disabled || preventPressBasedOnType;
+            } else {preventKeyPress = true;}
+        } else { preventKeyPress = false; }
+
+        if (preventKeyPress) e.preventDefault();
+    });
+}); 
+
+// Modificar a tecla enter para tab e 
+// Verificar se tem função a ser executada
+function changeEnterToTab(obj,e){
+    var keycode;
+    if (window.event){ 
+        keycode = window.event.keyCode;
+    }else if (e){ 
+        keycode = e.which;
+    }else{
+        return true;
+    } 
+    toUp(obj);
+    // alert(keycode);
+    if((keycode == 13)||(keycode == 9)){
+        pressEnterOrTab(obj,e);
+    }
+    if(keycode == 9){
+        nextFocus(obj);
+        pressTab(obj,e);
+        return false;
+    }
+    if(keycode == 13){
+        nextFocus(obj);
+        pressEnter(obj,e);
+        return false;
+    }
+    return true;
+    //e.preventDefault();
+}
+
+function pressEnterOrTab(obj,e){
+    return true;
+}
+
+function pressEnter(obj,e){
+    return true;
+}
+
+function pressTab(obj,e){
+    return true;
+}
+
+function nextFocus(obj){
+    var inputs = $(obj).closest('form').find(':input:visible');
+    var ind    = inputs.index(obj);
+    var i      = 1;
+    var flag   = true;
+    while(flag){
+        ele = inputs.eq(ind + i);
+        tp = ele.prop('type');
+        switch(tp){
+            case 'button':    
+            case 'submit':
+                i++;
+                break;
+            default:    
+                ele.focus();
+                flag = false;          
+        }
+    }
+    return;
+}
+
+function getNextElement(field){
+    var form = field.form;
+    for (var e = 0; e < form.elements.length; e++){
+        if(field == form.elements[e]){
+            break;
+        }
+    }
+    return form.elements[++e % form.elements.length];
+}

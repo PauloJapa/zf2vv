@@ -223,6 +223,8 @@ class OrcamentosController extends CrudController {
         $filtroForm = array();
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
+        // Abrir novo orçamento colocando o focu no campos do locadorNome        
+        $this->formData->get('locadorNome')->setAttribute('autofocus', 'autofucus');
         //Bloquear campos para os usuarios não Admin
         if($sessionContainer->userNotAdmin){
             $this->formData->bloqueiaCampos();
@@ -235,6 +237,7 @@ class OrcamentosController extends CrudController {
                 $result = $service->insert($data, TRUE);
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
+                    $this->flashMessenger()->clearMessages();
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -245,7 +248,6 @@ class OrcamentosController extends CrudController {
             }
         }
 
-        $imprimeProp = '0';
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
                 $service = $this->getServiceLocator()->get($this->service);
@@ -253,8 +255,8 @@ class OrcamentosController extends CrudController {
                 if($result[0] === TRUE){
                     $sessionContainer->idOrcamento = $result[1];
                     unset($sessionContainer->administradora);
+                    $this->flashMessenger()->clearMessages();
                     return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
-                    $imprimeProp = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -267,7 +269,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp'=>$imprimeProp])); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp' => '0'])); 
     }
     
     /**
@@ -312,10 +314,12 @@ class OrcamentosController extends CrudController {
         }
         
         //Verifica se o id veio registrado na sessão
+        $imprimeProp = '0'; 
         if(isset($sessionContainer->idOrcamento)){
             $data['id'] = $sessionContainer->idOrcamento;
             unset($sessionContainer->idOrcamento);
             $data['subOpcao'] = 'editar';
+            $imprimeProp = '1';
         }
         
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
@@ -372,6 +376,7 @@ class OrcamentosController extends CrudController {
                 $result = $service->update($data, TRUE);
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
+                    $this->flashMessenger()->clearMessages();
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -381,8 +386,7 @@ class OrcamentosController extends CrudController {
                 $this->flashMessenger()->addMessage('Primeiro Acerte os erros antes de calcular!!!');
             }
         }
-        
-        $imprimeProp = '0';        
+               
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
@@ -390,6 +394,7 @@ class OrcamentosController extends CrudController {
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
                     $imprimeProp = '1';
+                    $this->flashMessenger()->clearMessages();
                     //return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
                 }else{
                     foreach ($result as $value) {
