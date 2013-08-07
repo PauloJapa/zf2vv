@@ -122,7 +122,13 @@ class FechadosRepository extends AbstractRepository {
                 ->setParameters($this->parameters);
         
         if(!empty($orderBy)){
-            $query->orderBy($orderBy);
+            if(!is_array($orderBy)){
+                $query->orderBy($orderBy);
+            }else{
+                foreach ($orderBy as $value) {
+                    $query->orderBy($value);                    
+                }
+            }
         }
         
         if(!empty($groupBy)){
@@ -319,7 +325,7 @@ class FechadosRepository extends AbstractRepository {
             $this->parameters['seguradora']    = $data['seguradora'];            
         }
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery3('o.administradora');         
+        return $this->executaQuery3(['o.administradora','o.inicio']);         
     }
     
     /**

@@ -81,7 +81,6 @@ class RenovacaosController  extends CrudController {
             if(!isset($sessionContainer->administradora['id'])){
                 $this->verificaUserAction(FALSE);
             }
-            $filtro['administradora'] = $sessionContainer->administradora['id'];
             $data['administradora'] = $sessionContainer->administradora['id'];
             $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }

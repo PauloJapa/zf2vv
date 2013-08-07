@@ -617,7 +617,7 @@ class Fechados extends AbstractService {
                 if($admCod != 0){
                     $servEmail->enviaEmail(['nome' => $admNom,
                         'email' => $admEmai,
-                        'subject' => $admNom . 'Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
+                        'subject' => $admNom . ' -Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
                         'data' => $data],'seguro-faturado');                     
                 }
                 $admCod  = $value['administradora']['id'];
@@ -639,7 +639,7 @@ class Fechados extends AbstractService {
         if($admCod != 0){
             $servEmail->enviaEmail(['nome' => $admNom,
                 'email' => $admEmai,
-                'subject' => 'Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
+                'subject' => $admNom . ' -Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
                 'data' => $data],'seguro-faturado');                     
         }
         
