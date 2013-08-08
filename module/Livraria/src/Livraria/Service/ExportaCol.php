@@ -101,6 +101,8 @@ class ExportaCol extends AbstractService{
     }
     
     public function geraExpForCOL($adm){
+        echo '<h2>inicio</h2>';
+        $this->pr['vue'] = $adm;
         $data = $this->getSc()->data;
         $mes  = $data['mesFiltro'];
         $ano  = $data['anoFiltro'];
@@ -124,33 +126,32 @@ class ExportaCol extends AbstractService{
             $this->exportaLello('C'); //empresarial
             $this->exportaLello('R'); //residencial
         }else{
-            $this->exporta();
+            $this->exporta('C','1');
+            $this->exporta('C','2');
+            $this->exporta('C','3');
+            $this->exporta('C','mensal');
+            $this->exporta('R','1');
+            $this->exporta('R','2');
+            $this->exporta('R','3');
+            $this->exporta('R','mensal');
         }
-        
+die;        
         if($this->qtdExportado != 0){
             $this->logExportadoCol($mes,$ano);
         }
-    }
+    }  
     
     public function exportaLello($ocup){
-        $vCliente = false;
+        echo '<h2>inicio llelo</h2>';
+        $this->pr['vCliente'] = false;
+        $dia = 0;
+        $this->resetaValores();
         foreach ($this->expts as $this->expt) {
-            
-            // ============== HEADER DA IMPORTAÇÃO  UM HEADER POR DIA !!!
-            if(!$vCliente){
-                $vCliente = $this->expt['administradora']['codigoCol'];
-                if ($vCliente == '' OR $vCliente == 0){
-                    echo '<p>Administradora sem codigo COL para exportação</p>';
-                    return false;
-                }
-            }
-            $this->pr['vCliente']                   = $vCliente;
-            
+            // lello somente faz seguros com Allianz
             if($this->expt['seguradora']['id'] != 3){
                 echo '<p>Seguradora não é a Allianz fechado numero ' . $this->expt['id'] . '</p>';
                 continue;
             }
-print_r($this->expt);die;
             // Filtrar apenas Comercial
             if($ocup == 'C'){
                 if($this->ativid == 911 OR $this->ativid == 919){
@@ -163,45 +164,325 @@ print_r($this->expt);die;
                 }                
                 $this->pr['vTipo_ocupacao']          = 'RESIDENCIAL';
             }
+            
+            // Monta header e footer conforme fluxo do loop de exportação lello tem um header e footer por dia
+            $diaSeg = $this->expt['inicio']->format('d');
+            if($dia != $diaSeg){
+                // <=================== INICIO DO FOOTER (CALCULO DE COMISSÕES) 1 POR DIA
+                // Somando IOF e configurando variaveis e Calculando Comissão
+                // Inserindo Divisoes na fatura (1º Corretora) 
+                // Inserindo Divisoes na fatura (2º UE)
+                // Inserindo Divisoes na fatura (3º UI)
+                // Zerando variaveis para o proximo loop
+                if($dia != 0){
+                    $this->insertColFooter();
+                }    
+                // ============== HEADER DA IMPORTAÇÃO  UM HEADER POR DIA !!!
+                // Seleciona o Produto do COL
+                // Seleciona os parametros do produto
+                // Pega numero documento, alteracao, proposta e textos na tabela par_cont
+                // Abrindo nova fatura (Cada linha tem 9 campo da tabela)
+                //Pegando valor do Numero do item          
+                $resul = $this->insertColHeader($ocup);
+                if(!$resul){
+                    echo '<p>Falha ao montar header iniciando por seg: ' . $this->expt['id'] . '</p>';
+                    continue;                    
+                }
+                $dia = $diaSeg;
+            }
+            
             $this->qtdExportado++;
-            // Seleciona o Produto do COL
-            $this->pr['vProduto'] = $this->getProduto($ocup);
-            
-            // Seleciona os parametros do produto
-            $this->getProdutoParams($this->pr['vProduto'], $this->expt['comissao']);
-            
-            // Pega numero documento, alteracao, proposta e textos na tabela par_cont
-            $this->getDocumentos();
-            
-            // Abrindo nova fatura (Cada linha tem 9 campo da tabela)
-            $this->insertToDocumentos();
-            
-            //Pegando valor do Numero do item
-            $this->pr['vNum_item'] = $this->getNumItem();            
-            // ============== FIM HEADER DA IMPORTAÇÃO  UM HEADER POR DIA !!!
-            
             // ============== RESTANTES DO REGISTROS DO MESMO DIA
             // Pega numero item na tabela par_cont
-            $this->pr['vItem'] = $this->getVItem();  
-            
             // Pegando valor do Numero do item para Tabela DocsItensCobs
-            $this->pr['vItemCob'] = $this->pr['vItem'];  
-            
             // Inserir endereço dos itens
-            $this->insertToDocsItens();
-            
             // Inserindo dados na tabela DocsItensCobs (INCENDIO)
-            
-            
-            
+            // Inserindo dados na tabela DocsItensCobs (PERDA ALUGUEL)
+            // Inserindo dados na tabela DocsItensCobs (DANOS ELÉTRICOS)
+            // Inserindo dados na tabela DocsItensCobs (VENDAVAL)
+            // Carregando variaveis dos premios e juros (Faz acumulo Geral)
+            $this->insertColBody();
         }
+        // Monta o ultimo FOOTERCOL de saida do loop caso dia <> 0
+        if($dia != 0){
+            $this->insertColFooter();
+        }        
+    }
+    
+    
+    
+    public function exporta($ocup,$formaPgto){
+        echo '<h2>inicio Outras Adms ' . $ocup . ' ' . $formaPgto . '</h2>';
+        $this->pr['vCliente'] = false;
+        $qtd = 0;
+        $this->resetaValores();
+        foreach ($this->expts as $this->expt) {
+            // Outras Adm somente faz seguros com Maritima
+            if($this->expt['seguradora']['id'] != 2){
+                echo '<p>Seguradora não é a Maritima fechado numero ' . $this->expt['id'] . '</p>';
+                continue;
+            }
+            // Filtra forma de pagamento Mensal, avista, 2 ou 3 vezes
+            if($formaPgto == 'mensal'){
+                if($this->expt['validade'] != 'mensal'){
+                    continue;                
+                }
+            }else{
+                if($formaPgto != $this->expt['formaPagto']){
+                    continue;
+                }
+            }
+            // Filtrar apenas Comercial
+            if($ocup == 'C'){
+                if($this->ativid == 911 OR $this->ativid == 919){
+                    continue; // é residencial entao filtra
+                }
+                $this->pr['vTipo_ocupacao']          = 'COMERCIAL';
+            }else{ // Filtrar apenas residencial
+                if($this->ativid != 911 AND $this->ativid != 919){
+                    continue; // não é residencial entao filtra
+                }                
+                $this->pr['vTipo_ocupacao']          = 'RESIDENCIAL';
+            }   
+            // ============== HEADER DA IMPORTAÇÃO  UM HEADER POR FORMA DE PAGAMENTO !!!
+            // Seleciona o Produto do COL
+            // Seleciona os parametros do produto
+            // Pega numero documento, alteracao, proposta e textos na tabela par_cont
+            // Abrindo nova fatura (Cada linha tem 9 campo da tabela)
+            //Pegando valor do Numero do item  
+            if($qtd == 0){
+                $resul = $this->insertColHeader($ocup);
+                if(!$resul){
+                    echo '<p>Falha ao montar header iniciando por seg: ' . $this->expt['id'] . '</p>';
+                    continue;                    
+                }
+            }
+            $qtd++;
+            $this->insertColBody();
+        }
+        // Monta o ultimo FOOTERCOL de saida do loop caso dia <> 0
+        if($qtd != 0){
+            $this->insertColFooter();
+        } 
+    }
+    
+    public function insertColHeader($ocup){
+        // ============== HEADER DA IMPORTAÇÃO  UM HEADER POR DIA !!!
+        if(!$this->pr['vCliente']){
+            $this->pr['vCliente'] = $this->expt['administradora']['codigoCol'];
+            if ($this->pr['vCliente'] == '' OR $this->pr['vCliente'] == 0){
+                echo '<p>Administradora sem codigo COL para exportação</p>';
+                return false;
+            }
+        }            
+        // Seleciona o Produto do COL
+        $this->pr['vProduto'] = $this->getProduto($ocup);            
+        // Seleciona os parametros do produto
+        $this->getProdutoParams($this->pr['vProduto'], $this->expt['comissao']);            
+        // Pega numero documento, alteracao, proposta e textos na tabela par_cont
+        $this->getDocumentos();            
+        // Abrindo nova fatura (Cada linha tem 9 campo da tabela)
+        $this->insertToDocumentos();            
+        //Pegando valor do Numero do item
+        $this->pr['vNum_item'] = $this->getNumItem();            
+        // ============== FIM HEADER DA IMPORTAÇÃO  UM HEADER POR DIA !!!
+        return TRUE;
+    }
+    
+    public function insertColBody(){
+        // ============== Registros pertencentes ao corpo de exportação
+        // Pega numero item na tabela par_cont
+        $this->pr['vItem'] = $this->getVItem();              
+        // Pegando valor do Numero do item para Tabela DocsItensCobs
+        $this->pr['vItemCob'] = $this->pr['vItem'];              
+        // Inserir endereço dos itens
+        $this->insertToDocsItens();            
+        // Inserindo dados na tabela DocsItensCobs (INCENDIO)
+        $this->insertItensCobIncendio();            
+        // Inserindo dados na tabela DocsItensCobs (PERDA ALUGUEL)
+        $this->insertItensCobPerdaAluguel();            
+        // Inserindo dados na tabela DocsItensCobs (DANOS ELÉTRICOS)
+        $this->insertItensCobDanosEletricos();            
+        // Inserindo dados na tabela DocsItensCobs (VENDAVAL)
+        $this->insertItensCobVendaval();            
+        // Carregando variaveis dos premios e juros (Faz acumulo Geral)
+        $this->acumulaValores();          
+    }
+    
+    public function insertColFooter(){
+        // Somando IOF e configurando variaveis e Calculando Comissão
+        $this->insertValores();            
+        // Inserindo Divisoes na fatura (1º Corretora) 
+        $this->insertDivisaoFatCorretora();            
+        // Inserindo Divisoes na fatura (2º UE)
+        $this->insertDivisaoFatAdm();            
+        // Inserindo Divisoes na fatura (3º UI)
+        $this->insertDivisaoFatUI();            
+        // Zerando variaveis para o proximo loop
+        $this->resetaValores();        
+    }  
+    
+    public function insertDivisaoFatUI(){
+        $q  = $this->insertDivisaoFatHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", 3, 11710, 0, 0, 0, 0, 0, '0', 0, '4', '2', 0, '" . $this->pr['vData_venc_primeira'] . "', ";
+        $q .= "'C', '1', '2', 100, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "', 0 ";
+        $q .= ")";
+        print_r($q); echo '<br><br>'; return; 
+        $this->getMssql()->q($q);  
         
     }
     
-    public function insertToDocsItens($arg){
+    public function insertDivisaoFatAdm(){
+        $q  = $this->insertDivisaoFatHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", 2, " . $this->pr['vue'] . ", 1, 0, 0, 50, 0, '0', 1, '4', '2', 0, '" . $this->pr['vData_venc_primeira'] . "', ";
+        $q .= "'P', '1', '2', 100, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "', 2140 ";
+        $q .= ")";
+        print_r($q); echo '<br><br>'; return;
+        $this->getMssql()->q($q); 
+    }
+    
+    public function insertDivisaoFatCorretora(){
+        $q  = $this->insertDivisaoFatHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", 1, 11601, 0, 0, 0, 0, 0, '0', 0, '4', '2', 0, '" . $this->pr['vData_venc_primeira'] . "', ";
+        $q .= "'C', '1', '1', 100, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "', 0 ";
+        $q .= ")";
+        print_r($q); echo '<br><br>'; return;
+        $this->getMssql()->q($q);        
+    }
+    
+    public function insertDivisaoFatHeader(){
+        $q  = "INSERT INTO Tabela_DocsRepasses ( ";
+        $q .= "Documento, Alteracao, Nivel, Divisao, Forma_recebimento, Forma_parcelamento, Moeda_repasses, Perc_repasse, ";
+        $q .= "Perc_desconto, Incide_sobre_adic, Qtde_parcelas, Base_venc_prim, Base_venc_demais, Dias_venc_primeira, ";
+        $q .= "Data_venc_primeira, Base_calculo, Repasse_quitado, Remuneracao, Perc_part, Valor_repasse, Valor_base, ";
+        $q .= "Situacao, Data_inclusao, NivelDiv_com ";
+        $q .= ") VALUES ( ";
+        return $q;       
+    }
+    
+    public function insertValores(){
+        $this->pr['vIof']       = $this->pr['vPremio_total'] - $this->pr['vPremio_liquido'] ;
+        $this->pr['vIofParc']   = $this->pr['vIof'] / $this->pr['vParcela'];  
+        
+        $this->pr['vPremio_totalParc']    = $this->pr['vPremio_total'] / $this->pr['vParcela'];  
+
+        $this->pr['vPremio_liquidoParc']  = $this->pr['vPremio_liquido'] / $this->pr['vParcela'];
+        $this->pr['vComissao']            = $this->pr['vPremio_liquido'] * 0.8;
+    }
+    
+    public function acumulaValores(){
+        $this->pr['vPremio_liquido'] += $this->expt['premioLiquido'];
+        $this->pr['vPremio_total']   += $this->expt['premioTotal'];
+        $this->pr['vAdicional']      = 0;
+        $this->pr['vIof']            = 0;
+        if($this->expt['validade'] == 'mensal'){
+            $this->pr['vParcela']        = 1;
+        }else{
+            $this->pr['vParcela']        = $this->expt['numeroParcela'];            
+        }        
+    }
+    
+    public function resetaValores(){
+        $this->pr['vIof']                 = 0;
+        $this->pr['vIofParc']             = 0;
+        $this->pr['vPremio_totalParc']    = 0;
+        $this->pr['vPremio_total']        = 0;
+        $this->pr['vPremio_liquidoParc']  = 0;
+        $this->pr['vComissao']            = 0;
+        $this->pr['vPremio_liquido']      = 0;
+        $this->pr['vPremio_liquidoParc']  = 0;
+        $this->pr['vPremio_liquido']      = 0;
+        $this->pr['vPremio_total']        = 0;
+        $this->pr['vAdicional']           = 0;
+        $this->pr['vIof']                 = 0;
+        $this->pr['vParcela']             = 0;
+    }
+
+    public function insertItensCobVendaval(){
+        $this->pr['vVen'] = $this->expt['vendaval'];            
+        if($this->pr['vue'] == 3234){
+            $this->pr['vVenPremio'] = $this->expt['cobVendaval'];            
+        }else{
+            $this->pr['vVenPremio'] = 0;
+        }
+        $q  = $this->insertItensCobHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 26, 4, '4', " . $this->pr['vVen'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vVenPremio'] . "', 0, 'N', ";
+        $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
+        $q .= ")";
+        print_r($q); echo '<br><br>'; return;
+        $this->getMssql()->q($q);
+    }
+    
+    public function insertItensCobDanosEletricos(){
+        $this->pr['vEle'] = $this->expt['eletrico'];            
+        if($this->pr['vue'] == 3234){
+            $this->pr['vElePremio'] = $this->expt['cobEletrico'];            
+        }else{
+            $this->pr['vElePremio'] = 0;
+        }
+        $q  = $this->insertItensCobHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 22, 3, '4', " . $this->pr['vEle'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vElePremio'] . "', 0, 'N', ";
+        $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
+        $q .= ")";  
+        print_r($q); echo '<br><br>'; return;      
+        $this->getMssql()->q($q);
+    }
+    
+    public function insertItensCobPerdaAluguel(){
+        $this->pr['vAlu'] = $this->expt['aluguel'];            
+        if($this->pr['vue'] == 3234){
+            $this->pr['vAluPremio'] = $this->expt['cobAluguel'];            
+        }else{
+            $this->pr['vAluPremio'] = 0;
+        }
+        
+        $q  = $this->insertItensCobHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 92, 2, '4', " . $this->pr['vAlu'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vAluPremio'] . "', 0, 'N', ";
+        $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
+        $q .= ")";    
+        print_r($q); echo '<br><br>'; return;    
+        $this->getMssql()->q($q);
+        
+    }
+    
+    public function insertItensCobIncendio(){
+        // Se escolha entre Incendio ou Incendio + Conteudo
+        if($this->expt['tipoCobertura'] == '01' ){
+            $incendio = $this->expt['incendio'];   
+            $cobIncen = $this->expt['cobIncendio']; 
+        }else{
+            $incendio = $this->expt['conteudo'];   
+            $cobIncen = $this->expt['cobConteudo'];             
+        }
+        $this->pr['vInc'] = $incendio;            
+        if($this->pr['vue'] == 3234){
+            $this->pr['vIncPremio'] = $cobIncen;            
+        }else{
+            $this->pr['vIncPremio'] = 0;
+        }
+        $q  = $this->insertItensCobHeader();
+        $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 266, 1, '4', " . $this->pr['vInc'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vIncPremio'] . "', 0, 'N', ";
+        $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
+        $q .= ")";
+        
+        print_r($q); echo '<br><br>'; return;
+        $this->getMssql()->q($q);
+    }
+    
+    public function insertItensCobHeader(){
+        $q  = "INSERT INTO Tabela_DocsItensCobs (";
+        $q .= "Documento, Alteracao, Item, Cobertura, Ordem, Tem_impseg, Imp_segurada, Moeda, Tem_franquia, ";
+        $q .= "Tipo_franquia, Valor_franquia, Perc_franquia, Aplica_sobre, Franquia_minima, Franquia_maxima, ";
+        $q .= "Classe_bonus, Premio_base, Perc_comissao, Tem_relacao_bens, Bem_obrig, Forma_recebimento,  ";
+        $q .= "Qtde_parcelas, Parcela_inicial, Perc_ajuste, Situacao, Data_inclusao ";
+        $q .= ") VALUES ( "; 
+        return $q;       
+    }
+    
+    public function insertToDocsItens(){
         
         $this->pr['vProprietario'] = $this->addSaida($this->expt['locador']['nome'], 50);
-        $this->pr['vCep']          = $this->expt['imovel']['cep'];
+        $this->pr['vCep']          = $this->addSaida($this->expt['imovel']['cep'], 8, '0', 'STR_PAD_LEFT');
         $this->pr['vEndereco']     = $this->addSaida($this->expt['imovel']['rua'], 50);
         $this->pr['vNumero']       = $this->expt['imovel']['numero'];
         $this->pr['vComplemento']  = $this->addSaida($this->expt['imovel']['endereco']['compl'], 20);
@@ -224,7 +505,9 @@ print_r($this->expt);die;
         $q .= "0, 'A', '" . $this->pr['vData_inclusao'] . "', '" . $this->pr['vObs'] . "' ";
         $q .= ")";	
         
-        $this->execColQuery($q);
+        // executar query sql sem verificar o retorno
+        print_r($q); echo '<br><br>'; return;
+        $this->getMssql()->q($q);
     }
     
     public function getVItem(){
@@ -298,7 +581,7 @@ print_r($this->expt);die;
         $q .= "Perc_enc1, Perc_enc2, Encargos1, Encargos2, Total_enc1, Total_enc2, Situacao, Data_inclusao, Banco, ";
         $q .= "Premio_liqserv, Motivo_orc, Gera_comanda, Juros, Data_protocolo, Apolice ";
         $q .= ") VALUES ( ";
-        $q .= $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", '" . $this->pr['vData_proposta'] . "', " . $this->pr['vProposta'] . ", 1, 1, '1', '1', " . $vCliente . ", ";
+        $q .= $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", '" . $this->pr['vData_proposta'] . "', " . $this->pr['vProposta'] . ", 1, 1, '1', '1', " . $this->pr['vCliente'] . ", ";
         $q .= $this->pr['vGrupo_hierarquico'] . ", '" . $this->pr['vInicio_vigencia'] . "', '" . $this->pr['vTermino_vigencia'] . "', " . $this->pr['vSeguradora'] . ", " . $this->pr['vProduto'] . ", 0, 1, 0, 0, ";
         $q .= "0, 0, 0, " . $this->pr['vPerc_iof'] . ", 0, 0, 1, 0, 1, ";
         $q .= "0, '1', " . $this->pr['vPerc_com_base'] . ", 80, 0, 0, '1', 0, 1, ";
@@ -312,6 +595,7 @@ print_r($this->expt);die;
         $q .= "0, 0, 0, 0, '" . $this->pr['vData_protocolo'] . "', '" . $this->pr['vApolice'] . "'";		
         $q .= ")";
         // executar query sql sem verificar o retorno
+        print_r($q); echo '<br><br>'; return;
         $this->getMssql()->q($q);
     }
     
@@ -348,7 +632,7 @@ print_r($this->expt);die;
         $this->pr['vCom_varia_cob']    = $resul['Com_varia_cob'];
         $this->pr['vBonus_varia_cob']  = $resul['Bonus_varia_cob'];
         $this->pr['vPerc_iof']         = $resul['iof'];
-        if($c == 50){
+        if($c == 50 AND $this->pr['vue'] == '3234'){
             $this->pr['vPerc_com_base']         = 50;
         }else{
             $this->pr['vPerc_com_base']         = $resul['Perc_com_base'];
@@ -358,7 +642,7 @@ print_r($this->expt);die;
     public function getDocumentos(){
         $resul = $this->execColQuery("EXEC ss_Par_Cont_Int tabela_documentos");
         $this->pr['vDocumento'] = $resul['contador'];
-        $this->pr['vAlteracao'] = $resul['0'];
+        $this->pr['vAlteracao'] = '0';
         
         $resul = $this->execColQuery("EXEC ss_Par_Cont_Int tabela_textos");
         $this->pr['vCod_texto1'] = $resul['contador'];
@@ -373,20 +657,9 @@ print_r($this->expt);die;
     }
     
     public function execColQuery($q){
+        print_r($q); echo '<br><br>'; return;
         $resul = $this->getMssql()->q($q);
         return $resul->fetch(\PDO::FETCH_ASSOC);
-    }
-    
-    public function exporta(){
-        
-        foreach ($this->getSc()->lista as $this->expt) {
-            $codigoCol = $this->expt['administradora']['codigoCol'];
-            if ($codigoCol == '' OR $codigoCol == 0){
-                echo '<p>Administradora sem codigo COL para exportação</p>';
-                return false;
-            }
-        }
-        
     }
     
     public function addSaida($conteudo,$tam,$compl='',$opt=''){

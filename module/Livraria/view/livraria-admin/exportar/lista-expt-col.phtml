@@ -6,6 +6,9 @@ $coluns = array(
     'U.E.',
     'Administradora',
     'Locatário',
+    'Valid.',
+    'Forma Pag',
+    'Ocupação',
     'Inicio Vigência',
     'Fim Vigência',
     'Prêmio',
@@ -16,6 +19,9 @@ $coluns = array(
 $td     = array(
     'class="r"',
     'class="r"',
+    '',
+    '',
+    '',
     '',
     '',
     '',
@@ -47,10 +53,13 @@ foreach($this->data as $key => $value){
             $value['administradora']['id'],
             $value['administradora']['nome'] . '<br>' . $value['administradora']['email'],
             $value['locatarioNome'],
+            $value['validade'],
+            $value['formaPagto'],
+            $value['atividade']['descricao'],
             $value['inicio']->format('d/m/Y'),
             $value['fim']->format('d/m/Y'),
             number_format($value['premioTotal'], 2, ',', '.'),
-            number_format($value['comissao'], 0, ',', '.'),
+            number_format($value['comissao'], 2, ',', '.'),
             $value['seguradora']['apelido'],
             $value['administradora']['id'],
         ]));
@@ -61,10 +70,13 @@ foreach($this->data as $key => $value){
             '-',
             '-',
             $value['locatarioNome'],
+            $value['validade'],
+            $value['formaPagto'],
+            $value['atividade']['descricao'],
             $value['inicio']->format('d/m/Y'),
             $value['fim']->format('d/m/Y'),
             number_format($value['premioTotal'], 2, ',', '.'),
-            number_format($value['comissao'], 0, ',', '.'),
+            number_format($value['comissao'], 2, ',', '.'),
             $value['seguradora']['apelido'],
         ]));
     }
@@ -76,7 +88,7 @@ echo $this->ViewIndex('close');
 <table width="100%">
     <tr>
         <td align='center' width="50%">
-            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Exportação" onclick="toExporta('')">            
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Exportação" onclick="toExporta('<?php echo $admCod ?>')">            
         </td>
         <td align='center'>
             <input type="button" name="voltar" id="voltar" class="btn-success" value="Tela Anterior" onclick="window.history.back()">            

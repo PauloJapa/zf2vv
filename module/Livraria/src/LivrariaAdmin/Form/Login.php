@@ -4,7 +4,7 @@ namespace LivrariaAdmin\Form;
 
 use Zend\Form\Form;
 
-class Login extends Form {
+class Login extends AbstractForm {
     
     public function __construct($name = null) {
         parent::__construct('user');
@@ -12,33 +12,16 @@ class Login extends Form {
         $this->setAttribute('method', 'post');
         
         
+        $this->setInputText2('email', 'Login/Email', ['placeholder' => 'Digite o Login/Email']);
         
-        $this->add(array(
-           'name' => 'email',
-            'options' => array(
-                'type' => 'email',
-                'label' => 'Email'
-            ),
-            'attributes' => array(
-                'placeholder' => 'Entre com o email'
-            )
-        ));
-        $this->add(array(
-           'name' => 'password',
-            'options' => array(
-                'type' => 'Password',
-                'label' => 'Senha'
-            ),
-            'attributes' => array(
-                'type' => 'password'
-            )
-        ));
-        
+        $this->setInputText2('password','Senha');
+
+       
         $this->add(array(
            'name' => 'submit',
             'type' => 'Zend\Form\Element\Submit',
             'attributes' => array(
-                'value' => 'Login',
+                'value' => 'Entrar no Sistema',
                 'class' => 'btn-success'
             )
         ));

@@ -10,7 +10,7 @@ return array(
                 'options' => array(
                     'route' => '/',
                     'defaults' => array(
-                        'controller' => 'Livraria\Controller\Index',
+                        'controller' => 'livraria-admin/auth',
                         'action' => 'index',
                     ),
                 ),

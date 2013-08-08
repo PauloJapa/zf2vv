@@ -37,9 +37,12 @@ class AuthController extends AbstractActionController {
                 $result = $auth->authenticate($authAdapter);
 
                 if ($result->isValid()) {
-                    $sessionStorage->write($auth->getIdentity()['user'], null);
-               //     $sessionStorage->write($auth->getIdentity()['tipo'], null);
-                    return $this->redirect()->toRoute("livraria-admin", array('controller' => 'index', 'action' => 'bemVindo'));
+                    $sessionStorage->write($result->getIdentity()['user'], null);
+                    //var_dump($result->getIdentity()['user']->getAdministradora()['nome']);
+                    if($result->getIdentity()['user']->getTipo() == 'admin')
+                        return $this->redirect()->toRoute("livraria-admin", array('controller' => 'index', 'action' => 'bemVindo'));
+                    else
+                        return $this->redirect()->toRoute("livraria-admin", array('controller' => 'index', 'action' => 'bemVindoImo'));
                 }else
                     $error = true;
             }
@@ -60,7 +63,10 @@ class AuthController extends AbstractActionController {
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         $sessionContainer->setExpirationSeconds(1);
         
-        return $this->redirect()->toRoute('livraria-admin-auth');
+        //Não fazer cache da tela de logout
+        header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+        header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
+        return $this->redirect()->toRoute('livraria-home');
     }
 
 }

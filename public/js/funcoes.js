@@ -401,7 +401,7 @@ function changeEnterToTab(obj,e){
     }else{
         return true;
     } 
-    toUp(obj);
+    //toUp(obj);
     // alert(keycode);
     if((keycode == 13)||(keycode == 9)){
         pressEnterOrTab(obj,e);

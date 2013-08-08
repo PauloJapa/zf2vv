@@ -45,7 +45,11 @@ class Adapter implements AdapterInterface {
         
         
         if($user) {
-           return new Result(Result::SUCCESS, array('user'=>$user),array('OK'));
+            $admNome = $user->getAdministradora()->toArray();
+            $user->setAdministradora($admNome);
+          // $tipo = $user->getTipo();
+//var_dump($admNome);die;
+            return new Result(Result::SUCCESS, array('user'=>$user),array('OK'));
         }
         else
             return new Result(Result::FAILURE_CREDENTIAL_INVALID, null, array());

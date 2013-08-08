@@ -225,6 +225,7 @@ class Exporta extends AbstractService{
     public function geraArqsForMaritima($admFiltro){
         $data = $this->getSc()->data; 
         //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
+        $this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         $this->baseWork = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         if(!is_dir($this->baseWork)){
             mkdir($this->baseWork , 0777);
@@ -650,8 +651,14 @@ class Exporta extends AbstractService{
 
     public function setLine05(&$value) {
         //========= Linha 05 com DADOS DA COBERTURA ====================================
+        // Se escolha entre Incendio ou Incendio + Conteudo
+        if($value['tipoCobertura'] == '01' ){
+            $incendio = $value['incendio'];   
+        }else{
+            $incendio = $value['conteudo'];   
+        }
         $cobArray = [
-            '011101' => 'incendio',
+            '011101' => $incendio,
             '011103' => 'eletrico',
             '011117' => 'aluguel',
             '011131' => 'vendaval',

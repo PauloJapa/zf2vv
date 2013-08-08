@@ -46,7 +46,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="<?php echo $this->url('livraria-home'); ?>">Seguros Admin</a>
+                    <a class="brand" href="<?php echo $this->url('livraria-home'); ?>">Sistema Incêndio Locação</a>
                     <div class="nav-collapse">
                     <?php if ($user = $this->UserIdentity('LivrariaAdmin')){
                               if($user->getTipo() == 'admin')
@@ -65,11 +65,11 @@
             <div id="footerLayout" class="noPrint">
                 <hr>
                 <footer>
-                    <p>PC Watakabe Sistemas</p>
                     <? if($user) echo '<p>', $user->getNome(),' ', $user->getEmail(),' ', $user->getTipo(), '</p>' ;  ?>
+                    <!--<p>PC Watakabe Sistemas</p>-->
                 </footer>
             </div>
         </div> <!-- /container -->
-<?php echo $this->inlineScript() ?>
+<?php //echo $this->inlineScript() ?>
     </body>
 </html>

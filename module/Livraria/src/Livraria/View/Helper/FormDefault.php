@@ -147,6 +147,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputTextLine($name);
                 break;
             
+            case "passLine":
+                $this->renderInputPassLine($name);
+                break;
+            
             case "selectLine":
                 $this->renderInputSelectLine($name);
                 break;
@@ -334,6 +338,31 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append control-group" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
+            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+        "</div>", PHP_EOL,
+        "</div>", PHP_EOL,
+        $this->checkError();
+    }
+
+    /**
+     * Renderiza o input password na posição inline com um botao para limpar o conteudo
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputPassLine($name) {
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $this->checkError($element);
+        if($element->getAttribute('readOnly'))
+            $name = '';
+        echo 
+        '<div class="form-horizontal" id="pop' . $name . '">',
+        '<div class="input-append control-group" id="pop' . $name . '">',
+            $this->formView->formLabel($element),
+            $this->formView->formPassword($element),
             '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
         "</div>", PHP_EOL,
         "</div>", PHP_EOL,

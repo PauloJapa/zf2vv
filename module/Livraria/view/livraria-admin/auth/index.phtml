@@ -13,9 +13,29 @@ $form = $this->form;
 $form->setAttribute('action', $this->url('livraria-admin-auth'));
 
 $form->prepare();
-echo $this->form()->openTag($form);
-echo $this->formRow($form->get('email'));
-echo $this->formRow($form->get('password')) . "<br>";
-echo $this->formSubmit($form->get('submit'));
-echo $this->form()->closeTag();
+
+echo 
+$this->FormDefault(['legend' => 'Digite seu Login e Senha'],'inicio',$this, $form),
+    "<td>",
+        $this->FormDefault(['subOpcao' => 'hidden']),
+        $this->FormDefault(['email' => 'textLine']),
+        $this->FormDefault(['password' => 'passLine']),
+    "</td>\r",
+$this->FormDefault(['submit' => 'submit'],'fim');
+
 ?>
+
+<script language="javascript">
+    var formName = '<?php echo $form->getName(); ?>';
+    function pressEnterOrTab(obj, e){
+        n = obj.name;
+        switch(n){
+            case 'password':
+                entra();
+                break;
+        }
+    }
+    function entra(){
+        envia('/admin/auth','',formName);
+    }
+</script>

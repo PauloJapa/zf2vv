@@ -86,6 +86,26 @@ abstract class AbstractForm extends Form {
     }
     
     /**
+     * Monta os paramentro basicos para se fazer um input text
+     * @param string $name
+     * @param string $label
+     * @param array $attributes
+     */
+    public function setInputText2($name,$label,array $attributes = array()){
+        
+        $input['name'] = $name;
+        $input['options'] = array('type' => 'text','label' => $label);
+        
+        if(empty($attributes)){
+            $input['attributes'] = array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)'); 
+        }else{
+            $input['attributes'] = array_merge(array('id' => $name,'onKeyDown' => 'return changeEnterToTab(this,event)'),$attributes); 
+        }
+        
+        $this->add($input);
+    }
+    
+    /**
      * Monta os paramentro basicos para se fazer um input text Area
      * @param string $name
      * @param string $label
@@ -254,6 +274,10 @@ abstract class AbstractForm extends Form {
     }
     
     public function setIsAdmin(){
+        if(!$this->getIdentidade()){
+            $this->isAdmin = FALSE;
+            return;
+        }
         if($this->getIdentidade()->getTipo() == 'admin')
             $this->isAdmin = TRUE;
         else
