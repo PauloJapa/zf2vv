@@ -295,8 +295,8 @@ function envia(action,opc,frm,tar){
     frm.subOpcao.value = opc;
     frm.action = action ;
     try{
-        frm.scrolX.value = (document.all)?document.body.scrollLeft: window.pageXOffset;
-        frm.scrolY.value = (document.all)?document.body.scrollTop: window.pageYOffset;
+        frm.scrolX.value = $(document).scrollLeft();
+        frm.scrolY.value = $(document).scrollTop();
     }catch(e){
         erro = true;
     }
@@ -440,14 +440,18 @@ function nextFocus(obj){
     while(flag){
         ele = inputs.eq(ind + i);
         tp = ele.prop('type');
-        switch(tp){
-            case 'button':    
-            case 'submit':
-                i++;
-                break;
-            default:    
-                ele.focus();
-                flag = false;          
+        if(ele.prop('disabled')){
+            i++;
+        }else{
+            switch(tp){
+                case 'button':    
+                case 'submit':
+                    i++;
+                    break;
+                default:    
+                    ele.focus();
+                    flag = false;          
+            }
         }
     }
     return;

@@ -75,6 +75,41 @@ class User extends AbstractService {
         return TRUE;
     }
     
+    public function updateSenha(array $data){
+        //Se passord esta em branco é emitido erro
+        if (empty($data['password']) OR empty($data['password2']) OR empty($data['password3']))
+            return ['Todos os campos devem ser preenchidos!!!'];
+        //checar senha atual
+        $userId = $this->getIdentidade()->getId();
+        $this->entityReal = $this->em->find($this->entity, $userId);
+        $hash = $this->entityReal->encryptPassword($data['password3']);
+        if($hash != $this->entityReal->getPassword()){
+            return ['Senha Atual não confere!!'];
+        }
+        // Atualizando senha do usuario
+        $this->entityReal->setPassword($data['password']);
+        $this->em->persist($this->entityReal);
+        $this->em->flush();
+        
+        // Gerando log
+        $this->logForUser('Altera Senha','Alterou sua propria senha de acesso');
+        return TRUE;
+    }
+
+    public function logForUser($action,$descr) {        
+        $log = new Log($this->em);
+        $dataLog['user']       = $this->getIdentidade()->getId();
+        $data  = new \DateTime('now');
+        $dataLog['data']       = $data->format('d/m/Y');
+        $dataLog['idDoReg']    = $this->entityReal->getId();
+        $dataLog['tabela']     = 'user';
+        $dataLog['controller'] = 'users';
+        $dataLog['action']     = $action;
+        $dataLog['dePara']     = $descr;
+        $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
+        $log->setFlush($this->getFlush())->insert($dataLog);
+    }
+    
     public function logForEdit($tabela = 'user') {
         parent::logForEdit($tabela);
     }

@@ -54,30 +54,10 @@ class User  extends AbstractEndereco {
                        'class' => 'input-xmlarge',
                        'autoComplete'=>'off'];        
         $this->setInputText('administradoraDesc', 'Pertence a administradora', $attributes);
-
-        $this->add(array(
-           'name' => 'password',
-            'options' => array(
-                'type' => 'Password',
-                'label' => 'Senha'
-            ),
-            'attributes' => array(
-                'id' => 'password',
-                'type' => 'password'
-            )
-        ));       
         
-        $this->add(array(
-           'name' => 'password2',
-            'options' => array(
-                'type' => 'Password',
-                'label' => 'Repetir Senha'
-            ),
-            'attributes' => array(
-                'id' => 'password2',
-                'type' => 'password'
-            )
-        ));
+        $this->setInputText2('password3', 'Senha Atual');
+        $this->setInputText2('password', 'Senha');
+        $this->setInputText2('password2', 'Repetir Senha');
         
         $this->getEnderecoElements($em);
         

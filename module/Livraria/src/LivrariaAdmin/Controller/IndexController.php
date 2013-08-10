@@ -11,8 +11,11 @@ class IndexController extends CrudController {
     }
 
     public function bemVindoAction() {
-        $this->verificaSeUserAdmin();
-        return new ViewModel(array());
+        if($this->getIdentidade()->getTipo() == "admin"){
+            return new ViewModel(array());
+        }else{
+            return $this->redirect()->toRoute('livraria-admin', array('controller' => 'Index','action'=>'bemVindoImo'));
+        }
     }
     
     public function cadastroAction() {
@@ -42,6 +45,10 @@ class IndexController extends CrudController {
 
     public function importarAction() {
         $this->verificaSeUserAdmin();
+        return new ViewModel(array());
+    }
+
+    public function suporteAction() {
         return new ViewModel(array());
     }
 

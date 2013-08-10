@@ -91,4 +91,25 @@ class UsersController extends CrudController {
 
         return new ViewModel($this->getParamsForView()); 
     }
+    
+    public function alteraSenhaAction(){
+        $data = $this->getRequest()->getPost()->toArray();
+        if(isset($data['subOpcao'])){
+            $service = $this->getServiceLocator()->get($this->service);
+            $result = $service->updateSenha($data);
+            if($result === TRUE){
+                $this->flashMessenger()->addMessage('Alterado Com Sucesso!!!');
+            }else{
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }            
+            }
+        }else{
+            $this->flashMessenger()->clearMessages();
+        }        
+        $this->formData = new $this->form(null, $this->getEm(),[]);
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();        
+        return new ViewModel($this->getParamsForView()); 
+    }
 }
