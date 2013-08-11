@@ -122,6 +122,12 @@ return array(
                                 'controller' => 'users',
                                 'action' => 'index',
                             ),
+                            'users2' => array(
+                                'label' => 'Altera Senha',
+                                'route' => 'livraria-admin',
+                                'controller' => 'users',
+                                'action' => 'alteraSenha',
+                            ),
                         ),
                     ),
                     'locatarios' => array(
@@ -240,6 +246,18 @@ return array(
                         'action' => 'fechamentoSeguro',
                     ),
                     'relatorios7' => array(
+                        'label' => 'Pesquisa Seguro Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'fechados',
+                        'action' => 'buscar',
+                    ),
+                    'relatorios8' => array(
+                        'label' => 'Pré Fechamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'preFechamento',
+                        'action' => 'index',
+                    ),
+                    'relatorios9' => array(
                         'label' => 'Comissão de Seguro',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
@@ -331,8 +349,20 @@ return array(
                 'controller' => 'index',
                 'action' => 'bemVindo',
             ),
-            'contratos' => array(
-                'label' => 'Contratos',
+            'senha' => array(
+                'label' => 'Alterar Senha',
+                'route' => 'livraria-admin',
+                'controller' => 'users',
+                'action' => 'alteraSenha',
+            ),
+            'calculo' => array(
+                'label' => 'Calculo',
+                'route' => 'livraria-admin',
+                'controller' => 'orcamentos',
+                'action' => 'new',
+            ),
+            'consultas' => array(
+                'label' => 'Consultas',
                 'route' => 'livraria-admin',
                 'controller' => 'orcamentos',
                     'pages' => array(
@@ -350,8 +380,26 @@ return array(
                         ),
                     ),
             ),
+            'imprimir' => array(
+                'label' => 'Imprimir',
+                'route' => 'livraria-admin',
+                'controller' => 'usuario',
+                'action' => 'alteraSenha',
+            ),
+            'fatura' => array(
+                'label' => 'Pré-Fatura',
+                'route' => 'livraria-admin',
+                'controller' => 'usuario',
+                'action' => 'alteraSenha',
+            ),
+            'suporte' => array(
+                'label' => 'Suporte',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'suporte',
+            ),
             'logout' => array(
-                'label' => 'Logout',
+                'label' => 'Sair',
                 'route' => 'livraria-admin-logout',
             ),
         ),

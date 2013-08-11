@@ -651,18 +651,16 @@ abstract class AbstractService {
         }
         $this->data['codano'] = $this->data['criadoEm']->format('Y');
         $this->data['fim'] = clone $this->data['inicio'];
-        $interval_spec = ''; 
         if($this->data['validade'] == 'mensal'){
-            $interval_spec = 'P1M'; 
+            $this->data['fim']->add(new \DateInterval('P1M')); 
+            $this->data['fim']->sub(new \DateInterval('P1D'));
+            return TRUE;
         } 
         if($this->data['validade'] == 'anual'){
-            $interval_spec = 'P1Y'; 
+            $this->data['fim']->add(new \DateInterval('P1Y')); 
+            return TRUE;
         } 
-        if(empty($interval_spec)){
-            return ['Campo validade com valor que não existe na lista!!'];
-        }
-        $this->data['fim']->add(new \DateInterval($interval_spec)); 
-        return TRUE;
+        return ['Campo validade com valor que não existe na lista!!'];
     }
 
     /**

@@ -39,7 +39,7 @@ class OrcamentosController extends CrudController {
     public function verificaUserAction($redirect=true){
         $user = $this->getIdentidade();
         $data = $this->getRequest()->getPost()->toArray();
-        
+      //  var_dump($user);
         $sessionContainer = new SessionContainer("LivrariaAdmin");
        
         if(($user->getTipo() == 'admin') and (!isset($sessionContainer->administradora['id'])) and ($redirect))

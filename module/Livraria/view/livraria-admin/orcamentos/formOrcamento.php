@@ -173,11 +173,6 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         $this->FormDefault(['name' => 'aluguel','icone' => 'icon-pencil','js' => "setEmpty('aluguel')"],'iconeLine'),
         $this->FormDefault(['name' => 'eletrico','icone' => 'icon-pencil','js' => "setEmpty('eletrico')"],'iconeLine'),
         $this->FormDefault(['name' => 'vendaval','icone' => 'icon-pencil','js' => "setEmpty('vendaval')"],'iconeLine'),
-        //$this->FormDefault(['incendio' => 'moedaLine']),
-        //$this->FormDefault(['conteudo' => 'moedaLine']),
-        //$this->FormDefault(['aluguel' => 'moedaLine']),
-        //$this->FormDefault(['eletrico' => 'moedaLine']),
-        //$this->FormDefault(['vendaval' => 'moedaLine']),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['observacao' => 'textArea']),
@@ -348,6 +343,36 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         if(ocup[1].checked){
             var tcob = document.getElementById('tipoCobertura');
             tcob.selectedIndex = 2 ;
+        }
+    }
+
+    function setMesNiverOfMensal(click){
+        if(($("input[name=validade]:checked").val() == 'anual') || ($("#inicio").val() == '')){
+            $("#mesNiver").val('');
+            if(click){
+                alert('Não se preocupe vamos preencher para você!!!');
+            }
+            return;
+        }
+        var data = $('#inicio').val().split('/');
+        $('#mesNiver').val(data[1]);
+    }
+
+    function showIncOrIncCon(){
+        switch($('#tipoCobertura').val()){
+            case '01':
+                $('#popincendio').show();
+                $('#popconteudo').hide();
+                $('#conteudo').val('');
+                break;
+            case '02':
+                $('#popincendio').hide();
+                $('#incendio').val('');
+                $('#popconteudo').show();
+                break;
+            default:  
+                $('#popincendio').show();
+                $('#popconteudo').hide();  
         }
     }
 
@@ -601,6 +626,6 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
-    setTimeout('showTipo();setButtonFechaOrc();setOcultar()',500);
-    window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 500);
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();',500);
+    window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
 </script>

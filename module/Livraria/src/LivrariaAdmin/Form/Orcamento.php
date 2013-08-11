@@ -82,19 +82,18 @@ class Orcamento extends AbstractEndereco {
                        'autoComplete'=>'off'];        
         $this->setInputText('atividadeDesc', 'Atividade', $attributes);
      
-        $this->setInputText('proposta', 'Proposta',['readOnly'=>'true']);
+        $this->setInputText('proposta', 'Proposta',['readOnly'=>'true', 'placeholder' => 'Preenchimento Automatico']);
         $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyUp'=>'cleanCoberturas()']);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
-        $tipoCob = ['onChange'=>'travaResidencial();'];
+        $tipoCob = ['onChange'=>'travaResidencial();showIncOrIncCon()'];
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura, $tipoCob);
         
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
-        $this->setInputText('inicio', 'Inicio da Vigência', $attributes);
+        $this->setInputText('inicio', 'Inicio da Vigência', array_merge($attributes, ['onChange'=>'setMesNiverOfMensal();']));
 
-        $this->setInputText('fim', 'Fim da Vigência', $attributes);
-        $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));
+        $this->setInputText('fim', 'Fim da Vigência', ['readOnly' => 'true', 'placeholder' => 'Preenchimento Automatico']);
         
         $this->setInputText('criadoEm', 'Data', $attributes);
         
@@ -105,13 +104,14 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
-        $this->setInputRadio('validade', 'Tipo do Seguro', $validade, ['onClick' => "travaFormaPagto();"]);
+        $this->setInputRadio('validade', 'Tipo do Seguro', $validade, ['onClick' => "travaFormaPagto();setMesNiverOfMensal();"]);
         
         $this->setInputText('codigoGerente', 'Cod. Gerente');
         
         $this->setInputText('refImovel', 'Ref. do Imóvel');
         
         $formaPagto = $this->getParametroSelect('formaPagto');
+        $frm12vezes = array_pop($formaPagto);
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves';
@@ -135,7 +135,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputTextArea('observacao', 'Obs', $attributes);
         
         $options =['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
-        $this->setInputSelect('mesNiver', 'Mês de aniversário',$options);
+        $this->setInputSelect('mesNiver', 'Mês de aniversário',$options, ['onChange'=>'setMesNiverOfMensal(true);']);
         
         $this->setInputHidden('administradora');
         $this->setInputHidden('comissaoEnt');
@@ -203,6 +203,7 @@ class Orcamento extends AbstractEndereco {
         $this->isAdmin = FALSE;
         
         $this->get('formaPagto')->setAttribute('disabled', 'true');   
+        $this->get('validade')->setAttribute('disabled', 'true');   
     }
     
     public function setForRenovacao(){
