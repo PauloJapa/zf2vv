@@ -52,4 +52,12 @@ class IndexController extends CrudController {
         return new ViewModel(array());
     }
 
+    public function consultaAction() {
+        return new ViewModel(array());
+    }
+
+    public function imprimirAction() {
+        return new ViewModel(array());
+    }
+
 }

@@ -187,7 +187,7 @@ return array(
                 'label' => 'Consultas',
                 'route' => 'livraria-admin',
                 'controller' => 'index',
-                'action' => 'contratos',
+                'action' => 'consulta',
                 'pages' => array(
                     'orcamentos' => array(
                         'label' => 'Orçamento',
@@ -376,7 +376,8 @@ return array(
             'consultas' => array(
                 'label' => 'Consultas',
                 'route' => 'livraria-admin',
-                'controller' => 'orcamentos',
+                'controller' => 'index',
+                'action' => 'consulta',
                 'pages' => array(
                     'orcamentos' => array(
                         'label' => 'Orçamento',

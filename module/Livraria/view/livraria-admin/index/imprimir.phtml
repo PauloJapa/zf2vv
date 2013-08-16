@@ -1,0 +1,28 @@
+<?php
+$user = $this->UserIdentity('LivrariaAdmin');
+?>
+<h2>Menu Imprimir:</h2>
+<p>Escolha uma opção</p>
+<br />
+<div class="nav-collapse">
+<ul class="nav">
+    
+<?php if($user->getTipo() == 'admin'): ?> 
+    <li>Seguros
+        <ul>
+            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'pendentes')); ?>">Seguros Pendentes.</a></li>
+        </ul>
+    </li>   
+<?php else: ?>    
+    <li>Seguros
+        <ul>
+            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'pendentes')); ?>">Seguros Pendentes.</a></li>
+        </ul>
+    </li>   
+<?php endif;    ?>    
+</ul>
+</div>
+<br />
+<br />
+<br />
+<br />
