@@ -72,9 +72,10 @@ class Filtros  extends AbstractForm {
     }
     
     public function setOrcamento(){
+        $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Novos', 'R'=>'Renovação de Reajuste','F'=>'Fechados','C'=>'Cancelados']);
+        $this->setInputRadio('status', 'Status', ['A'=>'N - Novos', 'R'=>'R - Renovação de Reajuste','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();
@@ -84,6 +85,7 @@ class Filtros  extends AbstractForm {
     }
     
     public function setRenovado(){
+        $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Renovação',['class'=>'input-small']);
         $this->setInputText('renovado', 'Nº do Renovação',['class'=>'input-small']);
         $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','F'=>'Fechados','C'=>'Cancelados']);
@@ -96,9 +98,10 @@ class Filtros  extends AbstractForm {
     }
     
     public function setFechadosFull(){
+        $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Seguro',['class'=>'input-small']);
         $this->setInputText('fechado', 'Nº do Seguro',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Novos', 'R'=>'Renovados','C'=>'Cancelados']);
+        $this->setInputRadio('status', 'Status', ['T'=>'T - Todos','A'=>'N - Novos', 'R'=>'R - Renovados','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();

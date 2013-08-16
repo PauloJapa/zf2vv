@@ -32,11 +32,28 @@ class Relatorio extends AbstractService{
     protected $parameters;
     
     /**
+     * Objeto com SessionContainer
+     * @var object 
+     */
+    protected $sc;
+    
+    /**
      * Contruct recebe EntityManager para manipulação de registros
      * @param \Doctrine\ORM\EntityManager $em
      */
     public function __construct(EntityManager $em) {
         $this->em = $em;
+    }
+    
+    /**
+     * Retorna Instancia do Session Container
+     * @return object 
+     */
+    public function getSc(){
+        if($this->sc)
+            return $this->sc;
+        $this->sc = new SessionContainer("LivrariaAdmin");
+        return $this->sc;
     }
      
     public function montaQuery($data){
@@ -558,5 +575,31 @@ class Relatorio extends AbstractService{
         $sc->data          = $this->data;
         
         return $sc->comissao; 
+    }
+    
+    public function getRelatorio($data){
+        //Trata os filtro para data anual
+        $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];
+        $this->dateToObject('inicio');
+        // A vista
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->sub(new \DateInterval('P1D'));
+        $this->data['inicio']->sub(new \DateInterval('P1M'));
+        // Em 2 vezes
+        $this->data['inicio2'] = clone $this->data['inicio'];
+        $this->data['inicio2']->sub(new \DateInterval('P1M'));
+        $this->data['fim2']    = clone $this->data['fim'];
+        // Em 3 vezes
+        $this->data['inicio3'] = clone $this->data['inicio2'];
+        $this->data['inicio3']->sub(new \DateInterval('P1M'));
+        $this->data['fim3']    = clone $this->data['fim'];
+        
+        $this->data['administradora'] = $data['administradora'];
+        
+        $lista = $this->em->getRepository("Livraria\Entity\Fechados")->getFaturar($this->data);
+        //Armazena lista no cache para gerar outra saidas
+        $this->getSc()->lista = $lista;
+        
+        return $lista;
     }
 }

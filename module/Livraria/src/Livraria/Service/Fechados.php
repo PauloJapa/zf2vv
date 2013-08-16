@@ -69,6 +69,48 @@ class Fechados extends AbstractService {
     }
     
     /**
+     * Exclui o seguro fechado e exclui tb o orçamento ou renovação referente
+     * @param type $id
+     * @param type $data
+     * @return boolean
+     */
+    public function delete($id,$data) {
+        if(!parent::delete($id)){
+            return ['Erro ao tentar excluir registro!!'];
+        }
+        $this->logForDelete($id,$data);
+        $data['motivoNaoFechou'] = 'Excluido porque seu registro de fechado foi excluido fechado numero= '. $id . '. Motivo ' . $data['motivoNaoFechou'];
+        $orca = $this->entityReal->getOrcamentoId();
+        if($orca != 0){
+            $serOrca = new Orcamento($this->em);
+            $serOrca->delete($orca, $data);
+        }
+        $reno = $this->entityReal->getRenovacaoId();
+        if($reno != 0){
+            $serReno = new Renovacao($this->em);
+            $serReno->delete($reno, $data);
+        }        
+        return TRUE;
+    }
+    
+    /**
+     * Registra a exclusão do registro com seu motivo.
+     * @param type $id
+     * @param type $data
+     */
+    public function logForDelete($id,$data) {
+        //serviço logorcamento
+        $log = new LogFechados($this->em);
+        $dataLog['fechados'] = $id;
+        $dataLog['tabela'] = 'log_fechado';
+        $dataLog['controller'] = 'fechados';
+        $dataLog['action'] = 'delete';
+        $dataLog['mensagem'] = 'Fechado excluido com numero ' . $id;
+        $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
+        $log->insert($dataLog);
+    }
+    
+    /**
      * Retorna o Repositorio da entidade Fechados
      * @return object
      */

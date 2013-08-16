@@ -22,7 +22,7 @@ class User  extends AbstractEndereco {
            'name' => 'email',
             'options' => array(
                 'type' => 'email',
-                'label' => 'Email'
+                'label' => 'Login'
             ),
             'attributes' => array(
                 'id' => 'email',

@@ -276,5 +276,42 @@ class RenovacaoRepository extends AbstractRepository {
         
     }
     
+    /**
+     * Monta um DQL para pesquisar no banco e retornar um resultado em array 
+     * Os seguros pendentes 
+     * @param array $data
+     * @return array
+     */
+    public function getPendentes($data){
+        
+        if (empty($data['inicio']))
+            return [];
+        
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
+        $this->parameters['inicio']  = $this->dateToObject($data['inicio']);
+        $this->parameters['fim']     = $this->dateToObject($data['fim']);
+        $this->parameters['status']  = 'A';
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,i,ld,lc')
+                ->from('Livraria\Entity\Renovacao', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'i')
+                ->join('o.locador', 'ld')
+                ->join('o.locatario', 'lc')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        return $query->getQuery()->getArrayResult();
+    }
+    
 }
 

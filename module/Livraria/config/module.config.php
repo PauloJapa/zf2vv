@@ -87,6 +87,7 @@ return array(
             'relatorios' => 'LivrariaAdmin\Controller\RelatoriosController',
             'exportar' => 'LivrariaAdmin\Controller\ExportarController',
             'importar' => 'LivrariaAdmin\Controller\ImportarController',
+            'pendentes' => 'LivrariaAdmin\Controller\PendentesController',
             'livraria-admin/auth' => 'LivrariaAdmin\Controller\AuthController',
         ),
     ),

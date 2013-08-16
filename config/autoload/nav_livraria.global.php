@@ -177,31 +177,37 @@ return array(
                     ),
                 ),                
             ),
-            'contratos' => array(
-                'label' => 'Contratos',
+            'calculo' => array(
+                'label' => 'Calculo',
+                'route' => 'livraria-admin',
+                'controller' => 'orcamentos',
+                'action' => 'new',
+            ),
+            'consultas' => array(
+                'label' => 'Consultas',
                 'route' => 'livraria-admin',
                 'controller' => 'index',
                 'action' => 'contratos',
-                    'pages' => array(
-                        'orcamentos' => array(
-                            'label' => 'Orçamento',
-                            'route' => 'livraria-admin',
-                            'controller' => 'orcamentos',
-                            'action' => 'index',
-                        ),
-                        'renovacaos' => array(
-                            'label' => 'Renovação',
-                            'route' => 'livraria-admin',
-                            'controller' => 'renovacaos',
-                            'action' => 'index',
-                        ),
-                        'fechados' => array(
-                            'label' => 'Fechados',
-                            'route' => 'livraria-admin',
-                            'controller' => 'fechados',
-                            'action' => 'index',
-                        ),
+                'pages' => array(
+                    'orcamentos' => array(
+                        'label' => 'Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'orcamentos',
+                        'action' => 'listarOrcamentos',
                     ),
+                    'renovacaos' => array(
+                        'label' => 'Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'renovacaos',
+                        'action' => 'index',
+                    ),
+                    'fechados' => array(
+                        'label' => 'Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'fechados',
+                        'action' => 'listarFechados',
+                    ),
+                ),
             ),
             'relatorios' => array(
                 'label' => 'Relatórios',
@@ -240,24 +246,30 @@ return array(
                         'action' => 'imoveisDesocupados',
                     ),
                     'relatorios6' => array(
-                        'label' => 'Fechamento de Seguro',
+                        'label' => 'Pesquisa Seguros Fechados',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'fechamentoSeguro',
                     ),
                     'relatorios7' => array(
-                        'label' => 'Pesquisa Seguro Fechados',
+                        'label' => 'Pré Fatura',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'buscarRelatorio',
+                    ),
+                    'relatorios8' => array(
+                        'label' => 'Resumo Seguros Fechados',
                         'route' => 'livraria-admin',
                         'controller' => 'fechados',
                         'action' => 'buscar',
                     ),
-                    'relatorios8' => array(
-                        'label' => 'Pré Fechamento',
+                    'relatorios9' => array(
+                        'label' => 'Seguros Pendentes',
                         'route' => 'livraria-admin',
-                        'controller' => 'preFechamento',
+                        'controller' => 'pendentes',
                         'action' => 'index',
                     ),
-                    'relatorios9' => array(
+                    'relatorios10' => array(
                         'label' => 'Comissão de Seguro',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
@@ -365,32 +377,40 @@ return array(
                 'label' => 'Consultas',
                 'route' => 'livraria-admin',
                 'controller' => 'orcamentos',
-                    'pages' => array(
-                        'orcamentos' => array(
-                            'label' => 'Orçamento',
-                            'route' => 'livraria-admin',
-                            'controller' => 'orcamentos',
-                            'action' => 'index',
-                        ),
-                        'fechados' => array(
-                            'label' => 'Fechados',
-                            'route' => 'livraria-admin',
-                            'controller' => 'fechados',
-                            'action' => 'index',
-                        ),
+                'pages' => array(
+                    'orcamentos' => array(
+                        'label' => 'Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'orcamentos',
+                        'action' => 'listarOrcamentos',
                     ),
+                    'fechados' => array(
+                        'label' => 'Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'fechados',
+                        'action' => 'listarFechados',
+                    ),
+                ),
             ),
             'imprimir' => array(
                 'label' => 'Imprimir',
                 'route' => 'livraria-admin',
-                'controller' => 'usuario',
-                'action' => 'alteraSenha',
+                'controller' => 'index',
+                'action' => 'imprimir',
+                'pages' => array(
+                    'relatorios' => array(
+                        'label' => 'Seguros Pendentes',
+                        'route' => 'livraria-admin',
+                        'controller' => 'pendentes',
+                        'action' => 'index',
+                    ),
+                ),
             ),
             'fatura' => array(
-                'label' => 'Pré-Fatura',
+                'label' => 'Pré Fatura',
                 'route' => 'livraria-admin',
-                'controller' => 'usuario',
-                'action' => 'alteraSenha',
+                'controller' => 'relatorios',
+                'action' => 'buscarRelatorio',
             ),
             'suporte' => array(
                 'label' => 'Suporte',

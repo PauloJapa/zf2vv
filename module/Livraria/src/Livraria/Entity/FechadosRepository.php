@@ -9,6 +9,23 @@ namespace Livraria\Entity;
  */
 class FechadosRepository extends AbstractRepository {
 
+    /**
+     * Colunas selecionadas para o relatorio
+     * @var string 
+     */
+    protected $colunas;
+    
+    /**
+     * clasula where da pesquisa
+     * @var string 
+     */
+    protected $where;
+    /**
+     * clasula where da pesquisa
+     * @var array 
+     */
+    protected $parameters;
+    
     public function findFechados($data){
         
         if (empty($data['inicio']))
@@ -443,5 +460,63 @@ class FechadosRepository extends AbstractRepository {
         }
         
         return $query;
+    }
+    
+    
+    public function getFaturar($data){
+        if (empty($data['inicio']))
+            return [];
+        // Busca todos a faturar a vista
+        $this->where  = '';
+        $this->getWhereFatura($data['inicio'], $data['fim'], '01', $data['administradora']);
+        // Busca todos a faturar em 2 vezes
+        if(isset($data['inicio2'])){
+            $this->getWhereFatura($data['inicio2'], $data['fim2'], '02', $data['administradora']);
+        }
+        // Busca todos a faturar em 3 vezes
+        if(isset($data['inicio3'])){
+            $this->getWhereFatura($data['inicio3'], $data['fim3'], '03', $data['administradora']);
+        }
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,i,ld,lc')
+                ->from('Livraria\Entity\Fechados', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'i')
+                ->join('o.locador', 'ld')
+                ->join('o.locatario', 'lc')
+                ->where($this->where)
+                ->setParameters($this->parameters)
+              //  ->addOrderBy('o.administradora')
+                ->addOrderBy('o.ocupacao', 'DESC')
+                ->addOrderBy('o.formaPagto')
+                ->addOrderBy('o.inicio', 'DESC')
+                ;
+        return $query->getQuery()->getResult();
+        
+    }
+    
+    public function getWhereFatura($ini,$fim,$pag,$adm=''){
+        if(empty($this->where)){
+            $this->where  = '(o.inicio >= :inicio AND o.inicio <= :fim AND o.formaPagto <= :formaPagto';
+            $this->colunas = ''; 
+        }else{
+            $this->colunas = empty($this->colunas)? '2': '3';            
+            $this->where  .= ' OR (o.inicio >= :inicio'.$this->colunas.' AND o.inicio <= :fim'.$this->colunas.' AND o.formaPagto = :formaPagto'.$this->colunas;
+        }
+        $this->where .= ' AND (o.status = :status'.$this->colunas.' OR o.status = :statusB'.$this->colunas.')';
+        $this->parameters['inicio'.$this->colunas]  = $this->dateToObject($ini);
+        $this->parameters['fim'.$this->colunas]     = $this->dateToObject($fim);
+        $this->parameters['formaPagto'.$this->colunas]  = $pag;
+        $this->parameters['status'.$this->colunas]  = 'A';
+        $this->parameters['statusB'.$this->colunas] = 'R';
+        if(!empty($adm)){
+            $this->where .= ' AND o.administradora = :administradora'.$this->colunas;
+            $this->parameters['administradora'.$this->colunas]    = $adm;            
+        }
+        $this->where .= ')';
+        
     }
 }

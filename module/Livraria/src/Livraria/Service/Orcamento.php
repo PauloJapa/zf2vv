@@ -30,12 +30,11 @@ class Orcamento extends AbstractService {
     }
     
     public function delete($id,$data) {
-        if(parent::delete($id)){
-            $this->logForDelete($id,$data);
-            return TRUE;
-        }else{
-            return FALSE;
+        if(!parent::delete($id)){
+            return ['Erro ao tentar excluir registro!!'];
         }
+        $this->logForDelete($id,$data);
+        return TRUE;
     }
     
     /**
@@ -50,7 +49,7 @@ class Orcamento extends AbstractService {
         $dataLog['tabela'] = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos';
         $dataLog['action'] = 'delete';
-        $dataLog['mensagem'] = 'Orçamento excluido com numero ' . $this->data['id'];
+        $dataLog['mensagem'] = 'Orçamento excluido com numero ' . $id;
         $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
         $log->insert($dataLog);
     }

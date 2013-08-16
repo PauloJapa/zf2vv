@@ -33,13 +33,6 @@ class FechadosController extends CrudController {
         $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setFechadosFull();
-        $this->formData->setData((is_null($data)) ? [] : $data);
-        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF'];
-        foreach ($inputs as $input) {
-            if ((isset($data[$input])) AND (!empty($data[$input]))) {
-                $filtro[$input] = $data[$input];
-            }
-        }
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
             $sessionContainer = new SessionContainer("LivrariaAdmin");
@@ -47,9 +40,16 @@ class FechadosController extends CrudController {
             if(!isset($sessionContainer->administradora['id'])){
                 $this->verificaUserAction();
             }
-            $filtro['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }
-        
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }
         $list = $this->getEm()
                      ->getRepository($this->entity)
                      ->findListaFechados($filtro,[]);
@@ -189,6 +189,21 @@ class FechadosController extends CrudController {
 
         return new ViewModel($this->getParamsForView()); 
     }
+    
+    public function deleteAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = $this->getServiceLocator()->get($this->service);
+        $result = $service->delete($data['id'], $data);
+        if($result === TRUE){
+            $this->flashMessenger()->clearMessages();
+        }else{
+            foreach ($result as $value) {
+                $this->flashMessenger()->addMessage($value);
+            }
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarFechados'));
+    } 
     
     public function imprimiSeguroAction(){
         //Pegar os parametros que em de post

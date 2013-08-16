@@ -111,13 +111,6 @@ class OrcamentosController extends CrudController {
         $data = $this->filtrosDaPaginacao();
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setOrcamento();
-        $this->formData->setData((is_null($data)) ? [] : $data);
-        $inputs = ['id', 'administradora', 'status', 'user','dataI','dataF','validade'];
-        foreach ($inputs as $input) {
-            if ((isset($data[$input])) AND (!empty($data[$input]))) {
-                $filtro[$input] = $data[$input];
-            }
-        }
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
             $sessionContainer = new SessionContainer("LivrariaAdmin");
@@ -125,7 +118,15 @@ class OrcamentosController extends CrudController {
             if(!isset($sessionContainer->administradora['id'])){
                 $this->verificaUserAction(FALSE);
             }
-            $filtro['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
+        }
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
         }
         
         $list = $this->getEm()
@@ -410,6 +411,21 @@ class OrcamentosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp'=>$imprimeProp])); 
     }
     
+    public function deleteAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        $service = $this->getServiceLocator()->get($this->service);
+        $result = $service->delete($data['id'], $data);
+        if($result === TRUE){
+            $this->flashMessenger()->clearMessages();
+        }else{
+            foreach ($result as $value) {
+                $this->flashMessenger()->addMessage($value);
+            }
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarOrcamentos'));
+        
+    }    
     
     public function printPropostaAction(){
         //Pegar os parametros que em de post

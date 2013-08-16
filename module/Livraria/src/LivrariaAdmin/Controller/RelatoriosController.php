@@ -12,7 +12,6 @@ require '/var/www/zf2vv/module/Livraria/src/Livraria/Service/PHPExcel.php';
 class RelatoriosController extends CrudController {
 
     public function __construct() {
-        $this->verificaSeUserAdmin();
         $this->entity = "Livraria\Entity\Orcamento";
         $this->form = "LivrariaAdmin\Form\Relatorio";
         $this->service = "Livraria\Service\Relatorio";
@@ -484,6 +483,39 @@ class RelatoriosController extends CrudController {
         $viewModel = new ViewModel(array('data' => $sc->comissao,'admFiltro' => $data['id']));
         $viewModel->setTerminal(true);
         return $viewModel;        
+    }
+    
+    public function buscarRelatorioAction(){
+        $data = $this->filtrosDaPaginacao();
+        //usuario admin pode ver tudo os outros são filtrados
+        $user = $this->getIdentidade();
+        if($user->getTipo() != 'admin'){
+            $sessionContainer = new SessionContainer("LivrariaAdmin");
+            //Verifica se usuario tem registrado a administradora na sessao
+            if(!isset($sessionContainer->administradora['id'])){
+                $sessionContainer->administradora = $user->getAdministradora();
+                //$this->verificaUserAction(FALSE);
+            }
+            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
+        }
+        $this->formData = new $this->form($this->getEm());
+        $this->formData->setMapaRenovacao();
+        $this->formData->setData((is_null($data)) ? [] : $data);
+        
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel($this->getParamsForView());         
+    }
+    
+    public function listarRelatorioAction(){
+        $data = $this->filtrosDaPaginacao();
+        $srv = new $this->service($this->getEm());
+        $this->paginator = $srv->getRelatorio($data);
+        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));         
     }
     
 }

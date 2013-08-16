@@ -1,0 +1,70 @@
+<style type="text/css" media="print">
+    .F1 {
+        font-size: 10px;
+    }
+</style>
+<style>
+    .Br {
+        border-right:  #333 solid 1px ;
+    }
+    .Bl {
+        border-left:   #333 solid 1px ;
+    }
+    .Bt {
+        border-top:    #333 solid 1px ;
+    }
+    .Bb {
+        border-bottom: #333 solid 1px ;
+    }
+</style>
+
+<table style="width: 100% ;" >
+    <tr>
+        <td style="width: 30% ;"><img src="<?php echo $this->basePath(),'/images/VilaVelhaLogotipoM.png'; ?>" /></td>
+        <td valing="middle"><h2>Seguros Pendentes</h2></td>
+    </tr>
+</table>
+
+<table class="Bt Bb"  style="width: 100% ;">
+<tr>
+	<th class="Bl">Ref. do Imóvel</th>
+	<th class="Bl">Vigência Inicial</th>
+	<th class="Bl">Locatário</th>
+	<th class="Bl">Parc.</th>
+	<th class="Bl">Valor Parc.</th>
+	<th class="Bl Br">Prêmio</th>
+<tr>    
+<?  
+    foreach($this->data as $array): 
+        //calcula a parcela e descriçao da forma de pagamento
+        $frmPagto = isset($this->formaPagto[$array['formaPagto']]) ? $this->formaPagto[$array['formaPagto']] : 'Ñ encontrado' . $array['formaPagto'];
+        $valor = $array['premioTotal'] / intval(($array['formaPagto'] == '04') ? '12' : $array['formaPagto']);
+?>
+<tr>
+	<td nowrap class="Bl Bb Bt F1 r" align="center"><? echo $array['refImovel'] ?></td>
+	<td nowrap class="Bl Bb Bt F1 c"><? echo $array['inicio']->format('d/m/Y'), ' - ', $array['validade'] ?></td>
+	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
+	<td nowrap class="Bl Bb Bt F1 r"><? echo $frmPagto ?></td>
+	<td nowrap class="Bl Bb Bt F1" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
+        <td nowrap class="Bl Bb Bt Br F1" align="right"><? echo number_format($array['premioTotal'], 2, ',', '.') ?></td>
+</tr> 
+<? endforeach; ?>
+</table>
+
+<div align='center' class="noPrint">
+    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Imprimir" onclick="return imprimi()">
+</div>
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    function gerarMapa(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarMapa')); ?>";
+        envia(tar,'gerar');        
+    }
+    function imprimi(){
+        window.print();
+        return false;
+    }
+</script>

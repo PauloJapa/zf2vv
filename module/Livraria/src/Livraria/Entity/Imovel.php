@@ -498,7 +498,11 @@ class Imovel extends Filtro
      * @return string
      */
     public function __toString() {
-        return $this->rua . ' n:' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto;
+        if($this->numero == 0){
+            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto;
+        }else{
+            return $this->rua . ', ' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto;
+        }
     }
 
 
