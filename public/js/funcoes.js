@@ -303,6 +303,19 @@ function envia(action,opc,frm,tar){
     frm.submit() ;
 }
 
+function gMenu(action,frm){
+    if(frm == null)frm = document.getElementById('fmenu'); else frm = document.getElementById(frm);
+    if((action == null)||(action == ""))action = "/admin/auth/logout";
+    frm.action = action ;
+    try{
+        frm.scrolX.value = $(document).scrollLeft();
+        frm.scrolY.value = $(document).scrollTop();
+    }catch(e){
+        erro = true;
+    }
+    frm.submit() ;
+}
+
 function checkJanela(tar){
     // verifica se a janela está aberta
     if(janelaAberta != null && !janelaAberta.closed){
