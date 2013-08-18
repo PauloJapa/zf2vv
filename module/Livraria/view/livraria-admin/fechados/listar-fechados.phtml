@@ -92,26 +92,42 @@ $td     = array(
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'First'));
 
-$lambda = function($value){
-        echo "\t<td>",
-                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
-             "</td>\n";   
-    };
+if($user->getTipo() == "admin"){
+    $lambda = function($value,&$data){
+        echo "\t<td nowrap>";
+        switch ($data[2]) {
+            case "C":
+                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>';
+                break;
+            case "A":            case "I":            case "R":
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                     '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
+                     '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Log</span>',
+                     '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';   
+                break;
+            default:
+                echo '<span class="add-on hand">Sem Ação</span>';
+        }
+        echo "</td>\n";  
+    };     
+}else{
+    $lambda = function($value,&$data){
+        echo "\t<td nowrap>";
+        switch ($data[2]) {
+            case "C":
+                echo '<span class="add-on hand">cancelado</span>';
+                break;
+            case "A":            case "I":            case "R":
+                echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>',
+                     '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>';
+                break;
+            default:
+                echo '<span class="add-on hand">Sem Ação</span>';
+        }
+        echo "</td>\n";  
+    };     
+}   
 
-$lambda = function($value,&$data){
-        if($data[2] == "C"){
-            echo "\t<td nowrap>",
-                    '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
-                 "</td>\n";   
-        }
-        if($data[2] == "A" or $data[2] == "R" or $data[2] == "I"){
-            echo "\t<td nowrap>",
-                    '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>',
-                    '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Deletar</span>',
-                 "</td>\n";   
-        }
-                   
-    };    
 $this->ViewIndex('setFuncEdit',$lambda);    
     
 foreach($this->data as $entity){ 
@@ -141,7 +157,7 @@ echo $this->ViewIndex('close');
         <tr>
             <td>
                 <div class="input-append" id="popobservacao">
-                    <label for="motivoNaoFechou">Motivo do não fechamento.</label>
+                    <label for="motivoNaoFechou">Motivo do cancelamento do seguro.</label>
                     <textarea name="motivoNaoFechou" id="motivoNaoFechou" rows="6" class="span6"></textarea>
                 </div>
             </td>
@@ -158,7 +174,7 @@ echo $this->ViewIndex('close');
     var formName = '<?php echo $this->formName ?>';
     function edit(id){
         document.getElementById('id2').value = id ;
-        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'editAntecessor')); ?>";
         envia(tar,'editar');
     }    
     function getLogs(id){

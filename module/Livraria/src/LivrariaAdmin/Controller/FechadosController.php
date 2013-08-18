@@ -303,5 +303,29 @@ class FechadosController extends CrudController {
         $viewModel->setTerminal(true);
         return $viewModel;        
     }
+    
+    public function editAntecessorAction(){
+        $this->verificaSeUserAdmin();
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        if(!isset($data['id'])){
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarFechados'));
+        }
+        // Guardar id do antecessor na sessão
+        $sc = new SessionContainer("LivrariaAdmin");        
+        $fechado = $this->getEm()->find($this->entity,$data['id']);
+        $origemOrca = $fechado->getOrcamentoId();
+        if(!is_null($origemOrca) && $origemOrca != 0){
+            $sc->idOrcamento = $origemOrca;
+            $sc->idOrcamentoNoPrint = TRUE;
+            return $this->redirect()->toRoute($this->route, array('controller' => 'orcamentos', 'action' => 'edit'));
+        }
+        $origemReno = $fechado->getRenovacaoId();
+        if(!is_null($origemReno) && $origemReno != 0){
+            $sc->idRenovacao = $origemReno;
+            return $this->redirect()->toRoute($this->route, array('controller' => 'renovacaos', 'action' => 'edit'));
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarFechados'));
+    }
 
 }

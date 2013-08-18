@@ -200,6 +200,26 @@ return array(
                         'route' => 'livraria-admin',
                         'controller' => 'renovacaos',
                         'action' => 'index',
+                        'pages' => array(
+                            'renovacao1' => array(
+                                'label' => 'Listar Renovados',
+                                'route' => 'livraria-admin',
+                                'controller' => 'renovacaos',
+                                'action' => 'listarRenovados',
+                            ),
+                            'renovacao2' => array(
+                                'label' => 'Renovação',
+                                'route' => 'livraria-admin',
+                                'controller' => 'renovacaos',
+                                'action' => 'buscar',
+                            ),
+                            'renovacao3' => array(
+                                'label' => 'Fechados',
+                                'route' => 'livraria-admin',
+                                'controller' => 'renovacaos',
+                                'action' => 'buscarAbertos',
+                            ),
+                        ),
                     ),
                     'fechados' => array(
                         'label' => 'Fechados',

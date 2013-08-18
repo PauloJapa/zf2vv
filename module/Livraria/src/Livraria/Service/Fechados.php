@@ -470,17 +470,60 @@ class Fechados extends AbstractService {
      * @param Array $data com os campos do registro
      * @return boolean|array
      */
-    public function update(array $data) {
-        $this->data = $data;
-
-        $this->setReferences();
-
-        $result = $this->isValid();
-        if($result !== TRUE){
-            return $result;
-        }
-        if(parent::update())
-            $this->logForEdit();
+    public function update($entity, $dePara, $origem) {
+        $this->origem = $origem;
+        $this->dePara = $dePara;
+        $this->entityReal = $this->em->find($this->entity, $entity->getFechadoId());
+        $this->data = $this->entityReal->toArray();
+        
+        // Lista de metodos para atualizar$metodos[] = 'Locador';        
+        $metodos[] = 'Locatario';          $param[] = '';
+        $metodos[] = 'Imovel';             $param[] = '';
+        $metodos[] = 'Taxa';               $param[] = '';
+        $metodos[] = 'Atividade';          $param[] = '';
+        $metodos[] = 'Seguradora';         $param[] = '';
+        $metodos[] = 'Administradora';     $param[] = '';
+        $metodos[] = 'ValorAluguel';       $param[] = '';
+        $metodos[] = 'Incendio';           $param[] = '';
+        $metodos[] = 'Conteudo';           $param[] = '';
+        $metodos[] = 'Aluguel';            $param[] = '';
+        $metodos[] = 'Eletrico';           $param[] = '';
+        $metodos[] = 'Vendaval';           $param[] = '';
+        $metodos[] = 'CobIncendio';        $param[] = '';
+        $metodos[] = 'CobConteudo';        $param[] = '';
+        $metodos[] = 'CobAluguel';         $param[] = '';
+        $metodos[] = 'CobEletrico';        $param[] = '';
+        $metodos[] = 'CobVendaval';        $param[] = '';
+        $metodos[] = 'PremioLiquido';      $param[] = '';
+        $metodos[] = 'Premio';             $param[] = '';
+        $metodos[] = 'PremioTotal';        $param[] = '';
+        $metodos[] = 'Comissao';           $param[] = '';
+        $metodos[] = 'Inicio';             $param[] = 'obj';
+        $metodos[] = 'Fim';                $param[] = 'obj';
+        $metodos[] = 'CanceladoEm';        $param[] = 'obj';
+        $metodos[] = 'Codano';             $param[] = '';
+        $metodos[] = 'LocadorNome';        $param[] = '';
+        $metodos[] = 'LocatarioNome';      $param[] = '';
+        $metodos[] = 'TipoCobertura';      $param[] = '';
+        $metodos[] = 'SeguroEmNome';       $param[] = '';
+        $metodos[] = 'CodigoGerente';      $param[] = '';
+        $metodos[] = 'RefImovel';          $param[] = '';
+        $metodos[] = 'FormaPagto';         $param[] = '';
+        $metodos[] = 'Observacao';         $param[] = '';
+        $metodos[] = 'MesNiver';           $param[] = '';
+        // Atualizar campos modificados        
+        foreach ($metodos as $key => $metodo) {
+            if(empty($param[$key])){
+                $value = call_user_func(array($entity, 'get' . $metodo));
+            }else{
+                $value = call_user_func(array($entity, 'get' . $metodo), $param[$key]);
+            }
+            call_user_func(array($this->entityReal, 'set' . $metodo), $value);
+        }   
+        // Pesiste, Salva e gera log em fechados.
+        $this->em->persist($this->entityReal);
+        $this->em->flush(); 
+        $this->logForEdit($entity);
 
         return TRUE;
     }
@@ -489,8 +532,30 @@ class Fechados extends AbstractService {
      * Grava no logs dados da alteção feita na Entity
      * @return no return
      */
-    public function logForEdit(){
-        parent::logForEdit('fechados');
+    public function logForEdit($entity){
+        //parent::logForEdit('fechados');
+        //serviço LogFechamento
+        $log = new LogFechados($this->em);
+        $dataLog['fechados']  = $this->data['id']; 
+        $dataLog['tabela']     = 'log_fechados';
+        $dataLog['controller'] = $this->origem ;
+        $dataLog['action']     = 'edit';
+        $fechado   = $this->data['id'] . '/' . $this->data['codano'];
+        switch ($this->origem) {
+            case 'orcamentos':
+                $orcamento = $entity->getId() . '/' . $entity->getCodano();
+                $dataLog['mensagem']   = 'Alterado seguro fechado n ' . $fechado . ' a partir do orçamento n ' . $orcamento;
+                break;
+            case 'renovacaos':
+                $renovacao = $entity->getId() . '/' . $entity->getCodano();
+                $dataLog['mensagem']   = 'Alterado seguro fechado n ' . $fechado . ' a partir da renovação n ' . $renovacao;
+                break;
+            default:
+                $dataLog['mensagem']   = 'Erro Origem desconhecida!!!!!';
+                break;
+        }
+        $dataLog['dePara']     = 'Campo;Valor antes;Valor Depois;' . $this->dePara;
+        $log->insert($dataLog);
     }
 
     /**

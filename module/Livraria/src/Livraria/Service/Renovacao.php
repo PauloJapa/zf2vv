@@ -242,8 +242,11 @@ class Renovacao extends AbstractService {
     public function update(array $data,$param='') {
         $this->data = $data;
         
-        if($data['status'] != 'A')
+        if($data['status'] != 'A' AND $this->getIdentidade()->getTipo() != 'admin')
             return ['Esta renovação não pode ser editada!','Pois já esta finalizada!!'];
+        
+        if($data['status'] == 'C')
+            return ['Esta renovacao está cancelada e não pode ser editado!!!'];
         
         $ret = $this->setReferences();
         if($ret !== TRUE)
@@ -267,8 +270,13 @@ class Renovacao extends AbstractService {
         if($result !== TRUE){
             return $result;
         }
-        if(parent::update())
+        if(parent::update()){
             $this->logForEdit();
+            if($data['status'] == 'F' AND !empty($this->dePara)){
+                $srvFechado = new Fechados($this->em);
+                $srvFechado->update($this->entityReal,$this->dePara, 'renovacaos');
+            }
+        }
         
         return ['Salvo com Sucesso !!!']; 
     }
@@ -353,10 +361,11 @@ class Renovacao extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora(), $this->data['administradora']);
         // 9 de valores float
         $this->dePara .= $this->diffAfterBefore('Valor do Aluguel', $ent->floatToStr('valorAluguel'), $this->strToFloat($this->data['valorAluguel']));
-        $this->dePara .= $this->diffAfterBefore('Incêndio', $ent->floatToStr('incendio'), $this->strToFloat($this->data['incendio']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel'), $this->strToFloat($this->data['aluguel']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico'), $this->strToFloat($this->data['eletrico']));
-        $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval'), $this->strToFloat($this->data['vendaval']));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio', $ent->floatToStr('incendio',4), $this->strToFloat($this->data['incendio'],'',4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura Incêndio + Conteudo', $ent->floatToStr('conteudo',4), $this->strToFloat($this->data['conteudo'],'',4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura aluguel', $ent->floatToStr('aluguel',4), $this->strToFloat($this->data['aluguel'],'',4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura eletrico', $ent->floatToStr('eletrico',4), $this->strToFloat($this->data['eletrico'],'',4));
+        $this->dePara .= $this->diffAfterBefore('Cobertura vendaval', $ent->floatToStr('vendaval',4), $this->strToFloat($this->data['vendaval'],'',4));
         $this->dePara .= $this->diffAfterBefore('Premio Liquido', $ent->floatToStr('premioLiquido'), $this->strToFloat($this->data['premioLiquido']));
         $this->dePara .= $this->diffAfterBefore('Premio', $ent->floatToStr('premio'), $this->strToFloat($this->data['premio']));
         $this->dePara .= $this->diffAfterBefore('Premio Total', $ent->floatToStr('premioTotal'), $this->strToFloat($this->data['premioTotal']));
@@ -380,7 +389,7 @@ class Renovacao extends AbstractService {
         if(isset($this->data['gerado']))
             $this->dePara .= $this->diffAfterBefore('gerado', $ent->getGerado(), $this->data['gerado']);
         $this->dePara .= $this->diffAfterBefore('comissao', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
-        $this->dePara .= $this->diffAfterBefore('codFechado', $ent->getFechadoId(), $this->data['fechadoId']);
+        $this->dePara .= $this->diffAfterBefore('Fechado nº', $ent->getFechadoId(), $this->data['fechadoId']);
         $this->dePara .= $this->diffAfterBefore('mesNiver', $ent->getMesNiver(), $this->data['mesNiver']);
         //Juntar as alterações no imovel se houver
         $this->dePara .= $this->deParaImovel;

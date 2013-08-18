@@ -49,7 +49,7 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administra
         $this->FormDefault(['criadoEm' => 'calend']),
     "</td>", PHP_EOL;
         
-    if($this->UserIdentity('LivrariaAdmin')->getNome() == 'Paulo Cordeiro Watakabe'){
+    if($user->getNome() == 'Paulo Cordeiro Watakabe'){
         echo
     "</tr><tr>",
         "<td>\n",
@@ -102,7 +102,8 @@ $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'field
         '<a href="javascript:autoCompImoveis();">Exibir Imoveis desse locador <i class="icon-search"></i></a>',
         '<br /><span id="popImoveis" style="position:absolute"></span>',
         $this->FormDefault(['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
-        $this->FormDefault(['edImovel' => 'buttonOnly']),
+        // Usuario Administrador pode alterar imovel
+        ($user->getTipo() == 'admin') ? $this->FormDefault(['edImovel' => 'buttonOnly']) : '',
     "</td>",        
 "</tr><tr>", PHP_EOL,       
     "<td>",

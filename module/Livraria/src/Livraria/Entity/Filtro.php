@@ -56,7 +56,8 @@ class  Filtro
      */    
     public function trataFloat($valor,$dec=2){
         if(is_float($valor)){
-            return number_format($valor, $dec, ',','.');
+            return $valor;
+            //return number_format($valor, $dec, ',','.');
         }
         if(is_string($valor)){
             $valor = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $valor));

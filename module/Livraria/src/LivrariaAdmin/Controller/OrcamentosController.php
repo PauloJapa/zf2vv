@@ -318,9 +318,12 @@ class OrcamentosController extends CrudController {
         $imprimeProp = '0'; 
         if(isset($sessionContainer->idOrcamento)){
             $data['id'] = $sessionContainer->idOrcamento;
-            unset($sessionContainer->idOrcamento);
             $data['subOpcao'] = 'editar';
-            $imprimeProp = '1';
+            if(!isset($sessionContainer->idOrcamentoNoPrint)){
+                $imprimeProp = '1';
+            }
+            unset($sessionContainer->idOrcamento);
+            unset($sessionContainer->idOrcamentoNoPrint);
         }
         
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';

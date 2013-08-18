@@ -164,6 +164,14 @@ class RenovacaosController  extends CrudController {
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
         }
         
+        //Verifica se o id veio registrado na sessão
+        if(isset($sessionContainer->idRenovacao)){
+            $data['id'] = $sessionContainer->idRenovacao;
+            $data['subOpcao'] = 'editar';
+            unset($sessionContainer->idRenovacao);
+        }
+        
+        
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         if($data['subOpcao'] == 'fechar'){ 
