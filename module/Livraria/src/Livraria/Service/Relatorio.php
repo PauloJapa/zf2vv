@@ -248,10 +248,11 @@ class Relatorio extends AbstractService{
         
         //Trata os filtro para data mensal
         $this->data['mes'] = intval($data['mesFiltro']);
-        $mes = (date('m') -1 );
-        $mes = ($mes < 10) ? '0' . $mes : $mes ;
+        $mes = date('m');
         $this->data['inicioMensal'] = '01/' . $mes . '/' . date('Y');
         $this->dateToObject('inicioMensal');
+        // Pesquisar fechados de 2 ou 1 meses atras  
+        $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
         $this->data['fimMensal'] = clone $this->data['inicioMensal'];
         $this->data['fimMensal']->add(new \DateInterval('P1M'));
         $this->data['fimMensal']->sub(new \DateInterval('P1D'));

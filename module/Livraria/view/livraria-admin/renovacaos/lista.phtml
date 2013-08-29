@@ -1,4 +1,4 @@
-<h1>Seguros Fechados a Renovar</h1>
+<h1>Seguros Fechados(Mensais) a Renovar</h1>
 <br />
 
 <?php
@@ -10,6 +10,7 @@ $coluns = array(
     'Classe',
     'Inicio',
     'Fim',
+    'Niver',
     'Locador',
     'Locatario',
     'Valor',
@@ -24,8 +25,11 @@ $td = [
     '',
     '',
     '',
+    'class="r"',
+    '',
     '',
     'class="r"',
+    '',
     '',
 ];
 echo $this->ViewIndex('table'),
@@ -38,7 +42,7 @@ $lambda = function($value){
     };
     
 $this->ViewIndex('setFuncEdit',$lambda);    
-    
+$total = 0 ;    
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId() . '/' . $entity->getCodAno(),
@@ -48,17 +52,22 @@ foreach($this->data as $entity){
         $entity->getTaxa()->getClasse(),
         $entity->getInicio(),
         $entity->getFim(),
+        $entity->getMesNiver(),
         $entity->getLocadorNome(),
         $entity->getLocatarioNome(),
         $entity->floatToStr('premioTotal'),
         $entity->getStatus(),
         $entity->getId(),
     );
+    $total++;
     echo $this->ViewIndex('line',array('data' => $linha));
 }
 echo $this->ViewIndex('close');
 ?>
-<div align="center">
+<div class="noPrint">
+    <h2>Total de Seguros encontrados = <? echo $total; ?></h2>
+</div>
+<div align="center" class="noPrint">
     <input type="button" name="gerar" id="gerar" class="btn-success" value="Renovar Listados" onclick="geraRenovacao()">
 </div>
 <form name="form" id="form" method="POST">
@@ -76,6 +85,6 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url('livraria-admin',array('controller'=> 'renovacaos','action'=>'gerarRenovacao')); ?>";
         var msg = 'Tem certeza que deseja gerar a renovação desta lista ? \n Atenção não será possivel Desfazer a nova lista gerada!!';
         if(!confirm(msg))return;
-        envia(tar,'');  
+        envia(tar,'',null,'');  
     }
 </script>

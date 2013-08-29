@@ -195,6 +195,16 @@ class FechadosRepository extends AbstractRepository {
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
+        }else{
+            //Filtrar Adm pelo parametro
+            $admBlock = $this->getEntityManager()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('nao_gera_renovacao');
+            foreach ($admBlock as $key => $value) {
+                if(empty($key)){
+                    continue;
+                }
+                $this->where .= '  AND o.administradora <> :admCod' . $key;  
+                $this->parameters['admCod' . $key]  = $key;                
+            }
         }
         // Retorna um array com todo os registros encontrados        
         return $this->executaQueryMapaRenovacao();
@@ -208,16 +218,31 @@ class FechadosRepository extends AbstractRepository {
     public function getMapaRenovacaoMensal($data) {
         $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.validade = :valido AND o.mesNiver = :niver AND o.status = :status';
+        $this->where = 'o.fim BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver AND o.status = :status';
         $this->parameters['valido']  = 'mensal';
         $this->parameters['niver']   = $data['mes'];
-        $this->parameters['status']  = 'F';
+        $this->parameters['inicio']  = $data['inicioMensal'];
+        $this->parameters['fim']     = $data['fimMensal'];
+        $this->parameters['status']  = 'A';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
+        }else{
+            //Filtrar Adm pelo parametro
+            $admBlock = $this->getEntityManager()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('nao_gera_renovacao');
+            foreach ($admBlock as $key => $value) {
+                if(empty($key)){
+                    continue;
+                }
+                $this->where .= '  AND o.administradora <> :admCod' . $key;  
+                $this->parameters['admCod' . $key]  = $key;                
+            }
         }
+        
+        
+        
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery1('o.administradora','','Orcamento');
+        return $this->executaQuery1('o.administradora');
     }
     
     /**

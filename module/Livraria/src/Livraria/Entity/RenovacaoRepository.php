@@ -21,21 +21,23 @@ class RenovacaoRepository extends AbstractRepository {
      */
     public function findRenovar($mesFiltro,$ano,$adm){
         //Trata os filtro para data mensal
-        $mes = (date('m') -1 );
-        $mes = ($mes < 10) ? '0' . $mes : $mes ;
-        $ini = $ano . $mes . '01';
-        $fim = $ano . $mes . '31';
+        $this->data['inicio'] = new \DateTime($mesFiltro . '/01/' . $ano);
+        // Pesquisar fechados de 2 ou 1 meses atras  
+        $this->data['inicio']->sub(new \DateInterval('P1M'));
+        $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
+        $this->data['fim']->sub(new \DateInterval('P1D'));
         
-        $ini = '2012' . $mesFiltro . '01';
-        $fim = '2012' . $mesFiltro . '31';
+        $this->where =  ' f.status = :status';
+        $this->where .= ' AND f.fim BETWEEN :inicio AND :fim';
+        $this->where .= ' AND f.validade = :validade';
+        $this->where .= ' AND f.mensalSeq <= :mensalSeq';
         
-        $this->where = ' f.status <> :status AND f.inicio BETWEEN :inicio AND :fim AND f.validade = :validade AND f.mesNiver = :niver';
-        $this->where = ' f.fim BETWEEN :inicio AND :fim AND f.validade = :validade';
-        //$this->parameters['status']   = 'R';
-        $this->parameters['inicio']   = $ini;
-        $this->parameters['fim']      = $fim;
+        $this->parameters['status']   = 'A';
+        $this->parameters['inicio']   = $this->data['inicio'];
+        $this->parameters['fim']      = $this->data['fim'];
         $this->parameters['validade'] = 'mensal';
-        //$this->parameters['niver']    = $mesFiltro;
+        $this->parameters['mensalSeq'] = 10;
         if(!empty($adm)){
             $this->where .= '  AND f.administradora = :administradora';
             $this->parameters['administradora']  = $adm;
@@ -54,13 +56,76 @@ class RenovacaoRepository extends AbstractRepository {
         // Monta a dql para fazer consulta no BD
         $qb = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('f')
+                ->select('f,ad,at,im,ld,lc')
                 ->from('Livraria\Entity\Fechados', 'f')
+                ->join('f.administradora', 'ad')
+                ->join('f.atividade', 'at')
+                ->join('f.imovel', 'im')
+                ->join('f.locador', 'ld')
+                ->join('f.locatario', 'lc')
                 ->where($this->where)
-                ->setParameters($this->parameters); 
+                ->setParameters($this->parameters)
+                ->orderBy('f.administradora'); 
         
         return $qb->getQuery()->getResult();
     }
+    
+    public function acertaMensalSeq(){
+        $this->where =  ' f.status = :status';
+        $this->where .= ' AND f.fim BETWEEN :inicio AND :fim';
+        $this->where .= ' AND f.validade = :validade';
+        
+        $this->parameters['status']   = 'A';
+        $this->parameters['inicio']   = new \DateTime('01/01/2011');
+        $this->parameters['fim']      = new \DateTime('12/31/2011');
+        $this->parameters['validade'] = 'mensal';
+        // Monta a dql para fazer consulta no BD
+        $qb = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('f')
+                ->from('Livraria\Entity\Fechados', 'f')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        $ents = $qb->getQuery()->getResult();
+        $em = $this->getEntityManager();
+        $total = 0;
+        $erro = 0;
+        $ok = 0;
+        $igual = 0;
+        foreach ($ents as $ent) {
+            $mes = $ent->getMesNiver();
+            if($mes == 0 OR is_null($mes)){
+                echo 'Mes de aniversario invalido ', $ent->getId(), '<br>';
+                $erro++;
+                continue;
+            }
+            $mesP = (int)$ent->getInicio('obj')->format('m');
+            if($mes == $mesP){
+                echo 'Mes de aniversario igual ao mes fechado', $mesP, '<br>';
+                $igual++;
+                continue;
+            }
+            if($mes < $mesP){
+                // teoricamente mesmo ano
+                // seq vai ser mes que fechou menos mes niver
+                $setMes = $mesP - $mes;
+            }
+            if($mes > $mesP){
+                // teoricamento fechado um ano a mais que mes do niver
+                // seq vai ser 12 menos mes niver resultado soma ao mes que fechou
+                $setMes = (12 - $mes) + $mesP;                
+            }
+            $ok++;
+            echo 'Seq atualizada para ', $setMes , ' fechado ', $ent->getId(), '<br>';
+            $ent->setMensalSeq($setMes);
+            $em->persist($ent);              
+        }
+        echo '<h2>Atualizados ', $ok , ' erros ', $erro, ' niver igual mes fechado ', $igual, '<br>';
+        
+        $em->flush();       
+    }
+    
     
     
     

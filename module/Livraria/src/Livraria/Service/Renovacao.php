@@ -69,6 +69,13 @@ class Renovacao extends AbstractService {
         $this->data['id'] = '';
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
+        if(is_null($this->data['mensalSeq'])){
+            $this->data['mensalSeq'] = 0 ;
+        }
+        if(!is_numeric($this->data['mensalSeq'])){
+            echo '<h1>Mensal seq não é numerico erro numero do fechado ', $this->data['fechadoOrigemId'];
+            $this->data['mensalSeq'] = 0 ;
+        }
         $this->data['mensalSeq']++;
         $this->data['criadoEm'] = new \DateTime('now');
         $this->data['inicio'] = $this->fechado->getInicio('obj');

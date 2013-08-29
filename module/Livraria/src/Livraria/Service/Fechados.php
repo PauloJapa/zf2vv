@@ -640,6 +640,7 @@ class Fechados extends AbstractService {
 
         if($resul[0] === TRUE){
             $fechado->setObservacao($fechado->getObservacao() . '\n Gerou Orçamento para Renovação numero ' . $resul[1]);
+            //Marcar como renovado somente os anuais visto que os mensais serão marcados pelo serviço de renovação.
             if($fechado->getValidade() == 'anual'){
                 $fechado->setStatus('R');
             }

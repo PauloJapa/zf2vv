@@ -121,6 +121,10 @@ class RenovacaosController  extends CrudController {
     public function listaAction(){
         $this->verificaSeUserAdmin();
         $this->getDadosAnterior();
+        
+        //$this->getEm()->getRepository($this->entity)->acertaMensalSeq();
+        //die;
+                
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
                 ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);

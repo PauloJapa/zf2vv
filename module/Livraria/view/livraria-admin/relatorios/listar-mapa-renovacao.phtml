@@ -30,6 +30,7 @@
     $pagCss = '';
     $admCod =  0;
     $admNom =  '';
+    $total = 0 ;
     $fazTable = false;
     foreach($this->data as $array): 
         //calcula a parcela e descriçao da forma de pagamento
@@ -98,10 +99,11 @@
 <tr>            
 <?  
         endif;
+$total++;         
 ?>
 <tr>
 	<td nowrap class="Bl Bb Bt" align="center"><? echo $array['refImovel'] ?></td>
-	<td nowrap class="Bl Bb Bt"><? echo $array['inicio']->format('d/m/Y'), ' - ', $array['validade'] ?></td>
+	<td nowrap class="Bl Bb Bt"><? echo $array['inicio']->format('d/m/Y'), ' - ', $array['validade'], ($array['validade'] == 'mensal')?'('.$array['mesNiver'].')':''; ?></td>
 	<td class="Bl Bb Bt F1"><? echo $array['imovel']['rua'] ?></td>
 	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
         <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['incendio'], 2, ',', '.') ?></td>
@@ -129,6 +131,10 @@
 <? endforeach; ?>
 </table>
 
+<div class="noPrint">
+    <h2>Total de Seguros encontrados = <? echo $total; ?></h2>    
+</div>
+    
 <div align='center' class="noPrint">
     <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Gerar Mapeamento" onclick="return gerarMapa()">
 </div>
