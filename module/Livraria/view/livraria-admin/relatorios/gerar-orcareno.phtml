@@ -47,7 +47,7 @@ foreach($this->data as $key => $arrayResul){
     }
     //Adminitradora acumula resutado
     //Contagem separando em orçamento e renovação 
-    if ( isset($arrayResul['fechadoOrigemId'])){
+    if ($arrayResul['orcaReno'] == 'reno'){
         $renov ++; $totRenov ++;
     }else{
         $orcam ++; $totOrcam ++;

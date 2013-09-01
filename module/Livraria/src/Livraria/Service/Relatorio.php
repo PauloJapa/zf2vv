@@ -198,12 +198,15 @@ class Relatorio extends AbstractService{
         $this->dateToObject('fim');
         $this->parameters['inicio'] = $this->data['inicio'];
         $this->parameters['fim']    = $this->data['fim'];
-        $this->parameters['status'] = 'A';
+        $this->parameters['status'] = 'F';
         if($data['administradora']){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
         }
         
+        return $this->getOrcareno('Orcamento');
+        
+        /*
         $merge = array_merge($this->getOrcareno('Orcamento'), $this->getOrcareno('Renovacao'));
         $lista=[];
         foreach ($merge as $key => $value) {
@@ -211,6 +214,7 @@ class Relatorio extends AbstractService{
         }
         array_multisort($lista, SORT_ASC, SORT_NUMERIC, $merge);
         return $merge;
+         */
     }
     
     public function getOrcareno($tabela){ 
@@ -276,7 +280,7 @@ class Relatorio extends AbstractService{
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
                 continue;
             }
-            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $reajuste);
+            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $data['mesFiltro'], $data['anoFiltro'], $reajuste);
         }
         $sc->mapaRenovacao = $array;
     }
@@ -298,6 +302,8 @@ class Relatorio extends AbstractService{
         $servEmail = $sl->get('Livraria\Service\Email');
         $formaPagto = $sc->formaPagto;
         $mesPrazo = intval($sc->data['mesFiltro']);
+        $mes = $sc->data['mesFiltro'];
+        $ano = $sc->data['anoFiltro'];
         if($mesPrazo == 1){
             $mesPrazo = '12';
         }else{
@@ -336,7 +342,8 @@ class Relatorio extends AbstractService{
                 $i       = 0;
             }
             //Faz o acumulo dos dados.
-            $data[$i][0] = $value['inicio']->format('d/m/Y');
+            $data[$i][0] = ($value['validade'] == 'anual') ? $value['fim']->format('d/m/Y') : $value['fim']->format('d/') . $mes . '/' . $ano;
+            $data[$i][0] .= ' - ' . $value['validade'] . (($value['validade'] == 'mensal') ? '(' . $value['mesNiver'] . ')' : '');
             $data[$i][1] = $value['fim']->format('d/m/Y');
             $data[$i][2] = $value['refImovel'];
             $data[$i][3] = $value['validade'];

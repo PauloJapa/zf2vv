@@ -201,6 +201,9 @@ class Orcamento extends AbstractService {
     public function logForNew(){
         //parent::logForNew('orcamento');
         //serviço logorcamento
+        if(isset($this->data['orcaReno']) AND $this->data['orcaReno'] == 'reno'){
+            return;
+        }
         $log = new LogOrcamento($this->em);
         $dataLog['orcamento']  = $this->data['id']; 
         $dataLog['tabela']     = 'log_orcamento';

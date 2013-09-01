@@ -51,8 +51,8 @@
             $admCod = $array['administradora']['id'];
             $admNom = $array['administradora']['nome'];
             $atual = 0 ;
-            $itens = 8 ;
-            $ate   =  7;
+            $itens = 9 ;
+            $ate   =  8;
 ?>
 <table style="width: 100% ;" <? echo $pagCss ; ?>>
     <tr>
@@ -65,7 +65,7 @@
                 <tr>                
                     <td>
                         <table style="width: 100% ;">
-                            <tr>
+                            <tr class="F1">
                                 <td class="Bl Bb Bt"><strong>Tipo de Seleção</strong><br>Fim da Vigência</td>
                                 <td class="Bl Bb Bt"><strong>Tipo de Cobertua</strong><br>Renovação</td>
                                 <td class="Bl Bb Bt"><strong>Período</strong><br><? echo $this->date['inicio']->format('d/m/Y'), 'a', $this->date['fim']->format('d/m/Y'); ?></td>
@@ -84,7 +84,7 @@
 </table>
 
 <table class="Bt Bb"  style="width: 100% ;">
-<tr>
+<tr class="F1">
 	<th class="Bl">Ref. do Imóvel</th>
 	<th class="Bl">Vigência Inicial</th>
 	<th class="Bl">Local Segurado</th>
@@ -101,9 +101,12 @@
         endif;
 $total++;         
 ?>
-<tr>
+<tr class="F1">
 	<td nowrap class="Bl Bb Bt" align="center"><? echo $array['refImovel'] ?></td>
-	<td nowrap class="Bl Bb Bt"><? echo $array['inicio']->format('d/m/Y'), ' - ', $array['validade'], ($array['validade'] == 'mensal')?'('.$array['mesNiver'].')':''; ?></td>
+	<td nowrap class="Bl Bb Bt"><? echo ($array['validade'] == 'anual')? $array['fim']->format('d/m/Y') : $array['fim']->format('d/') . $this->date['mesFiltro'] . '/' . $this->date['anoFiltro'],
+                                            ' - ', 
+                                            $array['validade'], 
+                                           ($array['validade'] == 'mensal')?'('.$array['mesNiver'].')':''; ?></td>
 	<td class="Bl Bb Bt F1"><? echo $array['imovel']['rua'] ?></td>
 	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
         <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['incendio'], 2, ',', '.') ?></td>
@@ -114,13 +117,13 @@ $total++;
 	<td nowrap class="Bl Bb Bt" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
         <td nowrap class="Bl Bb Bt Br" align="right"><? echo number_format($array['premioTotal'], 2, ',', '.') ?></td>
 </tr>  
-<tr>
+<tr class="F1">
 	<td nowrap class="Bl">Ref. do Imóvel</td>
 	<td nowrap colspan="2">____________ Valor do Aluguel: <? echo number_format($array['valorAluguel'], 2, ',', '.') ?></td>
 	<td nowrap colspan="2">Valor do Aluguel Corrigido: <? echo number_format($array['valorAluguel'] * $this->date['upAluguel'], 2, ',', '.') ?>___________________</td>
 	<td nowrap class="Br" colspan="6">Imóvel Vago(__) &nbsp;&nbsp;Não Administramos(__) &nbsp;&nbsp;Sem Alteração (__)</td>
 </tr>  
-<tr>
+<tr class="F1">
 	<td nowrap class="Bl Bb">Ocupação</td>
 	<td nowrap class="Bb" colspan="2"><? echo $array['atividade']['descricao'] ?></td>
 	<td nowrap class="Br Bb" colspan="8">Ocupação Corrigida: _____________________________________________________</td>
@@ -138,6 +141,10 @@ $total++;
 <div align='center' class="noPrint">
     <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Gerar Mapeamento" onclick="return gerarMapa()">
 </div>
+
+<div align='center' class="noPrint">
+    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Imprimir" onclick="return imprimi()">
+</div>
 <form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
@@ -146,5 +153,8 @@ $total++;
     function gerarMapa(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'gerarMapa')); ?>";
         envia(tar,'gerar');        
+    }
+    function imprimi(){
+        window.print();
     }
 </script>

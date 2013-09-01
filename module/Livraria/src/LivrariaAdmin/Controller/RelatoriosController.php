@@ -205,7 +205,7 @@ class RelatoriosController extends CrudController {
             $registros[$seq][] = $arrayResul['imovel']['rua'] . ', ' . $arrayResul['imovel']['numero']. ' ' . $arrayResul['imovel']['bloco']. ' ' . $arrayResul['imovel']['apto'];
             $registros[$seq][] = isset($formaPagto[$arrayResul['formaPagto']]) ? $formaPagto[$arrayResul['formaPagto']]  : $arrayResul['formaPagto'];
             $registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
-            $registros[$seq][] = isset($arrayResul['fechadoOrigemId']) ? 'Renovação' : 'Orçamento';
+            $registros[$seq][] = ($arrayResul['orcaReno'] == 'reno') ? 'Renovação' : 'Orçamento';
             $seq++;
 //        var_dump($arrayResul);die;
         }
