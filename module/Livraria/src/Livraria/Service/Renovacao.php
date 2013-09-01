@@ -32,7 +32,7 @@ class Renovacao extends AbstractService {
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
-        $this->entity = "Livraria\Entity\Renovacao";
+        $this->entity = "Livraria\Entity\Orcamento";
         $this->fechado = "Livraria\Entity\Fechados";
     }
     
@@ -68,15 +68,16 @@ class Renovacao extends AbstractService {
         $this->data['fechadoOrigemId'] = $this->data['id'];
         $this->data['id'] = '';
         $this->data['user'] = $this->getIdentidade()->getId();
-        $this->data['status'] = "A";
+        $this->data['status'] = "R";
         if(is_null($this->data['mensalSeq'])){
             $this->data['mensalSeq'] = 0 ;
         }
         if(!is_numeric($this->data['mensalSeq'])){
-            echo '<h1>Mensal seq não é numerico erro numero do fechado ', $this->data['fechadoOrigemId'];
+            echo '<h1>Mensal seq não é numerico erro numero do fechado ', $this->data['fechadoOrigemId'] , '</h1>';
             $this->data['mensalSeq'] = 0 ;
         }
         $this->data['mensalSeq']++;
+        $this->data['orcaReno'] = 'reno';
         $this->data['criadoEm'] = new \DateTime('now');
         $this->data['inicio'] = $this->fechado->getInicio('obj');
         //Nova Vigência
@@ -121,7 +122,7 @@ class Renovacao extends AbstractService {
         
         //Faz inserção do fechado no BD
         $resul = $this->insert();
-
+        
         if($resul[0] === TRUE){
             //Registra o id do fechado de Orçamento
             $this->fechado->setRenovacaoId($this->data['id']);
@@ -328,15 +329,15 @@ class Renovacao extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             if($this->data['id'] != $entity->getId()){
-                if(($inicio <= $entity->getFim('obj'))){
+                if(($inicio < $entity->getFim('obj'))){
                     if($entity->getStatus() == "A"){
                         $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                     if($entity->getStatus() == "F"){
                         $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
+                        $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
                         $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
                     }
                 }

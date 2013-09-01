@@ -79,7 +79,7 @@ class LogRenovacao extends Filtro
     /**
      * @var Renovacao
      *
-     * @ORM\OneToOne(targetEntity="Renovacao")
+     * @ORM\OneToOne(targetEntity="Orcamento")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="renovacao_id", referencedColumnName="id")
      * })
@@ -169,8 +169,8 @@ class LogRenovacao extends Filtro
     }
 
     /**
-     * Entity Renovacao a qual se referencia esse log
-     * @return \Livraria\Entity\Renovacao
+     * Entity Orcamento a qual se referencia esse log
+     * @return \Livraria\Entity\Orcamento
      */
     public function getRenovacao() {
         return $this->renovacao;
@@ -178,10 +178,10 @@ class LogRenovacao extends Filtro
 
     /**
      * Entiry Renovacao a qual se referencia esse log
-     * @param \Livraria\Entity\Renovacao $renovacao
+     * @param \Livraria\Entity\Orcamento $renovacao
      * @return \Livraria\Entity\LogRenovacao
      */
-    public function setRenovacao(Renovacao $renovacao) {
+    public function setRenovacao(Orcamento $renovacao) {
         $this->renovacao = $renovacao;
         return $this;
     }

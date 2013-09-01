@@ -75,7 +75,7 @@ class Filtros  extends AbstractForm {
         $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['A'=>'N - Novos', 'R'=>'R - Renovação de Reajuste','C'=>'C - Cancelados']);
+        $this->setInputRadio('status', 'Status', ['A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();
@@ -88,9 +88,9 @@ class Filtros  extends AbstractForm {
         $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Renovação',['class'=>'input-small']);
         $this->setInputText('renovado', 'Nº do Renovação',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['T'=>'Todos','A'=>'Ativo','F'=>'Fechados','C'=>'Cancelados']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Todos','R'=>'Ativo','F'=>'Fechados','C'=>'Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
-        $this->get('status')->setValue('A'); 
+        $this->get('status')->setValue('R'); 
         $this->setDate();
         $this->setForUsuario();
         $this->setForAdministradora();        

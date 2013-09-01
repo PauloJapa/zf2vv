@@ -227,7 +227,7 @@ class Fechados extends AbstractService {
     public function validaOrcamento($id){
         //Carregar Entity Orcamento
         $this->Orcamento = $this->em
-            ->getRepository($this->Orcamento)
+            ->getRepository('Livraria\Entity\Orcamento')
             ->find($id);
 
         if(!$this->Orcamento){
@@ -356,7 +356,7 @@ class Fechados extends AbstractService {
     public function validaRenovacao($id){
         //Carregar Entity Orcamento
         $this->Renovacao = $this->em
-            ->getRepository($this->Renovacao)
+            ->getRepository('Livraria\Entity\Orcamento')
             ->find($id);
 
         if(!$this->Renovacao){

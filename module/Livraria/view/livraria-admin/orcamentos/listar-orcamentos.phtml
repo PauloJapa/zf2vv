@@ -1,4 +1,4 @@
-<h1>Orçamentos</h1>
+<h1>Orçamentos e Renovações</h1>
 <br />
 <style type="text/css">
 #delobs {
@@ -75,7 +75,7 @@ $coluns = array(
     'Locador',
     'Locatário',
     'Local do Risco',
-    'Inicio',
+    'Inicio Vigência',
     'Atividade',
     'Valor',
 );
@@ -89,7 +89,7 @@ $td     = array(
     'nowrap',
     'nowrap',
     'nowrap',
-    'nowrap'
+    'class="r"'
 );
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'first'));

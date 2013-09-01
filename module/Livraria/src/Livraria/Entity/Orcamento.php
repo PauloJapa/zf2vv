@@ -392,6 +392,20 @@ class Orcamento extends AbstractSeguro {
      * @ORM\Column(name="fechado_origem_id", type="integer", nullable=true)
      */
     protected $fechadoOrigemId;
+
+    /**
+     * @var integer $mensalSeq
+     *
+     * @ORM\Column(name="mensal_seq", type="integer", nullable=true)
+     */
+    protected $mensalSeq;
+
+    /**
+     * @var string $orcaReno
+     * Indica se registro é um orcamento ou renovação
+     * @ORM\Column(name="orca_reno", type="string", length=5, nullable=true)
+     */
+    protected $orcaReno;
     
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -431,14 +445,33 @@ class Orcamento extends AbstractSeguro {
         $this->fechadoId = $codFechado;
         return $this;
     }
+    
+    /**
+     * Indica se o registro é um orcamento(orca) ou renovação(reno)
+     * @return string
+     */
+    public function getOrcaReno() {
+        return $this->orcaReno;
+    }
 
     /**
+     * Setar se o registro é um orcamento(orca) ou renovação(reno)
+     * @param string $orcaReno
+     * @return \Livraria\Entity\Orcamento
+     */
+    public function setOrcaReno($orcaReno) {
+        $this->orcaReno = $orcaReno;
+        return $this;
+    }
+
+        /**
      * 
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {
         $data = parent::toArray();
         $data['fechadoId']     = $this->getFechadoId();
+        $data['orcaReno']      = $this->getOrcaReno();
         return $data;
     }
  

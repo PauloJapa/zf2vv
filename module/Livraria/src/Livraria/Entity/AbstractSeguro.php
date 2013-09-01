@@ -921,6 +921,24 @@ class AbstractSeguro  extends Filtro {
     }
     
     /**
+     * Qtd de vezes renovados
+     * @return int
+     */
+    public function getMensalSeq() {
+        return $this->mensalSeq;
+    }
+
+    /**
+     * Qtd de vezes renovados
+     * @param type $mensalSeq
+     * @return \Livraria\Entity\Fechados
+     */
+    public function setMensalSeq($mensalSeq) {
+        $this->mensalSeq = $mensalSeq;
+        return $this;
+    }
+    
+    /**
      * 
      * @return array com todos os campos formatados para o form
      */
@@ -984,6 +1002,7 @@ class AbstractSeguro  extends Filtro {
         $data['cobEletrico']    = $this->floatToStr('cobEletrico');
         $data['cobVendaval']    = $this->floatToStr('cobVendaval');
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
+        $data['mensalSeq']      = $this->getMensalSeq();
         return $data ;
     }
     

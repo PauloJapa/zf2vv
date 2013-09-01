@@ -10,7 +10,7 @@ class RenovacaosController  extends CrudController {
     private $serviceFechado;
     
     public function __construct() {
-        $this->entity = "Livraria\Entity\Renovacao";
+        $this->entity = "Livraria\Entity\Orcamento";
         $this->form = "LivrariaAdmin\Form\Orcamento";
         $this->service = "Livraria\Service\Renovacao";
         $this->serviceFechado = "Livraria\Service\Fechados";
@@ -48,10 +48,16 @@ class RenovacaosController  extends CrudController {
             }
             $filtro['administradora'] = $sessionContainer->administradora['id'];
         }
+        // Se filtro Status não exitir seta como padrão para Novos.
+        if(!isset($data['status'])){
+            $filtro['status'] = "R";
+        }
+        $filtro['orcaReno'] = 'reno';
+        $filtro['validade'] = 'mensal';
         
         $list = $this->getEm()
                      ->getRepository($this->entity)
-                     ->findRenovacao($filtro,$operadores,true);
+                     ->findOrcamento($filtro,$operadores,true);
         
         return parent::indexAction($filtro,[],$list);    
     }
@@ -98,7 +104,9 @@ class RenovacaosController  extends CrudController {
     public function listarAbertosAction(){
         $data = $this->filtrosDaPaginacao();
         $inputs = ['id', 'administradora', 'endereco', 'locador', 'locatario', 'user', 'end','dataI','dataF'];
-        $filtro = ['status'=>'A'];
+        $filtro['status']   ='R';
+        $filtro['validade'] ='mensal';
+        $filtro['orcaReno'] = 'reno';
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
                 $filtro[$input] = $data[$input];
@@ -124,10 +132,10 @@ class RenovacaosController  extends CrudController {
         
         //$this->getEm()->getRepository($this->entity)->acertaMensalSeq();
         //die;
-                
+              
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);
+                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);  
         return new ViewModel(['data' => $fechados]);
     }
     
@@ -136,7 +144,7 @@ class RenovacaosController  extends CrudController {
         $this->getDadosAnterior();
         $fechados = $this->getEm()
                 ->getRepository($this->entity)
-                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']);
+                ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']); 
         $service = new $this->service($this->getEm());
         foreach ($fechados as $fechado) {
             $resul = $service->renovar($fechado);
@@ -284,8 +292,8 @@ class RenovacaosController  extends CrudController {
     public function fecharSegurosAction() {
         $data = $this->getRequest()->getPost()->toArray();
         //Pegar Servico de fechados $sf
+        $sf = new $this->serviceFechado($this->getEm());
         foreach ($data['Checkeds'] as $idRen) {
-            $sf = new $this->serviceFechado($this->getEm());
             $resul = $sf->fechaRenovacao($idRen,FALSE);
             if($resul[0] === TRUE){
                 $fechou = $sf->getEntity();

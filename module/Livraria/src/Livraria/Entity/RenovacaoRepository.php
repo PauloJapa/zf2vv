@@ -10,6 +10,8 @@ namespace Livraria\Entity;
 class RenovacaoRepository extends AbstractRepository {
 
     /**
+     * OBS todos os metodos de repository renovação esta passando para o repository Orçamento 
+     * Esse repository esta sendo abandonado.
      * Busca Fechados que estão vencendo para renovação
      * Filtra pela data de final da vigencia, administradora e validade(mensal ou anual)
      * Filtro automatico para administradoras inseridas no paramentro com a chave nao_gera_renovacao
@@ -126,9 +128,15 @@ class RenovacaoRepository extends AbstractRepository {
         $em->flush();       
     }
     
-    
-    
-    
+    /**
+     *     
+     * OBS todos os metodos de repository renovação esta passando para o repository Orçamento 
+     * Esse repository esta sendo abandonado.
+     * @param string $filtros
+     * @param type $operadores
+     * @param type $retQuery
+     * @return type
+     */
     public function findRenovacao($filtros=[],$operadores=[],$retQuery=false){
         if(empty($filtros)){
             $filtros['status'] = 'A';

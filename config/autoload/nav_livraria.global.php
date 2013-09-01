@@ -196,25 +196,25 @@ return array(
                         'action' => 'listarOrcamentos',
                     ),
                     'renovacaos' => array(
-                        'label' => 'Renovação',
+                        'label' => 'Renovação_Mensais',
                         'route' => 'livraria-admin',
                         'controller' => 'renovacaos',
                         'action' => 'index',
                         'pages' => array(
                             'renovacao1' => array(
-                                'label' => 'Listar Renovados',
+                                'label' => 'Listar_Mensais',
                                 'route' => 'livraria-admin',
                                 'controller' => 'renovacaos',
                                 'action' => 'listarRenovados',
                             ),
                             'renovacao2' => array(
-                                'label' => 'Renovação',
+                                'label' => 'Gerar_Mensais',
                                 'route' => 'livraria-admin',
                                 'controller' => 'renovacaos',
                                 'action' => 'buscar',
                             ),
                             'renovacao3' => array(
-                                'label' => 'Fechados',
+                                'label' => 'Fechar_Mensais',
                                 'route' => 'livraria-admin',
                                 'controller' => 'renovacaos',
                                 'action' => 'buscarAbertos',
@@ -266,7 +266,7 @@ return array(
                         'action' => 'imoveisDesocupados',
                     ),
                     'relatorios6' => array(
-                        'label' => 'Pesquisa Seguros Fechados',
+                        'label' => 'Pré Fechamento',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'fechamentoSeguro',
@@ -283,12 +283,12 @@ return array(
                         'controller' => 'fechados',
                         'action' => 'buscar',
                     ),
-                    'relatorios9' => array(
-                        'label' => 'Seguros Pendentes',
-                        'route' => 'livraria-admin',
-                        'controller' => 'pendentes',
-                        'action' => 'index',
-                    ),
+                  //  'relatorios9' => array(
+                  //      'label' => 'Seguros Pendentes',
+                  //      'route' => 'livraria-admin',
+                  //      'controller' => 'pendentes',
+                  //      'action' => 'index',
+                  //  ),
                     'relatorios10' => array(
                         'label' => 'Comissão de Seguro',
                         'route' => 'livraria-admin',

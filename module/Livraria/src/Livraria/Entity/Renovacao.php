@@ -439,24 +439,6 @@ class Renovacao  extends AbstractSeguro
         $this->fechadoId = $FechadoId;
         return $this;
     }
-    
-    /**
-     * Qtd de vezes renovados
-     * @return int
-     */
-    public function getMensalSeq() {
-        return $this->mensalSeq;
-    }
-
-    /**
-     * Qtd de vezes renovados
-     * @param type $mensalSeq
-     * @return \Livraria\Entity\Renovacao
-     */
-    public function setMensalSeq($mensalSeq) {
-        $this->mensalSeq = $mensalSeq;
-        return $this;
-    }
 
     /**
      * 
@@ -465,7 +447,6 @@ class Renovacao  extends AbstractSeguro
     public function toArray() {
         $data = parent::toArray();
         $data['fechadoId']      = $this->getFechadoId();
-        $data['mensalSeq']      = $this->getMensalSeq();
         return $data ;
     }
 }
