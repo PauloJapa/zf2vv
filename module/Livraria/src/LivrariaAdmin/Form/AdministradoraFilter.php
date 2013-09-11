@@ -17,6 +17,7 @@ class AdministradoraFilter extends EnderecoFilter {
         $this->notEmpty('nome');
         $this->notEmpty('cnpj');
         $this->notEmpty('status');
+        $this->notEmpty('codigoCol');
         
     }
 

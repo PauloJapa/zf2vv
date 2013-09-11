@@ -234,9 +234,8 @@ class RelatoriosController extends CrudController {
         $this->verificaSeUserAdmin();
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
-        $this->paginator = $this->getEm()
-                     ->getRepository("Livraria\Entity\Renovacao")
-                     ->getCustoRenovacao($data);
+        $service = new $this->service($this->getEm());
+        $this->paginator = $service->getCustoRenovacao($data);
         //Guardar dados do resultado 
         $sc = new SessionContainer("LivrariaAdmin");
         $sc->dataOrcareno = $this->paginator;

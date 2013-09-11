@@ -249,7 +249,202 @@ class OrcamentoRepository extends AbstractRepository {
             return $query;
         }
         return $query->getResult();
-    }  
+    } 
+    
+    public function trySetFechadoOrigem(&$reno){
+        $data = clone $reno['inicio'];
+        $mesS = (int)$data->format('m');
+        //Calcula periodo para seguro do tipo mensal
+        if($reno['validade'] == 'mensal'){
+            $mesN = (int)$reno['mesNiver'];
+            if($mesN == 0){
+                echo '<h1>Erro Seguro sem mes de niversario definido';
+                return FALSE;
+            }
+            // Se mes maior que niver procura retira meses se nao tira ano inteiro
+            if($mesN <= $mesS){
+                $mesT = $mesS - $mesN + 1 ; // calcula quantos meses tem que tirar
+                $interval = 'P' . $mesT . 'M';
+            }else{                
+                $mesT = $mesN - 1 ; // tira 1 mes antes do niver e tira 1 ano
+                $interval = 'P1Y' . $mesT . 'M';
+            }                
+            $data->sub(new \DateInterval($interval));
+        }else{ // Periodo Anual tira um ano e um mes.
+            $data->sub(new \DateInterval('P1Y1M'));
+        }
+        // echo $data->format('d/m/Y'), '<br>';
+        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,i')
+                ->from('Livraria\Entity\Orcamento', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'i')
+                ->where("o.status = :status AND o.imovel = :imovel AND :data BETWEEN o.inicio AND o.fim")
+                ->setParameters(['status' => 'F', 'imovel' => $reno['imovel']['id'], 'data' => $data]);
+       
+        $seguroAnterior = $query->getQuery()->getArrayResult(); 
+        if(empty($seguroAnterior)){
+            return FALSE;
+        }
+        // echo 'data ', $seguroAnterior[0]['inicio']->format('d/m/Y'), ' ate ', $seguroAnterior[0]['fim']->format('d/m/Y');
+        
+        return $seguroAnterior[0]['id'];
+    }
+
+
+    /**
+     * Faz a pesquisa comparativa em os renovados fechados de um periodo com o fechados anteriormente
+     * @param array $data Filtros para pesquisa.
+     * @return array de entitys
+     */
+    public function CustoRenovacao($data){
+        // Monta a dql para fazer consulta no BD
+        $this->where =  ' o.status = :status';
+        $this->where .= ' AND o.inicio BETWEEN :inicio AND :fim';
+        $this->where .= ' AND o.orcaReno = :orcaReno';
+        $this->parameters['status'] = 'F';
+        $this->parameters['inicio']  = $data['inicio'];
+        $this->parameters['fim']  = $data['fim'];
+        $this->parameters['orcaReno'] = 'reno';
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,i')
+                ->from('Livraria\Entity\Orcamento', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'i')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        // Retorna um array com todo os registros encontrados        
+        $principalResul = $query->getQuery()->getArrayResult();
+        
+        // Segundo consulta é para pegar os os valores do seguro antes da renovação
+        $this->where = 'o.id IN(';
+        $this->parameters = [];
+        foreach ($principalResul as $key => $renovacao) {
+            if(is_null($renovacao['fechadoOrigemId']) OR $renovacao['fechadoOrigemId'] == 0){
+                if($principalResul[$key]['fechadoOrigemId'] = $this->trySetFechadoOrigem($renovacao)){
+                //    echo "<p>registro do fechado anterior Atualizado id ", $renovacao['id'] , ' anterior ', $principalResul[$key]['fechadoOrigemId'], "</p>";
+                    $continue = TRUE;
+               // }else{
+               //     echo "<h2>Sem registro do fechado anterior ", $renovacao['id'] , "</h2>";
+                }
+            }
+            $this->parameters[] = $principalResul[$key]['fechadoOrigemId'];
+            $this->where .= '?' . $key . ',';
+        }
+        $this->where = substr($this->where, 0, -1) . ')';
+        if(empty($this->parameters)){
+            return [];
+        }  
+        
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o')
+                ->from('Livraria\Entity\Orcamento', 'o')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        $secundarioResul = $query->getQuery()->getArrayResult();
+        
+        // Montar Array com a descrição das formas de pagamento
+        $formPagto = $this->getEntityManager()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        
+        
+        //Retonar 2 array com resultado para comparação
+        return $this->formataDadosParaExibicao($principalResul,$secundarioResul,$formPagto,$data);
+    }
+    
+    /**
+     * Mescla seguros atuais com seguros anterior para comparação e exibição.
+     * @param array $principal    seguros do periodo
+     * @param array $secundario   seguros anterior ao fechados
+     * @param array $formPagto    Formas de pagamento usados atualmente
+     * @param array $data         Filtros e dados para calculos
+     * @return array com lista para exibição
+     */
+    public function formataDadosParaExibicao(&$principal,&$secundario,&$formPagto,&$data){
+        $totF = $totI = 0;
+        $seq = 1;
+        $exibicao = [];
+        $filtro = (empty($data['percent'])) ? FALSE : floatval(str_replace(',', '.', $data['percent'])); 
+        foreach($principal as $lines){
+            $coluns = [];
+            $coluns[] = $seq;
+            $coluns[] = $lines['id'] . "/" . $lines['codano'];
+            $coluns[] = $lines['administradora']['id'];
+            $coluns[] = $lines['refImovel'];
+            $coluns[] = $lines['locadorNome'];
+            $coluns[] = $lines['locatarioNome'];
+            if(is_null($lines['fechadoOrigemId']) OR $lines['fechadoOrigemId'] == 0){
+                continue;
+            }
+            //Procurar fechado anterior a esse 
+            $flag = false;
+            foreach ($secundario as $value) {
+                //Verificar se realmente o codigo anterior bate com esse ID
+                if($value['id'] == $lines['fechadoOrigemId']){
+                    $totI = $value['premioTotal'];
+                    $coluns[] = $formPagto[$value['formaPagto']];
+                    $coluns[] = number_format($value['premioLiquido'], 2, ',', '.');
+                    $coluns[] = number_format($totI, 2, ',', '.');
+                    $flag = true;
+                    break;
+                }        
+            }
+            if(!$flag){
+                $coluns[] = '';$coluns[] = '';$coluns[] = '';$totI=0;
+                echo "<p>Alert fechado anterior ñ encontrado com id " , $lines['fechadoOrigemId'], ".<p>";
+            }
+            $totF = $lines['premioTotal'];
+            // Calcular porcentagem e filtra registro se necessario
+            if($totI != 0){
+                $percent = round($totF * 100 / $totI - 100, 2);
+            }else{
+                $percent = 0 ;
+            }  
+            // Filtrar os registros que a porcentagem diferença é menor que o filtro
+            if ($filtro !== FALSE){
+                $flag2 = FALSE;
+                switch ($data['comando']) {
+                    case '':
+                    case '==':
+                        if($filtro != $percent)
+                            $flag2 = TRUE;
+                        break;
+                    case '>=':
+                        if($filtro > $percent)
+                            $flag2 = TRUE;
+                        break;
+                    case '<=':
+                        if($filtro < $percent)
+                            $flag2 = TRUE;
+                        break;
+                }
+                if($flag2){
+                    continue;
+                }
+            }
+            $coluns[] = $formPagto[$lines['formaPagto']];
+            $coluns[] = number_format($lines['premioLiquido'], 2, ',', '.');
+            $coluns[] = number_format($totF, 2, ',', '.');
+            $coluns[] = ($percent == 0) ? '' : number_format($percent, 2, ',', '.') . "%";
+            $coluns[] = $lines['atividade']['descricao'];
+            
+            $exibicao[] = $coluns;
+            $seq++;
+        }   
+        
+        return $exibicao;
+    }
     
 }
 

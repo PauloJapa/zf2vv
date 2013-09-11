@@ -68,8 +68,6 @@ class Relatorio extends AbstractService{
             $this->where = 'o.mesNiver = :omesNiver';
             $this->parameters = ['omesNiver' => $data['mesNiver']];
         }
-        $findInOrcamento = TRUE;
-        $findInRenovacao = TRUE;
         $this->colunas = implode(',', $data['campo']);
         //Faz leitura em todos os filtro da tela e vai montando restante da clausula where
         $this->data = $data['valor'];
@@ -105,23 +103,32 @@ class Relatorio extends AbstractService{
                     $st = $data['valor'][$key];
                     switch ($st) {
                         case '1':
-                        case '2':
                             $status = 'A';
-                            $findInOrcamento = ($st == '1')? true : false;
-                            $findInRenovacao = ($st == '2')? true : false;
+                            $orcaReno = 'orca';
+                            break;
+                        case '2':
+                            $status = 'R';
+                            $orcaReno = 'reno';
                             break;
                         case '3':
                             $status = 'F';
-                            $findInOrcamento = $findInRenovacao = true;
+                            $orcaReno = FALSE;
                             break;
                         case '4':
+                            $status = 'C';
+                            $orcaReno = 'orca';
+                            break;
                         case '5':
                             $status = 'C';
-                            $findInOrcamento = ($st == '4')? true : false;
-                            $findInRenovacao = ($st == '5')? true : false;
+                            $orcaReno = 'reno';
                             break;
                     }
-                    $this->where .= ' AND o.status = :status ';
+                    if($orcaReno){
+                        $this->where .= ' AND o.status = :status AND o.orcaReno = :orcaReno';
+                        $this->parameters['orcaReno'] = $orcaReno;                        
+                    }else{
+                        $this->where .= ' AND o.status = :status';                        
+                    }
                     $this->parameters['status'] = $status;
                     break;
                 default:
@@ -136,14 +143,7 @@ class Relatorio extends AbstractService{
                     break;
             }
         }
-        if($findInOrcamento AND !$findInRenovacao){
-            return $this->getInOrcamento ($data);
-        }        
-        if($findInRenovacao AND !$findInOrcamento){
-            return $this->getInRenovacao ($data);
-        }        
-        return array_merge ($this->getInOrcamento ($data), $this->getInRenovacao($data));
-            
+        return $this->getInOrcamento ($data);
     }
 
     public function getInOrcamento($data){        
@@ -591,16 +591,22 @@ class Relatorio extends AbstractService{
         $this->dateToObject('inicio');
         // A vista
         $this->data['fim'] = clone $this->data['inicio'];
+        $this->data['fim']->add(new \DateInterval('P1M'));
         $this->data['fim']->sub(new \DateInterval('P1D'));
-        $this->data['inicio']->sub(new \DateInterval('P1M'));
-        // Em 2 vezes
-        $this->data['inicio2'] = clone $this->data['inicio'];
-        $this->data['inicio2']->sub(new \DateInterval('P1M'));
-        $this->data['fim2']    = clone $this->data['fim'];
-        // Em 3 vezes
-        $this->data['inicio3'] = clone $this->data['inicio2'];
-        $this->data['inicio3']->sub(new \DateInterval('P1M'));
-        $this->data['fim3']    = clone $this->data['fim'];
+        // Em 2 vezes as 1 parcelas
+        $this->data['inicio2'] = $this->data['inicio'];
+        $this->data['fim2']    = $this->data['fim'];
+        // Em 3 vezes as 1 parcelas
+        $this->data['inicio3'] = $this->data['inicio2'];
+        $this->data['fim3']    = $this->data['fim'];
+        // Em 2 vezes as 2 parcelas
+//        $this->data['inicio2'] = clone $this->data['inicio'];
+//        $this->data['inicio2']->sub(new \DateInterval('P1M'));
+//        $this->data['fim2']    = clone $this->data['fim'];
+        // Em 3 vezes as 3 parcelas
+//        $this->data['inicio3'] = clone $this->data['inicio2'];
+//        $this->data['inicio3']->sub(new \DateInterval('P1M'));
+//        $this->data['fim3']    = clone $this->data['fim'];
         
         $this->data['administradora'] = $data['administradora'];
         
@@ -610,4 +616,26 @@ class Relatorio extends AbstractService{
         
         return $lista;
     }
+    
+    /**
+     * 
+     */
+    public function getCustoRenovacao($data){
+        if (empty($data['inicio']))
+            return []; 
+        
+        $this->data = $data;
+        
+        $this->dateToObject('inicio');
+        if(empty($this->data['fim'])){            
+            $this->data['fim'] = clone $this->data['inicio'];
+            $this->data['fim']->add(new \DateInterval('P1M'));
+            $this->data['fim']->sub(new \DateInterval('P1D'));
+        }else{
+            $this->dateToObject('fim');            
+        }
+        
+        return $this->em->getRepository("Livraria\Entity\Orcamento")->CustoRenovacao($this->data);
+    }
+    
 }

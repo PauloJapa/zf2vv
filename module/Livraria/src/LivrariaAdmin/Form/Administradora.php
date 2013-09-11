@@ -41,11 +41,11 @@ class Administradora extends AbstractEndereco {
         $formaPagto = $this->getParametroSelect('formaPagto');
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto);
         
-        $validade = $this->getParametroSelect('validade',TRUE);
+        $validade = array_merge(['' => 'Ambos'],$this->getParametroSelect('validade',true));
         $this->setInputRadio('validade', 'Tipo do Seguro', $validade);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
-        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura);
+        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura (Imoveis Comercial)', $tipoCobertura);
         
         $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradora', '*Seguradora',$this->seguradoras);

@@ -225,8 +225,8 @@ class Exporta extends AbstractService{
     public function geraArqsForMaritima($admFiltro){
         $data = $this->getSc()->data; 
         //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
-        $this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         $this->baseWork = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
+        $this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         if(!is_dir($this->baseWork)){
             mkdir($this->baseWork , 0777);
         }

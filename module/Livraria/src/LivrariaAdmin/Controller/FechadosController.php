@@ -190,11 +190,33 @@ class FechadosController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
     
+    public function delVariosAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();        
+        //Cancelar a lista de seguros fechados selecionados.
+        foreach ($data['Checkeds'] as $idFech) {
+            //Pegar Servico de fechados $sf
+            $service = $this->getServiceLocator()->get($this->service);
+            $result = $service->delete($idFech, $data, $this->getServiceLocator()); 
+            if($result === TRUE){
+                $msg = 'Seguro Fechado ' . $idFech . ' Foi cancelado com sucesso';
+                $this->flashMessenger()->addMessage($msg);
+            }else{
+                $msg = 'Seguro Fechado ' . $idFech . ' gerou os seguintes erros!';
+                $this->flashMessenger()->addMessage($msg);
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }
+        }   
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarFechados'));
+    }   
+    
     public function deleteAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
         $service = $this->getServiceLocator()->get($this->service);
-        $result = $service->delete($data['id'], $data);
+        $result = $service->delete($data['id'], $data, $this->getServiceLocator());
         if($result === TRUE){
             $this->flashMessenger()->clearMessages();
         }else{

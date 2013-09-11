@@ -2,6 +2,9 @@
     .F1 {
         font-size: 10px;
     }
+    .F8 {
+        font-size: 8px;
+    }
 </style>
 <style>
     .Br {
@@ -18,26 +21,12 @@
     }
 </style>
 
-<table style="width: 100% ;" >
-    <tr>
-        <td style="width: 30% ;"><img src="<?php echo $this->basePath(),'/images/VilaVelhaLogotipoM.png'; ?>" /></td>
-        <td valing="middle">
-            <h2>RELATÓRIO DE PRÉ-FATURA</h2>
-            <p style="text-align:right;"><? echo date('d/m/Y h:i') , 'Hs'; ?></p>
-            <table style="width: 100% ;" >
-                <tr>
-                    <td>ADM</td>
-                    <td><? echo $this->date['administradoraDesc']; ?></td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
 
 <?  
 
 $total    = 0;
 $qtd      = 0;
+$adm      = 0;
 $tipo     = '';
 $ocupacaoOld = '';
 $ocupacao = '';
@@ -46,6 +35,53 @@ $parcela  = '';
 $parc     = '';
 $mesSel   = $this->date['mesFiltro'];
 foreach($this->data as $ent): 
+    // Verifica se trocou de adm e verifica se tem necessidade de finalizar tabela da adm anterior
+    $admAtual = $ent->getAdministradora()->getId();
+    if($adm != $admAtual):
+        if($adm != 0):
+        ?>
+        <tr>
+                <td class="Bl Bb Bt" colspan="3">&nbsp;</td>
+                <td class="Bl Bb Bt" align="center">Total</td>
+                <td class="Bl Bb Bt" align="center" colspan="3"><? echo $qtd ?></td>
+                <td class="Bl Bb Bt Br" align="right" colspan="2"><? echo number_format($total, 2, ',', '.') ?></td>
+        </tr> 
+        </table> 
+        <br />
+        <table class="Bt Bb"  style="width: 100% ;">
+        <tr><th class="Bl Br" align="center">Observação: </th></tr>  
+        <tr>  
+                <td class="Bl Bb Bt Br F1" rowspan="3">Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão
+        de apólice.</td>
+        </tr>  
+        </table> 
+        <br />
+        <?
+            $qtd = 0;
+            $total = 0;          
+            $pagCss = ' class="quebra"';
+            $parcelaOld = '';
+        else:
+            $pagCss = '';            
+        endif;            
+    ?>
+<table style="width: 100% ;" <? echo $pagCss ; ?>>
+    <tr>
+        <td style="width: 30% ;"><img src="<?php echo $this->basePath(),'/images/VilaVelhaLogotipoM.png'; ?>" /></td>
+        <td valing="middle">
+            <h2>RELATÓRIO DE PRÉ-FATURA</h2>
+            <p style="text-align:right;"><? echo date('d/m/Y h:i') , 'Hs'; ?></p>
+            <table style="width: 100% ;" >
+                <tr>
+                    <td></td>
+                    <td><? echo $ent->getAdministradora(); ?></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+    <?    
+    endif;
     // Verifica a sequencia da parcela e a forma de pagamento
     $fPg = $ent->getFormaPagto();
     $ocupacao = $ent->getOcupacao();
@@ -108,15 +144,14 @@ foreach($this->data as $ent):
     </tr>  
     </table>    
     <table class="Bt Bb"  style="width: 100% ;">
-    <tr>
+    <tr class="F1">
             <th class="Bl" style="width:9%;">Ref. do Imóvel</th>
             <th class="Bl" style="width:15%;">Locador</th>
             <th class="Bl" style="width:15%;">Locatário</th>
-            <th class="Bl" style="width:20%;">Local do Risco</th>
+            <th class="Bl" style="width:25%;">Local do Risco</th>
             <th class="Bl" style="width:15%;">Ocupação</th>
             <th class="Bl" style="width:8%;">Valor<br>Aluguel</th>
             <th class="Bl" style="width:7%;">Vigência<br>Inicial</th>
-            <th class="Bl" style="width:4%;">Parc.</th>
             <th class="Bl Br">Valor Parc.</th>
     </tr>    
 
@@ -125,17 +160,17 @@ foreach($this->data as $ent):
     $valor = $ent->getPremioTotal() / intval($ent->getFormaPagto());
     $total += $valor;
     $qtd++;
+    $adm = $admAtual;
     ?>
-<tr>
-	<td class="Bl Bb Bt F1"><? echo $ent->getRefImovel() ?></td>
-	<td class="Bl Bb Bt F1"><? echo $ent->getLocadorNome() ?></td>
-	<td class="Bl Bb Bt F1"><? echo $ent->getLocatarioNome() ?></td>
-	<td class="Bl Bb Bt F1"><? echo $ent->getImovel() ?></td>
-	<td class="Bl Bb Bt F1"><? echo $ent->getAtividade()->getDescricao() ?></td>
-        <td class="Bl Bb Bt F1" align="right"><? echo number_format($ent->getValorAluguel(), 2, ',', '.') ?></td>
-	<td class="Bl Bb Bt F1" align="right"><? echo $ent->getInicio() ?></td>
-	<td class="Bl Bb Bt F1" align="right"><? echo $parc ?></td>
-	<td class="Bl Bb Bt Br F1" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
+<tr class="F1">
+	<td class="Bl Bb Bt"><? echo $ent->getRefImovel() ?></td>
+	<td class="Bl Bb Bt F8"><? echo $ent->getLocadorNome() ?></td>
+	<td class="Bl Bb Bt F8"><? echo $ent->getLocatarioNome() ?></td>
+	<td class="Bl Bb Bt F8"><? echo $ent->getImovel() ?></td>
+	<td class="Bl Bb Bt F8"><? echo $ent->getAtividade()->getDescricao() ?></td>
+        <td class="Bl Bb Bt" align="right"><? echo number_format($ent->getValorAluguel(), 2, ',', '.') ?></td>
+	<td class="Bl Bb Bt" align="right"><? echo $ent->getInicio() ?></td>
+	<td class="Bl Bb Bt Br" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
 </tr> 
 <? endforeach; ?>
 <? if($qtd != 0): ?>

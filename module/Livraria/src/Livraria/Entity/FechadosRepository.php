@@ -514,7 +514,7 @@ class FechadosRepository extends AbstractRepository {
                 ->join('o.locatario', 'lc')
                 ->where($this->where)
                 ->setParameters($this->parameters)
-              //  ->addOrderBy('o.administradora')
+                ->addOrderBy('o.administradora')
                 ->addOrderBy('o.ocupacao', 'DESC')
                 ->addOrderBy('o.formaPagto')
                 ->addOrderBy('o.inicio', 'DESC')

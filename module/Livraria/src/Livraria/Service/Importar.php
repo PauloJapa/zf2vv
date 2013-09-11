@@ -209,7 +209,7 @@ class Importar extends AbstractService{
         $this->data['formaPagto'] = '01' ;
         $this->data['criadoEm'] = new \DateTime() ;
         
-        $this->data['comissaoEnt'] = '67' ;
+        $this->data['comissaoEnt'] = '13' ;
         $this->data['taxa'] = '' ;
         $this->data['canceladoEm'] = '' ;
         $this->data['numeroParcela'] = '' ;

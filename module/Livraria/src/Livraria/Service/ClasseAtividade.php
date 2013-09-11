@@ -153,6 +153,9 @@ class ClasseAtividade extends AbstractService {
             if($this->data['id'] == $entity->getId()){
                 continue;
             }
+            if($entity->getStatus() != 'A'){
+                continue;
+            }
             if(($entity->getFim() == 'vigente') and ($this->data['fim']->format('d/m/Y') == '01/01/0001')){
                 $erro[] = "Alerta! Já existe uma classe com esta Atividade para esta seguradora com data vigente! ID = " . $entity->getId() ;
             }

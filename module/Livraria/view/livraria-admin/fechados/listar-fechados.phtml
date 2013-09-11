@@ -1,12 +1,12 @@
 <h1>Seguros Fechados</h1>
 <br />
 <style type="text/css">
-#delobs {
+#delobs, #delobs2 {
     left:150px;
-    margin:0;
+    margin:10px;
     padding:10px;
     position:absolute;
-    top:50%;
+    top:140%;
     width:650px;
     background-color: #ffffff;
     border: solid #000 1px;
@@ -67,7 +67,7 @@
 
 $coluns = array(
     'Ação',
-    'Numero',
+    'Selecionar<br><label class="checkbox" onClick="setCheckbox()"><input type="checkbox" id="CheckTodos" value="">Todos</label>',
     'Status',
     'Ref Imovél',
     'Locador',
@@ -87,8 +87,11 @@ $td     = array(
     'nowrap',
     'nowrap',
     'nowrap',
-    'nowrap'
+    'class="r"'
 );  
+
+echo '<form name="form" id="form" method="POST">';
+
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'First'));
 
@@ -131,9 +134,14 @@ if($user->getTipo() == "admin"){
 $this->ViewIndex('setFuncEdit',$lambda);    
     
 foreach($this->data as $entity){ 
+    $status = $entity->getStatus();
+    $campo1 = $entity->getId() .'/'. $entity->getCodAno() ;
+    if($status == 'A'){
+        $campo1 = '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $campo1 .'</label>';        
+    }
     $linha = array(
         $entity->getId(),
-        $entity->getId() .'/'. $entity->getCodAno(),
+        $campo1,
         $entity->getStatus(),
         $entity->getRefImovel(),
         $entity->getLocadorNome(),
@@ -148,7 +156,10 @@ foreach($this->data as $entity){
 echo $this->ViewIndex('close');
 ?>
 <br />
-<form name="form" id="form" method="POST">
+<div class="noPrint">
+    <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Cancelar Selecionados" onclick="return cancelSelecionados()">
+</div>
+<br />
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
     <input type="hidden" name="fechados" id="fechados">
@@ -157,17 +168,33 @@ echo $this->ViewIndex('close');
         <tr>
             <td>
                 <div class="input-append" id="popobservacao">
-                    <label for="motivoNaoFechou">Motivo do cancelamento do seguro.</label>
+                    <label for="motivoNaoFechou">Motivo do cancelamento deste seguro.</label>
                     <textarea name="motivoNaoFechou" id="motivoNaoFechou" rows="6" class="span6"></textarea>
                 </div>
             </td>
             <td valign='top'>
                 <a href="javascript:desistir()"><i class="icon-backward"></i>Desisitir!</a>
-                <br><br><br><a href="javascript:deleltar();"><i class="icon-trash"></i>Finalizar!</a>
+                <br><br><br><a href="javascript:deleltar();"><i class="icon-trash"></i>Cancelar!</a>
             </td>
         </tr>
     </table>
 </div>  
+<div id="delobs2">
+    <table width="100%">
+        <tr>
+            <td>
+                <div class="input-append" id="popobservacao2">
+                    <label for="motivoNaoFechou2">Motivo do cancelamento deste(s) seguro(s).</label>
+                    <textarea name="motivoNaoFechou2" id="motivoNaoFechou2" rows="6" class="span6"></textarea>
+                </div>
+            </td>
+            <td valign='top'>
+                <a href="javascript:desistir('delobs2')"><i class="icon-backward"></i>Desisitir!</a>
+                <br><br><br><a href="javascript:delVarios();"><i class="icon-trash"></i>Cancelar Todos!</a>
+            </td>
+        </tr>
+    </table>
+</div> 
 </form>
 <script language="javascript">
     var dateFormat = 'dd/mm/yyyy';
@@ -191,8 +218,11 @@ echo $this->ViewIndex('close');
         motivo.style.display = 'block';
         document.getElementById('id2').value = id ;
     }  
-    function desistir(){
-        document.getElementById('delobs').style.display='none';
+    function desistir(id){
+        if(id == null){
+            id = 'delobs';
+        }
+        document.getElementById(id).style.display='none';
         document.getElementById('id2').value = '' ;
     }
     function deleltar(){
@@ -206,6 +236,39 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         envia(tar,id);        
     }
+
+    function cancelSelecionados(){
+        //Verificar se algum foi marcado
+        var aux = false;
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].checked){
+                aux = true;
+                break;
+            }
+        }
+        if(!aux){
+            alert("Nenhum registro foi selecionado!!");
+            return false;
+        }
+        var motivo = document.getElementById('delobs2');
+        motivo.style.display = 'none';
+        var msg = "Deseja realmente cancelar este(s) Seguro(s) Fechado(s) selecionado(s) ?";
+        if(!confirm(msg))return;
+        motivo.style.display = 'block';        
+    }
+
+    function delVarios(){
+        var obs = document.getElementById('motivoNaoFechou2').value;
+        if(obs == ''){
+            alert('Digite o motivo por favor!!!');
+            return;
+        }        
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delVarios')); ?>";
+        envia(tar,'',null,''); 
+        return false;
+    }
+    
     function printPdf(id){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'imprimiSeguro')); ?>";
         document.getElementById('id2').value = id ;
@@ -268,6 +331,8 @@ echo $this->ViewIndex('close');
     }   
 
     document.getElementById('delobs').style.display = 'none';
+    
+    document.getElementById('delobs2').style.display = 'none';
     
     $(document).ready(function(){
         var y_fixo = 250 + $("#delobs").offset().top;

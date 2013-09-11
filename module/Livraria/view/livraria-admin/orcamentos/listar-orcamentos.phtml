@@ -1,12 +1,12 @@
 <h1>Orçamentos e Renovações</h1>
 <br />
 <style type="text/css">
-#delobs {
+#delobs, #delobs2 {
     left:150px;
     margin:0;
     padding:10px;
     position:absolute;
-    top:50%;
+    top:80%;
     width:650px;
     background-color: #ffffff;
     border: solid #000 1px;
@@ -162,6 +162,10 @@ echo $this->ViewIndex('close');
 echo $this->FormDefault(['fecharSel'], 'submit');
 ?>
 <br />
+<div class="noPrint">
+    <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Cancelar Selecionados" onclick="return cancelSelecionados()">
+</div>
+<br />
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
     <input type="hidden" name="orcamento" id="orcamento">
@@ -176,7 +180,23 @@ echo $this->FormDefault(['fecharSel'], 'submit');
             </td>
             <td valign='top'>
                 <a href="javascript:desistir()"><i class="icon-backward"></i>Desisitir!</a>
-                <br><br><br><a href="javascript:deleltar();"><i class="icon-trash"></i>Finalizar!</a>
+                <br><br><br><a href="javascript:deleltar();"><i class="icon-trash"></i>Cancelar!</a>
+            </td>
+        </tr>
+    </table>
+</div>    
+<div id="delobs2">
+    <table width="100%">
+        <tr>
+            <td>
+                <div class="input-append" id="popobservacao2">
+                    <label for="motivoNaoFechou2">Motivo de não fechar este(s) orçamento(s).</label>
+                    <textarea name="motivoNaoFechou2" id="motivoNaoFechou2" rows="6" class="span6"></textarea>
+                </div>
+            </td>
+            <td valign='top'>
+                <a href="javascript:desistir('delobs2')"><i class="icon-backward"></i>Desisitir!</a>
+                <br><br><br><a href="javascript:delVarios();"><i class="icon-trash"></i>Cancelar Todos!</a>
             </td>
         </tr>
     </table>
@@ -186,17 +206,17 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     function edit(id){
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
-        envia(tar,'editar');
+        envia(tar,'editar',null,'');
     }    
     function novo(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
-        envia(tar,'novo');        
+        envia(tar,'novo',null,'');        
     }
     function getLogs(id){
         document.getElementById('id2').value = id ;
         document.getElementById('orcamento').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logOrcamento')); ?>";
-        envia(tar,id);        
+        envia(tar,id,null,'');        
     }
     function del(id){
         var motivo = document.getElementById('delobs');
@@ -206,8 +226,11 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         motivo.style.display = 'block';
         document.getElementById('id2').value = id ;
     }  
-    function desistir(){
-        document.getElementById('delobs').style.display='none';
+    function desistir(id){
+        if(id == null){
+            id = 'delobs';
+        }
+        document.getElementById(id).style.display='none';
         document.getElementById('id2').value = '' ;
     }
     function deleltar(){
@@ -219,8 +242,44 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         }
         if(id == '')return;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
-        envia(tar,id);        
+        envia(tar,id,null,'');        
     }
+
+    function cancelSelecionados(){
+        //Verificar se algum orcamento foi marcado
+        var aux = false;
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].checked){
+                aux = true;
+                break;
+            }
+        }
+        if(!aux){
+            alert("Nenhum registro foi selecionado!!");
+            return false;
+        }
+    
+        var motivo = document.getElementById('delobs2');
+        motivo.style.display = 'none';
+        var msg = "Deseja realmente cancelar orçamento(s) selecionados ?";
+        if(!confirm(msg))return;
+        motivo.style.display = 'block';
+        
+    }
+
+    function delVarios(){
+        var obs = document.getElementById('motivoNaoFechou2').value;
+        if(obs == ''){
+            alert('Digite o motivo por favor!!!');
+            return;
+        }
+        
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delVarios')); ?>";
+        envia(tar,'',null,''); 
+        return false;
+    }
+
     var dateFormat = 'dd/mm/yyyy';
     var formName = '<?php echo $this->formName ?>';
     function buscar(){
@@ -241,7 +300,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
             return false;
         }
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'listarOrcamentos')); ?>";
-        envia(tar,'buscar',formName);
+        envia(tar,'buscar',formName,'');
         return false;
     }  
     function autoCompUsuario(){
@@ -300,7 +359,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         }
     
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharSeguros')); ?>";
-        envia(tar,'novo'); 
+        envia(tar,'novo',null,''); 
         return false;
     }
 
@@ -312,6 +371,8 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     }
 
     document.getElementById('delobs').style.display = 'none';
+    
+    document.getElementById('delobs2').style.display = 'none';
     
     $(document).ready(function(){
         var y_fixo = 250 + $("#delobs").offset().top;

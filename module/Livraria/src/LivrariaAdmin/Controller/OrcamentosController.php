@@ -274,7 +274,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp' => '0'])); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora, 'imprimeProp' => '0'])); 
     }
     
     /**
@@ -287,7 +287,7 @@ class OrcamentosController extends CrudController {
         //Fechar a lista de orçamentos selecionados.
         foreach ($data['Checkeds'] as $idOrc) {
             $sf = new $this->serviceFechado($this->getEm());
-            $resul = $sf->fechaOrcamento($idOrc,FALSE);
+            $resul = $sf->fechaOrcamento($idOrc,FALSE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $fechou = $sf->getEntity();
                 $msg = 'Orçamento ' . $idOrc . ' gerou o fechado nº' . $fechou->getId() . '/' . $fechou->getCodano();
@@ -303,6 +303,35 @@ class OrcamentosController extends CrudController {
         }
         return $this->redirect()->toRoute($this->route, array('controller' => 'fechados', 'action'=>'listarFechados'));
     }
+    
+    /**
+     * Cancela varios orcamentos selecionados.
+     * Exibe alerta com a resultado da ação de cada orçamento.
+     * @return object View
+     */    
+    public function delVariosAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();        
+        //Fechar a lista de orçamentos selecionados.
+        foreach ($data['Checkeds'] as $idOrc) {        
+            //Pegar Servico de orcamento 
+            $service = $this->getServiceLocator()->get($this->service);
+            $result = $service->delete($idOrc, $data);
+            if($result === TRUE){
+                $msg = 'Orçamento ' . $idOrc . ' Foi cancelado com sucesso';
+                $this->flashMessenger()->addMessage($msg);
+            }else{
+                $msg = 'Orçamento ' . $idOrc . ' gerou os seguintes erros!';
+                $this->flashMessenger()->addMessage($msg);
+                foreach ($result as $value) {
+                    $this->flashMessenger()->addMessage($value);
+                }
+            }         
+        }    
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarOrcamentos'));
+    }    
+    
+    
     /**
      * Edita o registro, Salva o registro, exibi o registro ou a listagem
      * @return \Zend\View\Model\ViewModel
@@ -334,7 +363,7 @@ class OrcamentosController extends CrudController {
         
         if($data['subOpcao'] == 'fechar'){ 
             $servicoFechado = new $this->serviceFechado($this->getEm());
-            $resul = $servicoFechado->fechaOrcamento($data['id']);
+            $resul = $servicoFechado->fechaOrcamento($data['id'], TRUE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $this->flashMessenger()->addMessage('Registro fechado com sucesso!!!');
                 return;

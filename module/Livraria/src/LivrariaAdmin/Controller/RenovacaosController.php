@@ -188,7 +188,7 @@ class RenovacaosController  extends CrudController {
         
         if($data['subOpcao'] == 'fechar'){ 
             $servicoFechado = new $this->serviceFechado($this->getEm());
-            $resul = $servicoFechado->fechaRenovacao($data['id']);
+            $resul = $servicoFechado->fechaRenovacao($data['id'], TRUE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $this->flashMessenger()->addMessage('Seguro fechado com sucesso!!!');
                 return;
@@ -294,7 +294,7 @@ class RenovacaosController  extends CrudController {
         //Pegar Servico de fechados $sf
         $sf = new $this->serviceFechado($this->getEm());
         foreach ($data['Checkeds'] as $idRen) {
-            $resul = $sf->fechaRenovacao($idRen,FALSE);
+            $resul = $sf->fechaRenovacao($idRen,FALSE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $fechou = $sf->getEntity();
                 $msg = 'Renovação ' . $idRen . ' gerou o fechado nº' . $fechou->getId() . '/' . $fechou->getCodano();

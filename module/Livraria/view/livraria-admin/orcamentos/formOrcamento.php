@@ -39,7 +39,7 @@ $user = $this->UserIdentity('LivrariaAdmin');
 $form->prepare();
 //var_dump($form);
 echo 
-$this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora, 'hidden' => 'id'],'inicio',$this, $form),
+$this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora['nome'], 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
         $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
@@ -336,15 +336,24 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
     function travaResidencial(){
         var ocup = document.getElementsByName('ocupacao');
+        var tipoCob = '<? echo $this->administradora['tipoCobertura']; ?>';
+        var tcob = document.getElementById('tipoCobertura');
         if(ocup[0].checked){
-            var tcob = document.getElementById('tipoCobertura');
-            if(tcob.selectedIndex == 0)  
-                tcob.selectedIndex = 1 ;
+            if(tipoCob != ''){ 
+                // Valor padrao para comercio caso esteja definido
+                tcob.selectedIndex = tipoCob ;
+            }else{
+                if(tcob.selectedIndex == 0){
+                    // Caso comercio em tipo cob em branco o sugerido é predio
+                    tcob.selectedIndex = 1 ;
+                }  
+            }
         }
         if(ocup[1].checked){
-            var tcob = document.getElementById('tipoCobertura');
+            // Caso residencial é sempre predio + conteudo
             tcob.selectedIndex = 2 ;
         }
+        showIncOrIncCon();
     }
 
     function setMesNiverOfMensal(click){

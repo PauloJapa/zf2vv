@@ -29,11 +29,18 @@ class Orcamento extends AbstractService {
         $this->entity = "Livraria\Entity\Orcamento";
     }
     
-    public function delete($id,$data) {
+    public function delete($id, $data, $force=false) {
+        $enty = $this->em->find($this->entity,$id);
+        if(!$force AND $enty->getStatus() == 'F'){
+            return ['Erro este orçamento já foi fechado!!'];            
+        }
+        if($enty->getStatus() == 'C'){
+            return ['Erro este orçamento já foi cancelado anteriormente!!'];            
+        }
         if(!parent::delete($id)){
             return ['Erro ao tentar excluir registro!!'];
         }
-        $this->logForDelete($id,$data);
+        $this->logForDelete($id, $data, $enty->getOrcaReno());
         return TRUE;
     }
     
@@ -42,15 +49,25 @@ class Orcamento extends AbstractService {
      * @param type $id
      * @param type $data
      */
-    public function logForDelete($id,$data) {
+    public function logForDelete($id,$data, $orcaReno) {
         //serviço logorcamento
-        $log = new LogOrcamento($this->em);
-        $dataLog['orcamento'] = $id;
+        if($orcaReno == 'reno'){
+            $log = new LogRenovacao($this->em);
+            $dataLog['renovacao'] = $id;
+        }else{
+            $log = new LogOrcamento($this->em);
+            $dataLog['orcamento'] = $id;
+        }
         $dataLog['tabela'] = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos';
         $dataLog['action'] = 'delete';
         $dataLog['mensagem'] = 'Orçamento excluido com numero ' . $id;
-        $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
+        if(!empty($data['motivoNaoFechou'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou'] ;
+        }
+        if(!empty($data['motivoNaoFechou2'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou2'] ;
+        }
         $log->insert($dataLog);
     }
 
@@ -111,6 +128,12 @@ class Orcamento extends AbstractService {
         if($this->data['atividade']->getStatus() != "A"){
             return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
         }
+       // if($this->getIdentidade()->getTipo() != 'admin'){
+            $basica = $this->data['atividade']->getBasica();
+            if($basica == "EX" OR $basica == "SC"){
+                return ['Atividade escolhida esta bloqueada! Por Favor entre em contato com a Vila Velha.'];
+            }            
+       // }
         return TRUE;
     }
 

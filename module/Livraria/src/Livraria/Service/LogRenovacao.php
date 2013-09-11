@@ -3,7 +3,6 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use Livraria\Entity\Configurator;
 /**
  * LogRenovacao
  * Faz o CRUD da tabela LogRenovacao no banco de dados
@@ -18,7 +17,7 @@ class LogRenovacao extends AbstractService {
     
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
-        $this->idToReference('renovacao', 'Livraria\Entity\Renovacao');
+        $this->idToReference('renovacao', 'Livraria\Entity\Orcamento');
         $this->idToReference('user', 'Livraria\Entity\User');
     }
 

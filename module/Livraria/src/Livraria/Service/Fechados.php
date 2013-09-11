@@ -67,6 +67,12 @@ class Fechados extends AbstractService {
      */
     protected $origem;
 
+    /**
+     * Service locator que vem do controller
+     * @var object
+     */
+    protected $serviceLocator;
+
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Fechados";
@@ -76,26 +82,43 @@ class Fechados extends AbstractService {
     
     /**
      * Exclui o seguro fechado e exclui tb o orçamento ou renovação referente
-     * @param type $id
-     * @param type $data
+     * @param string $id
+     * @param array $data
+     * @param obj   $sl    service locator para enviar email
      * @return boolean
      */
-    public function delete($id,$data) {
+    public function delete($id,$data, $sl=null) {
+        $this->serviceLocator = $sl ;
+        $enty = $this->em->find($this->entity,$id);
+        if($enty->getStatus() == 'C'){
+            return ['Erro este seguro já foi cancelado!!'];            
+        }
         if(!parent::delete($id)){
             return ['Erro ao tentar excluir registro!!'];
         }
         $this->logForDelete($id,$data);
-        $data['motivoNaoFechou'] = 'Excluido porque seu registro de fechado foi excluido fechado numero= '. $id . '. Motivo ' . $data['motivoNaoFechou'];
-        $orca = $this->entityReal->getOrcamentoId();
-        if($orca != 0){
-            $serOrca = new Orcamento($this->em);
-            $serOrca->delete($orca, $data);
+        // Verificar se é usuario da imobiliaria e enviar email.
+        if($this->getIdentidade()->getTipo() != 'admin'){
+            $this->sendEmailCancelamento($enty);
         }
-        $reno = $this->entityReal->getRenovacaoId();
+        // Cancelar tb o orcamento ou renovação que gerou este seguro fechado.
+        $data['motivoNaoFechou'] = 'Excluido porque seu registro de fechado foi excluido fechado numero= '. $id . '. Motivo ' . $data['motivoNaoFechou'];
+        $serOrca = new Orcamento($this->em);
+        $orca = $enty->getOrcamentoId();
+        $reno = $enty->getRenovacaoId();
+        $force = TRUE;
+        if($orca != 0){
+            $resul = $serOrca->delete($orca, $data, $force) ;
+            if($resul !== true){
+                return $resul;
+            }
+        }
         if($reno != 0){
-            $serReno = new Renovacao($this->em);
-            $serReno->delete($reno, $data);
-        }        
+            $resul = $serOrca->delete($reno, $data, $force);
+            if($resul !== true){
+                return $resul;
+            }
+        }
         return TRUE;
     }
     
@@ -112,7 +135,12 @@ class Fechados extends AbstractService {
         $dataLog['controller'] = 'fechados';
         $dataLog['action'] = 'delete';
         $dataLog['mensagem'] = 'Fechado excluido com numero ' . $id;
-        $dataLog['dePara'] = (isset($data['motivoNaoFechou'])) ? $data['motivoNaoFechou'] : '';
+        if(!empty($data['motivoNaoFechou'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou'] ;
+        }
+        if(!empty($data['motivoNaoFechou2'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou2'] ;
+        }
         $log->insert($dataLog);
     }
     
@@ -266,7 +294,8 @@ class Fechados extends AbstractService {
     }
 
 
-    public function fechaOrcamento($id,$pdf=true){
+    public function fechaOrcamento($id,$pdf=true, $sl=null) {
+        $this->serviceLocator = $sl ;
         $resul = $this->validaOrcamento($id);
         if($resul[0] === FALSE){
             return $resul;
@@ -295,12 +324,46 @@ class Fechados extends AbstractService {
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }
+            $this->checkLimitVistoria();
         }
 
         return $resul;
     }
     
     /**
+     * Verificar o valor limite para não ter vistoria.
+     * Caso ultrapasse o valor um email é enviado alertando responveis.
+     */
+    public function checkLimitVistoria(){
+        if($this->entityReal->getTipoCobetura() == '01'){ //predio
+            $valor = $this->entityReal->getIncendio();
+        }
+        if($this->entityReal->getTipoCobetura() == '02'){ //predio + conteudo
+            $valor = $this->entityReal->getConteudo();
+        }
+        if($this->entityReal->getOcupacao() == '01'){ // Comercio
+            $chave = 'vistoria_comercial';
+        }
+        if($this->entityReal->getOcupacao() == '02'){ // Residencial
+            $chave = 'vistoria_residencial';
+        }
+        if(is_null($chave) OR is_null($valor)){
+            echo '<h1>Erro tipo de cobertura = ', $this->entityReal->getTipoCobetura(), 
+                                ' e Ocupação = ', $this->entityReal->getOcupacao() , '</h1>';
+            return;
+        }
+        $enty = $this->em->getRepository('Livraria\Entity\ParametroSis')->findByKey($chave);
+        if(empty($enty)){
+            echo '<h1>Erro parametro não encontrado chave = ', $chave, '</h1>';
+            return;
+        }
+        $limit = (float)$enty[0]->getConteudo();
+        if($valor > $limit){
+            $this->sendEmailVistoria();
+        }        
+    }
+
+        /**
      * 
      * @param Livraria\Entity\AbstractSeguro $obj
      */
@@ -348,7 +411,8 @@ class Fechados extends AbstractService {
     }
 
     
-    public function fechaRenovacao($id,$pdf=true){
+    public function fechaRenovacao($id,$pdf=true, $sl=null) {
+        $this->serviceLocator = $sl ;
         $resul = $this->validaRenovacao($id);
         if($resul[0] === FALSE){
             return $resul;
@@ -377,6 +441,7 @@ class Fechados extends AbstractService {
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }
+            $this->checkLimitVistoria();
         }
 
         return $resul;
@@ -730,6 +795,49 @@ class Fechados extends AbstractService {
         $sc->data          = $this->data;
         
         return $sc->faturados;  
+    }
+    
+    /**
+     * Envia email avisando que o limite da vistoria foi ultrapassado
+     * @return no
+     */
+    public function sendEmailVistoria(){
+        if(is_null($this->serviceLocator)){
+            return;
+        }
+        $servEmail = $this->serviceLocator->get('Livraria\Service\Email');  
+        $dados = $this->entityReal->getAdministradora()->toArray();
+        $dados['seguro'] = $this->entityReal->getId() . '/' . $this->entityReal->getCodano();
+        $dados['imovel'] = $this->entityReal->getImovel()->__toString();
+        $dados['locador'] = $this->entityReal->getLocadorNome();
+        $dados['locatario'] = $this->entityReal->getLocatarioNome();
+        $servEmail->enviaEmail(['nome' => 'Marisa',
+           // 'email' => 'marisa@vilavelha.com.br',
+            'email' => 'watakabe98@hotmail.com',
+            'subject' => 'Vistoria do Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
+            'data' => $dados],'seguro-vistoria');         
+    }
+
+    /**
+     * Envia email avisando que foi cancelado o seguro fechado
+     * @param object $enty
+     * @return no
+     */
+    public function sendEmailCancelamento($enty){
+        if(is_null($this->serviceLocator)){
+            return;
+        }
+        $servEmail = $this->serviceLocator->get('Livraria\Service\Email');  
+        $dados = $enty->getAdministradora()->toArray();
+        $dados['seguro'] = $enty->getId() . '/' . $enty->getCodano();
+        $dados['imovel'] = $enty->getImovel()->__toString();
+        $dados['locador'] = $enty->getLocadorNome();
+        $dados['locatario'] = $enty->getLocatarioNome();
+        $servEmail->enviaEmail(['nome' => 'Marisa',
+           // 'email' => 'marisa@vilavelha.com.br',
+            'email' => 'watakabe98@hotmail.com',
+            'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
+            'data' => $dados],'seguro-cancelado'); 
     }
     
     /**
