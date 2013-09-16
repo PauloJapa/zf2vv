@@ -265,6 +265,14 @@ class Relatorio extends AbstractService{
         $this->data['administradora'] = $data['administradora'];
         $this->data['anual'] = isset($data['anual']) ? TRUE : FALSE;
         $this->data['mensal'] = isset($data['mensal']) ? TRUE : FALSE;
+        // Gerar log
+        $obs = 'Simulação do Mapa Renovação:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= empty($data['upAluguel']) ? '' : 'Reajustar em : ' . $data['upAluguel'] .'<br>';
+        $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
+        $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
+        $this->logForSis('fechados', '', 'relatorio', 'gerarComissao', $obs);
         
         return $this->em->getRepository("Livraria\Entity\Fechados")->getMapaRenovacao($this->data); 
     }
@@ -283,6 +291,14 @@ class Relatorio extends AbstractService{
             $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $data['mesFiltro'], $data['anoFiltro'], $reajuste);
         }
         $sc->mapaRenovacao = $array;
+        // Gerar log
+        $obs = 'Gerou Mapa Renovação:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= empty($data['upAluguel']) ? '' : 'Reajustar em : ' . $data['upAluguel'] .'<br>';
+        $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
+        $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
+        $this->logForSis('fechados', '', 'relatorio', 'gerarComissao', $obs);
     }
     
     /**
@@ -581,7 +597,15 @@ class Relatorio extends AbstractService{
         $sc = new SessionContainer("LivrariaAdmin");
         $sc->comissao      = $this->em->getRepository("Livraria\Entity\Fechados")->getComissao($this->data); 
         $sc->data          = $this->data;
-        
+        // Gerar log
+        $obs = 'Paramentros da pesquisa:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['seguradora']) ? '' : 'Seguradora : ' . $data['seguradora'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= empty($data['comissao']) ? '' : 'Comissão : ' . $data['comissao'] .'<br>';
+        $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
+        $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
+        $this->logForSis('fechados', '', 'relatorio', 'gerarComissao', $obs);
         return $sc->comissao; 
     }
     

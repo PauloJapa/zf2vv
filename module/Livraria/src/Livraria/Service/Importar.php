@@ -63,6 +63,9 @@ class Importar extends AbstractService{
         $baseDir = '/var/www/zf2vv/data/work/';
         if(move_uploaded_file($fileTemp, $baseDir . $fileName)){
             $this->getSc()->file = $baseDir . $fileName;
+            $obs = 'Fez upload do arquivo:<br>';
+            $obs .= 'Nome do arquivo = '. $fileName .'<br>';
+            $this->logForSis('data/work', '', 'Importar', 'Upload', $obs);
         }else{
             $this->getSc()->file = FALSE;            
         }
@@ -121,6 +124,7 @@ class Importar extends AbstractService{
         // ferramentas para Atividade
         $this->repFechado = $this->em->getRepository('Livraria\Entity\Fechados');
         $dataResul = [];
+        $reg = 0;
         foreach ($arrayFile as $key => $value) {
             if($key == 0){
                 $dataResul[] = $this->csvToArray(utf8_encode($value)); 
@@ -138,8 +142,12 @@ class Importar extends AbstractService{
                 continue;
             }
             $dataResul[]['result'] = $service->insert($this->data);
+            $reg++;
         }
         $this->getSc()->importacaoResul = $dataResul;
+        $obs = 'Gerou os Orçamentos:<br>';
+        $obs .= 'Quantidade de registro lidos = '. $reg .'.<br>';
+        $this->logForSis('orcamentos', '', 'importar', 'importar', $obs);
         return $dataResul;
     }
     

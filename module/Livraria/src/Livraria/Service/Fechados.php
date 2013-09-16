@@ -321,10 +321,10 @@ class Fechados extends AbstractService {
             $this->em->flush();
             $this->registraLogOrcaReno();
             $this->atualizaImovel();
+            $this->checkLimitVistoria();
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }
-            $this->checkLimitVistoria();
         }
 
         return $resul;
@@ -335,10 +335,10 @@ class Fechados extends AbstractService {
      * Caso ultrapasse o valor um email é enviado alertando responveis.
      */
     public function checkLimitVistoria(){
-        if($this->entityReal->getTipoCobetura() == '01'){ //predio
+        if($this->entityReal->getTipoCobertura() == '01'){ //predio
             $valor = $this->entityReal->getIncendio();
         }
-        if($this->entityReal->getTipoCobetura() == '02'){ //predio + conteudo
+        if($this->entityReal->getTipoCobertura() == '02'){ //predio + conteudo
             $valor = $this->entityReal->getConteudo();
         }
         if($this->entityReal->getOcupacao() == '01'){ // Comercio
@@ -348,7 +348,7 @@ class Fechados extends AbstractService {
             $chave = 'vistoria_residencial';
         }
         if(is_null($chave) OR is_null($valor)){
-            echo '<h1>Erro tipo de cobertura = ', $this->entityReal->getTipoCobetura(), 
+            echo '<h1>Erro tipo de cobertura = ', $this->entityReal->getTipoCobertura(), 
                                 ' e Ocupação = ', $this->entityReal->getOcupacao() , '</h1>';
             return;
         }
@@ -363,7 +363,7 @@ class Fechados extends AbstractService {
         }        
     }
 
-        /**
+    /**
      * 
      * @param Livraria\Entity\AbstractSeguro $obj
      */
@@ -438,10 +438,10 @@ class Fechados extends AbstractService {
             $this->em->flush();
             $this->registraLogRenovacao();
             $this->atualizaImovel();
+            $this->checkLimitVistoria();
             if($pdf){
                 $this->getPdfSeguro($this->data['id']);
             }
-            $this->checkLimitVistoria();
         }
 
         return $resul;
@@ -812,8 +812,8 @@ class Fechados extends AbstractService {
         $dados['locador'] = $this->entityReal->getLocadorNome();
         $dados['locatario'] = $this->entityReal->getLocatarioNome();
         $servEmail->enviaEmail(['nome' => 'Marisa',
-           // 'email' => 'marisa@vilavelha.com.br',
-            'email' => 'watakabe98@hotmail.com',
+            'email' => 'marisa@vilavelha.com.br',
+           // 'email' => 'watakabe98@hotmail.com',
             'subject' => 'Vistoria do Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
             'data' => $dados],'seguro-vistoria');         
     }
