@@ -328,6 +328,7 @@ class Relatorio extends AbstractService{
         }
         $reajuste = empty($sc->data['upAluguel']) ? 1 : 1 + ($this->strToFloat($sc->data['upAluguel'], 'float') / 100);
         $admCod  = 0;
+        $total  = 0;
         foreach ($sc->mapaRenovacao as $value) {
             //caso venha configurado para nao enviar email ou vazio
             if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
@@ -356,6 +357,7 @@ class Relatorio extends AbstractService{
                 $admEmai = $value['administradora']['email'];
                 $data    = [];              
                 $i       = 0;
+                $total++;
             }
             //Faz o acumulo dos dados.
             $data[$i][0] = ($value['validade'] == 'anual') ? $value['fim']->format('d/m/Y') : $value['fim']->format('d/') . $mes . '/' . $ano;
@@ -386,7 +388,14 @@ class Relatorio extends AbstractService{
                 'email' => $admEmai,
                 'mesPrazo' => $mesPrazo,
                 'subject' => $admNom . ' -Seguro(s) para Renovação Anual do Incêndio Locação',
-                'data' => $data],'mapa-renovacao');                     
+                'data' => $data],'mapa-renovacao'); 
+            $total++;                    
+        }
+        
+        if($total > 0){
+            $obs = 'Enviou Email do Mapa Renovação:<br>';
+            $obs .= 'Quantidade de emails enviados = '. $total .'.';
+            $this->logForSis('', '', 'relatorios', 'sendEmailMapaRenovacao', $obs);
         }
         
         return true;

@@ -24,6 +24,8 @@ class Importar extends AbstractService{
     protected $serLocd;
     protected $repLocd;
     protected $repFechado;
+    protected $repOrcamento;    
+    protected $entitys;    
     protected $estados;
     
     /**
@@ -122,6 +124,7 @@ class Importar extends AbstractService{
         // ferramentas para Atividade
         $this->repAtivid = $this->em->getRepository('Livraria\Entity\Atividade');
         // ferramentas para Atividade
+        $this->repOrcamento = $this->em->getRepository('Livraria\Entity\Orcamento');
         $this->repFechado = $this->em->getRepository('Livraria\Entity\Fechados');
         $dataResul = [];
         $reg = 0;
@@ -141,7 +144,22 @@ class Importar extends AbstractService{
                 var_dump($this->erro);
                 continue;
             }
-            $dataResul[]['result'] = $service->insert($this->data);
+            $premio      = number_format($registro[19] / 100, 2, '.', '') ;
+            $this->preValida();
+            $insertResul = $service->insert($this->data);
+            // apos inserir com sucesso verificar se o valor do premio é igual ao calculado
+            if($insertResul[0] === true){
+                $premioCalc = $service->getEntity()->getPremioTotal();
+                $diferenca = (float)$premio - $premioCalc ;
+                if($diferenca < -0.10 OR $diferenca > 0.10){
+                    $insertResul[0] = "Alerta existe uma diferença no valor do premio por favor verificar no orçamento ". $insertResul[1];
+                    $insertResul[1] = "Valor da Importação ". number_format($premio, 2, ',', '.') . ' Valor calculado '. number_format($premioCalc, 2, ',', '.') . ' Diferença '. number_format($diferenca, 2, ',', '.');
+                }
+                $dataResul[]['result'] = $insertResul;
+            }else{
+                $dataResul[]['result'] = $insertResul;
+            }
+            $this->em->clear();
             $reg++;
         }
         $this->getSc()->importacaoResul = $dataResul;
@@ -149,6 +167,103 @@ class Importar extends AbstractService{
         $obs .= 'Quantidade de registro lidos = '. $reg .'.<br>';
         $this->logForSis('orcamentos', '', 'importar', 'importar', $obs);
         return $dataResul;
+    }
+    
+    public function preValida(){
+        if(empty($this->data['refImovel'])){
+            return;
+        }
+        // Lello validar pela referencia do imovel.
+        $filtro['refImovel'] = $this->data['refImovel'];            
+        $filtro['administradora'] = $this->data['administradora'];            
+        $this->entitys = $this->repOrcamento->findBy($filtro);
+        $this->dateToObject('inicio');
+        $inicio = $this->data['inicio'];
+        $flush = false;
+        foreach ($this->entitys as $key => $entity) {
+            if($this->data['id'] != $entity->getId()){
+                if(($inicio < $entity->getFim('obj'))){ // Data de inicio em conflito com algum perido existente
+                    if($entity->getLocatarioNome() != $this->data['locatarioNome']){ // locatarios diferentes
+                        switch ($entity->getStatus()) {
+                            case "R":
+                            case "A":
+                                    $entity->setStatus('C');
+                                    $this->em->persist($this->entitys[$key]);
+                                    $data['motivoNaoFechou'] = 'Trocou de locatario do Sr(a) ' . $entity->getLocatarioNome() . ' para Sr(a) ' . $this->data['locatarioNome'];
+                                    $this->logForCancelOrcamento($entity->getId(),$data,'orca');
+                                    $flush = true;
+                                break;
+                            case "F":
+                                    $fechado = $this->repFechado->find($entity->getFechadoId());
+                                    if($fechado){
+                                        $fechado->setStatus('C');
+                                        $this->em->persist($fechado);
+                                    }                                
+                                    $entity->setStatus('C');
+                                    $this->em->persist($this->entitys[$key]);
+                                    $data['motivoNaoFechou']  = 'Excluido porque seu registro de fechado foi excluido fechado numero= ' . $entity->getId();
+                                    $data['motivoNaoFechou'] .= 'Trocou de locatario do Sr(a) ' . $entity->getLocatarioNome() . ' para Sr(a) ' . $this->data['locatarioNome'];
+                                    $this->logForCancelOrcamento($entity->getId(),$data,'orca');
+                                    $this->logForCancelFechado($entity->getFechadoId(),$data);
+                                    $flush = true;
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        if($flush){
+            $this->em->flush();
+        }
+    }
+    
+    /**
+     * Registra a exclusão do registro com seu motivo.
+     * @param type $id
+     * @param type $data
+     */
+    public function logForCancelFechado($id,$data) {
+        //serviço logorcamento
+        $log = new LogFechados($this->em);
+        $dataLog['fechados'] = $id;
+        $dataLog['tabela'] = 'log_fechado';
+        $dataLog['controller'] = 'fechados';
+        $dataLog['action'] = 'delete';
+        $dataLog['mensagem'] = 'Fechado excluido com numero ' . $id;
+        if(!empty($data['motivoNaoFechou'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou'] ;
+        }
+        if(!empty($data['motivoNaoFechou2'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou2'] ;
+        }
+        $log->insert($dataLog);
+    }
+    
+    /**
+     * Registra a exclusão do registro com seu motivo.
+     * @param type $id
+     * @param type $data
+     */
+    public function logForCancelOrcamento($id,$data, $orcaReno) {
+        //serviço logorcamento
+        if($orcaReno == 'reno'){
+            $log = new LogRenovacao($this->em);
+            $dataLog['renovacao'] = $id;
+        }else{
+            $log = new LogOrcamento($this->em);
+            $dataLog['orcamento'] = $id;
+        }
+        $dataLog['tabela'] = 'log_orcamento';
+        $dataLog['controller'] = 'orcamentos';
+        $dataLog['action'] = 'delete';
+        $dataLog['mensagem'] = 'Orçamento excluido com numero ' . $id;
+        if(!empty($data['motivoNaoFechou'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou'] ;
+        }
+        if(!empty($data['motivoNaoFechou2'])){
+            $dataLog['dePara'] = $data['motivoNaoFechou2'] ;
+        }
+        $log->insert($dataLog);
     }
     
     public function getImpResul(){
@@ -172,7 +287,7 @@ class Importar extends AbstractService{
         
         $this->buscaLocador($array[5], $array[6]);        
         $this->buscaLocatario($array[7], $array[8]); 
-        $this->buscaImovel($array[9], $array[10]);
+        $this->buscaImovel($array[9], $array[10], $array[4]);
         
         $this->data['inicio'] = substr($array[14], 6, 2) . '/' . substr($array[14], 4, 2) . '/' . substr($array[14], 0, 4);
         $this->data['fim'] = substr($array[15], 6, 2) . '/' . substr($array[15], 4, 2) . '/' . substr($array[15], 0, 4);
@@ -190,30 +305,34 @@ class Importar extends AbstractService{
             $this->data['ocupacao'] = '02';
             $this->data['atividade'] = '487' ;
             $this->data['atividadeDesc'] = 'RESIDENCIAL' ;
+            $this->data['comissao'] = '80,00' ;
+            $this->data['tipoCobertura'] = '02' ;
+            $this->data['conteudo'] = number_format($array[16] / 100, 2, ',', '.') ;
+            $this->data['incendio'] = '' ;
         }else{
             $this->data['ocupacao'] = '01';
             $this->data['atividade'] = '488' ;
             $this->data['atividadeDesc'] = 'COMERCIAL' ;            
+            $this->data['comissao'] = '57,00' ;
+            $this->data['tipoCobertura'] = '01' ;
+            $this->data['conteudo'] = '' ;
+            $this->data['incendio'] = number_format($array[16] / 100, 2, ',', '.') ; ;
         }
-        $this->data['observacao'] = trim($array[4]) ;        
-        $this->data['observacao'] .=  '| ' . trim($array[12]) ;        
+        $this->data['observacao'] = 'Ref Imovel ' . trim($array[4]) ;        
+        $this->data['observacao'] .=  '| Ocupação ' . trim($array[12]) ;        
         $this->data['observacao'] .=  '| ' . trim($array[13]) ;        
-        $this->data['observacao'] .=  '| ' . trim($array[20]) ;        
+        $this->data['observacao'] .=  '| Seq. ' . trim($array[20]) ;        
         
-        $this->data['incendio'] = '' ;
-        $this->data['conteudo'] = number_format($array[16] / 100, 2, ',', '.') ;
         $this->data['aluguel']  = number_format($array[17] / 100, 2, ',', '.') ;
         $this->data['eletrico'] = number_format($array[18] / 100, 2, ',', '.') ;
         $this->data['valorAluguel'] = number_format($array[17] /100 / 6, 2, ',', '.') ;
         $this->data['vendaval'] = '' ;
         $this->data['premioTotal'] = '' ;
-        $this->data['refImovel'] = $array[19] ;
         
-        $this->data['comissao'] = '69,99' ;
+        
         $this->data['seguradora'] = '3' ;
         $this->data['seguroEmNome'] = '02' ;
         $this->data['validade'] = 'anual' ;
-        $this->data['tipoCobertura'] = '02' ;
         $this->data['formaPagto'] = '01' ;
         $this->data['criadoEm'] = new \DateTime() ;
         
@@ -234,10 +353,10 @@ class Importar extends AbstractService{
     }
     
     public function buscaFechadoAnterior(){
-        if(!is_object($this->data['imovel'])){
+        if(empty($this->data['refImovel'])){
             return 1;
         }
-        $entity = $this->repFechado->findBy(['imovel' => $this->data['imovel']->getId(), 'fim' => $this->data['inicio']]);
+        $entity = $this->repFechado->findBy(['refImovel' => $this->data['refImovel'], 'fim' => $this->data['inicio']]);
         if($entity){
             return $entity[0]->getId();
         }else{
@@ -245,7 +364,7 @@ class Importar extends AbstractService{
         }
     }
 
-    public function buscaImovel($cep, $rua){
+    public function buscaImovel($cep, $rua, $ref){
         /*
         $this->data['imovel'] = '2553' ;
         $this->data['imovelTel'] = '' ;
@@ -264,39 +383,40 @@ class Importar extends AbstractService{
         $this->data['estado'] = '27' ;
         $this->data['pais'] = '1' ;
          */        
-        //procurar imovel pelo rua, numero e locador
+        //procurar imovel pelo referencia
+        if(empty($ref)){
+            $this->erro[] = 'Falha referencia do imovel obrigatorio verifique os dados por favor!';
+            return;
+        }
+        $this->data['refImovel'] = $ref ;
+        $entity = $this->repImovel->findOneByRefImovel($ref);
+        if($entity){
+            $this->data['imovel'] = $entity;
+            return;
+        }
         $separado = $this->desmontaEnd($rua);
-        $filtro['rua'] = $separado['rua'];
-        $filtro['numero'] = isset($separado['numero']) ? $separado['numero'] : '';
-        $filtro['locador'] = $this->data['locador']->getId();
-        if(isset($separado['apto'])){
-            $filtro['apto'] = $separado['apto'];
-        }
-        $entitys = $this->repImovel->findBy($filtro);
-        if(!$entitys AND substr($filtro['rua'], 0, 3) == 'RUA'){
-            $filtro['rua'] = str_replace('RUA', 'R', $filtro['rua']);
-            $entitys = $this->repImovel->findBy($filtro);
-        }
-        if($entitys){
-            foreach ($entitys as $entity) {
-                $this->data['imovel'] = $entity;
-                return;
-            }
-        }
         $this->data['imovel'] = '';
+        $this->data['refImovel'] = $ref ;
         $this->data['cep'] = str_pad($cep, 8, '0', STR_PAD_LEFT);
         $this->data['rua'] = $separado['rua'];
         $this->data['numero'] = $separado['numero'];
-        $this->data['apto'] = '';
-        $this->data['bloco'] = '';
+        if(isset($separado['apto'])){
+            $this->data['apto'] = $separado['apto'];
+        }else{
+            $this->data['apto'] = '';
+        }
+        if(isset($separado['bloco'])){
+            $this->data['bloco'] = $separado['bloco'];
+        }else{
+            $this->data['bloco'] = '';
+        }
         $this->data['compl'] = isset($separado['compl']) ? $separado['compl'] : '';
                 
         $retorno = @file_get_contents('http://cep.republicavirtual.com.br/web_cep.php?cep='.urlencode($this->data['cep']).'&formato=json'); 
         if($retorno){ 
             $resultado = json_decode($retorno, true);
         }else{
-            var_dump($filtro);
-            $this->erro[] = 'Falha na busaca ao CEP verifique os dados por favor!';
+            $this->erro[] = 'Falha na busaca ao CEP (' . $this->data['cep'] . ')verifique os dados por favor!';
             return;
         }
         $this->data['bairro'] = '';
@@ -360,43 +480,30 @@ class Importar extends AbstractService{
         $this->data['cpfLoc'] = '3014131857' ;
         $this->data['cnpjLoc'] = '' ;
          */
-        //procurar locatrio pelo nome
-        $nome = rtrim($nome);
-        $lod = $this->repLocd->findByNome($nome);
-        foreach ($lod as $enty) {
-            $this->data['locador']      = $enty;
-            $this->data['locadorNome']  = $enty->getNome();
-            return;
+        $nome = trim($nome);
+        $this->data['locador'] = '' ;
+        $this->data['locadorNome'] = $nome ;
+        $this->data['tipoLoc'] = (strlen($doc) <= 11)? 'fisica' : 'juridica';
+        $this->data['cpfLoc'] = ($this->data['tipoLoc'] == 'fisica') ? $doc : '' ;
+        $this->data['cnpjLoc'] = ($this->data['tipoLoc'] == 'fisica') ? ''   : $doc ;
+        //procurar locador pelo nome
+        $lod = $this->repLocd->findOneBy(['nome' => $nome, 'administradora' => $this->data['administradora']]);
+        if ($lod) {
+            $this->data['locador']      = $lod;
+            if($this->data['tipoLoc'] == 'fisica'){
+                if($this->data['cpfLoc'] != $lod->formatarCPF_CNPJ($lod->getCpf(), false)){
+                    $lod->setCpf($this->data['cpfLoc']);
+                    $lod->setTipo($this->data['tipoLoc']);
+                    $this->em->persist($lod);
+                }
+            }else{
+                if($this->data['cnpjLoc'] != $lod->formatarCPF_CNPJ($lod->getCnpj(), false)){
+                    $lod->setCnpj($this->data['cnpjLoc']);
+                    $lod->setTipo($this->data['tipoLoc']);
+                    $this->em->persist($lod);
+                }                
+            }
         }
-        
-        //Nao encontrou entao insere ele no BD
-        $d['id'] = '';
-        $d['nome'] = $nome;
-        $tipo = (strlen($doc) <= 11)? 'fisica' : 'juridica';
-        $d['tipo'] =  $tipo;
-        $d['cpf']  = ($tipo == 'fisica') ? $doc : '' ;
-        $d['cnpj'] = ($tipo == 'fisica') ? ''   : $doc ;
-        $d['email'] = '';
-        $d['tel'] = '';
-        $d['status'] = 'A';
-        $d['enderecos'] = '';
-        $d['administradora'] = $this->data['administradora'];
-        $rs = $this->serLocd->insert($d);
-        if($rs === TRUE){
-            $loc = $this->serLocd->getEntity();
-            $this->data['locador']      = $loc;
-            $this->data['locadorNome']  = $loc->getNome();
-        }else{
-            $this->erro[] = $rs;
-            echo '<h2>Erro ao inserir locatario; </h2>';
-            var_dump($rs);
-            var_dump($d);
-            $this->data['locador']      = '';
-            $this->data['locadorNome']  = $nome;
-            $this->data['tipo']  = $tipo;
-            $this->data['cpf']   = $d['cpf'] ;
-            $this->data['cnpj']  = $d['cnpj'] ;
-        }        
     }
     
     public function buscaLocatario($nome, $doc) {       
@@ -408,40 +515,28 @@ class Importar extends AbstractService{
         $this->data['cnpj'] = '' ;
          */
         //procurar locatrio pelo nome
-        $nome = rtrim($nome);
-        $loc = $this->repLoct->findByNome($nome);
-        foreach ($loc as $enty) {
-            $this->data['locatario']      = $enty;
-            $this->data['locatarioNome']  = $enty->getNome();
-            return;
-        }
-        
-        //Nao encontrou entao insere ele no BD
-        $d['id'] = '';
-        $d['nome'] = $nome;
-        $tipo = (strlen($doc) <= 11)? 'fisica' : 'juridica';
-        $d['tipo'] = ($tipo == 'fisica') ? 'fisica' : 'juridica' ;
-        $d['cpf'] = ($tipo == 'fisica') ? $doc : '' ;
-        $d['cnpj'] = ($tipo == 'fisica') ? '' : $doc ;
-        $d['email'] = '';
-        $d['tel'] = '';
-        $d['status'] = 'A';
-        $d['enderecos'] = '';
-        $rs = $this->serLoct->insert($d);
-        if($rs === TRUE){
-            $loc = $this->serLoct->getEntity();
+        $nome = trim($nome);
+        $this->data['locatario'] = '' ;
+        $this->data['locatarioNome'] = $nome ;
+        $this->data['tipo'] = (strlen($doc) <= 11)? 'fisica' : 'juridica';
+        $this->data['cpf'] =  ($this->data['tipo'] == 'fisica') ? $doc : '' ;
+        $this->data['cnpj'] = ($this->data['tipo'] == 'fisica') ? '' : $doc ;
+        $loc = $this->repLoct->findOneByNome($nome);
+        if ($loc) {
             $this->data['locatario']      = $loc;
-            $this->data['locatarioNome']  = $loc->getNome();
-        }else{
-            $this->erro[] = $rs;
-            echo '<h2>Erro ao inserir locatario; </h2>';
-            var_dump($rs);
-            var_dump($d);
-            $this->data['locatario']      = '';
-            $this->data['locatarioNome']  = $nome;
-            $this->data['tipo']  = $tipo;
-            $this->data['cpf'] = $d['cpf'] ;
-            $this->data['cnpj'] = $d['cnpj'] ;
+            if($this->data['tipo'] == 'fisica'){
+                if($this->data['cpf'] != $loc->formatarCPF_CNPJ($loc->getCpf(), false)){
+                    $loc->setCpf($this->data['cpf']);
+                    $loc->setTipo($this->data['tipo']);
+                    $this->em->persist($loc);
+                }
+            }else{
+                if($this->data['cnpj'] != $loc->formatarCPF_CNPJ($loc->getCnpj(), false)){
+                    $loc->setCnpj($this->data['cnpj']);
+                    $loc->setTipo($this->data['tipo']);
+                    $this->em->persist($loc);
+                }                
+            }
         }
     }  
   

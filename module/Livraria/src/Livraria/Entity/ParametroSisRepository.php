@@ -24,7 +24,7 @@ class ParametroSisRepository extends EntityRepository {
     }
     
     public function fetchPairs($key) {
-        $entities = $this->findByKey($key);
+        $entities = $this->findKey($key);
         
         $array = array('' => 'Selecione na lista');
         

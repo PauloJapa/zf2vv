@@ -41,7 +41,10 @@ class ExportarController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         $this->service .= "Col";
         $service = new $this->service($this->getEm());
+        $resul = $service->geraTxtForCOL($data['id']);
+        /* Cancelado pois não irá gravar direto no Col e sim gerar arquivo txt 16/09/2013
         $resul = $service->geraExpForCOL($data['id']);
+         */
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('data' => $resul,'admFiltro' => $data['id']));
         $viewModel->setTerminal(true);

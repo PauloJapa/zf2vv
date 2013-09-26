@@ -454,8 +454,14 @@ class Orcamento extends AbstractService {
         $inicio = $this->data['inicio'];
         if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
             return array('A data deve ser preenchida corretamente!');
-            
-        $filtro['imovel'] = $this->data['imovel']->getId();
+        // Lello validar pela referencia do imovel.
+        if(!empty($this->data['refImovel']) AND $this->data['administradora']->getId() == 3234){
+            $filtro['refImovel'] = $this->data['refImovel'];            
+            $filtro['administradora'] = $this->data['administradora']->getId();            
+        }else{
+            $filtro['imovel'] = $this->data['imovel']->getId();            
+            $filtro['administradora'] = $this->data['administradora']->getId();            
+        }
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {

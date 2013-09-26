@@ -226,8 +226,12 @@ class OrcamentosController extends CrudController {
         }
         
         $filtroForm = array();
+        if(isset($data['seguradora'])){
+            $filtroForm['seguradora'] = $data['seguradora'];
+        }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         $this->formData->setData($data);
+        $this->formData->setComissao($data);
         // Abrir novo orçamento colocando o focu no campos do locadorNome        
         $this->formData->get('locadorNome')->setAttribute('autofocus', 'autofucus');
         //Bloquear campos para os usuarios não Admin
@@ -382,17 +386,22 @@ class OrcamentosController extends CrudController {
             $entity = $repository->find($data['id']);
         }
         
+        if(isset($data['seguradora'])){
+            $filtroForm['seguradora'] = $data['seguradora'];
+        }
         $this->formData = new $this->form(null, $this->getEm(),$filtroForm);
         //Metodo que bloqueia campos da edição caso houver
         //$this->formData->setEdit();
         if($data['subOpcao'] == 'editar'){ 
-            $this->formData->setData($entity->toArray());
+            $data = $entity->toArray();
             $data['administradora'] = $entity->getAdministradora()->getId();
             $data['status'] = $entity->getStatus();
+            $this->formData->setData($data);
             $sessionContainer->administradora = $this->getEm()->getRepository("Livraria\Entity\Administradora")->find($data['administradora'])->toArray();
         }else{
             $this->formData->setData($data);
         }
+        $this->formData->setComissao($data);
         
         //Se houver forma de pagamento dafult somente o usuario admin pode alterar
         if($this->getIdentidade()->getTipo() != 'admin'){
@@ -444,7 +453,7 @@ class OrcamentosController extends CrudController {
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora['nome'], 'imprimeProp'=>$imprimeProp])); 
+        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora, 'imprimeProp'=>$imprimeProp])); 
     }
     
     public function deleteAction(){

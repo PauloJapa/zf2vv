@@ -57,6 +57,7 @@ class TaxasController extends CrudController {
             if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
             if(!empty($data['tipoCobertura'])) $filtro['tipoCobertura'] = $data['tipoCobertura'];
             $this->formData->setData($data);
+            $this->formData->setComissao($data);
         }
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
@@ -96,7 +97,8 @@ class TaxasController extends CrudController {
             $filtro['comissao']   = $entity->floatToStr('Comissao');
             $filtro['validade']   = $entity->getValidade();
             $filtro['tipoCobertura']   = $entity->getTipoCobertura();
-            $this->formData->setData($entity->toArray());
+            $data = $entity->toArray();
+            $this->formData->setData($data);
             break;
         case 'buscar':  
             if(!empty($data['classe']))     $filtro['classe']     = $data['classe'];
@@ -121,7 +123,8 @@ class TaxasController extends CrudController {
                 }
             }   
             break;
-        }
+        }        
+        $this->formData->setComissao($data);
             
         $this->setRender(FALSE);
         $this->indexAction($filtro);

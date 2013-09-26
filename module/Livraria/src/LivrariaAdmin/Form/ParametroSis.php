@@ -27,14 +27,14 @@ class ParametroSis extends AbstractForm {
         $this->setInputHidden('ajaxStatus');
         $this->setInputHidden('autoComp');
         
-        $attributes = ['placeholder' => 'Key do parametro'];        
-        $this->setInputText('key', 'Chave do Parametro', $attributes);
+        $attributes = ['placeholder' => 'Key do parâmetro'];        
+        $this->setInputText2('key', 'Chave do Parâmetro', $attributes);
 
         $attributes = ['placeholder'=>'Valor'];        
-        $this->setInputText('conteudo', 'Parametro', $attributes);
+        $this->setInputText2('conteudo', 'Parâmetro', $attributes);
 
         $attributes = ['placeholder'=>'Descrição', 'class'=>'input-xmlarge'];        
-        $this->setInputText('descricao', 'Descrição', $attributes);
+        $this->setInputText2('descricao', 'Descrição', $attributes);
 
         $this->setInputSubmit('enviar', 'Salvar');
         

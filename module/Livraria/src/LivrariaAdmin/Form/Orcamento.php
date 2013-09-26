@@ -100,7 +100,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('seguroEmNome', 'Seguro em nome', ['01' => 'Locador','02' => 'Locatário']);
         
         $ocupacao = $this->getParametroSelect('ocupacao', TRUE);
-        $attributes = ['onClick' => "cleanAtividade();travaResidencial();"];
+        $attributes = ['onClick' => "cleanAtividade();travaResidencial();travaComissaoAllianz();"];
         $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
@@ -143,8 +143,7 @@ class Orcamento extends AbstractEndereco {
         if ($this->isAdmin) {
             $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
             $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
-            $comissao = $this->getParametroSelect('comissaoParam', TRUE);
-            $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao);
+            $this->setComissao($filtro['seguradora']);
         } else {
             $this->setInputHidden('seguradora');
             $this->setInputHidden('comissao');
@@ -181,7 +180,30 @@ class Orcamento extends AbstractEndereco {
         
         
     }
- 
+    
+    /**
+     * Seta as comissões se baseando na seguradora selecionada
+     * @param array $data
+     * @return no return
+     */
+    public function setComissao($data){
+        if(!$this->isAdmin){
+            return;
+        }
+        $this->remove('comissao');
+        if(isset($data['seguradora'])){
+            $comissaoKey = 'comissaoParam' . str_pad($data['seguradora'], 3, '0', STR_PAD_LEFT);
+        }else{
+            $comissaoKey = 'comissaoParam%';
+        }            
+        $comissao = $this->getParametroSelect($comissaoKey, TRUE);
+        $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao, ['onChange'=>'travaComissaoAllianz();']);
+        if(isset($data['comissao'])){
+            $this->get('comissao')->setValue($data['comissao']);
+        }
+    }
+
+
     /**
      * 
      * Atualiza o form para o modo de edição bloqueando campos se necessario

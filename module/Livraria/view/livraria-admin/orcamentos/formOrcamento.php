@@ -393,6 +393,19 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             fmPagto.selectedIndex = 1 ;
         }
     }
+    
+    function travaComissaoAllianz(){
+        if($('#seguradora').val() == '3'){
+            switch($("input[name=ocupacao]:checked").val()){
+                case '01':
+                    $('#comissao').val('57,00');
+                    break;
+                case '02':
+                    $('#comissao').val('80,00');
+                    break;
+            }
+        }
+    }
 
     function setCobertura(){
         var tcob = document.getElementById('tipoCobertura').value;
@@ -636,6 +649,6 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
-    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();',500);
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();travaComissaoAllianz();travaResidencial();',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
 </script>

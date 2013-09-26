@@ -100,6 +100,210 @@ class ExportaCol extends AbstractService{
         return $this->mssql;
     }
     
+    public function geraTxtForCOL($adm=''){
+        echo '<h2>inicio</h2>';
+        $data = $this->getSc()->data;
+        $mes  = $data['mesFiltro'];
+        $ano  = $data['anoFiltro'];
+        $this->data['inicioMensal'] = '01/' . $mes . '/' . $ano;
+        $this->dateToObject('inicioMensal');
+        $this->data['fimMensal'] = clone $this->data['inicioMensal'];
+        $this->data['fimMensal']->add(new \DateInterval('P1M'));
+        $this->data['fimMensal']->sub(new \DateInterval('P1D'));
+        $this->qtdExportado = 0 ;
+        $verificaSeFez = $this->em
+                         ->getRepository("Livraria\Entity\LogFaturaCol")
+                         ->findBy(['administradoraId' => $adm, 'mes' => $mes, 'ano' => $ano ]);
+        if($verificaSeFez){
+            echo '<p>Já foi realizado a exportação dessa administradora nesse periodo!!!</p>';
+            return false;
+        }
+        
+        $this->baseWork = '/var/www/zf2vv/data/work/Col' . $data['anoFiltro'] . $data['mesFiltro'] . '/';
+        if(!is_dir($this->baseWork)){
+            mkdir($this->baseWork , 0777);
+        }
+        $zipFile = $this->baseWork . "Exporta_Col_Txt.zip";
+        
+        $this->openZipFile($zipFile);
+        if(!empty($adm)){
+            $this->prepArqsForCol($adm);
+        }else{
+            $admArray = $this->getAdmCods();
+            foreach ($admArray as $admCod) {
+                $this->prepArqsForCol($admCod);
+            }    
+        }    
+        $this->zip->close();    
+        
+        if($this->qtdExportado > 0){
+            $obs = 'Gerou arquivo de texto para o Col:<br>';
+            $obs .= 'Codigo da administradora = '. $adm .'.<br>';
+            $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+            $obs .= 'Codigo da administradora = '. $adm .'.<br>';
+            $obs .= 'Quantidade de registro gravados = '. $this->qtdExportado .'.<br>';
+            $this->logForSis('fechados', '', 'exportar', 'geraTxtForCOL', $obs);
+        }   
+        return $zipFile;     
+    }
+    
+    public function prepArqsForCol($adm){
+        $arq = $this->baseWork . $adm . '_Col.txt';
+        if(!$this->setConteudo($arq, $adm)){
+            $this->writeFile();
+            $this->closeFile();  
+            $this->addFileToZip($arq);
+        }
+    }
+    
+    /**
+     * Gera o todo conteudo a gravar no arquivo a ser exportado para o COL
+     * @param type $arq nome do arquivo na work
+     * @param type $adm codigo da administradora
+     */
+    public function setConteudo($arq, $adm){
+        $head = TRUE;
+        $this->item = 0;
+        $this->saida = '';
+        foreach ($this->getSc()->lista as $value) {
+            // Filtrar a Administradora
+            if($adm != $value['administradora']['id']){
+                continue;
+            }
+            if($head){
+                $this->openFile($arq);
+                $head = FALSE;
+            }            
+            //locador nome 50
+            $this->addSaida2($value['locador']['nome'], 50);
+            //locatario nome 50
+            $this->addSaida2($value['locatario']['nome'], 50);
+            // imovel rua 50
+            $this->addSaida2($value['imovel']['rua'], 50);
+            // imovel numero 10
+            $this->addSaida2($value['imovel']['numero'], 10, '0', 'STR_PAD_LEFT');     
+            // imovel complemento 20
+            $this->addSaida2($value['imovel']['endereco']['compl'], 20);
+            // Bairro
+            $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
+            // Cidade
+            $this->addSaida2($value['imovel']['endereco']['cidade']['nome'], 30);
+            // Estado
+            $this->addSaida2($value['imovel']['endereco']['estado']['sigla'], 3);
+            // CEP
+            $this->addSaida2($value['imovel']['cep'], 9);
+            // Inicio Vigencia
+            $this->saida .= $value['inicio']->format('dmYhis');
+            // Fim Vigencia
+            $this->saida .= $value['fim']->format('dmYhis');
+            //Código da atividade(ocupação)	10
+            $this->addSaida2($value['atividade']['codSeguradora'], 10, '0', 'STR_PAD_LEFT'); 
+            // incendio
+            // Se escolha entre Incendio ou Incendio + Conteudo
+            if($value['tipoCobertura'] == '01' ){
+                $incendio = $value['incendio'];   
+            }else{
+                $incendio = $value['conteudo'];   
+            }
+            $this->addSaida2(number_format($value[$incendio], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //alu
+            $this->addSaida2(number_format($value['aluguel'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //ele
+            $this->addSaida2(number_format($value['eletrico'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //ven
+            $this->addSaida2(number_format($value['vendaval'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //n_parc numero_parcela 10
+            $this->addSaida2($value['numeroParcela'], 10, '0', 'STR_PAD_LEFT'); 
+            //premioliq
+            $this->addSaida2(number_format($value['premioLiquido'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //totpremio
+            $this->addSaida2(number_format($value['premioTotal'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            //comissao
+            $this->addSaida2(number_format($value['comissao'], 2, '', ''), 5, '0', 'STR_PAD_LEFT'); 
+            // Fim da linha 
+            $this->saida .= PHP_EOL; 
+            
+            $this->qtdExportado ++;
+        }  
+    } 
+    
+    /**
+     * Incrementa variavel e formata para saida para gravação
+     * @param type $conteudo Dados a ser incrementado
+     * @param type $tam      Quantidade de caracteres
+     * @param type $compl    Completar com esse caractere(padrão spaços)
+     * @param type $opt      Para completar no lado esquerdo ou direito(Padrão)
+     */
+    public function addSaida2($conteudo,$tam,$compl='',$opt=''){
+        if(empty($opt)){
+            $this->saida .= str_pad(utf8_decode($conteudo), $tam);
+        }else{
+            $this->saida .= str_pad(utf8_decode($conteudo), $tam, $compl, STR_PAD_LEFT);            
+        }
+    }   
+   
+    
+    /**
+     * Instancia um Object Zip e abre o arquivo indicado na string
+     * @param string $zipFile
+     * @return boolean
+     */
+    public function openZipFile($zipFile){
+        $this->zip = new \ZipArchive;
+        if($this->zip->open($zipFile, \ZipArchive::OVERWRITE)  !== true){
+            echo 'erro';
+            return FALSE;
+        }
+    }
+
+    /**
+     * Adiciona um arquivo no objeto zip aberto 
+     * Preciso do caminho absoluto e a da base do diretorio para separa o nome do arquivo
+     * @param type $file
+     * @param type $this->baseWork
+     */
+    public function addFileToZip($file){
+        $name = substr($file, strlen($this->baseWork));
+        $this->zip->addFile($file,$name);
+    }
+
+    /**
+     * Abre arquivo para gravar caso já exista limpa seu conteudo
+     * @param string $arq
+     */
+    public function openFile($arq) {
+        $this->fp = fopen($arq, "w");
+    }
+
+    /**
+     * Escreve o conteudo no arquio aberto
+     */
+    public function writeFile(){
+        fwrite($this->fp, $this->saida);
+    }
+
+    /**
+     * Fecha arquivo aberto
+     */
+    public function closeFile(){
+        fclose($this->fp);
+    }
+    
+    /**
+     * Retorna somente os ids das Administradoras encontrados na consulta
+     * @return array
+     */
+    public function getAdmCods(){
+        $array = [];
+        $auxCod = 0;
+        foreach ($this->getSc()->lista as $value) {
+            if ($auxCod == 0 OR $auxCod != $value['administradora']['id']){
+                $array[] = $auxCod = $value['administradora']['id'];
+            }
+        }
+        return $array;
+    }
+    
     public function geraExpForCOL($adm){
         echo '<h2>inicio</h2>';
         $this->pr['vue'] = $adm;
@@ -662,6 +866,13 @@ die;
         return $resul->fetch(\PDO::FETCH_ASSOC);
     }
     
+    /**
+     * retorna string formatada
+     * @param type $conteudo Dados a ser incrementado
+     * @param type $tam      Quantidade de caracteres
+     * @param type $compl    Completar com esse caractere(padrão spaços)
+     * @param type $opt      Para completar no lado esquerdo ou direito(Padrão)
+     */ 
     public function addSaida($conteudo,$tam,$compl='',$opt=''){
         if(empty($opt)){
             return str_pad(utf8_decode($conteudo), $tam);

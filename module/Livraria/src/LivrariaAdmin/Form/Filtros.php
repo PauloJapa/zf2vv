@@ -57,8 +57,11 @@ class Filtros  extends AbstractForm {
         $ocupacao = $this->getParametroSelect('ocupacao');
         $this->setInputSelect('ocupacao', 'Ocupação', $ocupacao);
         
-        $comissao = $this->getParametroSelect('comissaoParam');
-        $this->setInputSelect('comissao', 'Comissão', $comissao);
+        $comissao = $this->getParametroSelect('comissaoParam%');
+        foreach ($comissao as $key => $value) {
+            $comissaoPonto[str_replace(',', '.', $key)] = $value;
+        }
+        $this->setInputSelect('comissao', 'Comissão', $comissaoPonto);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura);

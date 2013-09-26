@@ -2,8 +2,6 @@
 
 namespace LivrariaAdmin\Form;
 
-use Zend\Form\Form,
-    Zend\Form\Element\Select;
 
 class Taxa extends AbstractForm {
     /**
@@ -63,8 +61,7 @@ class Taxa extends AbstractForm {
         $ocupacao = $this->getParametroSelect('ocupacao');
         $this->setInputSelect('ocupacao', '*Ocupação', $ocupacao, ['onChange'=>'buscaClasse();']);
         
-        $comissao = $this->getParametroSelect('comissaoParam');
-        $this->setInputSelect('comissao', '*Comissão', $comissao, ['onChange'=>'buscaClasse();']);
+        $this->setComissao();
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura, ['onChange'=>'buscaClasse();']);
@@ -102,6 +99,25 @@ class Taxa extends AbstractForm {
         $this->get('aluguel')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('eletrico')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('vendaval')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));  
+    }
+    
+    /**
+     * Seta as comissões se baseando na seguradora selecionada
+     * @param array $data
+     * @return no return
+     */
+    public function setComissao($data){
+        $this->remove('comissao');
+        if(isset($data['seguradora'])){
+            $comissaoKey = 'comissaoParam' . str_pad($data['seguradora'], 3, '0', STR_PAD_LEFT);
+        }else{
+            $comissaoKey = 'comissaoParam%';
+        }            
+        $comissao = $this->getParametroSelect($comissaoKey, TRUE);
+        $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao);
+        if(isset($data['comissao'])){
+            $this->get('comissao')->setValue($data['comissao']);
+        }
     }
 
 }

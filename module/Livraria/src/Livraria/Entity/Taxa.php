@@ -615,6 +615,7 @@ class Taxa extends Filtro
         $data['alteradoEm']       = $this->getAlteradoEm();
         $data['classe']           = $this->getClasse()->getId(); 
         $data['seguradora']       = $this->getSeguradora()->getId(); 
+        $data['tipoCobertura']    = $this->getTipoCobertura();
         return $data ;
     }
 
