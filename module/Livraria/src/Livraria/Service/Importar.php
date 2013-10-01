@@ -495,12 +495,14 @@ class Importar extends AbstractService{
                     $lod->setCpf($this->data['cpfLoc']);
                     $lod->setTipo($this->data['tipoLoc']);
                     $this->em->persist($lod);
+                    $this->em->flush();
                 }
             }else{
                 if($this->data['cnpjLoc'] != $lod->formatarCPF_CNPJ($lod->getCnpj(), false)){
                     $lod->setCnpj($this->data['cnpjLoc']);
                     $lod->setTipo($this->data['tipoLoc']);
                     $this->em->persist($lod);
+                    $this->em->flush();
                 }                
             }
         }
@@ -529,12 +531,14 @@ class Importar extends AbstractService{
                     $loc->setCpf($this->data['cpf']);
                     $loc->setTipo($this->data['tipo']);
                     $this->em->persist($loc);
+                    $this->em->flush();
                 }
             }else{
                 if($this->data['cnpj'] != $loc->formatarCPF_CNPJ($loc->getCnpj(), false)){
                     $loc->setCnpj($this->data['cnpj']);
                     $loc->setTipo($this->data['tipo']);
                     $this->em->persist($loc);
+                    $this->em->flush();
                 }                
             }
         }

@@ -473,32 +473,32 @@ abstract class AbstractService {
         // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
         $txIncendio = 0.0;
         if ($this->data['tipoCobertura'] == '01' AND $incendio != 0.0001){
-            $txIncendio = $this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio') ;
+            $txIncendio = round($this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio'), 2) ;
             $total += $txIncendio;
         }
         
         // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
         $txConteudo = 0.0;
         if ($this->data['tipoCobertura'] == '02' AND $conteudo != 0.0001){
-            $txConteudo = $this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo') ;
+            $txConteudo = round($this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo'), 2) ;
             $total += $txConteudo;
         }
         
         $txAluguel = 0.0;
         if ($aluguel != 0.0001){
-            $txAluguel = $this->calcTaxaMultMinMax($aluguel,'Aluguel') ;
+            $txAluguel = round($this->calcTaxaMultMinMax($aluguel,'Aluguel'), 2) ;
             $total += $txAluguel;
         }
         
         $txEletrico = 0.0;
         if ($eletrico != 0.0001){
-            $txEletrico = $this->calcTaxaMultMinMax($eletrico,'Eletrico') ;
+            $txEletrico = round($this->calcTaxaMultMinMax($eletrico,'Eletrico'), 2) ;
             $total += $txEletrico;
         }
         
         $txVendaval = 0.0;
         if ($vendaval != 0.0001){
-            $txVendaval = $this->calcTaxaMultMinMax($vendaval,'Vendaval') ;
+            $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
             $total += $txVendaval;
         }
         
@@ -524,7 +524,7 @@ abstract class AbstractService {
         
         $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
         
-        $totalBruto = $total * (1 + $iof) ;
+        $totalBruto = round($total * (1 + $iof), 2) ;
         
         if($totalAntes != 0.0){
             $this->data['premio']        = $this->strToFloat($totalAntes);

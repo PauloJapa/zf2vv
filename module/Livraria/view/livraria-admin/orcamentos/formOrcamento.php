@@ -41,7 +41,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora['nome'], 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
-        $this->FormDefault(['comissaoEnt','administradora','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
+        $this->FormDefault(['comissaoEnt','administradora','administradoraDesc','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -625,6 +625,13 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function voltar(){
+        $('#id').val('');
+        $('#refImovel').val('');
+        $('#locador').val('');
+        $('#locadorNome').val('');
+        $('#locatario').val('');
+        $('#locatarioNome').val('');
+        $('#administradoraDesc').val('<? echo $this->administradora['nome']; ?>');
         var target = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>$bak )); ?>";
         envia(target,'',formName,'');
     }
@@ -646,9 +653,14 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         document.getElementById('id').value = auxid ;
     }  
 
+    function formataDoc(){
+        $('#cpf').val(cpfCnpj($('#cpf').val()));
+        $('#cpfLoc').val(cpfCnpj($('#cpfLoc').val()));
+    }
+
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
-    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();travaComissaoAllianz();travaResidencial();',500);
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();travaComissaoAllianz();travaResidencial();formataDoc();',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
 </script>

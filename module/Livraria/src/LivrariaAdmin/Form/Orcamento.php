@@ -138,6 +138,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputSelect('mesNiver', 'Mês de aniversário',$options, ['onChange'=>'setMesNiverOfMensal(true);']);
         
         $this->setInputHidden('administradora');
+        $this->setInputHidden('administradoraDesc');
         $this->setInputHidden('comissaoEnt');
         
         if ($this->isAdmin) {

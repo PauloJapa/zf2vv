@@ -148,6 +148,12 @@ class Imovel extends Filtro
      */
     private $fechadoFim;
 
+    /**
+     * @ORM\Column(type="text")
+     * @var string
+     */
+    protected $compl;
+
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -468,6 +474,16 @@ class Imovel extends Filtro
         return $this;
     }
 
+    public function getCompl() {
+        return $this->compl;
+    }
+
+    public function setCompl($compl) {
+        $this->compl = $compl;
+        return $this;
+    }
+
+
     /**
      * 
      * @return array com todos os campos formatados para o form
@@ -490,18 +506,19 @@ class Imovel extends Filtro
         $data['fechadoAno']    = $this->getFechadoAno();
         $data['vlrAluguel']    = $this->floatToStr('VlrAluguel');
         $data['fechadoFim']    = $this->getFechadoFim();
+        $data['compl']         = $this->getCompl();
         return $data ;
     }
     
     /**
-     * Metodo magico para retornar o nome do locatario
+     * Metodo magico para retornar o endereço do imovel
      * @return string
      */
     public function __toString() {
         if($this->numero == 0){
-            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto;
+            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl;
         }else{
-            return $this->rua . ', ' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto;
+            return $this->rua . ' n:' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl;
         }
     }
 
