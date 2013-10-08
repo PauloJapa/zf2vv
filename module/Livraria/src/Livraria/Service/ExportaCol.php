@@ -205,7 +205,7 @@ class ExportaCol extends AbstractService{
             }else{
                 $incendio = $value['conteudo'];   
             }
-            $this->addSaida2(number_format($value[$incendio], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+            $this->addSaida2(number_format($incendio, 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
             //alu
             $this->addSaida2(number_format($value['aluguel'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
             //ele
@@ -236,9 +236,9 @@ class ExportaCol extends AbstractService{
      */
     public function addSaida2($conteudo,$tam,$compl='',$opt=''){
         if(empty($opt)){
-            $this->saida .= str_pad(utf8_decode($conteudo), $tam);
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam);             
         }else{
-            $this->saida .= str_pad(utf8_decode($conteudo), $tam, $compl, STR_PAD_LEFT);            
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam, $compl, STR_PAD_LEFT);            
         }
     }   
    
@@ -875,9 +875,9 @@ die;
      */ 
     public function addSaida($conteudo,$tam,$compl='',$opt=''){
         if(empty($opt)){
-            return str_pad(utf8_decode($conteudo), $tam);
+            return str_pad(substr(utf8_decode($conteudo),0,$tam), $tam);
         }else{
-            return str_pad(utf8_decode($conteudo), $tam, $compl, STR_PAD_LEFT);            
+            return str_pad(substr(utf8_decode($conteudo),0,$tam), $tam, $compl, STR_PAD_LEFT);            
         }
     }
     

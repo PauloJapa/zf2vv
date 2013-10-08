@@ -209,9 +209,9 @@ class Exporta extends AbstractService{
     
     public function addSaida($conteudo,$tam,$compl='',$opt=''){
         if(empty($opt)){
-            $this->saida .= str_pad(utf8_decode($conteudo), $tam);
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam);
         }else{
-            $this->saida .= str_pad(utf8_decode($conteudo), $tam, $compl, STR_PAD_LEFT);            
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam, $compl, STR_PAD_LEFT);            
         }
     }
 

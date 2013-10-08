@@ -85,7 +85,7 @@ class OrcamentosController extends CrudController {
             $sessionContainer->administradora = $administradora[0]->toArray();
             $sessionContainer->seguradora = $seguradora[0]->toArray();
             $sessionContainer->expiraSessaoMontada = true;
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new','page'=> rand(1, 100)));
         }
         
         $this->formData = new \LivrariaAdmin\Form\EscolheAdm();        
@@ -394,6 +394,7 @@ class OrcamentosController extends CrudController {
         //$this->formData->setEdit();
         if($data['subOpcao'] == 'editar'){ 
             $data = $entity->toArray();
+            $data['subOpcao'] = 'editar';
             $data['administradora'] = $entity->getAdministradora()->getId();
             $data['status'] = $entity->getStatus();
             $this->formData->setData($data);

@@ -144,7 +144,9 @@ class Orcamento extends AbstractEndereco {
         if ($this->isAdmin) {
             $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
             $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
-            $this->setComissao($filtro['seguradora']);
+            if(isset($filtro['seguradora'])){
+                $this->setComissao($filtro['seguradora']);                
+            }
         } else {
             $this->setInputHidden('seguradora');
             $this->setInputHidden('comissao');
