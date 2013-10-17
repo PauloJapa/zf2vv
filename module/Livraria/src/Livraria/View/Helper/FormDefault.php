@@ -390,6 +390,11 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputCalend($name) {
         $element = $this->form->get($name);
+        $onKeyUp = $element->getAttribute('onKeyUp');
+        if($onKeyUp == null){
+            $onKeyUp = '';
+        }
+        $element->setAttribute('onKeyUp', 'formataData(this);' . $onKeyUp);
         $this->checkError($element);
         if($element->getAttribute('readOnly'))
             $name = '';

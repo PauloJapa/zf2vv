@@ -479,3 +479,44 @@ function getNextElement(field){
     }
     return form.elements[++e % form.elements.length];
 }
+
+// Formata data no padrão DDMMAAAA
+function formataData(campo) {
+    campo.value = filtraCampo(campo);
+    var vr = LimparMoeda(campo.value, "0123456789");
+    tam = vr.length;
+    if (tam <= 1)
+        campo.value = vr;
+    if (tam > 2 && tam < 5)
+        campo.value = vr.substr(0, tam - 2) + '/' + vr.substr(tam - 2, tam);
+    if (tam >= 5 && tam <= 10)
+        campo.value = vr.substr(0, 2) + '/' + vr.substr(2, 2) + '/' + vr.substr(4, 4);
+}
+
+// limpa todos os caracteres especiais do campo solicitado
+function filtraCampo(campo) {
+    var s = "";
+    var cp = "";
+    vr = campo.value;
+    tam = vr.length;
+    for (i = 0; i < tam; i++) {
+        if (vr.substring(i, i + 1) != "/" && vr.substring(i, i + 1) != "-" && vr.substring(i, i + 1) != "." && vr.substring(i, i + 1) != ",") {
+            s = s + vr.substring(i, i + 1);
+        }
+    }
+    campo.value = s;
+    return cp = campo.value
+}
+
+// retira caracteres invalidos da string
+function LimparMoeda(valor, validos) {
+    var result = "";
+    var aux;
+    for (var i = 0; i < valor.length; i++) {
+        aux = validos.indexOf(valor.substring(i, i + 1));
+        if (aux >= 0) {
+            result += aux;
+        }
+    }
+    return result;
+}

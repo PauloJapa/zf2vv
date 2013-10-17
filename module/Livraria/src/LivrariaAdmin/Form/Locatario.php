@@ -48,6 +48,7 @@ class Locatario extends AbstractEndereco {
             ),
             'attributes' => array(
                 'id' => 'nome',
+                'maxlength' => '50',
                 'placeholder' => 'Entre com o nome do locatario'
             )
         ));

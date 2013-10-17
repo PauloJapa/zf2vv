@@ -35,7 +35,7 @@ class Locador extends AbstractEndereco {
         
         $this->setInputHidden('ajaxStatus');
 
-        $this->setInputText('nome','Nome',['placeholder'=>'Entre com o nome do Locador']);
+        $this->setInputText('nome','Nome',['placeholder'=>'Entre com o nome do Locador','maxlength' => '50']);
 
         $options = [''=>'','fisica'=>'Pessoa Fisica','juridica'=>'Pessoa Juridica'];
         $this->setInputSelect('tipo', 'Fisica/Juridica', $options, ['onChange' => 'showTipo()']);

@@ -70,6 +70,8 @@ class Imovel extends AbstractEndereco {
         $this->setInputText('fechadoFim', 'Vencimento do Seguro',['readOnly' => 'true']);
         
         $this->getEnderecoElements($em);
+        
+        $this->get('rua')->setAttribute('maxlength', '50');      
 
         $this->setInputSubmit('enviar', 'Salvar', ['onClick' => 'return salvar()']);
     }   
