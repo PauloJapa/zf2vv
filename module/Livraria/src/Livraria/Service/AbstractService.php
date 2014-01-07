@@ -658,6 +658,7 @@ abstract class AbstractService {
         } 
         if($this->data['validade'] == 'anual'){
             $this->data['fim']->add(new \DateInterval('P1Y')); 
+            $this->data['fim']->sub(new \DateInterval('P1D'));
             return TRUE;
         } 
         return ['Campo validade com valor que não existe na lista!!'];

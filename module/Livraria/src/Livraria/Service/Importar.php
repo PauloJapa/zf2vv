@@ -483,7 +483,16 @@ class Importar extends AbstractService{
         $nome = trim($nome);
         $this->data['locador'] = '' ;
         $this->data['locadorNome'] = $nome ;
-        $this->data['tipoLoc'] = (strlen($doc) <= 11)? 'fisica' : 'juridica';
+        $tamanho = strlen($doc);
+        $this->data['tipoLoc'] = ($tamanho <= 11)? 'fisica' : 'juridica';
+        //Arrumar tamanho da numeração do cpf
+        if($this->data['tipoLoc'] == 'fisica' AND $tamanho <> 11){
+            $doc = str_pad($doc, 11, '0', STR_PAD_LEFT);  
+        }      
+        //Arrumar tamanho da numeração do cnpj
+        if($this->data['tipoLoc'] == 'juridica' AND $tamanho <> 14){
+            $doc = str_pad($doc, 14, '0', STR_PAD_LEFT);  
+        }      
         $this->data['cpfLoc'] = ($this->data['tipoLoc'] == 'fisica') ? $doc : '' ;
         $this->data['cnpjLoc'] = ($this->data['tipoLoc'] == 'fisica') ? ''   : $doc ;
         //procurar locador pelo nome
@@ -494,15 +503,11 @@ class Importar extends AbstractService{
                 if($this->data['cpfLoc'] != $lod->formatarCPF_CNPJ($lod->getCpf(), false)){
                     $lod->setCpf($this->data['cpfLoc']);
                     $lod->setTipo($this->data['tipoLoc']);
-                    $this->em->persist($lod);
-                    $this->em->flush();
                 }
             }else{
                 if($this->data['cnpjLoc'] != $lod->formatarCPF_CNPJ($lod->getCnpj(), false)){
                     $lod->setCnpj($this->data['cnpjLoc']);
                     $lod->setTipo($this->data['tipoLoc']);
-                    $this->em->persist($lod);
-                    $this->em->flush();
                 }                
             }
         }
@@ -520,7 +525,16 @@ class Importar extends AbstractService{
         $nome = trim($nome);
         $this->data['locatario'] = '' ;
         $this->data['locatarioNome'] = $nome ;
-        $this->data['tipo'] = (strlen($doc) <= 11)? 'fisica' : 'juridica';
+        $tamanho = strlen($doc);
+        $this->data['tipo'] = ($tamanho <= 11)? 'fisica' : 'juridica';
+        //Arrumar tamanho da numeração do cpf
+        if($this->data['tipo'] == 'fisica' AND $tamanho <> 11){
+            $doc = str_pad($doc, 11, '0', STR_PAD_LEFT);  
+        }      
+        //Arrumar tamanho da numeração do cnpj
+        if($this->data['tipo'] == 'juridica' AND $tamanho <> 14){
+            $doc = str_pad($doc, 14, '0', STR_PAD_LEFT);  
+        }     
         $this->data['cpf'] =  ($this->data['tipo'] == 'fisica') ? $doc : '' ;
         $this->data['cnpj'] = ($this->data['tipo'] == 'fisica') ? '' : $doc ;
         $loc = $this->repLoct->findOneByNome($nome);
@@ -530,15 +544,11 @@ class Importar extends AbstractService{
                 if($this->data['cpf'] != $loc->formatarCPF_CNPJ($loc->getCpf(), false)){
                     $loc->setCpf($this->data['cpf']);
                     $loc->setTipo($this->data['tipo']);
-                    $this->em->persist($loc);
-                    $this->em->flush();
                 }
             }else{
                 if($this->data['cnpj'] != $loc->formatarCPF_CNPJ($loc->getCnpj(), false)){
                     $loc->setCnpj($this->data['cnpj']);
                     $loc->setTipo($this->data['tipo']);
-                    $this->em->persist($loc);
-                    $this->em->flush();
                 }                
             }
         }
