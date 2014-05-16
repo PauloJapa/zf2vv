@@ -330,6 +330,14 @@ echo $this->ViewIndex('close');
         return false;
     }   
 
+    function setCheckbox(){
+        var todos = document.getElementById('CheckTodos');
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            elems[i].checked = todos.checked;
+        }
+    }
+
     document.getElementById('delobs').style.display = 'none';
     
     document.getElementById('delobs2').style.display = 'none';

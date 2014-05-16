@@ -127,7 +127,7 @@ class Relatorio  extends AbstractForm {
     
     public function setComissaoSeguro(){
         $this->setMesAnoAdm();
-        $comissao = $this->getParametroSelect('comissaoParam', TRUE);
+        $comissao = $this->getParametroSelect('comissaoParam%', TRUE);
         $this->setInputSelect('comissao', 'Comissão',$comissao);
         $seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradora', '*Seguradora', $seguradoras);

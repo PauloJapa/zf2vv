@@ -40,6 +40,7 @@ class Exporta extends AbstractService{
     protected $zip;
     protected $saida;
     protected $baseWork;
+    protected $baseWorkTemp;
     protected $item;
     protected $tipoLocatario;
     protected $tipoLocador;
@@ -225,12 +226,16 @@ class Exporta extends AbstractService{
     public function geraArqsForMaritima($admFiltro){
         $data = $this->getSc()->data; 
         //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
-        $this->baseWork = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
-        $this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
+        $this->baseWorkTemp = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
+        //$this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
+        $this->baseWork = '/mnt/share/locacaoincendio/';
         if(!is_dir($this->baseWork)){
             mkdir($this->baseWork , 0777);
         }
-        $zipFile = $this->baseWork . "Exporta_Maritima.zip";
+        if(!is_dir($this->baseWorkTemp)){
+            mkdir($this->baseWorkTemp , 0777);
+        }
+        $zipFile = $this->baseWorkTemp . "Exporta_Maritima.zip";
         $this->qtdExportado = 0;
         $this->fechadoRepository = $this->em->getRepository("Livraria\Entity\Fechados");
         $this->openZipFile($zipFile);
@@ -497,6 +502,10 @@ class Exporta extends AbstractService{
         $this->saida .= '11';
         // tel corretor 8
         $this->saida .= '32269600';
+        // DD tel 2
+        $this->saida .= '11';
+        // fax corretor 8
+        $this->saida .= '32269622';
         // Incluir automenticamente co-corretagem 1
         $this->saida .= 'N';
         // Fim da linha 01
@@ -529,7 +538,7 @@ class Exporta extends AbstractService{
         // bairro de corresondencia 20
         $this->saida .= str_pad('CENTRO', 20);
         // cidade de corresondencia 40
-        $this->saida .= str_pad('SÃO PAULO', 40);
+        $this->addSaida2('SÃO PAULO', 40);
         // uf de corresondencia 2
         $this->saida .= 'SP';
         // cep de corresondencia 8
@@ -551,7 +560,7 @@ class Exporta extends AbstractService{
         // bairro de cobrança 20
         $this->saida .= str_pad('CENTRO', 20);
         // cidade de cobrança 40
-        $this->saida .= str_pad('SÃO PAULO', 40);
+        $this->addSaida2('SÃO PAULO', 40);
         // uf de cobrança 2
         $this->saida .= 'SP';
         // cep de cobrança 8
@@ -579,34 +588,38 @@ class Exporta extends AbstractService{
         //Número do Item	6
         $this->saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
         //Nome do Inquilino	60
-        $this->saida .= str_pad($value['locatario']['nome'], 60);
+        $this->addSaida2($value['locatario']['nome'], 60);
         //Tipo de Pessoa do Inquilino	1
         $this->saida .= $this->tipoLocatario;
         //CPF / CNPJ Inquilino	14
         $this->saida .= ($this->tipoLocatario == 'F')?str_pad($value['locatario']['cpf'], 14):str_pad($value['locatario']['cnpj'], 14);
         //Nome do Proprietário	60
-        $this->saida .= str_pad($value['locador']['nome'], 60);
+        $this->addSaida2($value['locador']['nome'], 60);
         //Tipo de Pessoa do Proprietário	1
         $this->saida .= $this->tipoLocador;
         //CPF / CNPJ Proprietário	14
-        $this->saida .= ($this->tipoLocador == 'F')?str_pad($value['locador']['cpf'], 14):str_pad($value['locador']['cnpj'], 14);
+        if($this->tipoLocador == 'F'){
+            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 14, '0', 'STR_PAD_LEFT');
+        }else{
+            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 14, '0', 'STR_PAD_LEFT');
+        }
         //Endereco	40
-        $this->saida .= str_pad($value['imovel']['rua'], 40);
+        $this->addSaida2($value['imovel']['rua'], 40);
         //Número do Endereço	6
-        $this->saida .= str_pad($value['imovel']['numero'], 6, '0', STR_PAD_LEFT);
+        $this->addSaida2($value['imovel']['numero'], 6, '0', 'STR_PAD_LEFT'); 
         //Compl. do Endereço	15
-        $this->saida .= str_pad($value['imovel']['rua'], 15);
+        $this->addSaida2($value['imovel']['endereco']['compl'], 15);
         //Bairro	30
-        $this->saida .= str_pad($value['imovel']['endereco']['bairro']['nome'], 30);
+        $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
         //Cidade	30
-        $this->saida .= str_pad($value['imovel']['endereco']['cidade']['nome'], 30);
+        $this->addSaida2($value['imovel']['endereco']['cidade']['nome'], 30);
         //UF	2
         $this->saida .= str_pad($value['imovel']['endereco']['estado']['sigla'], 2);
         //CEP	8
-        $this->saida .= str_pad($value['imovel']['cep'], 15);
+        $this->addSaida2($value['imovel']['cep'], 8);
         //Código da Atividade	4
         $ativid = $value['atividade']['codSeguradora'];
-        $this->saida .= str_pad($ativid, 4, '0', STR_PAD_LEFT);
+        $this->addSaida2($ativid, 4, '0', 'STR_PAD_LEFT'); 
         //Cobertura	1
         $this->saida .= substr($value['tipoCobertura'], 1, 1);
         //Tipo de Residência	1
@@ -640,11 +653,11 @@ class Exporta extends AbstractService{
         //Data de Nascimento Inquilino	10
         $this->saida .= str_pad(' ', 10);
         //Observação	254
-        $this->saida .= str_pad($value['observacao'], 254);
+        $this->addSaida2($value['observacao'], 254);
         //Indicador de Verbas Separadas	1
         $this->saida .= ($value['tipoCobertura'] == '04') ? '1' : '0';
         //Período Indenitário Perda/Pgto. Aluguel	2
-        $this->saida .= str_pad(' ', 2);
+        //$this->saida .= str_pad(' ', 2);
         // Fim da linha 03
         $this->saida .= PHP_EOL;
     }
@@ -653,9 +666,9 @@ class Exporta extends AbstractService{
         //========= Linha 05 com DADOS DA COBERTURA ====================================
         // Se escolha entre Incendio ou Incendio + Conteudo
         if($value['tipoCobertura'] == '01' ){
-            $incendio = $value['incendio'];   
+            $incendio = 'incendio';   
         }else{
-            $incendio = $value['conteudo'];   
+            $incendio = 'conteudo';   
         }
         $cobArray = [
             '011101' => $incendio,
@@ -697,15 +710,34 @@ class Exporta extends AbstractService{
         // Tipo de pessoa	1
         $this->saida .= ($this->tipoLocador == 'F')? '1' : '2';
         // CPF/CNPJ	14
-        $this->saida .= ($this->tipoLocador == 'F')?str_pad($value['locador']['cpf'], 14, '0', STR_PAD_LEFT):str_pad($value['locador']['cnpj'], 14, '0', STR_PAD_LEFT);
+        if($this->tipoLocador == 'F'){
+            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 14, '0', 'STR_PAD_LEFT');
+        }else{
+            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 14, '0', 'STR_PAD_LEFT');
+        }
         // Cobertura	1
         $this->saida .= '0';    
         // Participação (%)	5
-        $this->saida .= '100000';    
+        $this->saida .= '10000';    
         // Número do item	6
         $this->saida .= str_pad($this->item, 6, '0', STR_PAD_LEFT);
         // Fim da linha 10
         $this->saida .= PHP_EOL;         
     }
     
+    /**
+     * Incrementa variavel e formata para saida para gravação
+     * @param type $conteudo Dados a ser incrementado
+     * @param type $tam      Quantidade de caracteres
+     * @param type $compl    Completar com esse caractere(padrão spaços)
+     * @param type $opt      Para completar no lado esquerdo ou direito(Padrão)
+     */
+    public function addSaida2($conteudo,$tam,$compl='',$opt=''){
+        if(empty($opt)){
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam);             
+        }else{
+            $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam, $compl, STR_PAD_LEFT);            
+        }
+    } 
 }
+    

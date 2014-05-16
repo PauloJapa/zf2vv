@@ -26,6 +26,8 @@
 
 $total    = 0;
 $qtd      = 0;
+$total2   = 0;
+$qtd2     = 0;
 $adm      = 0;
 $tipo     = '';
 $ocupacaoOld = '';
@@ -160,6 +162,8 @@ foreach($this->data as $ent):
     $valor = $ent->getPremioTotal() / intval($ent->getFormaPagto());
     $total += $valor;
     $qtd++;
+    $total2 += $valor;
+    $qtd2++;
     $adm = $admAtual;
     ?>
 <tr class="F1">
@@ -190,6 +194,16 @@ foreach($this->data as $ent):
 de apólice.</td>
 </tr>  
 <? endif; ?>
+</table> 
+<br />
+<table class="Bt Bb"  style="width: 100% ;">
+<tr>
+        <td class="Bl Bb Bt" align="center">Total Geral</td>
+        <td class="Bl Bb Bt" align="center">Seguros</td>
+        <td class="Bl Bb Bt" align="right"><? echo $qtd2 ?></td>
+        <td class="Bl Bb Bt" align="center">Valor</td>
+        <td class="Bl Bb Bt Br" align="right"><? echo number_format($total2, 2, ',', '.') ?></td>
+</tr> 
 </table> 
 <br />
 

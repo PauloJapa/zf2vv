@@ -305,7 +305,7 @@ class OrcamentosController extends CrudController {
                 }
             }            
         }
-        return $this->redirect()->toRoute($this->route, array('controller' => 'fechados', 'action'=>'listarFechados'));
+        return $this->redirect()->toRoute($this->route, array('controller' => 'orcamentos', 'action'=>'listarOrcamentos'));
     }
     
     /**

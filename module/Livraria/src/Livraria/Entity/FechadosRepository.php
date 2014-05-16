@@ -454,6 +454,20 @@ class FechadosRepository extends AbstractRepository {
                     $parameters['dataF'] = $this->dateToObject($filtro);
                     break;
                 case 'status':
+                    if($filtro == 'A'){ 
+                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key . ' AND l.orcamentoId <> :orcamentoId';
+                        $parameters[$key] = 'A';
+                        $parameters['orcamentoId'] = '0';
+                        break;
+                    }
+                    if($filtro == 'R'){
+                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key . ' AND l.renovacaoId <> :renovacaoId';
+                        $parameters[$key] = 'A';
+                        $parameters['renovacaoId'] = '0';
+                        break;
+                    }
                     if($filtro != 'T'){
                         $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
                         $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;

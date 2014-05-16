@@ -42,6 +42,10 @@ class OrcamentoRepository extends AbstractRepository {
                         $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
                         $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
                         $parameters[$key] = $filtro;
+                    }else{
+                        $where .= ' AND (l.status = :status1 OR  l.status = :status2)';
+                        $parameters['status1'] = 'A';                         
+                        $parameters['status2'] = 'R';                        
                     }
                     break;
                 default:
@@ -402,7 +406,7 @@ class OrcamentoRepository extends AbstractRepository {
             }
             if(!$flag){
                 $coluns[] = '';$coluns[] = '';$coluns[] = '';$totI=0;
-                echo "<p>Alert fechado anterior ñ encontrado com id " , $lines['fechadoOrigemId'], ".<p>";
+                //echo "<p>Alert fechado anterior ñ encontrado com id " , $lines['fechadoOrigemId'], ".<p>";
             }
             $totF = $lines['premioTotal'];
             // Calcular porcentagem e filtra registro se necessario

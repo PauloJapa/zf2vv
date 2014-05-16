@@ -101,7 +101,7 @@ class ExportaCol extends AbstractService{
     }
     
     public function geraTxtForCOL($adm=''){
-        echo '<h2>inicio</h2>';
+        //echo '<h2>inicio</h2>';
         $data = $this->getSc()->data;
         $mes  = $data['mesFiltro'];
         $ano  = $data['anoFiltro'];
@@ -124,6 +124,9 @@ class ExportaCol extends AbstractService{
             mkdir($this->baseWork , 0777);
         }
         $zipFile = $this->baseWork . "Exporta_Col_Txt.zip";
+        
+        // Carregar as formas de pagamento
+        $this->formaPagto = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
         
         $this->openZipFile($zipFile);
         if(!empty($adm)){
@@ -175,15 +178,29 @@ class ExportaCol extends AbstractService{
                 $head = FALSE;
             }            
             //locador nome 50
-            $this->addSaida2($value['locador']['nome'], 50);
+            $this->addSaida2($value['locadorNome'], 50);
+            //echo $value['locadorNome'], '<br>',utf8_decode($value['locadorNome']) , "<br><br>";
             //locatario nome 50
-            $this->addSaida2($value['locatario']['nome'], 50);
+            $this->addSaida2($value['locatarioNome'], 50);
             // imovel rua 50
             $this->addSaida2($value['imovel']['rua'], 50);
             // imovel numero 10
             $this->addSaida2($value['imovel']['numero'], 10, '0', 'STR_PAD_LEFT');     
             // imovel complemento 20
-            $this->addSaida2($value['imovel']['endereco']['compl'], 20);
+            $complemento = '';
+            $sep         = '';
+            if(!empty($value['imovel']['apto'])){
+                $complemento = 'AP ' . $value['imovel']['apto'];
+                $sep         = ', BL ';
+            }
+            if(!empty($value['imovel']['bloco'])){
+                $complemento .= $sep . $value['imovel']['bloco'];
+                $sep         = ', ';
+            }
+            if(!empty($value['imovel']['endereco']['compl'])){
+                $complemento .= $sep . $value['imovel']['endereco']['compl'];
+            }
+            $this->addSaida2($complemento, 20);
             // Bairro
             $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
             // Cidade
@@ -220,6 +237,22 @@ class ExportaCol extends AbstractService{
             $this->addSaida2(number_format($value['premioTotal'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
             //comissao
             $this->addSaida2(number_format($value['comissao'], 2, '', ''), 5, '0', 'STR_PAD_LEFT'); 
+            //forma de pagamento(20)
+            $this->addSaida2($this->formaPagto[$value['formaPagto']], 20);
+            //Seguradora(20)
+            $this->addSaida2($value['seguradora']['apelido'], 20);
+            //Locador Doc(15)
+            if($value['locador']['tipo'] == 'fisica'){
+                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+            }else{
+                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+            }
+            //Locatario Doc(15)
+            if($value['locatario']['tipo'] == 'fisica'){
+                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locatario']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+            }else{
+                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locatario']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+            }
             // Fim da linha 
             $this->saida .= PHP_EOL; 
             

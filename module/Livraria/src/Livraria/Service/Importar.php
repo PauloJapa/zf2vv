@@ -296,9 +296,11 @@ class Importar extends AbstractService{
         
         if(trim($array[2]) == 'R'){
             $this->data['status'] = 'R' ;              
+            $this->data['orcaReno'] = 'reno' ;              
             $this->data['fechadoOrigemId'] = $this->buscaFechadoAnterior() ;
         }else{
             $this->data['status'] = 'A' ;                    
+            $this->data['orcaReno'] = 'orca' ;              
         }
         
         if($array[11] == '1'){
@@ -339,7 +341,7 @@ class Importar extends AbstractService{
         $this->data['comissaoEnt'] = '13' ;
         $this->data['taxa'] = '' ;
         $this->data['canceladoEm'] = '' ;
-        $this->data['numeroParcela'] = '' ;
+        $this->data['numeroParcela'] = '01' ;
         $this->data['premio'] = '' ;
         $this->data['premioLiquido'] = '' ;
         $this->data['fechadoId'] = '' ;
@@ -362,6 +364,17 @@ class Importar extends AbstractService{
         }else{
             return 1;
         }
+    }
+    
+    /**
+     * Script para remover acentos e caracteres especiais:
+     * @param string $s
+     * @return string Sem Acentos
+     */
+    public function rmAcentos($s){
+        //$palavra = ereg_replace("[^a-zA-Z0-9]", "", strtr($s, "áàãâéêíóôõúüçÁÀÃÂÉÊÍÓÔÕÚÜÇ", "aaaaeeiooouucAAAAEEIOOOUUC"));
+        $palavra = strtr(strtoupper($s), "ÁÀÃÂÉÊÍÓÔÕÚÜÇ", "AAAAEEIOOOUUC");
+        return $palavra;
     }
 
     public function buscaImovel($cep, $rua, $ref){
@@ -389,12 +402,64 @@ class Importar extends AbstractService{
             return;
         }
         $this->data['refImovel'] = $ref ;
-        $entity = $this->repImovel->findOneByRefImovel($ref);
+        //$entity = $this->repImovel->findOneByRefImovel($ref);
+        $ents = $this->repImovel->findByRefImovel($ref);
+        $separado = $this->desmontaEnd($rua);
+        $entity = false;
+        if(count($ents) == 1){
+            $entity = $ents[0];
+        }else{
+            foreach ($ents as $ent) {
+                if($this->rmAcentos($separado['rua']) == $this->rmAcentos($ent->getRua())){
+                    if($separado['numero'] == $ent->getNumero()){
+                        if(isset($separado['apto'])){ 
+                            if($this->rmAcentos($separado['apto']) != $this->rmAcentos($ent->getApto())){
+                                continue;
+                            }
+                        } 
+                        if(isset($separado['bloco'])){
+                            if($this->rmAcentos($separado['bloco']) != $this->rmAcentos($ent->getBloco())){
+                                continue;
+                            }
+                        } 
+                        if(isset($separado['compl'])){ 
+                            if($this->rmAcentos($separado['compl']) != $this->rmAcentos($ent->getCompl())){
+                                continue;
+                            } 
+                        } 
+                        $entity = $ent;
+                        break;
+                    }
+                }
+            }
+        }
         if($entity){
+            // Verificar se imovel encontrado é de fato igual ao do arquivo caso contrario atualizar
+            //echo "<p>", $this->rmAcentos($separado['rua']) , '<br>', $this->rmAcentos($entity->getRua()) , '</p>'; 
+            if(
+            $this->rmAcentos($separado['rua']) != $this->rmAcentos($entity->getRua()) 
+            OR $separado['numero'] != $entity->getNumero()
+            OR (isset($separado['apto']) AND $separado['apto'] != $entity->getApto())
+            OR (isset($separado['bloco']) AND $separado['bloco'] != $entity->getBloco())
+            OR $separado['compl'] != $entity->getCompl()
+            ){
+                $entity->setRua($separado['rua']);
+                $entity->getEndereco()->setRua($separado['rua']);
+                $entity->setNumero($separado['numero']);
+                $entity->getEndereco()->setNumero($separado['numero']);
+                $entity->setCep($cep);
+                $entity->getEndereco()->setCep($cep);
+                $entity->setApto(isset($separado['apto']) ? $separado['apto'] : '');
+                $entity->setBloco(isset($separado['bloco']) ? $separado['bloco'] : '');
+                $entity->setCompl(isset($separado['compl']) ? $separado['compl'] : '');
+                $entity->getEndereco()->setCompl(isset($separado['compl']) ? $separado['compl'] : '');
+                //echo "<p>Atualizando", $this->rmAcentos($separado['rua']) , '<br>', $this->rmAcentos($entity->getRua()) , '</p>'; 
+                $this->em->persist($entity);
+                $this->em->flush();
+            }
             $this->data['imovel'] = $entity;
             return;
         }
-        $separado = $this->desmontaEnd($rua);
         $this->data['imovel'] = '';
         $this->data['refImovel'] = $ref ;
         $this->data['cep'] = str_pad($cep, 8, '0', STR_PAD_LEFT);
@@ -411,14 +476,14 @@ class Importar extends AbstractService{
             $this->data['bloco'] = '';
         }
         $this->data['compl'] = isset($separado['compl']) ? $separado['compl'] : '';
-                
-        $retorno = @file_get_contents('http://cep.republicavirtual.com.br/web_cep.php?cep='.urlencode($this->data['cep']).'&formato=json'); 
-        if($retorno){ 
-            $resultado = json_decode($retorno, true);
-        }else{
-            $this->erro[] = 'Falha na busaca ao CEP (' . $this->data['cep'] . ')verifique os dados por favor!';
-            return;
-        }
+        $resultado['uf'] = 'SP';       
+        //$retorno = @file_get_contents('http://cep.republicavirtual.com.br/web_cep.php?cep='.urlencode($this->data['cep']).'&formato=json'); 
+        //if($retorno){ 
+        //    $resultado = json_decode($retorno, true);
+        //}else{
+        //    $this->erro[] = 'Falha na busaca ao CEP (' . $this->data['cep'] . ')verifique os dados por favor!';
+        //    return;
+        //}
         $this->data['bairro'] = '';
         $this->data['bairroDesc'] = isset($resultado['bairro']) ? $resultado['bairro'] : '';
         $this->data['cidade'] = '';
@@ -438,37 +503,55 @@ class Importar extends AbstractService{
     
     public function desmontaEnd($end){
         $r = trim($end);
-        $array = explode(' ', $r);
+        $array = explode(' ', substr($r, strpos($r, ',') + 2, strlen($r) - 1)) ;
         $res['compl'] = '';
         $res['rua'] = substr($r, 0, strpos($r, ','));
-        for ($i = 0; $i < count($array); $i++) {
+        //verificar se a string do numero tem barra separando varios numeros
+        if(strpos($array[0], '/') !== FALSE){
+            $numeros = explode('/', $array[0]);
+            $res['numero'] = $numeros[0];
+            for ($i = 1; $i < count($numeros); $i++) {
+                $res['compl'] .= ' / ' . $numeros[$i];
+            }
+        }else{
+            $res['numero'] = $array[0];
+        }        
+        for ($i = 1; $i < count($array); $i++) {
             switch ($array[$i]) {
+                case 'AP':
                 case 'AP.':
-                case 'SL.':
                     $i++;
-                    if($array[$i] == 'AP'){
+                    if($array[$i] == 'AP' OR $array[$i] == 'AP.'){
                         $i++;
                     }
                     $res['apto'] = $array[$i];
                     break;
+                case 'BL':
                 case 'BL.':
                     $i++;
+                    if($array[$i] == 'BL' OR $array[$i] == 'BL.'){
+                        $i++;
+                    }
                     $res['bloco'] = $array[$i];
                     break;
+                case 'SL.':
                 case 'CS.':
                 case 'LJ.':
                 case 'BOX':
+                case '/':
                     $res['compl'] .= $array[$i];
                     $i++;
                     $res['compl'] .= ' ' . $array[$i];
                     break;
+                case '-':
+                    // do nothing
+                    break;
                 default:
-                    if(is_numeric($array[$i]) OR strpos($array[$i], '/')){
-                        $res['numero'] = $array[$i];                        
-                    }                    
+                    $res['compl'] .= " " . $array[$i];
                     break;
             }
         }
+//var_dump($array); echo '<br>';       
         return $res;
     }
 

@@ -344,8 +344,9 @@ class FechadosController extends CrudController {
         }
         $origemReno = $fechado->getRenovacaoId();
         if(!is_null($origemReno) && $origemReno != 0){
-            $sc->idRenovacao = $origemReno;
-            return $this->redirect()->toRoute($this->route, array('controller' => 'renovacaos', 'action' => 'edit'));
+            $sc->idOrcamento = $origemReno;
+            $sc->idOrcamentoNoPrint = TRUE;
+            return $this->redirect()->toRoute($this->route, array('controller' => 'orcamentos', 'action' => 'edit')) ;
         }
         return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarFechados'));
     }

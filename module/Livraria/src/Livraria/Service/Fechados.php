@@ -303,7 +303,11 @@ class Fechados extends AbstractService {
 
         //Montar dados para tabela de fechados
         $this->data = $this->Orcamento->toArray();
-        $this->data['orcamentoId'] = $this->data['id'];
+        if($this->data['orcaReno'] == 'orca'){
+            $this->data['orcamentoId'] = $this->data['id'];
+        }else{
+            $this->data['renovacaoId'] = $this->data['id'];
+        } 
         unset($this->data['id']);
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";

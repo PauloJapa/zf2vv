@@ -71,7 +71,12 @@ class ImprimirSeguro extends FPDF{
         $l6 = ['Ocupação:',$ocupacao];
         $this->setCell($l6, 20);
     }
+    public function setL7E($end){
+        $l7e = ['Local do Imóvel:',$end];
+        $this->setCell($l7e, 30);
+    }
     public function setL7($obs){
+        return; // Desativada a pedido do cliente que alegar não precisar 08/05/2014
         $l7 = ['Observações:',$obs];
         $this->setCell($l7, 25);
     }

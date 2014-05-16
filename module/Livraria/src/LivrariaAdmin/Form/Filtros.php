@@ -78,7 +78,7 @@ class Filtros  extends AbstractForm {
         $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
+        $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
         $this->get('status')->setValue('A'); 
         $this->setDate();

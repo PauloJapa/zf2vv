@@ -153,8 +153,11 @@ class Imovel extends AbstractService {
         if(empty($this->data['numero']))
             return array('Numero não pode estar vazio!!');
             
-        $filtro['rua'] = $this->data['rua'];
-        $filtro['numero'] = $this->data['numero'];
+        $filtro['rua']     = $this->data['rua'];
+        $filtro['numero']  = $this->data['numero'];
+        $filtro['compl']   = $this->data['compl'];
+        $filtro['apto']    = $this->data['apto'];
+        $filtro['bloco']   = $this->data['bloco'];
         $filtro['locador'] = $this->data['locador']->getId();
         
         $entitys = $repository->findBy($filtro);

@@ -102,8 +102,13 @@ class ImovelRepository extends EntityRepository {
         if (!empty($list))
             return $query;
         
-        //Nova pesquisa pesquisando por qualquer ocorrencia        
-        $this->parameters['rua'] = '%' . $filtros['rua'] . '%';
+        //Nova pesquisa pesquisando por qualquer ocorrencia  
+        if(isset($filtros['rua'])){
+            $this->parameters['rua'] = '%' . $filtros['rua'] . '%';            
+        }else{
+            //Apenas para retornar uma query vazia
+            $this->parameters['id'] = '0';                        
+        }
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('i,ld,lt')

@@ -46,8 +46,8 @@ class Orcamento extends AbstractService {
     
     /**
      * Registra a exclusão do registro com seu motivo.
-     * @param type $id
-     * @param type $data
+     * @param string $id
+     * @param array  $data (Motivo do cancelamento)
      */
     public function logForDelete($id,$data, $orcaReno) {
         //serviço logorcamento
@@ -465,24 +465,35 @@ class Orcamento extends AbstractService {
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
-            if($this->data['id'] != $entity->getId()){
-                if(($inicio < $entity->getFim('obj'))){
-                    if($entity->getStatus() == "A"){
-                        $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
-                        $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
-                    }
-                    if($entity->getStatus() == "F"){
-                        $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
-                        $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
-                    }
-                    if($entity->getStatus() == "R"){
-                        $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
-                        $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
-                    }
+            //Caso de edição pular o proprio registro.
+            if($this->data['id'] == $entity->getId()){
+                continue;
+            }
+            // Validar data do inicio deste registro para que nao conflite com algum existente!!
+            if(($inicio >= $entity->getFim('obj'))){
+                continue;
+            }
+            // Lello fazer cancelamento direto
+            if($filtro['administradora'] == 3234){
+                if($entity->getStatus() == "A" OR $entity->getStatus() == "R") {
+                    $this->delete($entity->getId(), ['motivoNaoFechou' => 'Cancelado por conflitar com registro da importação.']);
+                    continue;
                 }
+            }
+            if($entity->getStatus() == "A"){
+                $erro[] = "Alerta!" ;
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            }
+            if($entity->getStatus() == "F"){
+                $erro[] = "Alerta!" ;
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            }
+            if($entity->getStatus() == "R"){
+                $erro[] = "Alerta!" ;
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
         }
         
@@ -601,7 +612,7 @@ class Orcamento extends AbstractService {
         $this->pdf->setL2($seg->getAdministradora()->getNome());
         $this->pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
         $this->pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
-        //$this->pdf->setL5($seg->getImovel()->getEnderecoCompleto());
+        $this->pdf->setL5($seg->getImovel());
         $this->pdf->setL6($seg->getAtividade());
         $this->pdf->setL7($seg->getObservacao());
         $this->pdf->setL8($seg->floatToStr('valorAluguel'));
