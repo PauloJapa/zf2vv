@@ -89,6 +89,7 @@ class RelatoriosController extends CrudController {
             $sessionContainer->data = $this->data;
         }
         $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());
@@ -225,6 +226,7 @@ class RelatoriosController extends CrudController {
     public function custoRenovacaoAction(){
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());
@@ -265,6 +267,7 @@ class RelatoriosController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
         $this->formData->setMapaRenovacao();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());        
@@ -334,6 +337,7 @@ class RelatoriosController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
         $this->formData->setImovelDesocupado();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());         
@@ -394,6 +398,7 @@ class RelatoriosController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
         $this->formData->setSeguroFechados();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());         
@@ -452,6 +457,7 @@ class RelatoriosController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Relatorio($this->getEm());
         $this->formData->setComissaoSeguro();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());         

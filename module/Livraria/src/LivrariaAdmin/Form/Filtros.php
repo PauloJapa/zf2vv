@@ -80,7 +80,7 @@ class Filtros  extends AbstractForm {
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
-        $this->get('status')->setValue('A'); 
+        $this->get('status')->setValue('T'); 
         $this->setDate();
         $this->setForUsuario();
         $this->setForAdministradora();        
@@ -106,7 +106,7 @@ class Filtros  extends AbstractForm {
         $this->setInputText('fechado', 'Nº do Seguro',['class'=>'input-small']);
         $this->setInputRadio('status', 'Status', ['T'=>'T - Todos','A'=>'N - Novos', 'R'=>'R - Renovados','C'=>'C - Cancelados']);
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
-        $this->get('status')->setValue('A'); 
+        $this->get('status')->setValue('T'); 
         $this->setDate();
         $this->setForUsuario();
         $this->setForAdministradora();        

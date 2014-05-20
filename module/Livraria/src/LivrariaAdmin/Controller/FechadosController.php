@@ -239,6 +239,7 @@ class FechadosController extends CrudController {
     public function buscarAction(){
         $this->verificaSeUserAdmin();
         $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());        

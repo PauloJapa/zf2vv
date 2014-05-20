@@ -65,13 +65,14 @@ class RenovacaosController  extends CrudController {
     public function buscarAction() { 
         $this->verificaSeUserAdmin();
         //Pegar os parametros que em de post
-        $this->data = $this->getRequest()->getPost()->toArray();
+        $this->data = $this->filtrosDaPaginacao();
         if ((isset($this->data['subOpcao']))&&($this->data['subOpcao'] == 'buscar'))  {
             $sessionContainer = new SessionContainer("LivrariaAdmin");
             $sessionContainer->data = $this->data;
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'lista'));
         }
         $this->formData = new \LivrariaAdmin\Form\Renovacao();
+        $this->formData->setData((is_null($this->data)) ? [] : $this->data);
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());

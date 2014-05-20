@@ -88,7 +88,8 @@ class OrcamentosController extends CrudController {
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new','page'=> rand(1, 100)));
         }
         
-        $this->formData = new \LivrariaAdmin\Form\EscolheAdm();        
+        $this->formData = new \LivrariaAdmin\Form\EscolheAdm();  
+        $this->formData->setData($this->filtrosDaPaginacao());      
         
         if($data['subOpcao'] == 'editar'){
             $this->formData->get('administradora')->setValue($sessionContainer->administradora['id']);
@@ -123,7 +124,7 @@ class OrcamentosController extends CrudController {
         }
         // Se filtro Status não exitir seta como padrão para Novos.
         if(!isset($data['status'])){
-            $data['status'] = "A";
+            $data['status'] = "T";
         }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade'];

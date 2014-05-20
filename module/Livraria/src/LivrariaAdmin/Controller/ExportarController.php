@@ -19,6 +19,7 @@ class ExportarController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new $this->form($this->getEm());
         $this->formData->setCOL();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());  
@@ -59,6 +60,7 @@ class ExportarController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new $this->form($this->getEm());
         $this->formData->setCOL();
+        $this->formData->setData($this->filtrosDaPaginacao());
         $this->formData->get('seguradora')->setValue('2');
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
@@ -105,6 +107,7 @@ class ExportarController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new $this->form($this->getEm());
         $this->formData->setCartao();
+        $this->formData->setData($this->filtrosDaPaginacao());
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
         return new ViewModel($this->getParamsForView());  

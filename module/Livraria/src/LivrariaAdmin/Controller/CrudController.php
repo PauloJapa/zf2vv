@@ -26,6 +26,12 @@ abstract class CrudController extends AbstractActionController {
     protected $authService;
     
     /**
+     * Objeto que manipula os dados do usuario armazenado
+     * @var Zend\Session\Container
+     */
+    protected $sc;
+    
+    /**
      *
      * @var type 
      */
@@ -238,13 +244,37 @@ abstract class CrudController extends AbstractActionController {
     
     public function filtrosDaPaginacao(){
         //Guardar dados dos filtros para paginação
-        $sc = new SessionContainer("LivrariaAdmin");
+        $this->sc = new SessionContainer("LivrariaAdmin");
         $post = $this->getRequest()->isPost();
-        if(is_int($this->params()->fromRoute('page'))){
-            if($post)
-                $sc->data = $this->getRequest()->getPost()->toArray();
+        if(is_int($this->params()->fromRoute('page')) AND $post){
+            $data = $this->getRequest()->getPost()->toArray();
+            if (!isset($data['administradora']) OR empty($data['administradora'])){
+                $this->getDefaultAdm($data);
+            }else{
+                $this->setDefaultAdm($data);            
+            }
+            $this->sc->data = $data;
         }
-        return $sc->data;
+        return $this->sc->data;
+    }
+       
+
+    public function getDefaultAdm(&$data) {
+        //Verifica se esta registrado a administradora na sessao
+        if(is_null($this->sc->administradora)){
+            $this->sc->administradora = ['id' => '2022', 'nome' => 'VILA VELHA'];
+        }           
+        $data['administradora']     = $this->sc->administradora['id'];
+        $data['administradoraDesc'] = $this->sc->administradora['nome'];
+    }
+
+    public function setDefaultAdm(&$data) {
+        if(is_null($this->sc->administradora)){
+            $this->sc->administradora = ['id' => $data['administradora'], 'nome' => $data['administradoraDesc']];
+        }
+        if($this->sc->administradora['id'] != $data['administradora']){
+            $this->sc->administradora = ['id' => $data['administradora'], 'nome' => $data['administradoraDesc']];
+        }
     }
 
 }
