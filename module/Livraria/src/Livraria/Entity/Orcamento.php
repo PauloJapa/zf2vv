@@ -464,12 +464,23 @@ class Orcamento extends AbstractSeguro {
         return $this;
     }
 
-        /**
+    /**
      * 
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {
         $data = parent::toArray();
+        $data['fechadoId']     = $this->getFechadoId();
+        $data['orcaReno']      = $this->getOrcaReno();
+        return $data;
+    }
+    
+    /**
+     * 
+     * @return array com todos os campos formatados para o form
+     */
+    public function toArrayWithObj() {
+        $data = parent::toArrayWithObj();
         $data['fechadoId']     = $this->getFechadoId();
         $data['orcaReno']      = $this->getOrcaReno();
         return $data;

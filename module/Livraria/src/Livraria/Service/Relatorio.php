@@ -38,6 +38,12 @@ class Relatorio extends AbstractService{
     protected $sc;
     
     /**
+     * String com endereço de email padrão
+     * @var type String
+     */
+    protected $mailDefault = 'incendiolocacao@vilavelha.com.br'; 
+    
+    /**
      * Contruct recebe EntityManager para manipulação de registros
      * @param \Doctrine\ORM\EntityManager $em
      */
@@ -179,7 +185,7 @@ class Relatorio extends AbstractService{
         if(isset($data['orderBy']) AND !empty($data['orderBy'])){
             $query->orderBy($data['orderBy'], 'ASC');
         }// Ordena pelo escolhido se houver
-        if(isset($data['limit']) AND $data['orderBy'] != '0'){
+        if(isset($data['limit']) AND $data['limit'] != '0'){
             $query->setMaxResults($data['limit']);
         }
         // Retorna um array com todo os registros encontrados
@@ -191,15 +197,16 @@ class Relatorio extends AbstractService{
             return [];
         
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status';
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND ( o.status = :status OR o.status = :status2 )';
         $this->data['inicio'] = $data['inicio'];
         $this->data['fim']    = $data['fim'];
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
         $this->parameters['inicio'] = $this->data['inicio'];
         $this->parameters['fim']    = $this->data['fim'];
-        $this->parameters['status'] = 'F';
-        if($data['administradora']){
+        $this->parameters['status'] = 'A';
+        $this->parameters['status2'] = 'R';
+        if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
         }
@@ -332,7 +339,7 @@ class Relatorio extends AbstractService{
         foreach ($sc->mapaRenovacao as $value) {
             //caso venha configurado para nao enviar email ou vazio
             if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
-                continue; 
+                $value['administradora']['email'] = $this->mailDefault; 
             }
             //Filtro Administrador
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
@@ -452,7 +459,7 @@ class Relatorio extends AbstractService{
         foreach ($sc->ImoveisDesocu as $value) {
             //caso venha configurado para nao enviar email ou vazio
             if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
-                continue; 
+                $value['administradora']['email'] = $this->mailDefault; 
             }
             //Filtro Administrador
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
@@ -541,7 +548,7 @@ class Relatorio extends AbstractService{
         foreach ($sc->fechaSeguro as $value) {
             //caso venha configurado para nao enviar email ou vazio
             if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
-                continue; 
+                $value['administradora']['email'] = $this->mailDefault; 
             }
             //Filtro Administrador
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){

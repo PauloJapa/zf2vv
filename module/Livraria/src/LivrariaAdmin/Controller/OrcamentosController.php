@@ -290,8 +290,8 @@ class OrcamentosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         //Pegar Servico de fechados $sf
         //Fechar a lista de orçamentos selecionados.
+        $sf = new $this->serviceFechado($this->getEm());
         foreach ($data['Checkeds'] as $idOrc) {
-            $sf = new $this->serviceFechado($this->getEm());
             $resul = $sf->fechaOrcamento($idOrc,FALSE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $fechou = $sf->getEntity();
@@ -309,6 +309,66 @@ class OrcamentosController extends CrudController {
         return $this->redirect()->toRoute($this->route, array('controller' => 'orcamentos', 'action'=>'listarOrcamentos'));
     }
     
+    /**
+     * Fecha o todos os orçamento e renovaçoes e copia os dados para a tabela de fechados
+     * @return View
+     */
+    public function fecharTodosSegurosAction() {
+        $data = $this->getRequest()->getPost()->toArray();
+        // Se filtro Status não exitir seta como padrão para Novos.
+        if(!isset($data['status'])){
+            $data['status'] = "T";
+        }
+        $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade'];
+        foreach ($inputs as $input) {
+            if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                $filtro[$input] = $data[$input];
+            }
+        }   
+        
+        $list = $this->getEm()
+                     ->getRepository($this->entity)
+                     ->findOrcamento($filtro,[])
+                     ->getQuery()
+                     ->getResult();
+        
+        $sf = new $this->serviceFechado($this->getEm());
+        
+        $sf->setServiceLocator($this->getServiceLocator());  
+        $contador = 0 ;
+        $indFlush = 50;
+        foreach ($list as $obj) {
+            $resul = $sf->fechaRapido($obj);
+            $this->setMsgSeguroForUser($resul, $obj->getOrcaReno(),$obj->getId()); 
+            $contador++;
+            if($contador == $indFlush){
+                $this->getEm()->flush();
+                $contador = 0 ;
+            }
+        } 
+        $this->getEm()->flush();
+        
+        $sf->logFechaRapido($data);
+        
+        return $this->redirect()->toRoute($this->route, array('controller' => 'orcamentos', 'action'=>'listarOrcamentos'));
+    }
+    
+    public function setMsgSeguroForUser($resul, $org, $id){
+        $origem = ($org == 'orca')? 'Orçamento ' : 'Renovação ';
+        if($resul[0] === TRUE){
+            $msg = $origem . $id . ' Fechado com sucesso.';
+            $this->flashMessenger()->addMessage($msg);
+        }else{
+            $msg = $origem . $id . ' gerou os seguintes erros!';
+            $this->flashMessenger()->addMessage($msg);
+            unset($resul[0]);
+            foreach ($resul as $value) {
+                $this->flashMessenger()->addMessage($value);
+            }
+        }  
+    }
+
+
     /**
      * Cancela varios orcamentos selecionados.
      * Exibe alerta com a resultado da ação de cada orçamento.

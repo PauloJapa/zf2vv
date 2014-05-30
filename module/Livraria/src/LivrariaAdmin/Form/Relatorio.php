@@ -41,6 +41,7 @@ class Relatorio  extends AbstractForm {
             "at.descricao" => "Ocupacão",
             "ad.id" => "UE",
             "o.status" => "Status",
+            "o.administradora" => "Administradora",
             "o.refImovel" => "Ref. Imóvel",
         ];
         $this->setInputSelect('filtro[]', 'Filtrar', $campos);
@@ -49,6 +50,8 @@ class Relatorio  extends AbstractForm {
         $comando = [
             ">" => "Maior que",
             "<" => "Menor que",
+            ">=" => "Maior ou igual que",
+            "<=" => "Menor ou igual que",
             "=" => "Exatamente igual",
             "LIKE" => "Parecido com",
             "<>" => "Diferente",
@@ -72,7 +75,7 @@ class Relatorio  extends AbstractForm {
             '0' => 'Todos  Registros',
         ];
         $this->setInputSelect('limit', 'Maximo de Resultado:', $limit);
-        $this->get('limit')->setValue('100');
+        $this->get('limit')->setValue('1000');
     }
     
     public function setMesAnoAdm(){

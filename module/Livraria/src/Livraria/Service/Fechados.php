@@ -20,6 +20,30 @@ class Fechados extends AbstractService {
     protected $deParaImovel;
 
     /**
+     * Vai conter o valor do is do fechado inicial
+     * @var type
+     */
+    protected $idFechado;
+    
+    /**
+     * Entity LogFechamentos
+     * @var type
+     */
+    protected $logEnty;
+
+    /**
+     * Entity LogOrcamentos
+     * @var type
+     */
+    protected $logOrcaEnty;
+
+    /**
+     * Entity LogRenovação
+     * @var type
+     */
+    protected $logRenoEnty;
+
+    /**
      * Entity Orcamento
      * @var type
      */
@@ -73,11 +97,40 @@ class Fechados extends AbstractService {
      */
     protected $serviceLocator;
 
+    /**
+     * Data Agora o Momento em foi instanciado o Serviço
+     * @var object
+     */
+    protected $dataAgora;
+    
+    /**
+     * Conta os seguros fechados que tem critica
+     * @var integer
+     */
+    private $fechadosNg = 0;
+    
+    /**
+     * Conta os seguros fechados normalmente
+     * @var integer
+     */
+    private $fechadosOk = 0;
+
     public function __construct(EntityManager $em) {
         parent::__construct($em);
+        $this->logEnty = "Livraria\Entity\LogFechados";
+        $this->logOrcaEnty = "Livraria\Entity\LogOrcamento";
+        $this->logRenoEnty = "Livraria\Entity\LogRenovacao";
         $this->entity = "Livraria\Entity\Fechados";
         $this->Orcamento = "Livraria\Entity\Orcamento";
         $this->Renovacao = "Livraria\Entity\Renovacao";
+        $this->dataAgora = new \DateTime('now');
+    }
+    /**
+     * Recebe o service Locator do ZF2
+     * @param objeto $serviceLocator
+     */
+    public function setServiceLocator($serviceLocator) {
+        $this->serviceLocator = $serviceLocator;
     }
     
     /**
@@ -271,10 +324,14 @@ class Fechados extends AbstractService {
     }
 
     public function validaOrcamento($id){
-        //Carregar Entity Orcamento
-        $this->Orcamento = $this->em
-            ->getRepository('Livraria\Entity\Orcamento')
-            ->find($id);
+        if (!is_object($id)){
+            //Carregar Entity Orcamento
+            $this->Orcamento = $this->em
+                ->getRepository('Livraria\Entity\Orcamento')
+                ->find($id);
+        }else{
+            $this->Orcamento = $id;
+        }
 
         if(!$this->Orcamento){
             return [FALSE,'Registro Orçamento não encontrado'];
@@ -312,7 +369,7 @@ class Fechados extends AbstractService {
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['status'] = "A";
         $this->data['gerado'] = "N";
-        $this->data['criadoEm'] = new \DateTime('now');
+        $this->data['criadoEm'] = $this->getDataAgora();
 
         //Faz inserção do fechado no BD
         $resul = $this->insert();
@@ -333,26 +390,213 @@ class Fechados extends AbstractService {
 
         return $resul;
     }
+        
+    /**
+     * Gera o log com resumo dos parametros utilizados e qtd de seguros fechados.
+     * @param array $data
+     */
+    public function logFechaRapido($data){   // Gerar log
+        $obs = 'Fechou seguros pelo botão (Fechar Todas Paginas):<br>';
+        $obs .= 'Total de seguros fechados nesta ação ' . ($this->fechadosOk + $this->fechadosNg) . ':<br>';
+        $obs .= 'Total de seguros fechados normal ' . $this->fechadosOk . ':<br>';
+        $obs .= 'Total de seguros fechados criticado ' . $this->fechadosNg . ':<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= empty($data['dataI']) ? '' : 'Inicio em : ' . $data['dataI'] .'<br>';
+        $obs .= empty($data['dataF']) ? '' : 'Terminando em : ' . $data['dataF'] .'<br>';
+        $obs .= empty($data['status']) ? '' : 'Com Status de : ' . $data['status'] .'<br>';
+        $obs .= isset($data['anual']) ? 'Gerou Somente Anual' .'<br>' : '';
+        $obs .= isset($data['mensal']) ? 'Gerou Somente mensal' .'<br>' : '';
+        $this->logForSis('fechados', '', 'fechados', 'fecharTodosSeguros', $obs);
+    }
+    
+    public function fechaRapido($obj){
+        $resul = $this->validaOrcamento($obj);
+        if($resul[0] === FALSE){
+            return $resul;
+        }
+
+        //Montar dados para tabela de fechados
+        $this->data = $obj->toArrayWithObj();
+        if($this->data['orcaReno'] == 'orca'){
+            $this->origem = 'orcamentos';
+            $this->data['orcamentoId'] = $this->data['id'];
+        }else{
+            $this->origem = 'renovacaos';
+            $this->data['renovacaoId'] = $this->data['id'];
+        } 
+        unset($this->data['id']);
+
+        $this->data['locador']          = $this->em->getReference('Livraria\Entity\Locador', $this->data['locador']);
+        $this->data['locatario']        = $this->em->getReference('Livraria\Entity\Locatario', $this->data['locatario']);
+        $this->data['imovel']           = $this->em->getReference('Livraria\Entity\Imovel', $this->data['imovel']);
+        $this->data['taxa']             = $this->em->getReference('Livraria\Entity\Taxa', $this->data['taxa']);
+        $this->data['atividade']        = $this->em->getReference('Livraria\Entity\Atividade', $this->data['atividade']);
+        $this->data['seguradora']       = $this->em->getReference('Livraria\Entity\Seguradora', $this->data['seguradora']);
+        $this->data['administradora']   = $this->em->getReference('Livraria\Entity\Administradora', $this->data['administradora']);
+        $this->data['user']             = $this->em->getReference('Livraria\Entity\User', $this->getIdentidade()->getId());
+        $this->data['multiplosMinimos'] = $this->em->getReference('Livraria\Entity\MultiplosMinimos', $this->data['multiplosMinimos']);
+        
+        $this->data['status'] = "A";
+        $this->data['gerado'] = "N";
+        $this->data['criadoEm'] = $this->getDataAgora();
+      
+        //Faz inserção do fechado no BD
+        $resul = $this->insertRapido();
+
+        if($resul[0] === TRUE){
+            //Registra o id do fechado de Orçamento
+            $this->Orcamento->setFechadoId($this->idFechado);
+            $this->Orcamento->setStatus('F');
+            $this->em->persist($this->Orcamento);
+            $this->fechadosOk++;
+        }else{
+            $this->fechadosNg++;
+        }
+        
+        //Criar log orcamento
+        $fechado   = $this->idFechado . '/' . $this->entityReal->getCodano();
+        $dataLog['dePara']       = '';
+        $dataLog['data']         = $this->getDataAgora();
+        $dataLog['user'] = $this->data['user'];
+        $dataLog['ip']           = $_SERVER['REMOTE_ADDR'];
+        if($this->Orcamento->getOrcaReno() == 'orca'){
+            $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+            $dataLog['orcamento']    = $this->Orcamento;
+            $dataLog['tabela']     = 'log_orcamento';
+            $dataLog['controller'] = 'orcamentos' ;            
+            $dataLog['action']     = 'fechaOrcamento';
+            $dataLog['mensagem']   = 'Fechou o orçamento(' . $orcamento . ') e gerou o fechado de numero ' . $fechado ;
+            $logOrca = new $this->logOrcaEnty($dataLog);
+            $this->em->persist($logOrca);
+        }
+        //Criar log renovação
+        if($this->Orcamento->getOrcaReno() == 'reno'){
+            $renovacao = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+            $dataLog['renovacao']    = $this->Orcamento;
+            $dataLog['tabela']     = 'log_renovacao';
+            $dataLog['controller'] = 'renovacaos' ;            
+            $dataLog['action']     = 'fecharSeguros';
+            $dataLog['mensagem']   = 'Fechou o renovação(' . $renovacao . ') e gerou o fechado de numero ' . $fechado ;
+            $logReno = new $this->logRenoEnty($dataLog);
+            $this->em->persist($logReno);
+        }
+        //Atualiza dados do imovel        
+        $imovel = $this->em->find('Livraria\Entity\Imovel',  $this->data['imovel']);
+        if($imovel){
+            $imovel->setFechadoId($this->idFechado);
+            $imovel->setFechadoAno($this->data['codano']);
+            $imovel->setVlrAluguel($this->data['valorAluguel']);
+            $imovel->setFechadoFim($this->data['fim']);
+            $imovel->setLocatario($this->data['locatario']);
+            $imovel->setLocador($this->data['locador']);
+            $this->em->persist($imovel);
+        }
+        
+        if(!$this->checkMensal()){
+            $this->checkLimitVistoria();            
+        }
+                
+        return $resul;
+    }
+
+    /**
+     * Verifica se seguro é mensal se não retorna falso
+     * Verifica se mensal seq é zero significando renovação Anual do mensal 
+     * @return boolean
+     */
+    public function checkMensal() {
+        if($this->Orcamento->getValidade() != 'mensal'){
+            return false;
+        }
+        if($this->Orcamento->getMensalSeq() == 0){
+            return false;            
+        }
+        return TRUE;
+    }
+    
+    public function insertRapido(){
+        /*
+         * Já busca as referencias no proprio array
+        $this->setReferences();
+         */
+        /*
+         * Não fazer validação presupondo que os orçamentos já estão validados
+        $result = $this->isValid();
+        if($result !== TRUE){
+            return $result;
+        }
+         */       
+       
+        $this->entityReal = new $this->entity($this->data);
+        $this->em->persist($this->entityReal);   
+        
+        if (is_null($this->idFechado)){
+            echo 'testando';
+            $this->em->flush();
+            $this->idFechado = $this->entityReal->getId();
+        }else{
+            $this->idFechado++;
+        }
+
+        $dataLog['tabela']     = 'log_fechados';
+        $dataLog['controller'] = $this->origem ;
+        $dataLog['action']     = 'fechar';
+        $fechado   = $this->idFechado . '/' . $this->entityReal->getCodano();
+        switch ($this->origem) {
+            case 'orcamentos':
+                $orcamento = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+                $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' do orçamento n ' . $orcamento;
+                break;
+            case 'renovacaos':
+                $renovacao = $this->Orcamento->getId() . '/' . $this->Orcamento->getCodano();
+                $dataLog['mensagem']   = 'Novo seguro fechado n ' . $fechado . ' da renovação n ' . $renovacao;
+                break;
+            default:
+                $dataLog['mensagem']   = 'Erro Origem desconhecida!!!!!';
+                break;
+        }
+        $dataLog['dePara']       = '';
+        $dataLog['data']         = $this->getDataAgora();
+        $dataLog['user']         = $this->data['user'];
+        $dataLog['ip']           = $_SERVER['REMOTE_ADDR'];
+        $dataLog['fechados']     = $this->entityReal;
+       
+        $log = new $this->logEnty($dataLog);
+        $this->em->persist($log);       
+
+        return array(TRUE,  'Inserido');
+    }
+
+    public function getDataAgora(){
+        return $this->dataAgora;
+    }
     
     /**
      * Verificar o valor limite para não ter vistoria.
      * Caso ultrapasse o valor um email é enviado alertando responveis.
      */
     public function checkLimitVistoria(){
-        if($this->entityReal->getTipoCobertura() == '01'){ //predio
-            $valor = $this->entityReal->getIncendio();
+        switch ($this->entityReal->getTipoCobertura()){
+            case '01':  // predio
+                $valor = $this->entityReal->getIncendio();
+                break;
+            case '02':  // /predio + conteudo
+                $valor = $this->entityReal->getConteudo();
+                break;
         }
-        if($this->entityReal->getTipoCobertura() == '02'){ //predio + conteudo
-            $valor = $this->entityReal->getConteudo();
-        }
-        if($this->entityReal->getOcupacao() == '01'){ // Comercio
-            $chave = 'vistoria_comercial';
-        }
-        if($this->entityReal->getOcupacao() == '02'){ // Residencial
-            $chave = 'vistoria_residencial';
+        switch ($this->entityReal->getOcupacao()){
+            case '01':  // Comercio
+                $chave = 'vistoria_comercial';
+                break;
+            case '02':  // Residencial
+                $chave = 'vistoria_residencial';
+                break;
+            case '03':  // Industrial
+                $chave = 'vistoria_industrial';
+                break;
         }
         if(is_null($chave) OR is_null($valor)){
-            echo '<h1>Erro tipo de cobertura = ', $this->entityReal->getTipoCobertura(), 
+            echo '<h1>Alerta tipo de cobertura = ', $this->entityReal->getTipoCobertura(), 
                                 ' e Ocupação = ', $this->entityReal->getOcupacao() , '</h1>';
             return;
         }
@@ -531,6 +775,7 @@ class Fechados extends AbstractService {
         if(parent::insert())
             $this->logForNew();
 
+        $this->idFechado = $this->data['id'];
         return array(TRUE,  $this->data['id']);
     }
 
@@ -811,7 +1056,7 @@ class Fechados extends AbstractService {
         }
         $servEmail = $this->serviceLocator->get('Livraria\Service\Email');  
         $dados = $this->entityReal->getAdministradora()->toArray();
-        $dados['seguro'] = $this->entityReal->getId() . '/' . $this->entityReal->getCodano();
+        $dados['seguro'] = $this->idFechado . '/' . $this->entityReal->getCodano();
         $dados['imovel'] = $this->entityReal->getImovel()->__toString();
         $dados['locador'] = $this->entityReal->getLocadorNome();
         $dados['locatario'] = $this->entityReal->getLocatarioNome();

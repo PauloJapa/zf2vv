@@ -163,7 +163,11 @@ echo $this->ViewIndex('close');
 echo $this->FormDefault(['fecharSel'], 'submit');
 ?>
 <br />
-<div class="noPrint">
+<div class="noPrint" align="center">
+    <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Fechar Todas Paginas" onclick="return fecharTodos()">
+</div>
+<br />
+<div class="noPrint" align="center">
     <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Cancelar Selecionados" onclick="return cancelSelecionados()">
 </div>
 <br />
@@ -361,6 +365,17 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharSeguros')); ?>";
         envia(tar,'novo',null,''); 
+        return false;
+    }
+    
+    function fecharTodos(){
+        var msg = "Deseja realmente fechar os seguros de todas as paginas.\n\n PS não será possivel reverter em caso de erro!! ";
+        if(!confirm(msg)){
+            return false;
+        }
+        var aux = false;    
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharTodosSeguros')); ?>";
+        envia(tar,'todos',formName,''); 
         return false;
     }
 

@@ -253,16 +253,21 @@ abstract class CrudController extends AbstractActionController {
             }else{
                 $this->setDefaultAdm($data);            
             }
+            $this->setDatePeriodo($data);
             $this->sc->data = $data;
         }
-        return $this->sc->data;
+        if (is_array($this->sc->data)){
+            return $this->sc->data;            
+        }else{
+            return [];
+        }
     }
        
 
     public function getDefaultAdm(&$data) {
         //Verifica se esta registrado a administradora na sessao
         if(is_null($this->sc->administradora)){
-            $this->sc->administradora = ['id' => '2022', 'nome' => 'VILA VELHA'];
+            $this->sc->administradora = ['id' => '3234', 'nome' => 'LELLO LOCA'];
         }           
         $data['administradora']     = $this->sc->administradora['id'];
         $data['administradoraDesc'] = $this->sc->administradora['nome'];
@@ -275,6 +280,15 @@ abstract class CrudController extends AbstractActionController {
         if($this->sc->administradora['id'] != $data['administradora']){
             $this->sc->administradora = ['id' => $data['administradora'], 'nome' => $data['administradoraDesc']];
         }
+    }
+
+    public function setDatePeriodo(&$data) {
+        if(isset($data['dataI'])){
+            return ;
+        }
+        $dataAgora = new \DateTime('now');
+        $data['dataI'] = '01/' . $dataAgora->format('m/Y');  
+        $data['dataF'] = $dataAgora->format('d/m/Y');  
     }
 
 }

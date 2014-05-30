@@ -1006,4 +1006,61 @@ class AbstractSeguro  extends Filtro {
         return $data ;
     }
     
+    /**
+     * 
+     * @return array com todos os campos formatados para o form
+     */
+    public function toArrayWithObj() {
+        $data['id']             = $this->getId();
+        $data['codano']         = $this->getCodano();
+        $data['locadorNome']    = $this->getLocadorNome();
+        $data['locatarioNome']  = $this->getLocatarioNome();
+        $data['valorAluguel']   = $this->floatToStr('valorAluguel');
+        $data['tipoCobertura']  = $this->getTipoCobertura();
+        $data['inicio']         = $this->getInicio('obj');
+        $data['fim']            = $this->getFim('obj');
+        $data['seguroEmNome']   = $this->getSeguroemnome();
+        $data['codigoGerente']  = $this->getCodigogerente();
+        $data['refImovel']      = $this->getRefimovel();
+        $data['formaPagto']     = $this->getFormapagto();
+        $data['incendio']       = $this->floatToStr('incendio');
+        $data['conteudo']       = $this->floatToStr('conteudo');
+        $data['aluguel']        = $this->floatToStr('aluguel');
+        $data['eletrico']       = $this->floatToStr('eletrico');
+        $data['vendaval']       = $this->floatToStr('vendaval');
+        $data['numeroParcela']  = $this->getNumeroparcela();
+        $data['premioLiquido']  = $this->floatToStr('premioLiquido');
+        $data['premio']         = $this->floatToStr('premio');
+        $data['premioTotal']    = $this->floatToStr('premioTotal');
+        $data['criadoEm']       = $this->getCriadoem('obj');
+        $data['canceladoEm']    = $this->getCanceladoEm('obj');
+        $data['alteradoEm']     = $this->getAlteradoem('obj');
+        $data['observacao']     = $this->getObservacao();
+        $data['gerado']         = $this->getGerado();
+        $data['comissao']       = $this->floatToStr('comissao');
+        $data['locador']        = $this->getLocador()->getId();
+        $data['locatario']      = $this->getLocatario()->getId();
+        $data['imovel']         = $this->getImovel()->getId();
+        $data['taxa']           = $this->getTaxa()->getId();
+        $data['atividade']      = $this->getAtividade()->getId();
+        $data['seguradora']     = $this->getSeguradora()->getId();
+        $data['administradora'] = $this->getAdministradora()->getId();
+        $data['user']           = $this->getUser()->getId();
+        $data['multiplosMinimos'] = $this->getMultiplosMinimos()->getId();
+        $data['status']         = $this->getStatus();
+        $data['mesNiver']       = $this->getMesNiver();
+        $data['validade']       = $this->getValidade();
+        $data['ocupacao']       = $this->getOcupacao();
+        $data['taxaIof']        = $this->floatToStr('taxaIof',4);
+        $data['cobIncendio']    = $this->floatToStr('cobIncendio');
+        $data['cobConteudo']    = $this->floatToStr('cobConteudo');
+        $data['cobAluguel']     = $this->floatToStr('cobAluguel');
+        $data['cobEletrico']    = $this->floatToStr('cobEletrico');
+        $data['cobVendaval']    = $this->floatToStr('cobVendaval');
+        $data['comissaoEnt']    = $this->getComissaoEnt();
+        $data['mensalSeq']      = $this->getMensalSeq();
+        $data['fechadoOrigemId']= $this->getFechadoOrigemId();
+        return $data ;
+    }
+    
 }
