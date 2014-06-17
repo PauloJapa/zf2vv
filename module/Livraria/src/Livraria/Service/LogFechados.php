@@ -10,10 +10,25 @@ use Livraria\Entity\Configurator;
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 class LogFechados extends AbstractService {
+    
+    /**
+     * Data de agora da classe
+     * @var \DateTime
+     */
+    protected $dataAgora;
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\LogFechados";
+    }
+    
+    public function getDataAgora() {
+        if(is_null($this->dataAgora)){
+            $this->dataAgora = new \DateTime('now');
+        }  else {
+            $this->dataAgora->add(new \DateInterval('PT1S'));            
+        }
+        return $this->dataAgora;
     }
     
     public function setReferences(){
@@ -30,7 +45,7 @@ class LogFechados extends AbstractService {
     public function insert(array $data) { 
         $this->data = $data;
         
-        $this->data['data'] = new \DateTime('now');
+        $this->data['data'] = $this->getDataAgora();
         $this->data['user'] = $this->getIdentidade()->getId();
         $this->data['ip']   = $_SERVER['REMOTE_ADDR'];
         

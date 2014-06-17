@@ -33,11 +33,11 @@ foreach($this->data as $value){
         continue;
     }
     // Decide cor da linha
-    if($cor == "background:#B9FFB9;"){
-        $cor = "";
-    }else{
-        $cor = "background:#B9FFB9;";
-    }
+//    if($cor == "background:#B9FFB9;"){
+//        $cor = "";
+//    }else{
+//        $cor = "background:#B9FFB9;";
+//    }
     //calcula a parcela
     $frmPagto = isset($this->formaPagto[$value['formaPagto']]) ? $this->formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
     $valor = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);

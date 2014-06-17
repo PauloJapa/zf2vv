@@ -254,13 +254,12 @@ class FechadosController extends CrudController {
         
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
+        //Pega servico  
+        $service = new $this->service($this->getEm());
         $viewData = $this->getParamsForView();
-        $viewData['data'] = $this->getEm()
-                     ->getRepository($this->entity)
-                     ->findFechados($this->data);
-        if(empty($this->data['fim'])){
-            $this->data['fim'] = '1 mês subsequente';
-        }
+        $viewData['data'] = $service->montaListaAtualAnterior($this->data);
+        $this->data['inicio'] = $service->getFiltroData('inicio');
+        $this->data['fim']    = $service->getFiltroData('fim');
         $viewData['date'] = $this->data;
         return new ViewModel($viewData);
         

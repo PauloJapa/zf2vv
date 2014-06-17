@@ -201,7 +201,7 @@ class Exporta extends AbstractService{
             // Referencia do imovel
             $this->addSaida($value['imovel']['refImovel'], 40);
             // Fim da linha 
-            $this->saida .= PHP_EOL;  
+            $this->saida .= "\r\n";  
             $this->item ++;
             $this->qtdExportado ++;
         }     
@@ -407,9 +407,10 @@ class Exporta extends AbstractService{
             $this->setLine03($value);
             $this->setLine05($value);
             $this->setLine10($value);
-            if($this->fechadoRepository->setGerado($value['id'])){
-                $this->logForGerado($value['id'], $value['codano']);
-            }
+            //não marcar como gerado ainda
+//            if($this->fechadoRepository->setGerado($value['id'])){
+//                $this->logForGerado($value['id'], $value['codano']);
+//            }
         }        
         return $head;
     }
@@ -474,7 +475,7 @@ class Exporta extends AbstractService{
         // Nº Apolice tam 10
         $this->saida .= '0000000000';
         // Fim da linha 00
-        $this->saida .= PHP_EOL;        
+        $this->saida .= "\r\n";        
     }
 
     public function setLine01() {
@@ -509,7 +510,7 @@ class Exporta extends AbstractService{
         // Incluir automenticamente co-corretagem 1
         $this->saida .= 'N';
         // Fim da linha 01
-        $this->saida .= PHP_EOL;        
+        $this->saida .= "\r\n";        
     }
 
     public function setLine02() {
@@ -578,7 +579,7 @@ class Exporta extends AbstractService{
         // tipo de pessoa do cliente
         $this->saida .= 'J';
         // Fim da linha 02
-        $this->saida .= PHP_EOL;
+        $this->saida .= "\r\n";
     }
 
     public function setLine03(&$value) {
@@ -659,7 +660,7 @@ class Exporta extends AbstractService{
         //Período Indenitário Perda/Pgto. Aluguel	2
         //$this->saida .= str_pad(' ', 2);
         // Fim da linha 03
-        $this->saida .= PHP_EOL;
+        $this->saida .= "\r\n";
     }
 
     public function setLine05(&$value) {
@@ -694,7 +695,7 @@ class Exporta extends AbstractService{
             // Taxa Informada	1
             $this->saida .= '0';
             // Fim da linha 05
-            $this->saida .= PHP_EOL;        
+            $this->saida .= "\r\n";        
         }        
     }
 
@@ -722,7 +723,7 @@ class Exporta extends AbstractService{
         // Número do item	6
         $this->saida .= str_pad($this->item, 6, '0', STR_PAD_LEFT);
         // Fim da linha 10
-        $this->saida .= PHP_EOL;         
+        $this->saida .= "\r\n";         
     }
     
     /**

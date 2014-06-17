@@ -147,14 +147,28 @@ class RenovacaosController  extends CrudController {
                 ->getRepository($this->entity)
                 ->findRenovar($this->data['mesNiver'], $this->data['anoFiltro'], $this->data['administradora']); 
         $service = new $this->service($this->getEm());
-        foreach ($fechados as $fechado) {
+        $service->setFlush(FALSE);
+        $indClear = 100;
+        $ok = $ng = 0;
+        foreach ($fechados as $key => $fechado) {
             $resul = $service->renovar($fechado);
             if($resul[0] !== TRUE){
+                $ng++;
                 foreach ($resul as $value) {
                     $this->flashMessenger()->addMessage($value);
                 }
+            }  else {
+                $ok++;
+            }
+            if(($key % $indClear) === 0){
+                $this->getEm()->flush();
+                $this->getEm()->clear();
+                $this->flashMessenger()->addMessage('Renovou ' . $indClear. ' Seguros');
             }
         }
+        $total = $ok + $ng;
+        $service->saveLogRenovacao($this->data, $total,$ok,$ng);
+        $this->getEm()->flush();
         return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'listarRenovados'));
     }
     

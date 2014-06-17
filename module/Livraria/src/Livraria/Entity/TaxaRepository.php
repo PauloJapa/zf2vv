@@ -29,6 +29,8 @@ class TaxaRepository extends EntityRepository {
      * @return boolean|Entity \Livraria\Entity\Taxa
      */
     public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual', $cob='01'){
+
+        
         //Pegar classeAtividade correspondente vigente na data
         $classeAtividade = $this->getEntityManager()
                 ->getRepository('Livraria\Entity\ClasseAtividade')
@@ -40,6 +42,12 @@ class TaxaRepository extends EntityRepository {
         if(!is_object($date)){
             $d = explode("/", $date);
             $date = new \DateTime($d[1] . '/' . $d[0] . '/' . $d[2]);
+        }
+        
+        //Acertar tipo de cobertura
+        if ($classeAtividade->getAtividade()->getOcupacao() == 2 AND $cob != '02'){
+            $cob = '02';
+            echo 'Tipo de cobertura para residencial somente predio + conteudo <br />';
         }
         
         $query = $this->getEntityManager()

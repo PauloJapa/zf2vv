@@ -1,9 +1,9 @@
 <p>
-Bom dia! 
+<?
+$hr = date(" H "); 
+echo ($hr <= 12)?'Bom dia!':'Boa tarde!'; ;
+?>  
 </p>
-<br />
-<br />
-    <? echo $this->nome;?>,
 <br />
 <br />
 <p>
@@ -29,11 +29,11 @@ Bom dia!
     <tbody>
 <? foreach ($this->data as $value) : ?>
         <tr>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[0]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[1]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[2]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[3]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[0]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[1]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[2]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[3]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[4]; ?></td>
         </tr>
 <? endforeach; ?>        
     </tbody>        

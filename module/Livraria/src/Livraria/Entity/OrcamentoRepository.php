@@ -107,8 +107,9 @@ class OrcamentoRepository extends AbstractRepository {
      * @return array
      */
     public function getPendentes($data){
-        if (empty($data['inicio']))
+        if (empty($data['inicio'])) {
             return [];
+        }
         
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
         $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND (o.status = :status OR o.status = :status2)';
@@ -154,15 +155,21 @@ class OrcamentoRepository extends AbstractRepository {
         $this->data['fim']->add(new \DateInterval('P1M'));
         $this->data['fim']->sub(new \DateInterval('P1D'));
         
-        $this->where =  ' f.status = :status';
-        $this->where .= ' AND f.fim BETWEEN :inicio AND :fim';
+        $this->where =  ' (f.status = :status OR f.status = :status2)';
+        $this->where .= ' AND f.inicio BETWEEN :inicio AND :fim';
         $this->where .= ' AND f.validade = :validade';
-        $this->where .= ' AND f.validade = :validade';
+        $this->where .= ' AND f.mesNiver <> :mesFiltro';
         $this->where .= ' AND f.mensalSeq <= :mensalSeq';
         
-        $this->parameters['status']   = 'A';
+        $this->parameters['status']   = 'A';   // SEGURO que foi fechado
+        $this->parameters['status2']   = 'AR'; // SEGURO MENSAL que foi fechado e renovado
         $this->parameters['inicio']   = $this->data['inicio'];
         $this->parameters['fim']      = $this->data['fim'];
+        $mes = (int)$mesFiltro + 1;
+        if($mes == 13){
+            $mes = 1;
+        }
+        $this->parameters['mesFiltro'] = $mes;
         $this->parameters['validade'] = 'mensal';
         $this->parameters['mensalSeq'] = 10;
         if(!empty($adm)){

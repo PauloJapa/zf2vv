@@ -23,9 +23,11 @@ echo $this->ViewIndex('table'),
 $lambda = function($value,&$data)
     {
         echo "\t<td nowrap class='r'>",
-                '<span class="add-on hand" onClick="printProp(\'', $value, '\')"><i class="icon-print"></i> Imprimir Prosposta</span>',
+                '<span class="add-on hand" onClick="printProp(\'', $value, '\')"><i class="icon-print"></i> Imprimir </span>',
                 '&nbsp;&nbsp;&nbsp;&nbsp;',
-                '<span class="add-on hand" onClick="sendEmail(\'', $value, '\')"><i class="icon-envelope"></i> Enviar Email</span>',
+                '<span class="add-on hand" onClick="sendEmail(\'', $value, '\')"><i class="icon-envelope"></i> Email</span>',
+                '&nbsp;&nbsp;&nbsp;&nbsp;',
+                '<span class="add-on hand" onClick="sendEmailRenovacao(\'', $value, '\')"><i class="icon-envelope"></i> Email Renovação</span>',
              "</td>\n";   
     };
     
@@ -65,10 +67,13 @@ echo $this->ViewIndex('close');
 <br />
 <table width="100%">
     <tr>
-        <td align='center' width="33%">
-            <input type="button" name="enviar" id="enviar" class="btn-success" value="Enviar Todos" onclick="sendEmail()">            
+        <td align='center' width="25%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Todos Emails" onclick="sendEmail()">            
         </td>
-        <td align='center' width="33%">
+        <td align='center' width="25%">
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Todos Emails Renovação" onclick="sendEmailRenovacao()">            
+        </td>
+        <td align='center' width="25%">
             <input type="button" name="enviar" id="enviar" class="btn-success" value="Imprimir Todos" onclick="printProp()">            
         </td>
         <td align='center'>
@@ -89,6 +94,10 @@ echo $this->ViewIndex('close');
     }  
     function sendEmail(adm){
         var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmail')); ?>";
+        envia(tar2, adm, null,'email');
+    }   
+    function sendEmailRenovacao(adm){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'sendEmailRenovacao')); ?>";
         envia(tar2, adm, null,'email');
     }    
 </script>

@@ -258,15 +258,13 @@ class Relatorio extends AbstractService{
         $this->data['fim']->sub(new \DateInterval('P1D'));
         
         //Trata os filtro para data mensal
-        $this->data['mes'] = intval($data['mesFiltro']);
-        $mes = date('m');
-        $this->data['inicioMensal'] = '01/' . $mes . '/' . date('Y');
-        $this->dateToObject('inicioMensal');
-        // Pesquisar fechados de 2 ou 1 meses atras  
-        $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
+        $this->data['inicioMensal'] = clone $this->data['inicio'];
+        // Pesquisar fechados mensal que terminam a vigencia no mes posterior
+        $this->data['inicioMensal']->sub(new \DateInterval('P3M'));
         $this->data['fimMensal'] = clone $this->data['inicioMensal'];
         $this->data['fimMensal']->add(new \DateInterval('P1M'));
         $this->data['fimMensal']->sub(new \DateInterval('P1D'));
+        $this->data['niver'] = (int)$data['mesFiltro'];
 
         //Filtro para ambos os casos
         $this->data['administradora'] = $data['administradora'];
@@ -279,24 +277,41 @@ class Relatorio extends AbstractService{
         $obs .= empty($data['upAluguel']) ? '' : 'Reajustar em : ' . $data['upAluguel'] .'<br>';
         $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
         $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
-        $this->logForSis('fechados', '', 'relatorio', 'gerarComissao', $obs);
-        
+        $this->logForSis('fechados', '', 'relatorio', 'listarMapaRenovacao', $obs);
         return $this->em->getRepository("Livraria\Entity\Fechados")->getMapaRenovacao($this->data); 
     }
     
     public function gerarMapa($sc, $admFiltro){
         //Pegando o serviço de orçamento
         $servico = new Fechados($this->em);
+        $servico->setFlush(FALSE);
         $array = $sc->mapaRenovacao;
         $data = $sc->data;
         $reajuste = $this->strToFloat($data['upAluguel'], 'float');
+        $mes = (int)$data['mesFiltro'];
+        $ano = (int)$data['anoFiltro'];
+        $indClear = 100;
+        $ind = $ok = $ng = 0;
         foreach ($array as $key => $value) {
             //Filtro Administradora
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
                 continue;
             }
-            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $data['mesFiltro'], $data['anoFiltro'], $reajuste);
+            $array[$key]['resul'] = $servico->fechadoToOrcamento($value['id'], $mes, $ano, $reajuste);
+            if($array[$key]['resul'][0] === TRUE){
+                $ok++;
+            }  else {
+                $ng++;
+            }
+            $ind ++;
+            if(($ind % $indClear) === 0){
+                $this->em->flush();
+                $this->em->clear();
+                echo 'Gerou mapa ', $indClear, ' Orçamentos';
+                @flush();
+            }
         }
+        $this->em->flush();
         $sc->mapaRenovacao = $array;
         // Gerar log
         $obs = 'Gerou Mapa Renovação:<br>';
@@ -305,7 +320,10 @@ class Relatorio extends AbstractService{
         $obs .= empty($data['upAluguel']) ? '' : 'Reajustar em : ' . $data['upAluguel'] .'<br>';
         $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
         $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
-        $this->logForSis('fechados', '', 'relatorio', 'gerarComissao', $obs);
+        $obs .= 'Total = '. ($ok + $ng) .'<br>';
+        $obs .= 'Sucesso = '. $ok .'<br>';
+        $obs .= 'Criticados = '. $ng .'<br>';
+        $this->logForSis('orcamento', '', 'relatorio', 'gerarMapa', $obs);
     }
     
     /**
@@ -351,13 +369,7 @@ class Relatorio extends AbstractService{
             //se mudar adm faz envio e reseta os valores
             if($admCod != $value['administradora']['id']){
                 if($admCod != 0){
-                    $servEmail->enviaEmail(['nome' => $admNom,
-                        'cod' => $admCod,
-                        'date' => $sc->data,
-                        'email' => $admEmai,
-                        'mesPrazo' => $mesPrazo,
-                        'subject' => $admNom . ' -Seguro(s) para Renovação Anual do Incêndio Locação',
-                        'data' => $data],'mapa-renovacao');                     
+                    $this->sendEmailMapaRenovacaoAnual($servEmail, $admCod, $sc, $admEmai, $mesPrazo, $admNom, $data);
                 }
                 $admCod  = $value['administradora']['id'];
                 $admNom  = $value['administradora']['nome'];
@@ -367,9 +379,9 @@ class Relatorio extends AbstractService{
                 $total++;
             }
             //Faz o acumulo dos dados.
-            $data[$i][0] = ($value['validade'] == 'anual') ? $value['fim']->format('d/m/Y') : $value['fim']->format('d/') . $mes . '/' . $ano;
+            $data[$i][0] = ($value['validade'] == 'anual') ? $value['fim']->format('d/m') : $value['fim']->format('d/') . $mes ;
             $data[$i][0] .= ' - ' . $value['validade'] . (($value['validade'] == 'mensal') ? '(' . $value['mesNiver'] . ')' : '');
-            $data[$i][1] = $value['fim']->format('d/m/Y');
+            $data[$i][1] = $value['fim']->format('d/m');
             $data[$i][2] = $value['refImovel'];
             $data[$i][3] = $value['validade'];
             $data[$i][4] = $value['imovel']['rua'] . ' n-' . $value['imovel']['numero']. ' ' . $value['imovel']['apto']. ' ' . $value['imovel']['bloco'];
@@ -378,24 +390,24 @@ class Relatorio extends AbstractService{
             $data[$i][7] = number_format($value['aluguel'], 2, ',', '.');
             $data[$i][8] = number_format($value['eletrico'], 2, ',', '.');
             $data[$i][9] = number_format($value['vendaval'], 2, ',', '.');
-            $data[$i][10] = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];;
+            if($value['validade'] == 'anual'){
+                $formaP = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];;
+            }else{
+                $formaP = 'Mensal';
+            }
+            $data[$i][10] = $formaP;
             $data[$i][11] = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);;
             $data[$i][12] = number_format($value['premioTotal'], 2, ',', '.');
             $data[$i][13] = number_format($value['valorAluguel'], 2, ',', '.');
             $data[$i][14] = $value['atividade']['descricao'];
             $data[$i][15] = ($reajuste == 1)? '': number_format($value['valorAluguel'] * $reajuste, 2, ',', '.');
+            $data[$i][16] = $value['locadorNome'];
             $i++;
         }
         
         //Envia ultima administradora se houver
         if($admCod != 0){
-            $servEmail->enviaEmail(['nome' => $admNom,
-                'cod' => $admCod,
-                'date' => $sc->data,
-                'email' => $admEmai,
-                'mesPrazo' => $mesPrazo,
-                'subject' => $admNom . ' -Seguro(s) para Renovação Anual do Incêndio Locação',
-                'data' => $data],'mapa-renovacao'); 
+            $this->sendEmailMapaRenovacaoAnual($servEmail, $admCod, $sc, $admEmai, $mesPrazo, $admNom, $data);
             $total++;                    
         }
         
@@ -407,6 +419,16 @@ class Relatorio extends AbstractService{
         
         return true;
         
+    }
+    
+    public function sendEmailMapaRenovacaoAnual(&$servEmail, &$admCod, &$sc, &$admEmai, &$mesPrazo, &$admNom, &$data) {
+        $servEmail->enviaEmail(['nome' => $admNom,
+                'cod' => $admCod,
+                'date' => $sc->data,
+                'email' => $admEmai,
+                'mesPrazo' => $mesPrazo,
+                'subject' => $admNom . ' - Renovação de Seguro - Mês ' . $sc->data['mesFiltro'],
+                'data' => $data],'mapa-renovacao'); 
     }
 
     /**
@@ -543,54 +565,147 @@ class Relatorio extends AbstractService{
 
         $servEmail = $sl->get('Livraria\Service\Email');
         $formaPagto = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
-
+        //Retirar da forma de pag a descrição entre parenteses.
+        foreach ($formaPagto as $key => $value) {
+            $formaPagto[$key] = substr($value, 0, strpos($value, '('));
+        }
         $admCod  = 0;
+        $mes = '';
         foreach ($sc->fechaSeguro as $value) {
-            //caso venha configurado para nao enviar email ou vazio
-            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
-                $value['administradora']['email'] = $this->mailDefault; 
-            }
             //Filtro Administrador
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
                 continue;
             }
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
+                $value['administradora']['email'] = $this->mailDefault; 
+            }
             //se mudar adm faz envio e reseta os valores
             if($admCod != $value['administradora']['id']){
                 if($admCod != 0){
-                    $servEmail->enviaEmail(['nome' => $admNom,
-                        'email' => $admEmai,
-                        'subject' => $admNom . ' -Seguro(s) Fechado(s) do Incêndio Locação',
-                        'data' => $data],'seguro-fechado');                     
+                    $this->sendEmailSegFechForAdm($servEmail, $admNom, $admEmai, $data, $mes);                   
                 }
                 $admCod  = $value['administradora']['id'];
                 $admNom  = $value['administradora']['nome'];
                 $admEmai = $value['administradora']['email'];
+                $mes     = $value['inicio']->format('m');
                 $data    = [];              
                 $i       = 0;
             }
             //Faz o acumulo dos dados.
-            $data[$i][] = $value['id'];
+            $data[$i][] = $value['refImovel'];
+            $data[$i][] = $value['locadorNome'];
             $data[$i][] = $value['locatarioNome'];
             $data[$i][] = $value['inicio']->format('d/m/Y');
-            $data[$i][] = $value['fim']->format('d/m/Y');
             $data[$i][] = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
-            $data[$i][] = number_format($value['premioTotal'], 2, ',', '.');
             $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
             $i++;
         }
         
         //Envia ultima administradora se houver
-        if($admCod != 0){
-            $servEmail->enviaEmail(['nome' => $admNom,
-                'email' => $admEmai,
-                'subject' => $admNom . ' -Seguro(s) Fechado(s) do Incêndio Locação',
-                'data' => $data],'seguro-fechado');                     
+        if($admCod != 0){   
+            $this->sendEmailSegFechForAdm($servEmail, $admNom, $admEmai, $data, $mes);
         }
         
         return true;
         
     }
+    
+    /**
+     * Faz o envio de email do seguros fechados pré faturamento.
+     * @param type $servEmail
+     * @param type $admNom
+     * @param type $admEmai
+     * @param type $data
+     * @param type $mes
+     */
+    public function sendEmailSegFechForAdm(&$servEmail, &$admNom, &$admEmai, &$data, $mes) {
+        $servEmail->enviaEmail(['nome' => $admNom,
+            'email' => $admEmai,
+            'subject' => $admNom . ' - Pré Fatura - Mês ' . $mes,
+            'data' => $data], 'seguro-fechado');
+    }
+    
+    public function sendEmailOnlyRenovacao($sl,$admFiltro='') {
+        //Ler dados guardados
+        $sc = new SessionContainer("LivrariaAdmin");
+        if(empty($sc->dataOrcareno)){
+            return;
+        }
+
+        $servEmail = $sl->get('Livraria\Service\Email');
+        $formaPagto = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        //Retirar da forma de pag a descrição entre parenteses.
+        foreach ($formaPagto as $key => $value) {
+            $formaPagto[$key] = substr($value, 0, strpos($value, '('));
+        }
         
+        $admCod  = 0;
+        $mes = '';
+        foreach ($sc->dataOrcareno as $value) {
+            //Filtrar orcamentos
+            if($value['orcaReno'] == 'orca'){
+                continue;
+            }
+            //Filtro Administrador
+            if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
+                continue;
+            }
+            //caso venha configurado para nao enviar email ou vazio
+            if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
+                $value['administradora']['email'] = $this->mailDefault; 
+            }
+            //se mudar adm faz envio e reseta os valores
+            if($admCod != $value['administradora']['id']){
+                if($admCod != 0){
+                    $this->sendEmailOnlyRenovacaoMonta($servEmail, $admNom, $admEmai, $data, $mes);                   
+                }
+                $admCod  = $value['administradora']['id'];
+                $admNom  = $value['administradora']['nome'];
+                $admEmai = $value['administradora']['email'];
+                $mes     = $value['inicio']->format('m');
+                $data    = [];              
+                $i       = 0;
+            }
+            //Faz o acumulo dos dados.
+            $data[$i][] = $value['refImovel'];
+            $data[$i][] = $value['locadorNome'];
+            $data[$i][] = $value['locatarioNome'];
+            $data[$i][] = $value['inicio']->format('d/m/Y');
+            if($value['validade'] == 'anual'){
+                $formaP = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];;
+            }else{
+                $formaP = 'Mensal';
+            }
+            $data[$i][] = $formaP;
+            $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
+            $i++;
+        }
+        
+        //Envia ultima administradora se houver
+        if($admCod != 0){   
+            $this->sendEmailOnlyRenovacaoMonta($servEmail, $admNom, $admEmai, $data, $mes);
+        }
+        
+        return true;
+        
+    }
+    
+    /**
+     * Faz o envio de email do seguros em renovação ainda não fechados.
+     * @param type $servEmail
+     * @param type $admNom
+     * @param type $admEmai
+     * @param type $data
+     * @param type $mes
+     */
+    public function sendEmailOnlyRenovacaoMonta(&$servEmail, &$admNom, &$admEmai, &$data, $mes) {
+        $servEmail->enviaEmail(['nome' => $admNom,
+            'email' => $admEmai,
+            'subject' => $admNom . ' - Renovação Pendente - Mês ' . $mes,
+            'data' => $data], 'renovacao-pendente');
+    }
+
     public function gerarComissao($data){
         //Trata os filtros para consulta
         $this->data['inicio'] = '01/' . $data['mesFiltro'] . '/' . $data['anoFiltro'];

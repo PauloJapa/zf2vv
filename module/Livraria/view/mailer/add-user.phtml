@@ -1,13 +1,13 @@
 <p>
-Bom dia! 
+<?
+$hr = date(" H "); 
+echo ($hr <= 12)?'Bom dia!':'Boa tarde!'; ;
+?> 
 </p>
 <br />
 <br />
-    <? echo $this->nome;?>,
-<br />
-<br />
 <p>
-Segue relação de seguros não fechados.
+Segue relação de seguros não fechados, para seu conhecimento e providencias.
 </p>
 <br />
 <br />
@@ -19,22 +19,18 @@ Segue relação de seguros não fechados.
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locador</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Endereço</th>
-            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Forma Pagto.</th>
-            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Premio</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Status</th>
         </tr>
     </thead>
     <tbody>
 <? foreach ($this->data as $value) : ?>
         <tr>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[0]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[1]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[2]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[3]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[5]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[6]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[7]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[0]; ?></p></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[1]; ?></p></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[2]; ?></p></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[3]; ?></p></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[4]; ?></p></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><p><? echo $value[5]; ?></p></td>
         </tr>
 <? endforeach; ?>        
     </tbody>        

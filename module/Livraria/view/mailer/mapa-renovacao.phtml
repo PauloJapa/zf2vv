@@ -2,16 +2,16 @@
 <?
 $hr = date(" H "); 
 echo ($hr <= 12)?'Bom dia!':'Boa tarde!'; 
+
+$dataAgora = new \DateTime('now');
+$dataAgora->add(new \DateInterval('P15D'));
 ?> 
 </p>
 <br />
 <br />
-    <strong><? echo $this->nome;?>,</strong>
-<br />
-<br />
 <p>
 Abaixo relatório de Renovação para que seja providenciado as devidas atualizações.
-Favor atualizar em nosso sistema ou nos enviar dados para atualização até o dia 10/<? echo $this->mesPrazo; ?>
+Favor atualizar em nosso sistema ou nos enviar dados para atualização até o dia <? echo $dataAgora->format('d/m'); ?>
  para que possamos dar andamento no processo de Renovação.
 </p>    
  
@@ -27,23 +27,23 @@ Qualquer dúvida favor entrar em contato.
 <table style="border-top: solid #000 1px; border-left: solid #000 1px;"  cellspacing="0" cellpadding="0">
     <thead>
         <tr style="background-color: #d9d9d9;">
-            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Início Vigência</th>
-            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Tipo</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Data</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Ref.</th>
+            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locador</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Locatário</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Endereço</th>
-            <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Forma Pagto</th>
             <th style="border-bottom: solid #000 1px; border-right:  solid #000 1px;">Valor do Aluguel atualizado</th>
         </tr>
     </thead>
     <tbody>
 <? foreach ($this->data as $value) : ?>
         <tr>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[0]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[3]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[5]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px;"><? echo $value[4]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"><? echo $value[10]; ?></td>
-            <td style="border-bottom: solid #000 1px; border-right:  solid #000 1px; text-align: right;"></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[0]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[2]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[16]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[5]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;font-size:8pt;"><? echo $value[4]; ?></td>
+            <td style="border-bottom:solid #000 1px;border-right:solid #000 1px;text-align:right;font-size:9pt;"></td>
         </tr>
 <? endforeach; ?>        
     </tbody>        

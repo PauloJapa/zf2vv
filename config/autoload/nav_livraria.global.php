@@ -266,7 +266,7 @@ return array(
                         'action' => 'imoveisDesocupados',
                     ),
                     'relatorios6' => array(
-                        'label' => 'Pré Fechamento',
+                        'label' => 'Email Pré Fatura',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'fechamentoSeguro',

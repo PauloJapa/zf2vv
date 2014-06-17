@@ -10,7 +10,13 @@ use SisBase\Conexao\Mysql;
 require '/var/www/zf2vv/module/Livraria/src/Livraria/Service/PHPExcel.php';
 
 class RelatoriosController extends CrudController {
-
+    
+    /**
+     * String com endereço de email padrão
+     * @var type String
+     */
+    protected $mailDefault = 'incendiolocacao@vilavelha.com.br'; 
+    
     public function __construct() {
         $this->entity = "Livraria\Entity\Orcamento";
         $this->form = "LivrariaAdmin\Form\Relatorio";
@@ -165,6 +171,23 @@ class RelatoriosController extends CrudController {
         $pdfObj->Output('Orcamento_Renovacao_' . $sc->data['inicio'] . '_' .  $sc->data['fim'] . '.pdf','D');
     }
     
+    /**
+     * Enviar email somente de renovações pendentes para administradoras verificarem
+     */
+    public function sendEmailRenovacaoAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //Pegar servico que gerou os registro 
+        $service = new $this->service($this->getEm());
+        //Passa o localizador de serviço para pegar o servico de email e fazer o envio de email
+        $resul = $service->sendEmailOnlyRenovacao($this->getServiceLocator(),$data['subOpcao']);
+        if($resul){
+            echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+        }else{
+            echo '<h2>Erro !! Feche esta janela e tente novamente !!</h2>';
+        }          
+    }
+    
     public function sendEmailAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
@@ -186,12 +209,12 @@ class RelatoriosController extends CrudController {
             if(!empty($admCodFiltro) AND $admCodFiltro != $arrayResul['administradora']['id']){
                 continue;
             }
+            if($arrayResul['administradora']['email'] == 'NAO'){
+                $arrayResul['administradora']['email'] = $this->mailDefault; 
+            }
             if($admCod != $arrayResul['administradora']['id']){
                 if($admEmai != 'NAO' AND $admCod != 0){
-                    $sm->enviaEmail(['nome' => $admNome, 
-                                     'email' => $admEmai, 
-                                     'subject' => $admNome . ' E-mail de Seguro Todos Incêndio Locação',
-                                     'data' => $registros]);
+                    $this->sendEmailForOrcaReno($sm, $admNome, $admEmai, $registros);
                 }
                 $admCod    = $arrayResul['administradora']['id'];
                 $admNome   = $arrayResul['administradora']['nome'];
@@ -203,20 +226,34 @@ class RelatoriosController extends CrudController {
             $registros[$seq][] = $arrayResul['inicio']->format('d/m/Y');
             $registros[$seq][] = $arrayResul['locadorNome'];
             $registros[$seq][] = $arrayResul['locatarioNome'];
-            $registros[$seq][] = $arrayResul['imovel']['rua'] . ', ' . $arrayResul['imovel']['numero']. ' ' . $arrayResul['imovel']['bloco']. ' ' . $arrayResul['imovel']['apto'];
-            $registros[$seq][] = isset($formaPagto[$arrayResul['formaPagto']]) ? $formaPagto[$arrayResul['formaPagto']]  : $arrayResul['formaPagto'];
-            $registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
+            $end = $arrayResul['imovel']['rua'] . ', ' . $arrayResul['imovel']['numero'];
+            $end .= (!empty($arrayResul['imovel']['bloco']))? ' BL ' . $arrayResul['imovel']['bloco'] :'';
+            $end .= (!empty($arrayResul['imovel']['apto']))? ' AP ' . $arrayResul['imovel']['apto'] :'';
+            $end .= (!empty($arrayResul['imovel']['enderecos']['compl']))? ' - ' . $arrayResul['imovel']['enderecos']['compl'] :'';
+            $registros[$seq][] = $end;
+            //$registros[$seq][] = isset($formaPagto[$arrayResul['formaPagto']]) ? $formaPagto[$arrayResul['formaPagto']]  : $arrayResul['formaPagto'];
+            //$registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
             $registros[$seq][] = ($arrayResul['orcaReno'] == 'reno') ? 'Renovação' : 'Orçamento';
             $seq++;
-//        var_dump($arrayResul);die;
         }
         if($admEmai != 'NAO' AND $admCod != 0){
-            $sm->enviaEmail(['nome' => $admNome, 
-                             'email' => $admEmai, 
-                             'subject' => 'E-mail de Seguro Todos Incêndio Locação',
-                             'data' => $registros]);
+            $this->sendEmailForOrcaReno($sm, $admNome, $admEmai, $registros);
         }
         echo '<h2>Email(s) enviado com Sucesso!!!<br><br><br> Feche esta janela para continuar !!</h2>';
+    }
+    
+    /**
+     * Faz o envio da listagem de seguros a renovar PS deveria estar no serviço porem não foi colocado
+     * @param type $sm
+     * @param type $admNome
+     * @param type $admEmai
+     * @param type $registros
+     */
+    public function sendEmailForOrcaReno(&$sm, &$admNome, &$admEmai, &$registros) {
+        $sm->enviaEmail(['nome' => $admNome, 
+                             'email' => $admEmai, 
+                             'subject' => $admNome . ' - Seguros não fechados',
+                             'data' => $registros]);
     }
     
     /**

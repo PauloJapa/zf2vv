@@ -1,8 +1,8 @@
 <?php
 $form->prepare();
 echo 
-$this->FormDefault(['legend' => 'Busca com base na data fim da vigência:'],'inicio',$this, $form),
-    "<td valign='middle' align='right' width='15%'>Periodo Fim",
+$this->FormDefault(['legend' => 'Busca com base no mês vencimento:'],'inicio',$this, $form),
+    "<td valign='middle' align='right' width='15%'>Periodo",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
     "</td>\r<td width='15%'>",
         $this->FormDefault(['mesFiltro' => 'select']),

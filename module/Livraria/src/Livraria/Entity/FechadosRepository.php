@@ -26,37 +26,26 @@ class FechadosRepository extends AbstractRepository {
      */
     protected $parameters;
     
-    public function findFechados($data){
-        
-        if (empty($data['inicio']))
-            return [];
-        
-        //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim';
-        $this->parameters['inicio']  = $this->dateToObject($data['inicio']);
-        if (!empty($data['fim'])){
-            $this->parameters['fim'] = $this->dateToObject($data['fim']);
-        }else{
-            $this->parameters['fim'] = clone $this->parameters['inicio'];
-            $this->parameters['fim']->add(new \DateInterval('P1M')); 
-            $this->parameters['fim']->sub(new \DateInterval('P1D')); 
-        }
+    public function findFechados($data){        
+        $this->parameters = $data;            
+        $this->where = 'o.inicio BETWEEN :inicio AND :fim';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
-            $this->parameters['administradora']    = $data['administradora'];            
+        }  else {
+            unset($this->parameters['administradora']);
         }
-            
         // Monta a dql para fazer consulta no BD
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('o,ad')
+                ->select('count(o.id) as qtd, sum(o.premioTotal) as total, ad.id, ad.nome')
                 ->from('Livraria\Entity\Fechados', 'o')
                 ->join('o.administradora', 'ad')
                 ->where($this->where)
                 ->setParameters($this->parameters)
-                ->orderBy('o.administradora'); 
+                ->addGroupBy('o.administradora')
+                ->orderBy('ad.nome'); 
         
-        // Retorna um array com todo os registros encontrados        
+        // Retorna um array com todo os registros encontrados  
         return $query->getQuery()->getArrayResult();
     }
     
@@ -218,12 +207,14 @@ class FechadosRepository extends AbstractRepository {
     public function getMapaRenovacaoMensal($data) {
         $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.fim BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver AND o.status = :status';
+        $this->where = 'o.fim BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver AND (o.status = :status OR o.status = :status2) AND o.status <> :status3';
         $this->parameters['valido']  = 'mensal';
-        $this->parameters['niver']   = $data['mes'];
+        $this->parameters['niver']   = $data['niver'];
         $this->parameters['inicio']  = $data['inicioMensal'];
         $this->parameters['fim']     = $data['fimMensal'];
-        $this->parameters['status']  = 'A';
+        $this->parameters['status']  = 'A';     // SEGURO ATIVO
+        $this->parameters['status2']  = 'R';    // SEGURO RENOVADO
+        $this->parameters['status3']  = 'AR';   // DESPREZA SEGURO MENSAL ATUALIZAÇAO ANUAL DE VALOR
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
@@ -389,16 +380,16 @@ class FechadosRepository extends AbstractRepository {
         return $this->executaQuery3('o.administradora');         
     }
     
-    public function setGerado($id=false){
+    public function setGerado($id=false, $campo='gerado', $value='S'){
         if(!$id)
             return FALSE;
         
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->update('Livraria\Entity\Fechados', 'o')
-                ->set('o.gerado', ':S')
+                ->set('o.' . $campo, ':S')
                 ->where('o.id = :id')
-                ->setParameter('S', 'S')
+                ->setParameter('S',  $value)
                 ->setParameter('id', $id)
                 ->getQuery()
                 ->execute();
@@ -557,5 +548,32 @@ class FechadosRepository extends AbstractRepository {
         }
         $this->where .= ')';
         
+    }
+    
+    
+    /**
+     * Registra o id do fechado de Orçamento
+     * @param type $id
+     * @param type $idRenovacao
+     * @param type $status
+     * @return boolean
+     */    
+    public function setSeguroRenovado($id=false, $idRenovacao='', $status=''){
+        if((!$id)OR($idRenovacao == '')OR($status == '')){
+            return FALSE;
+        }
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->update('Livraria\Entity\Fechados', 'o')
+                ->set('o.renovacaoId', ':idRenovacao')
+                ->set('o.status', ':status')
+                ->where('o.id = :id')
+                ->setParameter('idRenovacao', $idRenovacao)
+                ->setParameter('status', $status)
+                ->setParameter('id', $id)
+                ->getQuery()
+                ->execute();
+        
+        return $query;
     }
 }

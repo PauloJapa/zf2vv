@@ -114,6 +114,12 @@ class Fechados extends AbstractService {
      * @var integer
      */
     private $fechadosOk = 0;
+    
+    /**
+     * Pega o primeiro Id inserido e depois incrementa para diminuir a leitura no banco
+     * @var integer
+     */
+    protected $firstId = 0;
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
@@ -217,7 +223,8 @@ class Fechados extends AbstractService {
         if($this->servicoOrcamento)
             return $this->servicoOrcamento;
         
-        $this->servicoOrcamento =  new Orcamento($this->em);        
+        $this->servicoOrcamento =  new Orcamento($this->em);    
+        $this->servicoOrcamento->setFlush($this->getFlush());
         return $this->servicoOrcamento;        
     }
     
@@ -229,7 +236,8 @@ class Fechados extends AbstractService {
         if($this->servicoLogFechado)
             return $this->servicoLogFechado;
         
-        $this->servicoLogFechado =  new LogFechados($this->em);       
+        $this->servicoLogFechado =  new LogFechados($this->em);  
+        $this->servicoLogFechado->setFlush($this->getFlush());
         return $this->servicoLogFechado;        
     }
     
@@ -241,7 +249,8 @@ class Fechados extends AbstractService {
         if($this->servicoLogOrcamento)
             return $this->servicoLogOrcamento;
         
-        $this->servicoLogOrcamento =  new LogOrcamento($this->em);       
+        $this->servicoLogOrcamento =  new LogOrcamento($this->em);  
+        $this->servicoLogOrcamento->setFlush($this->getFlush());
         return $this->servicoLogOrcamento;        
     }
     
@@ -253,7 +262,8 @@ class Fechados extends AbstractService {
         if($this->servicoLogRenovacao)
             return $this->servicoLogRenovacao;
         
-        $this->servicoLogRenovacao =  new LogRenovacao($this->em);       
+        $this->servicoLogRenovacao =  new LogRenovacao($this->em);   
+        $this->servicoLogRenovacao->setFlush($this->getFlush());
         return $this->servicoLogRenovacao;        
     }
 
@@ -401,8 +411,8 @@ class Fechados extends AbstractService {
         $obs .= 'Total de seguros fechados normal ' . $this->fechadosOk . ':<br>';
         $obs .= 'Total de seguros fechados criticado ' . $this->fechadosNg . ':<br>';
         $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
-        $obs .= empty($data['dataI']) ? '' : 'Inicio em : ' . $data['dataI'] .'<br>';
-        $obs .= empty($data['dataF']) ? '' : 'Terminando em : ' . $data['dataF'] .'<br>';
+        $obs .= empty($data['dataI']) ? '' : 'Periodo Inicio em : ' . $data['dataI'] .'<br>';
+        $obs .= empty($data['dataF']) ? '' : 'Periodo Fim em : ' . $data['dataF'] .'<br>';
         $obs .= empty($data['status']) ? '' : 'Com Status de : ' . $data['status'] .'<br>';
         $obs .= isset($data['anual']) ? 'Gerou Somente Anual' .'<br>' : '';
         $obs .= isset($data['mensal']) ? 'Gerou Somente mensal' .'<br>' : '';
@@ -911,29 +921,36 @@ class Fechados extends AbstractService {
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
-        if(empty($this->data['imovel']))
+        if (empty($this->data['imovel'])) {
             return array('Um imovel deve ser selecionado!');
-        
+        }
         $inicio = $this->data['inicio'];
-        if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
+        if (!is_object($inicio)) {
             return array('A data deve ser preenchida corretamente!');
-            
+        }
         $filtro['imovel'] = $this->data['imovel']->getId();
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
-            $st = $entity->getStatus();
-            if (($st != "A") and ($st != 'R')) {
-                continue;  //so valida registros ativos ou renovados
+            if(isset($this->data['id']) and ($this->data['id'] == $entity->getId())){
+                continue;
             }
-            $ini = $this->data['inicio'];
-            if ($entity->getInicio('obj') >= $ini and $ini <= $entity->getFim('obj')) {
-                $erro[] = "Alerta!";
-                $erro[] = 'Vigencia ' . $entity->getInicio() . ' <= ' . $entity->getFim();
-                $erro[] = "Já existe um seguro com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            if(($inicio >= $entity->getFim('obj'))){
+                continue;
             }
-        }
-        
+            switch ($entity->getStatus()) {
+                case "A":
+                    $erro[] = "Alerta!" ;
+                    $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
+                    $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    break;
+                case "F":
+                    $erro[] = "Alerta!" ;
+                    $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
+                    $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                    break;
+            }
+        }        
         if(!empty($erro)){
             return $erro;
         }else{
@@ -973,7 +990,7 @@ class Fechados extends AbstractService {
         $this->data['status'] = "R";
         $this->data['orcaReno'] = "reno";
         $this->data['mensalSeq'] = 0;
-        $this->data['criadoEm'] = new \DateTime('now');
+        $this->data['criadoEm'] = $this->getDataAgora();
         if($this->data['validade'] == 'anual'){
             $this->data['inicio'] = $fechado->getFim('obj');
         }else{// senão é considera mensal(Mensal é renovado 3 meses antes de chegar na ultima parcela)
@@ -988,17 +1005,31 @@ class Fechados extends AbstractService {
         }
         
         //Faz inserção do fechado no BD
-        $resul = $this->getSrvOrca()->insert($this->data);
+        if($this->firstId == 0){
+            $this->getSrvOrca()->setFlush(TRUE);
+            $resul = $this->getSrvOrca()->insert($this->data);
+            $this->getSrvOrca()->setFlush(FALSE);
+            if($resul[0] === TRUE){
+                $this->firstId = $this->getSrvOrca()->getEntity()->getId();
+            }
+        }else{
+            $this->firstId++;
+            $this->data['id'] = $this->firstId;
+            $resul = $this->getSrvOrca()->insert($this->data);
+        }
 
         if($resul[0] === TRUE){
             $fechado->setObservacao($fechado->getObservacao() . 'Gerou Renovação para reajuste numero ' . $resul[1]);
             //Marcar como renovado somente os anuais visto que os mensais serão marcados pelo serviço de renovação.
             if($fechado->getValidade() == 'anual'){
-                $fechado->setStatus('R');
+                $fechado->setStatus('R');   // SEGURO RENOVADO
+            }else{
+                $fechado->setStatus('AR');  // SEGURO MENSAL QUE TEVE ATUALIZAÇAO ANUAL DE VALOR              
             }
             $this->em->persist($fechado);
-            $this->em->flush();
             $this->registraLogFechadoToOrcamento($fechado);
+        }  else {
+            $this->firstId--;            
         }
         
         return $resul;
@@ -1149,5 +1180,87 @@ class Fechados extends AbstractService {
         return true;
         
     }
+    
+    /**
+     * Trata os filtros 
+     * Faz a consulta com periodo atual
+     * Faz outra consulta retirando 1 ano do periodo
+     * retorna array de resultados 
+     * @param array $data
+     * @return array mixed
+     */
+    public function montaListaAtualAnterior($data) {
+        // Aborta caso filtro inicio vazio
+        if (empty($data['inicio'])) {
+            return [];
+        }
+        $this->data['inicio'] = $data['inicio'];
+        $this->data['fim'] = $data['fim'];
+        $this->data['administradora'] = $data['administradora'];
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        if(!$this->dateToObject('inicio')){
+            return [];            
+        }
+        if (!empty($data['fim'])){
+            if(!$this->dateToObject('fim')){
+                return [];            
+            }
+        }else{
+            $this->data['fim'] = clone $this->data['inicio'];
+            $this->data['fim']->add(new \DateInterval('P1M')); 
+            $this->data['fim']->sub(new \DateInterval('P1D')); 
+        }
+        $periodoAtual = $this->getRep()->findFechados($this->data);
+        
+        $this->data['inicio']->sub(new \DateInterval('P1Y')); 
+        $this->data['fim']->sub(new \DateInterval('P1Y')); 
+        $periodoAntes = $this->getRep()->findFechados($this->data);
+        
+        return $this->juntaAtualAntes($periodoAtual,$periodoAntes);
+    }
+
+    /**
+     * Unifica os resultados para um unico array para exibição
+     * @param array $periodoAtual
+     * @param array $periodoAntes
+     * @return array
+     */
+    public function juntaAtualAntes(&$periodoAtual, &$periodoAntes) {
+        $uniao = [];
+        foreach ($periodoAtual as $value) {
+            $antes = $this->getInArray($periodoAntes,$value['id']);
+            $uniao[] = ['id' => $value['id'], 
+                        'nome' => $value['nome'], 
+                        'atual' => ['qtd' => $value['qtd'], 'total' => $value['total']], 
+                        'antes' => ['qtd' => $antes['qtd'], 'total' => $antes['total']]];
+        }
+        foreach ($periodoAntes as $value) {
+            $uniao[] = ['id' => $value['id'], 
+                        'nome' => $value['nome'], 
+                        'atual' => ['qtd' => 0, 'total' => 0], 
+                        'antes' => ['qtd' => $value['qtd'], 'total' => $value['total']]];
+        }
+        return $uniao;
+    }
+
+    /**
+     * Busca no array o registro com a chave passada
+     * Caso exista ele monta valores para retornar e apaga registro do array
+     * Caso não exista retorna um array com os valores zerados.
+     * @param type $periodoAntes
+     * @param type $value
+     * @return array
+     */
+    public function getInArray(&$periodoAntes, $value) {
+        $antes = ['qtd' => 0, 'total' => 0];
+        foreach ($periodoAntes as $key => $reg) {
+            if($reg['id'] == $value){
+                $antes['qtd'] = $reg['qtd'];
+                $antes['total'] = $reg['total'];
+                unset($periodoAntes[$key]);
+            }
+        }
+        return $antes;
+    } 
 
 }

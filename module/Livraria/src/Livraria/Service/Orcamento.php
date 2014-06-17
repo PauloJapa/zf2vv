@@ -178,12 +178,13 @@ class Orcamento extends AbstractService {
         );
         
         if(!$this->data['taxa']){
-            var_dump($this->data['seguradora']->getId());
-            var_dump($this->data['atividade']->getId());
-            var_dump($this->data['criadoEm']);
-            var_dump(str_replace(',', '.', $this->data['comissao']));
-            var_dump($this->data['validade']);
-            var_dump($this->data['tipoCobertura']);
+            echo 'Seguradora', $this->data['seguradora']->getId() , '<br />';
+            echo 'Atividade', $this->data['atividade']->getId() , '<br />';
+            echo 'Criado em ', $this->data['criadoEm']->format('d/m/Y') , '<br />';
+            echo 'Comissão ', str_replace(',', '.', $this->data['comissao']) , '<br />';
+            echo 'Validade ', $this->data['validade'] , '<br />';
+            echo 'Tipo de cobertura ', $this->data['tipoCobertura'] , '<br />';
+            echo '<br />';
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
         }
         
@@ -228,6 +229,7 @@ class Orcamento extends AbstractService {
             return;
         }
         $log = new LogOrcamento($this->em);
+        $log->setFlush($this->getFlush());
         $dataLog['orcamento']  = $this->data['id']; 
         $dataLog['tabela']     = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos' ;
@@ -448,12 +450,13 @@ class Orcamento extends AbstractService {
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
-        if(empty($this->data['imovel']))
+        if (empty($this->data['imovel'])) {
             return array('Um imovel deve ser selecionado!');
-        
+        }
         $inicio = $this->data['inicio'];
-        if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
+        if (!is_object($inicio)) {
             return array('A data deve ser preenchida corretamente!');
+        }
         // Lello validar pela referencia do imovel.
         if(!empty($this->data['refImovel']) AND $this->data['administradora']->getId() == 3234){
             $filtro['refImovel'] = $this->data['refImovel'];            
@@ -466,7 +469,7 @@ class Orcamento extends AbstractService {
         $erro = array();
         foreach ($entitys as $entity) {
             //Caso de edição pular o proprio registro.
-            if($this->data['id'] == $entity->getId()){
+            if(isset($this->data['id']) AND $this->data['id'] == $entity->getId()){
                 continue;
             }
             // Validar data do inicio deste registro para que nao conflite com algum existente!!
@@ -482,17 +485,17 @@ class Orcamento extends AbstractService {
             }
             if($entity->getStatus() == "A"){
                 $erro[] = "Alerta!" ;
-                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
                 $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
             if($entity->getStatus() == "F"){
                 $erro[] = "Alerta!" ;
-                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
                 $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
             if($entity->getStatus() == "R"){
                 $erro[] = "Alerta!" ;
-                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
+                $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
                 $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
         }

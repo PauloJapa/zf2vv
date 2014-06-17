@@ -29,11 +29,123 @@ class Renovacao extends AbstractService {
      * @var type
      */
     protected $fechado;
+    
+    /**
+     * Data de agora da classe
+     * @var \DateTime
+     */
+    protected $dataAgora;
+    
+    /**
+     * Repository da Entity ComissaoEnt
+     * @var Livraria\Entity\ComissaoRepository
+     */
+    protected $comissaoEntRep;
+    
+    /**
+     * Repository da Entity Taxa
+     * @var Livraria\Entity\TaxaRepository
+     */
+    protected $taxaEntRep;
+    
+    /**
+     * Repository da Entity MultiplosMinimos
+     * @var Livraria\Entity\MultiplosMinimosRepository
+     */
+    protected $multiplosMinimosRep;
+    
+    /**
+     * Repository da Entity Fechados
+     * @var Livraria\Entity\FechadosRepository
+     */
+    protected $fechadoRep;
+    
+    /**
+     * Repository da Entity Orcamento
+     * @var Livraria\Entity\OrcamentoRepository
+     */
+    protected $orcaRep;
+    
+    /**
+     * Serviço da Entity LogRenovacao
+     * @var LogRenovacao
+     */
+    protected $logRenovacaoServ;
+    
+    /**
+     * Serviço da Entity LogFechados
+     * @var LogFechados
+     */
+    protected $logFechadosServ;
+    
+    /**
+     * Memoriza o primeiro ID de fechados 
+     * @var int
+     */
+    protected $idInicial = 0;
+    
+    
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Orcamento";
         $this->fechado = "Livraria\Entity\Fechados";
+        $this->dataAgora = new \DateTime('now');
+    }
+    
+    public function getDataAgora() {
+        return $this->dataAgora;
+    }
+    
+    public function getComissaoEntRep(){
+        if(is_null($this->comissaoEntRep)){
+            $this->comissaoEntRep = $this->em->getRepository('Livraria\Entity\Comissao');            
+        }
+        return $this->comissaoEntRep;
+    }
+    
+    public function getTaxaRep(){
+        if(is_null($this->taxaEntRep)){
+            $this->taxaEntRep = $this->em->getRepository('Livraria\Entity\Taxa');
+        }
+        return $this->taxaEntRep;
+    }
+    
+    public function getMultiplosMinimosRep(){
+        if(is_null($this->multiplosMinimosRep)){
+            $this->multiplosMinimosRep = $this->em->getRepository('Livraria\Entity\MultiplosMinimos');
+        }
+        return $this->multiplosMinimosRep;
+    }
+    
+    public function getFechadoRep() {
+        if(is_null($this->fechadoRep)){
+            $this->fechadoRep = $this->em->getRepository('Livraria\Entity\Fechados');
+        }
+        return $this->fechadoRep;        
+    }
+    
+    public function getOrcamentoRep() {
+        if(is_null($this->orcaRep)){
+            $this->orcaRep = $this->em->getRepository('Livraria\Entity\Orcamento');
+        }
+        return $this->orcaRep;        
+    }
+    
+    public function getlogRenovacaoServ() {
+        if(is_null($this->logRenovacaoServ)){
+            $this->logRenovacaoServ = new LogRenovacao($this->em);
+            $this->logRenovacaoServ->setFlush($this->getFlush());
+        }
+        return $this->logRenovacaoServ;
+    }
+    
+    public function getlogFechadosServ() {
+        if(is_null($this->logFechadosServ)){
+            $this->logFechadosServ = new LogFechados($this->em);
+            $this->logFechadosServ->setFlush($this->getFlush());
+        }
+        return $this->logFechadosServ;
     }
     
     public function delete($id,$data) {
@@ -78,58 +190,69 @@ class Renovacao extends AbstractService {
         }
         $this->data['mensalSeq']++;
         $this->data['orcaReno'] = 'reno';
-        $this->data['criadoEm'] = new \DateTime('now');
+        $this->data['criadoEm'] = $this->getDataAgora();
         $this->data['inicio'] = $this->fechado->getInicio('obj');
         //Nova Vigência
         $resul = $this->recalculaVigencia();
-        if($resul !== TRUE)
+        if ($resul !== TRUE) {
             return $resul;
-        
+        }
+
         //Pegando o locatario atual desse imovel porque o locatario pode ter sido trocado no meio da vigencia do fechado
         //Quando a troca de locatario é apenas atualizado no imovel.
         $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
         $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
 
+/* Renovação mensal não precisa recalcular seguro mantem o preço do anterior
         //  Novo calculo do premio
         //  Comissão da Administradora padrão
-        $this->data['comissaoEnt'] = $this->em
-            ->getRepository('Livraria\Entity\Comissao')
+        $this->data['comissaoEnt'] = $this->getComissaoEntRep()
             ->findComissaoVigente($this->data['administradora'],  $this->data['criadoEm']);
         $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
         
-        $this->data['taxa'] = $this->em
-                ->getRepository('Livraria\Entity\Taxa')
-                ->findTaxaVigente(
-                    $this->data['seguradora'], 
-                        $this->data['atividade'], 
-                        $this->data['criadoEm'], 
-                        str_replace(',', '.', $this->data['comissao']),
-                        $this->data['validade'],
-                        $this->data['tipoCobertura']
+        $this->data['taxa'] = $this->getTaxaRep()->findTaxaVigente(
+                $this->data['seguradora'], 
+                $this->data['atividade'], 
+                $this->data['criadoEm'], 
+                str_replace(',', '.', $this->data['comissao']), 
+                $this->data['validade'], 
+                $this->data['tipoCobertura']
         );
-        
+
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigênte nao encontrada!!!'];
         
-        $this->data['multiplosMinimos'] = $this->em
-            ->getRepository('Livraria\Entity\MultiplosMinimos')
+        $this->data['multiplosMinimos'] = $this->getMultiplosMinimosRep()
             ->findMultMinVigente($this->data['seguradora'],  $this->data['criadoEm']);
         
-        $this->data['administradora'] = $this->fechado->getAdministradora()->getObjeto();
+        //$this->data['administradora'] = $this->fechado->getAdministradora()->getObjeto();
         $resul = $this->CalculaPremio();
+*/
         
         $this->data['fechadoId'] = '0';
         
         //Faz inserção do fechado no BD
-        $resul = $this->insert();
+        if($this->idInicial == 0){
+            $this->setFlush(TRUE);
+            $resul = $this->insert();
+            $this->idInicial = $this->data['id'];
+            $this->setFlush(FALSE);
+        }else{
+            $this->idInicial++;
+            $this->data['id'] = $this->idInicial;
+            $resul = $this->insert();
+        }
         
         if($resul[0] === TRUE){
             //Registra o id do fechado de Orçamento
-            $this->fechado->setRenovacaoId($this->data['id']);
-            $this->fechado->setStatus('R');
-            $this->em->persist($this->fechado);
-            $this->em->flush();
-            $this->registraLogFechado();
+            $atualizaSeguro = $this->getFechadoRep()->setSeguroRenovado($this->fechado->getId(), $this->data['id'], 'R');
+            if($atualizaSeguro){
+                $this->registraLogFechado();
+            }else{
+                echo '<h1>erro ao atualiza seguro fechado com id da renovacao ', $this->fechado->getId();
+            }
+        }else{
+            $this->idInicial--; //caso de erro na inserção decrementa o idinicial que foi incrementado e não usado
         }
         
         return $resul;
@@ -167,8 +290,7 @@ class Renovacao extends AbstractService {
     
     public function registraLogFechado(){
         //Criar serviço logorcamento
-        $log = new LogFechados($this->em);
-        $dataLog['fechados']    = $this->fechado;
+        $dataLog['fechados']   = $this->em->getReference('Livraria\Entity\Fechados', $this->fechado->getId());
         $dataLog['tabela']     = 'log_fechados';
         $dataLog['controller'] = 'renovacaos' ;
         $dataLog['action']     = 'gerarRenovacao';
@@ -176,7 +298,18 @@ class Renovacao extends AbstractService {
         $renovacao = $this->data['id'] . '/' . $this->data['codano'];
         $dataLog['mensagem']   = 'Renovar Seguro(' . $fechado . ') e gerou a renovacao de numero ' . $renovacao ;
         $dataLog['dePara']     = '';
-        $log->insert($dataLog);
+        $this->getlogFechadosServ()->insert($dataLog);
+    }
+    
+    public function saveLogRenovacao($data, $tot, $ok, $ng){
+        // Gerar log dos seguros renovados
+        $obs = 'Gerou Renovação dos seguros mensal:<br>';
+        $obs .= 'Mes = '. $data['mesNiver'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= 'Total = '. $tot .'<br>';
+        $obs .= 'Sucesso = '. $ok .'<br>';
+        $obs .= 'Criticados = '. $ng .'<br>';
+        $this->logForSis('orcamento', '', 'renovacaos', 'gerarRenovacao', $obs);
     }
 
         /**
@@ -230,7 +363,6 @@ class Renovacao extends AbstractService {
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      */
     public function logForNew(){
-        $log = new LogRenovacao($this->em);
         $dataLog['renovacao']  = $this->data['id']; 
         $dataLog['tabela']     = 'log_renovacao';
         $dataLog['controller'] = 'renovacaos' ;
@@ -239,7 +371,7 @@ class Renovacao extends AbstractService {
         $renovacao   = $this->data['id'] . '/' . $this->data['codano'];
         $dataLog['mensagem']   = 'Nova renovação de seguro n ' . $renovacao . ' do seguro fechado n ' . $fechado;
         $dataLog['dePara']     = '';
-        $log->insert($dataLog);
+        $this->getlogRenovacaoServ()->insert($dataLog);
     }
 
     /** 
@@ -315,32 +447,39 @@ class Renovacao extends AbstractService {
      */
     public function isValid(){ 
         // Valida se o registro esta conflitando com algum registro existente
-        $repository = $this->em->getRepository($this->entity);
         $filtro = array();
         if(empty($this->data['imovel']))
             return array('Um imovel deve ser selecionado!');
         
         $inicio = $this->data['inicio'];
+        $fim    = $this->data['fim'];
         if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
             return array('A data deve ser preenchida corretamente!');
             
         $filtro['imovel'] = $this->data['imovel']->getId();
-        $entitys = $repository->findBy($filtro);
+        $entitys =$this->getOrcamentoRep()->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
-            if($this->data['id'] != $entity->getId()){
-                if(($inicio < $entity->getFim('obj'))){
-                    if($entity->getStatus() == "A"){
-                        $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
-                        $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
-                    }
-                    if($entity->getStatus() == "F"){
-                        $erro[] = "Alerta!" ;
-                        $erro[] = 'Vigencia ' . $inicio->format('d/m/Y') . ' <= ' . $entity->getFim();
-                        $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
-                    }
-                }
+            if(isset($this->data['id']) and ($this->data['id'] == $entity->getId())){
+                continue;
+            }
+            if(($inicio >= $entity->getFim('obj'))){
+                continue; // Inicio vigencia maior ou igual ao fim de vig. do seg. da base
+            }
+            if($fim <= $entity->getInicio('obj')){
+                continue; // Fim vigencia menor ou igual ao inicio de vig. do seg. da base
+            }
+            if($entity->getStatus() == "A"){
+                $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
+                $erro[] = "Já existe uma novo Orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            }
+            if($entity->getStatus() == "R"){
+                $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
+                $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+            }
+            if($entity->getStatus() == "F"){
+                $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
+                $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
         }
         

@@ -1,10 +1,16 @@
-<h1>Resultado Período <? echo $this->date['inicio']; ?> até <? echo $this->date['fim']; ?></h1>
+<h2>Resultado Período Antes <? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); 
+$this->date['inicio']->add(new \DateInterval('P1Y'));
+$this->date['fim']->add(new \DateInterval('P1Y'));
+?></h2>
+<h2>Resultado Período Atual <? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); ?></h2>
 <br />
 <?php
 $coluns = array(
     'Seq',
     'U.E.',
     'Administradora',
+    'Anterior Quant. Seguros',
+    'Anterior Prêmio ',
     'Quant. Seguros',
     'Prêmio'
     );
@@ -14,35 +20,32 @@ $td     = array(
     '',
     'class="r"',
     'class="r"',
+    'class="r"',
+    'class="r"',
 );
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => false));
 
-$admCod = $fechado = $totFechado = $seq =  $totPremio =  $premio = 0;
-$admNome  = '';
-foreach($this->data as $key => $arrayResul){
+$totFechado = $totFechadoA = $seq =  $totPremio =  $totPremioA =  0;
+foreach($this->data as $key => $values){
     // Mudou adm exibe resulta e reseta valores
-    if($admCod != $arrayResul['administradora']['id']){
-        if($admCod != 0){
-            $seq ++;
-            echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $fechado, number_format($premio, 2, ',', '.')]));
-        }
-        $fechado = $premio = 0;
-        $admCod  = $arrayResul['administradora']['id'];
-        $admNome = $arrayResul['administradora']['nome'];
-    }
-    //Adminitradora acumula resutado
-    //Contagem separando em orçamento e renovação 
-        $fechado    ++; 
-        $totFechado ++;
-        $premio     += $arrayResul['premioTotal'];
-        $totPremio  += $arrayResul['premioTotal'];
+    $seq ++;
+    echo $this->ViewIndex('line',array('data' =>[  $seq, 
+                                                    $values['id'], 
+                                                    $values['nome'], 
+                                                    $values['antes']['qtd'], 
+                                                    number_format($values['antes']['total'], 2, ',', '.'),
+                                                    $values['atual']['qtd'], 
+                                                    number_format($values['atual']['total'], 2, ',', '.')
+                                                ]));
+    // SOMATORIA GERAL 
+    $totFechadoA += $values['antes']['qtd'];
+    $totPremioA  += $values['antes']['total'];
+    $totFechado += $values['atual']['qtd'];
+    $totPremio  += $values['atual']['total'];
 }
-// ultima linha de registros
-$seq ++;
-echo $this->ViewIndex('line',array('data' => [$seq, $admCod, $admNome, $fechado, number_format($premio, 2, ',', '.')]));
 // Totaliza Dados
-echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totFechado, number_format($totPremio, 2, ',', '.')]));
+echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totFechadoA, number_format($totPremioA, 2, ',', '.'), $totFechado, number_format($totPremio, 2, ',', '.')]));
 
 echo $this->ViewIndex('close');
 

@@ -117,11 +117,10 @@ abstract class AbstractService {
         $this->entityReal = new $this->entity($this->data);
         
         $this->em->persist($this->entityReal);
-        if($this->getFlush())
+        if ($this->getFlush()) {
             $this->em->flush();
-        
-        $this->data['id'] = $this->entityReal->getId();
-        
+            $this->data['id'] = $this->entityReal->getId();
+        }        
         return TRUE;
     }   
     
@@ -503,7 +502,12 @@ abstract class AbstractService {
         }
         
         //Verificar Se administradora tem total de cobertura minima e compara
-        $coberturaMinAdm = $this->getParametroSis($this->data['administradora']->getId() . '_cob_min');
+        if(is_object($this->data['administradora'])){
+            $idAdm = $this->data['administradora']->getId();
+        }else{
+            $idAdm = $this->data['administradora'];            
+        }
+        $coberturaMinAdm = $this->getParametroSis($idAdm . '_cob_min');
         $totalAntes = 0.0;
         if($coberturaMinAdm !== FALSE);{
             if($total < $coberturaMinAdm){
@@ -694,5 +698,14 @@ abstract class AbstractService {
         $dataLog['dePara']     = $obs;
         $dataLog['ip']         = $_SERVER['REMOTE_ADDR'];
         $log->setFlush($this->getFlush())->insert($dataLog);
+    }  
+    
+    /**
+     * Retorna o filtro solicitado se não existir retorna falso
+     * @param mixed $index
+     * @return mixed
+     */
+    public function getFiltroData($index) {
+        return (isset($this->data[$index])) ? $this->data[$index] : FALSE;
     }
 }
