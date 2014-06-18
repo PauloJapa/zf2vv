@@ -406,12 +406,18 @@ class Orcamento extends AbstractSeguro {
      * @ORM\Column(name="orca_reno", type="string", length=5, nullable=true)
      */
     protected $orcaReno;
+
+    /**
+     * @ORM\Column(type="text")
+     * @var string
+     */
+    protected $assist24;
     
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
      * Tambem carrega as data de criadoEm e alteradoEm atuais 
-     * @param Array $option
+     * @param Array $options
      */    
     public function __construct($options = null) {
         $this->alteradoEm = new \DateTime('now');

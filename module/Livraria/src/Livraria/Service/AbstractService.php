@@ -509,11 +509,14 @@ abstract class AbstractService {
         }
         $coberturaMinAdm = $this->getParametroSis($idAdm . '_cob_min');
         $totalAntes = 0.0;
-        if($coberturaMinAdm !== FALSE);{
+        if($coberturaMinAdm !== FALSE){
             if($total < $coberturaMinAdm){
                 $totalAntes = $total;
                 $total = $coberturaMinAdm;
             }
+        }
+        if($this->data['assist24'] == 'S'){
+            $total += $this->getAssist24Vlr();
         }
      /*   
         if ($this->data['validade'] == 'mensal'){
@@ -708,4 +711,9 @@ abstract class AbstractService {
     public function getFiltroData($index) {
         return (isset($this->data[$index])) ? $this->data[$index] : FALSE;
     }
+
+    public function getAssist24Vlr() {
+        return (floatval($this->getParametroSis('assist24_' . $this->data['ocupacao'] . '_' . $this->data['validade'])));
+    }
+
 }

@@ -864,6 +864,7 @@ class Fechados extends AbstractService {
         $metodos[] = 'FormaPagto';         $param[] = '';
         $metodos[] = 'Observacao';         $param[] = '';
         $metodos[] = 'MesNiver';           $param[] = '';
+        $metodos[] = 'Assist24';           $param[] = '';
         // Atualizar campos modificados        
         foreach ($metodos as $key => $metodo) {
             if(empty($param[$key])){

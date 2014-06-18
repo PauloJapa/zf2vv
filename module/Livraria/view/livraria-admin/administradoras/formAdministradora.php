@@ -51,6 +51,8 @@ echo
         $this->FormDefault(['validade' => 'radio']),
     "</td><td>\r",
         $this->FormDefault(['tipoCobertura' => 'select']),
+    "</td><td width='33%'>\r",
+        $this->FormDefault(['assist24' => 'radio']),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),  
         

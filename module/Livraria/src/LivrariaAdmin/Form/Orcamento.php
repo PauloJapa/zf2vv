@@ -146,10 +146,13 @@ class Orcamento extends AbstractEndereco {
             $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
             if(isset($filtro['seguradora'])){
                 $this->setComissao($filtro['seguradora']);                
-            }
+            }        
+            $assist24 = ['N' => 'Não', 'S' => 'Sim'];
+            $this->setInputRadio('assist24', 'Assistencia 24', $assist24);
         } else {
             $this->setInputHidden('seguradora');
             $this->setInputHidden('comissao');
+            $this->setInputHidden('assist24');
         }       
         
         $this->getEnderecoElements($em);

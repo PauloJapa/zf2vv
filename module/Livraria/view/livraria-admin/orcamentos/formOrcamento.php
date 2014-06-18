@@ -81,7 +81,7 @@ echo
         
     // Usuario Administrador pode alterar seguradora e valor da comissão    
     if ($user->getTipo() != 'admin') {
-        echo $this->FormDefault(['seguradora', 'comissao'], 'hidden');
+        echo $this->FormDefault(['seguradora', 'comissao','assist24'], 'hidden');
     } else {
         echo 
         $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
@@ -89,6 +89,8 @@ echo
                 $this->FormDefault(['comissao' => 'select']),
             "</td><td>", PHP_EOL,
                 $this->FormDefault(['seguradora' => 'select']),
+            "</td><td>", PHP_EOL,
+                $this->FormDefault(['assist24' => 'radio']),
             "</td><td>", PHP_EOL,
                 $this->FormDefault(['logOrca' => 'buttonOnly']),
             "</td>", PHP_EOL,

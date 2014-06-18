@@ -49,6 +49,9 @@ class Administradora extends AbstractEndereco {
         
         $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradora', '*Seguradora',$this->seguradoras);
+        
+        $assist24 = ['N' => 'Não', 'S' => 'Sim'];
+        $this->setInputRadio('assist24', 'Assistencia 24', $assist24);
      
         $this->getEnderecoElements($em);
         

@@ -120,6 +120,12 @@ class Administradora extends Filtro {
      * @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      */
     protected $seguradora;
+
+    /**
+     * @ORM\Column(type="text")
+     * @var string
+     */
+    protected $assist24;
     
 
     
@@ -379,6 +385,24 @@ class Administradora extends Filtro {
         $this->seguradora = $seguradora;
         return $this;
     }
+    
+    /**
+     * Assistencia da asseguradora 24 horas para o cliente
+     * @return string
+     */
+    public function getAssist24() {
+        return $this->assist24;
+    }
+
+    /**
+     * Assistencia da asseguradora 24 horas para o cliente
+     * @param string $assist24
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setAssist24($assist24) {
+        $this->assist24 = $assist24;
+        return $this;
+    }
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -397,6 +421,7 @@ class Administradora extends Filtro {
         $data['CreatedAt']      = $this->getCreatedAt();
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 
         $data['seguradora']     = $this->getSeguradora()->getId(); 
+        $data['assist24']       = $this->getAssist24(); 
         return $data ;
     }
 

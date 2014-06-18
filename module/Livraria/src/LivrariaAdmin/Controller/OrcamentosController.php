@@ -41,11 +41,12 @@ class OrcamentosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
       //  var_dump($user);
         $sessionContainer = new SessionContainer("LivrariaAdmin");
+        $adm = $sessionContainer->administradora;
        
-        if(($user->getTipo() == 'admin') and (!isset($sessionContainer->administradora['id'])) and ($redirect))
+        if(($user->getTipo() == 'admin') and (!isset($adm['id'])) and ($redirect))
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'escolheAdm'));
         
-        if(isset($sessionContainer->administradora['id']))
+        if(isset($adm['id']))
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'new'));
         
         $id = $user->getId();
@@ -191,8 +192,8 @@ class OrcamentosController extends CrudController {
     public function newAction() {
         
         $sessionContainer = new SessionContainer("LivrariaAdmin");
-        
-        if(!isset($sessionContainer->administradora['id'])){
+        $adm = $sessionContainer->administradora;
+        if(!isset($adm['id'])){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
         }
        
@@ -204,7 +205,7 @@ class OrcamentosController extends CrudController {
             if(($this->getIdentidade()->getTipo() == 'admin')and(!isset($sessionContainer->expiraSessaoMontada))){
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'escolheAdm'));
             }
-            $data['administradora'] = $sessionContainer->administradora['id'];
+            $data['administradora'] = $adm['id'];
             $data['seguradora']     = $sessionContainer->seguradora['id'];
             $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
             //Buscar paramentros de comissão e seus multiplos
@@ -212,10 +213,11 @@ class OrcamentosController extends CrudController {
                 ->getRepository('Livraria\Entity\Comissao')
                 ->findComissaoVigente($data['administradora'],  $data['criadoEm']);
             $data['comissaoEnt'] = $comissaoEnt->getId();
-            $data['comissao'] = $comissaoEnt->floatToStr('comissao');
-            $data['formaPagto'] = $sessionContainer->administradora['formaPagto'];
-            $data['validade'] = $sessionContainer->administradora['validade'];
-            $data['tipoCobertura'] = $sessionContainer->administradora['tipoCobertura'];
+            $data['comissao']    = $comissaoEnt->floatToStr('comissao');
+            $data['formaPagto']    = $adm['formaPagto'];
+            $data['validade']      = $adm['validade'];
+            $data['tipoCobertura'] = $adm['tipoCobertura'];
+            $data['assist24']      = $adm['assist24'];
             //Se houver forma de pagamento dafult somente o usuario admin pode alterar
             if($this->getIdentidade()->getTipo() != 'admin'){
                 if($data['formaPagto'] != ''){

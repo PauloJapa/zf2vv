@@ -346,7 +346,7 @@ class AbstractSeguro  extends Filtro {
 
     /**
      * Cobertura para conteudo baseado no multiplo conteudo da seguradora vezes aluguel
-     * @param string $incendio
+     * @param string $conteudo
      * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setConteudo($conteudo) {
@@ -894,7 +894,7 @@ class AbstractSeguro  extends Filtro {
 
     /**
      * Entity do MultiplosMinimos
-     * @param \Livraria\Entity\Comissao $multiplosMinimos
+     * @param \Livraria\Entity\Comissao $comissaoEnt
      * @return \Livraria\Entity\Orcamento|Renovacao|Fechados|Renovacao|Fechados
      */
     public function setComissaoEnt(Comissao $comissaoEnt) {
@@ -935,6 +935,24 @@ class AbstractSeguro  extends Filtro {
      */
     public function setMensalSeq($mensalSeq) {
         $this->mensalSeq = $mensalSeq;
+        return $this;
+    }
+    
+    /**
+     * Assistencia da asseguradora 24 horas para o cliente
+     * @return string
+     */
+    public function getAssist24() {
+        return $this->assist24;
+    }
+
+    /**
+     * Assistencia da asseguradora 24 horas para o cliente
+     * @param string $assist24
+     * @return \Livraria\Entity\$entity
+     */
+    public function setAssist24($assist24) {
+        $this->assist24 = $assist24;
         return $this;
     }
     
@@ -1003,6 +1021,7 @@ class AbstractSeguro  extends Filtro {
         $data['cobVendaval']    = $this->floatToStr('cobVendaval');
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['mensalSeq']      = $this->getMensalSeq();
+        $data['assist24']       = $this->getAssist24(); 
         return $data ;
     }
     
@@ -1060,6 +1079,7 @@ class AbstractSeguro  extends Filtro {
         $data['comissaoEnt']    = $this->getComissaoEnt();
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
+        $data['assist24']       = $this->getAssist24(); 
         return $data ;
     }
     
