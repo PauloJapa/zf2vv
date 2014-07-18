@@ -159,7 +159,7 @@ class OrcamentoRepository extends AbstractRepository {
         $this->where .= ' AND f.inicio BETWEEN :inicio AND :fim';
         $this->where .= ' AND f.validade = :validade';
         $this->where .= ' AND f.mesNiver <> :mesFiltro';
-        $this->where .= ' AND f.mensalSeq <= :mensalSeq';
+//        $this->where .= ' AND f.mensalSeq <= :mensalSeq';
         
         $this->parameters['status']   = 'A';   // SEGURO que foi fechado
         $this->parameters['status2']   = 'AR'; // SEGURO MENSAL que foi fechado e renovado
@@ -171,7 +171,7 @@ class OrcamentoRepository extends AbstractRepository {
         }
         $this->parameters['mesFiltro'] = $mes;
         $this->parameters['validade'] = 'mensal';
-        $this->parameters['mensalSeq'] = 10;
+//        $this->parameters['mensalSeq'] = 10;
         if(!empty($adm)){
             $this->where .= '  AND f.administradora = :administradora';
             $this->parameters['administradora']  = $adm;

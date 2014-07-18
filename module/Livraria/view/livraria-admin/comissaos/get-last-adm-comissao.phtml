@@ -1,0 +1,23 @@
+<?php
+
+//echo '<h1>Nenhum resultado foi encontrado!!!!</h1>', $this->id;
+
+?>
+<br />
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }    
+    function edit(id){
+        document.getElementById('id2').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
+        envia(tar,'editar');
+    }   
+    edit('<?php echo $this->id; ?>');
+</script>

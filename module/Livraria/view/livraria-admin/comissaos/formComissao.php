@@ -14,13 +14,21 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados da Comissao', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
-        $this->FormDefault(['administradora' => 'select', 'inicio' => 'calend']),
+        $this->FormDefault(['subOpcao'], 'hidden'),
+        $this->FormDefault(['administradora' => 'select']),
     "</td><td>\r",
-        $this->FormDefault(['comissao' => 'float', 'fim' => 'calend']),
+        $this->FormDefault(['comissao' => 'select']),
     "</td><td>\r",
-        $this->FormDefault(['status' => 'select','subOpcao' => 'hidden']),
+        $this->FormDefault(['comissaoRes' => 'select']),
     "</td>\r",      
-
+"</tr><tr>\r",
+    "<td>\r",
+        $this->FormDefault(['inicio' => 'calend']),
+    "</td><td>\r",
+        $this->FormDefault(['fim' => 'calend']),
+    "</td><td>\r",
+        $this->FormDefault(['status' => 'select']),
+    "</td>\r",      
 "</tr>\r",
 "</table>\r",        
 $this->FormDefault(['legend'=>'Multiplos'],'fieldIni'),
@@ -50,5 +58,12 @@ $this->FormDefault(['submit' => 'enviar'],'fim');
     function voltar(){
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
         envia(tar,'',formName);
+    }
+    function getLastAdmComissao(obj){  
+        if($('#administradora').val() == ''){
+            return;
+        }
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'getLastAdmComissao')); ?>";
+        envia(tar,'',formName);        
     }
 </script>

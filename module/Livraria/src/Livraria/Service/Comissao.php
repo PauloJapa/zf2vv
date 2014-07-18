@@ -117,6 +117,7 @@ class Comissao extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Data inicio', $ent->getInicio(), $this->data['inicio']->format('d/m/Y'));
         $this->dePara .= $this->diffAfterBefore('Data fim', $ent->getFim(), $ent->trataData($this->data['fim']));
         $this->dePara .= $this->diffAfterBefore('Comissão', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
+        $this->dePara .= $this->diffAfterBefore('Comissão Res.', $ent->floatToStr('comissaoRes'), $this->strToFloat($this->data['comissaoRes']));
         $this->dePara .= $this->diffAfterBefore('M. Incendio', $ent->floatToStr('multIncendio'), $this->strToFloat($this->data['multIncendio']));
         $this->dePara .= $this->diffAfterBefore('M. Conteudo', $ent->floatToStr('multConteudo'), $this->strToFloat($this->data['multConteudo']));
         $this->dePara .= $this->diffAfterBefore('M. Aluguel', $ent->floatToStr('multAluguel'), $this->strToFloat($this->data['multAluguel']));

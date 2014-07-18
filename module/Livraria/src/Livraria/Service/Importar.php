@@ -27,6 +27,8 @@ class Importar extends AbstractService{
     protected $repOrcamento;    
     protected $entitys;    
     protected $estados;
+    protected $date;
+    protected $assit24;
     
     /**
      * Contruct recebe EntityManager para manipulação de registros
@@ -34,6 +36,7 @@ class Importar extends AbstractService{
      */
     public function __construct(EntityManager $em) {
         $this->em = $em;
+        $this->date = new \DateTime() ;
     }
     
     /**
@@ -105,6 +108,8 @@ class Importar extends AbstractService{
         if(!$file){
             return FALSE;
         }
+        $lello = $this->em->find('Livraria\Entity\Administradora',3234);
+        $this->assit24 = $lello->getAssist24();
         $arrayFile = file($file);
         $service = new Orcamento($this->em);
         // ferramentas para locador
@@ -336,7 +341,7 @@ class Importar extends AbstractService{
         $this->data['seguroEmNome'] = '02' ;
         $this->data['validade'] = 'anual' ;
         $this->data['formaPagto'] = '01' ;
-        $this->data['criadoEm'] = new \DateTime() ;
+        $this->data['criadoEm'] = $this->date ;
         
         $this->data['comissaoEnt'] = '13' ;
         $this->data['taxa'] = '' ;
@@ -351,6 +356,8 @@ class Importar extends AbstractService{
         $this->data['proposta'] = '' ;
         $this->data['mesNiver'] = '' ;
         $this->data['codigoGerente'] = '' ;
+        $this->data['mensalSeq'] = '0' ;
+        $this->data['assist24'] = $this->assit24 ;
         
     }
     

@@ -32,6 +32,13 @@ class Comissao extends Filtro
     private $comissao;
 
     /**
+     * @var float $comissao
+     *
+     * @ORM\Column(name="comissao_res", type="decimal", nullable=false)
+     */
+    private $comissaoRes;
+
+    /**
      * @var \DateTime $inicio
      *
      * @ORM\Column(name="inicio", type="datetime", nullable=false)
@@ -168,7 +175,7 @@ class Comissao extends Filtro
     }
     
     /**
-     * Valor da comissão
+     * Valor da comissão Seguro Comerciais
      * @return float 
      */
     public function getComissao() {
@@ -182,6 +189,24 @@ class Comissao extends Filtro
      */
     public function setComissao($comissao) {
         $this->comissao = $this->trataFloat($comissao);
+        return $this;
+    }
+    
+    /**
+     * Valor da comissão Seguros Residenciais
+     * @return float 
+     */
+    public function getComissaoRes() {
+        return $this->comissaoRes;
+    }
+
+    /**
+     * Recebe uma string para converter em float
+     * @param string $comissaoRes
+     * @return \Livraria\Entity\Comissao
+     */
+    public function setComissaoRes($comissaoRes) {
+        $this->comissaoRes = $this->trataFloat($comissaoRes);
         return $this;
     }
 
@@ -441,6 +466,7 @@ class Comissao extends Filtro
     public function toArray() {
         $data['id']               = $this->getId();
         $data['comissao']         = $this->floatToStr('comissao');
+        $data['comissaoRes']      = $this->floatToStr('comissaoRes');
         $data['inicio']           = $this->getInicio();
         $data['fim']              = $this->getFim();
         $data['status']           = $this->getStatus();

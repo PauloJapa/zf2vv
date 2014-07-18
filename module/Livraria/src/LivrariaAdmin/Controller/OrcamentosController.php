@@ -53,6 +53,7 @@ class OrcamentosController extends CrudController {
         $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
         
         $sessionContainer->administradora = $user->getAdministradora()->toArray();
+//        echo '<pre>';        var_dump($sessionContainer->administradora); die;
         if(!is_array($sessionContainer->administradora))
             return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
             
@@ -208,6 +209,7 @@ class OrcamentosController extends CrudController {
             $data['administradora'] = $adm['id'];
             $data['seguradora']     = $sessionContainer->seguradora['id'];
             $data['criadoEm']       = (empty($data['criadoEm']))? (new \DateTime('now'))->format('d/m/Y') : $data['criadoEm'];
+            $data['inicio']         = (empty($data['inicio']))?   (new \DateTime('now'))->format('d/m/Y') : $data['inicio'];            
             //Buscar paramentros de comissão e seus multiplos
             $comissaoEnt = $this->getEm()
                 ->getRepository('Livraria\Entity\Comissao')
@@ -280,8 +282,49 @@ class OrcamentosController extends CrudController {
         
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-        
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora, 'imprimeProp' => '0'])); 
+        $arrayParam = $this->getCalculoParams($adm['id']);
+        $arrayParam['administradora'] = $sessionContainer->administradora ;
+        $arrayParam['imprimeProp'] = '0' ;
+        return new ViewModel(array_merge($this->getParamsForView(), $arrayParam)); 
+    }
+    
+    /**
+     * Retorna os parametros para calculo 
+     * - Comissão relacionadas a cadas seguradora
+     * - Comissão para residencial e comercial parametrizado na tabela comissão
+     * - Cobertura para residencial e comercial parametrizado na tabela Administradora
+     */
+    public function getCalculoParams($idAdm) {
+     // - Comissão relacionadas a cadas seguradora
+        $seguradoras = $this->getEm()->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
+        $param = [];
+        foreach ($seguradoras as $key => $value) {           
+            $comissaoKey = 'comissaoParam' . str_pad($key, 3, '0', STR_PAD_LEFT);
+            $comissao = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs($comissaoKey);
+            $retira = array_shift($comissao);
+            foreach ($comissao as $vlr => $txt) {
+                $param[$key][$vlr] = $txt ;
+            } 
+        }
+        // - Comissão para residencial e comercial parametrizado na tabela comissão     
+        /* @var $entComissao \Livraria\Entity\Comissao */
+        $entComissao = $this->getEm()->getRepository('Livraria\Entity\Comissao')->findOneBy(['administradora' => $idAdm],['inicio'=>'DESC']);
+        if($entComissao){
+            $param['comissaoComercial'] = $entComissao->floatToStr('comissao');
+            $param['comissaoResidencial'] = $entComissao->floatToStr('comissaoRes');
+        } 
+      
+        // - Cobertura para residencial e comercial parametrizado na tabela Administradora   
+        /* @var $entAdm \Livraria\Entity\Administradora */
+        $entAdm = $this->getEm()->find('Livraria\Entity\Administradora', $idAdm);
+        if($entAdm){
+            $param['coberturaComercial'] = $entAdm->getTipoCobertura();
+            $param['coberturaResidencial'] = $entAdm->getTipoCoberturaRes();
+            $param['seguradora'] = $entAdm->getSeguradora()->getId();
+        } 
+        $parray['param'] = $param ;
+//        echo '<pre>'; var_dump($parray);die;
+        return $parray;
     }
     
     /**
@@ -516,8 +559,11 @@ class OrcamentosController extends CrudController {
           
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-        
-        return new ViewModel(array_merge($this->getParamsForView(),['administradora'=>$sessionContainer->administradora, 'imprimeProp'=>$imprimeProp])); 
+                
+        $arrayParam = $this->getCalculoParams($data['administradora']);
+        $arrayParam['administradora'] = $sessionContainer->administradora ;
+        $arrayParam['imprimeProp'] = $imprimeProp ;
+        return new ViewModel(array_merge($this->getParamsForView(),$arrayParam)); 
     }
     
     public function deleteAction(){
@@ -555,8 +601,8 @@ class OrcamentosController extends CrudController {
              "<html><head></head><body>teste popup</body></html>";
         die;
     }
-    
-    
+
+
     /*                          FUNÇOES DE IMPORTAÇÃO
     public function importarAction(){
         echo

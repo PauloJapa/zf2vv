@@ -201,24 +201,24 @@ return array(
                         'controller' => 'renovacaos',
                         'action' => 'index',
                         'pages' => array(
-                            'renovacao1' => array(
-                                'label' => 'Listar_Mensais',
-                                'route' => 'livraria-admin',
-                                'controller' => 'renovacaos',
-                                'action' => 'listarRenovados',
-                            ),
+//                            'renovacao1' => array(
+//                                'label' => 'Listar_Mensais',
+//                                'route' => 'livraria-admin',
+//                                'controller' => 'renovacaos',
+//                                'action' => 'listarRenovados',
+//                            ),
                             'renovacao2' => array(
                                 'label' => 'Gerar_Mensais',
                                 'route' => 'livraria-admin',
                                 'controller' => 'renovacaos',
                                 'action' => 'buscar',
                             ),
-                            'renovacao3' => array(
-                                'label' => 'Fechar_Mensais',
-                                'route' => 'livraria-admin',
-                                'controller' => 'renovacaos',
-                                'action' => 'buscarAbertos',
-                            ),
+//                            'renovacao3' => array(
+//                                'label' => 'Fechar_Mensais',
+//                                'route' => 'livraria-admin',
+//                                'controller' => 'renovacaos',
+//                                'action' => 'buscarAbertos',
+//                            ),
                         ),
                     ),
                     'fechados' => array(
@@ -266,13 +266,13 @@ return array(
                         'action' => 'imoveisDesocupados',
                     ),
                     'relatorios6' => array(
-                        'label' => 'Email Pré Fatura',
+                        'label' => 'Email Fatura',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'fechamentoSeguro',
                     ),
                     'relatorios7' => array(
-                        'label' => 'Pré Fatura',
+                        'label' => 'Fatura',
                         'route' => 'livraria-admin',
                         'controller' => 'relatorios',
                         'action' => 'buscarRelatorio',
@@ -428,7 +428,7 @@ return array(
                 ),
             ),
             'fatura' => array(
-                'label' => 'Pré Fatura',
+                'label' => 'Fatura',
                 'route' => 'livraria-admin',
                 'controller' => 'relatorios',
                 'action' => 'buscarRelatorio',

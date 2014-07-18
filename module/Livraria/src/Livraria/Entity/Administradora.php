@@ -76,11 +76,20 @@ class Administradora extends Filtro {
     protected $validade;
 
     /**
+     * O tipo de cobertura do seguro quando do tipo comercial
      * @var string $tipoCobertura
      *
      * @ORM\Column(name="tipo_cobertura", type="string", length=2, nullable=false)
      */
     protected $tipoCobertura;
+
+    /**
+     * O tipo de cobertura do seguro quando do tipo residencial
+     * @var string $tipoCoberturaRes
+     *
+     * @ORM\Column(name="tipo_cobertura_res", type="string", length=2, nullable=false)
+     */
+    protected $tipoCoberturaRes;
 
     /**
      * @ORM\Column(name="user_id_criado", type="integer")
@@ -242,7 +251,7 @@ class Administradora extends Filtro {
     /**
      * Params 01=A vista(no ato), 02=2vezes(1+1), 03=3vezes(1+2)
      * @param string $formaPagto
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Administradora
      */
     public function setFormaPagto($formaPagto) {
         $this->formaPagto = $formaPagto;
@@ -260,7 +269,7 @@ class Administradora extends Filtro {
     /**
      * 'mensal'|'anual'
      * @param string $validade
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Administradora
      */
     public function setValidade($validade){
         $this->validade = $validade;
@@ -269,7 +278,7 @@ class Administradora extends Filtro {
     }
     
     /**
-     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * Tipo de cobertura para comercial 01=Predio, 02=Predio + conteudo, 03=Conteudo
      * @return string
      */
     public function getTipoCobertura() {
@@ -277,12 +286,30 @@ class Administradora extends Filtro {
     }
 
     /**
-     * Tipo de cobertura 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * Tipo de cobertura para comercial 01=Predio, 02=Predio + conteudo, 03=Conteudo
      * @param string $tipoCobertura
-     * @return \Livraria\Entity\Orcamento
+     * @return \Livraria\Entity\Administradora
      */
     public function setTipoCobertura($tipoCobertura) {
         $this->tipoCobertura = $tipoCobertura;
+        return $this;
+    }
+    
+    /**
+     * Tipo de cobertura para residencial 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @return string
+     */
+    public function getTipoCoberturaRes() {
+        return $this->tipoCoberturaRes;
+    }
+
+    /**
+     * Tipo de cobertura para residencial 01=Predio, 02=Predio + conteudo, 03=Conteudo
+     * @param string $tipoCobertura
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setTipoCoberturaRes($tipoCoberturaRes) {
+        $this->tipoCoberturaRes = $tipoCoberturaRes;
         return $this;
     }
     
@@ -417,6 +444,7 @@ class Administradora extends Filtro {
         $data['formaPagto']     = $this->getFormaPagto();
         $data['validade']       = $this->getValidade();
         $data['tipoCobertura']  = $this->getTipoCobertura();
+        $data['tipoCoberturaRes']  = $this->getTipoCoberturaRes();
         $data['userIdCriado']   = $this->getUserIdCriado();
         $data['CreatedAt']      = $this->getCreatedAt();
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 

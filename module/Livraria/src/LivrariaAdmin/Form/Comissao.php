@@ -17,7 +17,10 @@ class Comissao extends AbstractForm {
 
         $this->setInputHidden('id');
 
-        $this->setInputText('comissao', '*Comissao', ['placeholder' => 'XX,XX']);
+        $comissao = [];
+        $this->setInputSelect('comissao', '*Comissão Comercial', $comissao);
+        
+        $this->setInputSelect('comissaoRes', '*Comissão Residencial', $comissao);
 
         $calend = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
         $this->setInputText('inicio', '*Inicio da Vigência', $calend);
@@ -33,9 +36,20 @@ class Comissao extends AbstractForm {
         $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
         $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
         
-        $this->setInputSelect('administradora', '*Administradora', $this->administradoras);
+        $atribAdmistrodora = ['onChange'=>'getLastAdmComissao(this)'];
+        $this->setInputSelect('administradora', '*Administradora', $this->administradoras, $atribAdmistrodora);
 
         $this->setInputSubmit('enviar', 'Salvar');
+    }
+    
+    public function setComissaoOptions($adm){
+        $entAdm = $this->em->find('Livraria\Entity\Administradora', $adm);
+        if($entAdm){
+            $param = str_pad($entAdm->getSeguradora()->getId(), 3, '0', STR_PAD_LEFT);
+            $comissao = $this->getParametroSelect('comissaoParam' . $param);
+            $this->setInputSelect('comissao', '*Comissão Comercial', $comissao);        
+            $this->setInputSelect('comissaoRes', '*Comissão Residencial', $comissao);
+        }
     }
 
 }

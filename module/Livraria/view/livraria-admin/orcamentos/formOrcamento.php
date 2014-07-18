@@ -49,16 +49,16 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administra
         $this->FormDefault(['criadoEm' => 'calend']),
     "</td>", PHP_EOL;
         
-    if($user->getNome() == 'Paulo Cordeiro Watakabe'){
-        echo
-    "</tr><tr>",
-        "<td>\n",
-            $this->formRow($form->get('content')),
-        "</td><td>",
-            $this->FormDefault(['importar'], 'submitOnly'),
-        "</td><td>",
-        "</td>\n";
-    }        
+//    if($user->getNome() == 'Paulo Cordeiro Watakabe'){
+//        echo
+//    "</tr><tr>",
+//        "<td>\n",
+//            $this->formRow($form->get('content')),
+//        "</td><td>",
+//            $this->FormDefault(['importar'], 'submitOnly'),
+//        "</td><td>",
+//        "</td>\n";
+//    }        
 echo 
   "</tr><tr>", PHP_EOL,
     "<td>",
@@ -77,27 +77,8 @@ echo
         $this->FormDefault(['cpf','cnpj'],'text'),
     "</td>", PHP_EOL,
   "</tr>", PHP_EOL,
-"</table>", PHP_EOL;
+"</table>", PHP_EOL,
         
-    // Usuario Administrador pode alterar seguradora e valor da comissão    
-    if ($user->getTipo() != 'admin') {
-        echo $this->FormDefault(['seguradora', 'comissao','assist24'], 'hidden');
-    } else {
-        echo 
-        $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
-            "<td>",
-                $this->FormDefault(['comissao' => 'select']),
-            "</td><td>", PHP_EOL,
-                $this->FormDefault(['seguradora' => 'select']),
-            "</td><td>", PHP_EOL,
-                $this->FormDefault(['assist24' => 'radio']),
-            "</td><td>", PHP_EOL,
-                $this->FormDefault(['logOrca' => 'buttonOnly']),
-            "</td>", PHP_EOL,
-        $this->FormDefault([],'fieldFim');
-    }
-
-echo 
 $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'fieldIni'),
 
     "<td colspan='3' nowrap>", PHP_EOL,
@@ -163,7 +144,27 @@ $this->FormDefault([],'fieldFim'),
         $this->FormDefault(['refImovel' => 'text']),
     "</td>", PHP_EOL,
   "</tr>", PHP_EOL,
-"</table>", PHP_EOL,
+"</table>", PHP_EOL;
+        
+    // Usuario Administrador pode alterar seguradora e valor da comissão    
+    if ($user->getTipo() != 'admin') {
+        echo $this->FormDefault(['seguradora', 'comissao','assist24'], 'hidden');
+    } else {
+        echo 
+        $this->FormDefault(['legend' => 'Parametros do Administrador:'],'fieldIni'),
+            "<td>",
+                $this->FormDefault(['comissao' => 'select']),
+            "</td><td>", PHP_EOL,
+                $this->FormDefault(['seguradora' => 'select']),
+            "</td><td>", PHP_EOL,
+                $this->FormDefault(['assist24' => 'radio']),
+            "</td><td>", PHP_EOL,
+                $this->FormDefault(['logOrca' => 'buttonOnly']),
+            "</td>", PHP_EOL,
+        $this->FormDefault([],'fieldFim');
+    }
+
+echo 
         
 $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
     "<td>",
@@ -178,6 +179,7 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         $this->FormDefault(['name' => 'vendaval','icone' => 'icon-pencil','js' => "setEmpty('vendaval')"],'iconeLine'),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
+        $this->FormDefault(['parcelaVlr' => 'moedaLine']),
         $this->FormDefault(['observacao' => 'textArea']),
     "</td><td style='vertical-align: middle; width:20%;'>", PHP_EOL,
         $this->FormDefault(['calcula'=>'submit']),
@@ -201,6 +203,8 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     var dateFormat = 'dd/mm/yyyy';
     var varVazio = ''; //Var para testar se campo cnpj ou cpf esta vazio
     var imprime = '<?php echo $this->imprimeProp ?>';
+    var param = <?php echo json_encode($this->param); ?>;
+    var user = '<?php echo $user->getTipo(); ?>';
     
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
@@ -336,36 +340,16 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         autoComp2(filtros,servico,'popAtividade',returns,'2',functionCall);
     }
 
-    function travaResidencial(){
-        var ocup = document.getElementsByName('ocupacao');
-        var tipoCob = '<? echo $this->administradora['tipoCobertura']; ?>';
-        var tcob = document.getElementById('tipoCobertura');
-        if(ocup[0].checked){
-            if(tipoCob != ''){ 
-                // Valor padrao para comercio caso esteja definido
-                tcob.selectedIndex = tipoCob ;
-            }else{
-                if(tcob.selectedIndex == 0){
-                    // Caso comercio em tipo cob em branco o sugerido é predio
-                    tcob.selectedIndex = 1 ;
-                }  
-            }
-        }
-        if(ocup[1].checked){
-            // Caso residencial é sempre predio + conteudo
-            tcob.selectedIndex = 2 ;
-        }
-        showIncOrIncCon();
-    }
-
     function setMesNiverOfMensal(click){
         if(($("input[name=validade]:checked").val() == 'anual') || ($("#inicio").val() == '')){
             $("#mesNiver").val('');
             if(click){
-                alert('Não se preocupe vamos preencher para você!!!');
+                alert('Não se preocupe vamos preencher para você!!!\n\n Porém é necessario colocar o inicio da vigência!!');
             }
+            document.getElementById('popmesNiver').style.display = 'none';
             return;
         }
+        document.getElementById('popmesNiver').style.display = 'block';
         var data = $('#inicio').val().split('/');
         $('#mesNiver').val(data[1]);
     }
@@ -390,39 +374,45 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
     function travaFormaPagto(){
         var vldd = document.getElementsByName('validade');
+        var fmPagto = document.getElementById('formaPagto');
         if(vldd[0].checked){
-            var fmPagto = document.getElementById('formaPagto');
             fmPagto.selectedIndex = 1 ;
+            fmPagto.options[1].text = "Mensal";
+        }else{
+            fmPagto.options[1].text = "A vista(no ato)";            
+        }
+        if(fmPagto.selectedIndex > 1){
+            document.getElementById('popparcelaVlr').style.display = 'block';
+            var parcView = document.getElementById('parcelaVlr');
+            var parc = fmPagto.selectedIndex;
+            var strClean = document.getElementById('premioTotal').value.replace(/[^0-9\,]+/g,"");
+            var total = Number(strClean.replace(',','.'));
+            if(total > 0){
+                var parcVlr = total / parc;
+                formatarCampo(parcVlr,parcView,100);
+            }else{
+                parcView.value = '';
+            }
+        }else{
+            document.getElementById('popparcelaVlr').style.display = 'none';
         }
     }
     
-    function travaComissaoAllianz(){
-        if($('#seguradora').val() == '3'){
-            switch($("input[name=ocupacao]:checked").val()){
-                case '01':
-                    $('#comissao').val('57,00');
-                    break;
-                case '02':
-                    $('#comissao').val('80,00');
-                    break;
+    
+    function formatarCampo(valor,dest,fator){
+        valor = Math.round (valor*fator)/fator ;
+        if(typeof(dest) === "string"){
+            destino = document.getElementById(dest);
+        }else{
+            destino = dest;
+        }
+        destino.value = valor;
+        for(i = 1; i < destino.value.length; i++){ //Coloca um zero no final Ex 1.5 para 1.50
+            if ((destino.value.charAt(i) == ".")&&(destino.value.charAt(i+2) == "")){
+                destino.value = destino.value + "0" ;
             }
         }
-    }
-
-    function setCobertura(){
-        var tcob = document.getElementById('tipoCobertura').value;
-        if(tcob == '02'){
-            document.getElementById('popincendio').style.display = 'none';
-            document.getElementById('popconteudo').style.display = 'block';
-            return;
-        }
-        if(tcob == ''){
-            document.getElementById('popincendio').style.display = 'none';
-            document.getElementById('popconteudo').style.display = 'none';
-            return;
-        }
-        document.getElementById('popincendio').style.display = 'block';
-        document.getElementById('popconteudo').style.display = 'none';
+        destino.value = destino.value.replace(".",",");
     }
 
     function cleanAtividade(){
@@ -659,10 +649,88 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         $('#cpf').val(cpfCnpj($('#cpf').val()));
         $('#cpfLoc').val(cpfCnpj($('#cpfLoc').val()));
     }
+    
+    function getComissao(){
+        $('#comissao option').remove();
+        seg = $('#seguradora').val();
+        $.each(param, function(index, value) {
+            if(index === seg){
+                $.each(value, function(key, vlr){
+                    $('#comissao').append(new Option(vlr, key));
+                });
+            }
+	});
+    }
 
+    function setCobertura(obj){
+        if(typeof obj === 'undefined'){
+            obj = {'name': ''};
+        }
+        if((user === 'admin') && (obj.name === 'tipoCobertura')){
+            return;
+        }
+        var ocup = document.getElementsByName('ocupacao');
+        var tcob = document.getElementById('tipoCobertura');
+        if(ocup[0].checked){ // Caso Comercial
+            $.each(param, function(index, value) {
+                if(index === 'coberturaComercial'){
+                    tcob.selectedIndex = value ;                    
+                }
+            });
+        }
+        if(ocup[1].checked){ // Caso residencial
+            $.each(param, function(index, value) {
+                if(index === 'coberturaResidencial'){
+                    tcob.selectedIndex = value ;                    
+                }
+            });
+        }
+        showIncOrIncCon();
+    }
+    
+    function setComissao(obj){
+        if(typeof obj === 'undefined'){
+            obj = {'name': ''};
+        }
+        if((user === 'admin') && (obj.name === 'comissao')){
+            return;
+        }
+        seg = $('#seguradora').val();
+        flag =true;
+        $.each(param, function(index, value) {
+            if(index === 'seguradora' && seg != value){
+                flag = false; // seguradora não é a mesma que foi parametrizada                  
+            }
+        });
+        if(!flag){
+            return;
+        }
+        switch($("input[name=ocupacao]:checked").val()){
+        case '01':                
+            $.each(param, function(index, value) {
+                if((index === 'comissaoComercial') && (value !== '')){
+                    $('#comissao').val(value);
+                }
+            });
+            break;
+        case '02':              
+            $.each(param, function(index, value) {
+                if((index === 'comissaoResidencial') && (value !== '')){
+                    $('#comissao').val(value);
+                }
+            });
+            break;
+        }
+    }
+    
+    
+    // Ocultar campos
+    document.getElementById('popcodigoGerente').style.display = 'none';
+    document.getElementById('popmesNiver').style.display = 'none';
+    document.getElementById('popparcelaVlr').style.display = 'none';
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
-    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();travaComissaoAllianz();travaResidencial();formataDoc();',500);
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();setComissao();setCobertura();formataDoc();travaFormaPagto();setMesNiverOfMensal()',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
 </script>

@@ -86,7 +86,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('valorAluguel', 'Valor Aluguel',['onKeyUp'=>'cleanCoberturas()']);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
-        $tipoCob = ['onChange'=>'travaResidencial();showIncOrIncCon()'];
+        $tipoCob = ['onChange'=>'setCobertura(this);showIncOrIncCon()'];
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura, $tipoCob);
         
         
@@ -100,7 +100,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('seguroEmNome', 'Seguro em nome', ['01' => 'Locador','02' => 'Locatário']);
         
         $ocupacao = $this->getParametroSelect('ocupacao', TRUE);
-        $attributes = ['onClick' => "cleanAtividade();travaResidencial();travaComissaoAllianz();"];
+        $attributes = ['onClick' => "cleanAtividade();setCobertura(this);setComissao(this);"];
         $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
@@ -111,7 +111,6 @@ class Orcamento extends AbstractEndereco {
         $this->setInputText('refImovel', 'Ref. do Imóvel');
         
         $formaPagto = $this->getParametroSelect('formaPagto');
-        $frm12vezes = array_pop($formaPagto);
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves';
@@ -130,6 +129,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('premioLiquido');
         $this->setInputHidden('premio');
         $this->setInputText('premioTotal','Pagamento total de :');
+        $this->setInputText('parcelaVlr','Valor da Parcela de :');
         
         $attributes = ['rows' => "8",'class'=>'span8'];
         $this->setInputTextArea('observacao', 'Obs', $attributes);
@@ -143,7 +143,7 @@ class Orcamento extends AbstractEndereco {
         
         if ($this->isAdmin) {
             $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
-            $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
+            $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ['onChange'=>'getComissao();']);
             if(isset($filtro['seguradora'])){
                 $this->setComissao($filtro['seguradora']);                
             }        
@@ -203,7 +203,7 @@ class Orcamento extends AbstractEndereco {
             $comissaoKey = 'comissaoParam%';
         }            
         $comissao = $this->getParametroSelect($comissaoKey, TRUE);
-        $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao, ['onChange'=>'travaComissaoAllianz();']);
+        $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao, ['onChange'=>'setComissao(this);']);
         if(isset($data['comissao'])){
             $this->get('comissao')->setValue($data['comissao']);
         }

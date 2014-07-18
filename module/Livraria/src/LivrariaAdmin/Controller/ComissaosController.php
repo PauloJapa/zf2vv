@@ -76,8 +76,10 @@ class ComissaosController extends CrudController {
         //Metodo que bloqueia campos da edição caso houver
         //$this->formData->setEdit();
         if($data['subOpcao'] == 'editar'){ 
+            $this->formData->setComissaoOptions($entity->getAdministradora()->getId());
             $this->formData->setData($entity->toArray());
         }else{
+            $this->formData->setComissaoOptions($data['administradora']);
             $this->formData->setData($data);
         }
         
@@ -99,6 +101,21 @@ class ComissaosController extends CrudController {
         $this->route2 = $this->getEvent()->getRouteMatch();
 
         return new ViewModel($this->getParamsForView()); 
+    }
+
+    public function getLastAdmComissaoAction() {
+        $this->verificaSeUserAdmin();
+        $data = $this->getRequest()->getPost()->toArray();
+        $repository = $this->getEm()->getRepository($this->entity);
+        $entity = $repository->findOneBy(['administradora' => $data['administradora']],['inicio'=>'DESC']);
+        if($entity){
+            // Pegar a rota atual do controler
+            $this->route2 = $this->getEvent()->getRouteMatch();
+            $view = new ViewModel(array_merge(['id' => $entity->getId()],$this->getParamsForView()));
+            return $view;
+        }
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
+        
     }
 
 }

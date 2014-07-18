@@ -18,7 +18,8 @@ $this->FormDefault([],'fim');
 $coluns = array(
     'ID'
     , 'Administradora'
-    , 'Comissão'
+    , 'Comercial %'
+    , 'Residencial %'
     , 'Mult. Incêncio'
     , 'Mult. Conteúdo'
     , 'Mult. Aluguel'
@@ -38,6 +39,7 @@ $td = array(
     , 'class="r"'
     , 'class="r"'
     , 'class="r"'
+    , 'class="r"'
     , ''
     , ''
     , ''
@@ -51,6 +53,7 @@ foreach($this->data as $entity){
         $entity->getId(),
         $entity->getAdministradora(),
         $entity->floatToStr('Comissao'),
+        $entity->floatToStr('comissaoRes'),
         $entity->floatToStr('multIncendio'),
         $entity->floatToStr('multConteudo'),
         $entity->floatToStr('multAluguel'),

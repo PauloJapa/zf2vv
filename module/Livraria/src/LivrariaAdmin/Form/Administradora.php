@@ -45,7 +45,8 @@ class Administradora extends AbstractEndereco {
         $this->setInputRadio('validade', 'Tipo do Seguro', $validade);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
-        $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura (Imoveis Comercial)', $tipoCobertura);
+        $this->setInputSelect('tipoCobertura', 'Cobertura Comercial', $tipoCobertura);
+        $this->setInputSelect('tipoCoberturaRes', 'Cobertura Residencial', $tipoCobertura);
         
         $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradora', '*Seguradora',$this->seguradoras);
