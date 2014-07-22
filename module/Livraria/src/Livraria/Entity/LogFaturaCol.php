@@ -21,42 +21,42 @@ class LogFaturaCol extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var integer $administradoraId
      *
      * @ORM\Column(name="administradora_id", type="integer", nullable=false)
      */
-    private $administradoraId;
+    protected $administradoraId;
 
     /**
      * @var integer $mes
      *
      * @ORM\Column(name="mes", type="integer", nullable=false)
      */
-    private $mes;
+    protected $mes;
 
     /**
      * @var integer $ano
      *
      * @ORM\Column(name="ano", type="integer", nullable=false)
      */
-    private $ano;
+    protected $ano;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=true)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=true)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     public function getId() {
         return $this->id;

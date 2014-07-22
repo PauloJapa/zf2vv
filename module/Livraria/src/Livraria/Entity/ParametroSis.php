@@ -21,28 +21,28 @@ class ParametroSis
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $key
      *
      * @ORM\Column(name="chave", type="string", length=20, nullable=false)
      */
-    private $key;
+    protected $key;
 
     /**
      * @var string $conteudo
      *
      * @ORM\Column(name="conteudo", type="string", length=255, nullable=false)
      */
-    private $conteudo;
+    protected $conteudo;
 
     /**
      * @var string $descricao
      *
      * @ORM\Column(name="descricao", type="string", length=255, nullable=true)
      */
-    private $descricao;
+    protected $descricao;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados

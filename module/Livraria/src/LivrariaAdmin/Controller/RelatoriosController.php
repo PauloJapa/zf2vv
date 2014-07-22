@@ -541,6 +541,7 @@ class RelatoriosController extends CrudController {
             $data['administradora'] = $sessionContainer->administradora['id'];
             $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }
+        /* @var $this->formData \LivrariaAdmin\Form\Relatorio */
         $this->formData = new $this->form($this->getEm());
         $this->formData->setMapaRenovacao();
         $this->formData->setData((is_null($data)) ? [] : $data);

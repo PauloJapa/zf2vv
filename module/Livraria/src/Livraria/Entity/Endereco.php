@@ -55,7 +55,7 @@ class Endereco {
      *
      * @ORM\Column(name="criado_em", type="datetime")
      */
-    private $createdAt;
+    protected $createdAt;
 
     /**
      * @ORM\Column(name="user_id_alterado", type="integer")
@@ -68,7 +68,7 @@ class Endereco {
      *
      * @ORM\Column(name="alterado_em", type="datetime")
      */
-    private $updatedAt;
+    protected $updatedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity="Livraria\Entity\Bairro", inversedBy="endereco")

@@ -306,7 +306,7 @@ function envia(action,opc,frm,tar){
 function gMenu(action,frm){
     if(frm == null)frm = document.getElementById('fmenu'); else frm = document.getElementById(frm);
     if((action == null)||(action == ""))action = "/admin/auth/logout";
-    frm.action = action ;
+    frm.action = action + '?' + Math.ceil ( Math.random() * 100000 );
     try{
         frm.scrolX.value = $(document).scrollLeft();
         frm.scrolY.value = $(document).scrollTop();
@@ -336,29 +336,34 @@ var tempoPopup = 0;
 function hasPopupBlocker(){
     blockTest = false;
     tempoPopup = 0;
+//        alert('erro1');
     var myPopup = window.open("popupTest", "popupTest", "directories=no,height=150,width=150,menubar=no,resizable=no,scrollbars=no,status=no,titlebar=no,top=0,location=no");
     if (!myPopup){
+//        alert('erro2');
         blockTest = false;
     }else{
-        if (navigator.userAgent.indexOf("Chrome") != -1) { 
-            tempoPopup = 500;
-            myPopup.onload = function() {
-                setTimeout(function() {
-                    if (myPopup.screenX === 0) {
-                        blockTest = false;
-                    } else {
-                        blockTest = true;
-                        myPopup.close();  
-                    }
-                }, 100);
-            };
-        }else{
+//        if (navigator.userAgent.indexOf("Chrome") != -1) { 
+//            tempoPopup = 500;
+//            myPopup.onload = function() {
+//                setTimeout(function() {
+//                    if (myPopup.screenX === 0) {
+//                        blockTest = false;
+//        alert('erro3');
+//                    } else {
+//        alert('erro4');
+//                        blockTest = true;
+//                        myPopup.close();  
+//                    }
+//                }, 100);
+//            };
+//        }else{
+//        alert('erro5');
             blockTest = true;
             myPopup.close(); 
-        } 
+//        } 
     }
 
-    setTimeout("checkBlocker()",tempoPopup)
+    setTimeout("checkBlocker()",tempoPopup);
 //checkBlocker();
 }
 

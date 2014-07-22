@@ -23,7 +23,7 @@ class MultiplosMinimos extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $idMultiplos;
+    protected $idMultiplos;
 
 
     /**
@@ -31,133 +31,133 @@ class MultiplosMinimos extends Filtro
      *
      * @ORM\Column(name="min_premio_anual", type="decimal", nullable=true)
      */
-    private $minPremioAnual;
+    protected $minPremioAnual;
 
     /**
      * @var float $minPremioMensal
      *
      * @ORM\Column(name="min_premio_mensal", type="decimal", nullable=true)
      */
-    private $minPremioMensal;
+    protected $minPremioMensal;
 
     /**
      * @var float $minApoliceAnual
      *
      * @ORM\Column(name="min_apolice_anual", type="decimal", nullable=true)
      */
-    private $minApoliceAnual;
+    protected $minApoliceAnual;
 
     /**
      * @var float $minApoliceMensal
      *
      * @ORM\Column(name="min_apolice_mensal", type="decimal", nullable=true)
      */
-    private $minApoliceMensal;
+    protected $minApoliceMensal;
 
     /**
      * @var float $minParcelaAnual
      *
      * @ORM\Column(name="min_parcela_anual", type="decimal", nullable=true)
      */
-    private $minParcelaAnual;
+    protected $minParcelaAnual;
 
     /**
      * @var float $minParcelaMensal
      *
      * @ORM\Column(name="min_parcela_mensal", type="decimal", nullable=true)
      */
-    private $minParcelaMensal;
+    protected $minParcelaMensal;
 
     /**
      * @var float $minAluguel
      *
      * @ORM\Column(name="min_aluguel", type="decimal", nullable=true)
      */
-    private $minAluguel;
+    protected $minAluguel;
 
     /**
      * @var float $minIncendio
      *
      * @ORM\Column(name="min_incendio", type="decimal", nullable=true)
      */
-    private $minIncendio;
+    protected $minIncendio;
 
     /**
      * @var float $minConteudo
      *
      * @ORM\Column(name="min_conteudo", type="decimal", nullable=true)
      */
-    private $minConteudo;
+    protected $minConteudo;
 
     /**
      * @var float $minEletrico
      *
      * @ORM\Column(name="min_eletrico", type="decimal", nullable=true)
      */
-    private $minEletrico;
+    protected $minEletrico;
 
     /**
      * @var float $minVendaval
      *
      * @ORM\Column(name="min_vendaval", type="decimal", nullable=true)
      */
-    private $minVendaval;
+    protected $minVendaval;
 
     /**
      * @var float $maxAluguel
      *
      * @ORM\Column(name="max_aluguel", type="decimal", nullable=true)
      */
-    private $maxAluguel;
+    protected $maxAluguel;
 
     /**
      * @var float $maxIncendio
      *
      * @ORM\Column(name="max_incendio", type="decimal", nullable=true)
      */
-    private $maxIncendio;
+    protected $maxIncendio;
 
     /**
      * @var float $maxConteudo
      *
      * @ORM\Column(name="max_conteudo", type="decimal", nullable=true)
      */
-    private $maxConteudo;
+    protected $maxConteudo;
 
     /**
      * @var float $maxEletrico
      *
      * @ORM\Column(name="max_eletrico", type="decimal", nullable=true)
      */
-    private $maxEletrico;
+    protected $maxEletrico;
 
     /**
      * @var float $maxVendaval
      *
      * @ORM\Column(name="max_vendaval", type="decimal", nullable=true)
      */
-    private $maxVendaval;
+    protected $maxVendaval;
 
     /**
      * @var \DateTime $multVigenciaInicio
      *
      * @ORM\Column(name="mult_vigencia_inicio", type="date", nullable=false)
      */
-    private $multVigenciaInicio;
+    protected $multVigenciaInicio;
 
     /**
      * @var \DateTime $multVigenciaFim
      *
      * @ORM\Column(name="mult_vigencia_fim", type="date", nullable=true)
      */
-    private $multVigenciaFim;
+    protected $multVigenciaFim;
 
     /**
      * @var string $multStatus
      *
      * @ORM\Column(name="mult_status", type="string", length=2, nullable=false)
      */
-    private $multStatus;
+    protected $multStatus;
 
     /**
      * @var Seguradora
@@ -167,7 +167,7 @@ class MultiplosMinimos extends Filtro
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
      */
-    private $seguradora;
+    protected $seguradora;
 
 
     /** 

@@ -23,91 +23,91 @@ class Taxa extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var \DateTime $inicio
      *
      * @ORM\Column(name="inicio", type="datetime", nullable=false)
      */
-    private $inicio;
+    protected $inicio;
 
     /**
      * @var \DateTime $fim
      *
      * @ORM\Column(name="fim", type="datetime", nullable=true)
      */
-    private $fim;
+    protected $fim;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var float $incendio
      *
      * @ORM\Column(name="incendio", type="decimal", precision=20, scale=8, options={"default" = 0})
      */
-    private $incendio;
+    protected $incendio;
 
     /**
      * @var float $incendioConteudo
      *
      * @ORM\Column(name="incendio_conteudo", precision=20, scale=8, options={"default" = 0})
      */
-    private $incendioConteudo;
+    protected $incendioConteudo;
 
     /**
      * @var float $aluguel
      *
      * @ORM\Column(name="aluguel", type="decimal", precision=20, scale=8, options={"default" = 0})
      */
-    private $aluguel;
+    protected $aluguel;
 
     /**
      * @var float $eletrico
      *
      * @ORM\Column(name="eletrico", type="decimal", precision=20, scale=8, options={"default" = 0})
      */
-    private $eletrico;
+    protected $eletrico;
 
     /**
      * @var float $vendaval
      *
      * @ORM\Column(name="vendaval", type="decimal", precision=20, scale=8, options={"default" = 0})
      */
-    private $vendaval;
+    protected $vendaval;
 
     /**
      * @var string $validade
      *
      * @ORM\Column(name="validade", type="string", length=10, nullable=false)
      */
-    private $validade;
+    protected $validade;
 
     /**
      * @var string $ocupacao
      *
      * @ORM\Column(name="ocupacao", type="string", length=10, nullable=false)
      */
-    private $ocupacao;
+    protected $ocupacao;
 
     /**
      * @var float $comissao
      *
      * @ORM\Column(name="comissao", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-    private $comissao;
+    protected $comissao;
 
     /**
      * @var string $seq
      *
      * @ORM\Column(name="seq", type="string", length=1, nullable=true)
      */
-    private $seq;
+    protected $seq;
 
     /**
      * @var string $tipoCobertura
@@ -121,28 +121,28 @@ class Taxa extends Filtro
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=false)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var Classe
@@ -152,7 +152,7 @@ class Taxa extends Filtro
      *   @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
      * })
      */
-    private $classe;
+    protected $classe;
 
 
     /**
@@ -163,7 +163,7 @@ class Taxa extends Filtro
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
      */
-    private $seguradora;
+    protected $seguradora;
 
 
  

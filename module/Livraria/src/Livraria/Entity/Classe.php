@@ -23,56 +23,56 @@ class Classe
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $cod
      *
      * @ORM\Column(name="cod", type="string", length=45, nullable=false)
      */
-    private $cod;
+    protected $cod;
 
     /**
      * @var string $descricao
      *
      * @ORM\Column(name="descricao", type="string", length=100, nullable=false)
      */
-    private $descricao;
+    protected $descricao;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=false)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $status;
+    protected $status;
 
 
  

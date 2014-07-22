@@ -29,6 +29,10 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('taxaIof');
         $this->setInputHidden('canceladoEm');
         $this->setInputHidden('fechadoId');
+        $this->setInputHidden('fechadoOrigemId');
+        $this->setInputHidden('mensalSeq');
+        $this->setInputHidden('orcaReno');
+        $this->setInputHidden('gerado');
         
         $this->setInputHidden('imovel');
         $this->setInputHidden('imovelTel');

@@ -22,56 +22,56 @@ class Locador
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $nome
      *
      * @ORM\Column(name="nome", type="string", length=255, nullable=false)
      */
-    private $nome;
+    protected $nome;
 
     /**
      * @var string $tipo
      *
      * @ORM\Column(name="tipo", type="string", length=5, nullable=false)
      */
-    private $tipo;
+    protected $tipo;
 
     /**
      * @var string $cpf
      *
      * @ORM\Column(name="cpf", type="string", length=45, nullable=true)
      */
-    private $cpf;
+    protected $cpf;
 
     /**
      * @var string $cnpj
      *
      * @ORM\Column(name="cnpj", type="string", length=45, nullable=true)
      */
-    private $cnpj;
+    protected $cnpj;
 
     /**
      * @var string $tel
      *
      * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
-    private $tel;
+    protected $tel;
 
     /**
      * @var string $email
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
-    private $email;
+    protected $email;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=false)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var Endereco
@@ -81,7 +81,7 @@ class Locador
      *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      * })
      */
-    private $endereco;
+    protected $endereco;
 
     /**
      * @var Administradora
@@ -91,7 +91,7 @@ class Locador
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
      */
-    private $administradora;
+    protected $administradora;
 
  
     /** 

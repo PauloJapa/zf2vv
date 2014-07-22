@@ -60,7 +60,7 @@ class User {
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $status;
+    protected $status;
 
     /**
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
@@ -72,7 +72,7 @@ class User {
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Administradora")
      * @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      */
-    private $administradora;    
+    protected $administradora;    
 
     public function __construct($options = null) {
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);

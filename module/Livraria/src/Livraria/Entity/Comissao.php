@@ -22,105 +22,105 @@ class Comissao extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var float $comissao
      *
      * @ORM\Column(name="Comissao", type="decimal", nullable=false)
      */
-    private $comissao;
+    protected $comissao;
 
     /**
      * @var float $comissao
      *
      * @ORM\Column(name="comissao_res", type="decimal", nullable=false)
      */
-    private $comissaoRes;
+    protected $comissaoRes;
 
     /**
      * @var \DateTime $inicio
      *
      * @ORM\Column(name="inicio", type="datetime", nullable=false)
      */
-    private $inicio;
+    protected $inicio;
 
     /**
      * @var \DateTime $fim
      *
      * @ORM\Column(name="fim", type="datetime", nullable=true)
      */
-    private $fim;
+    protected $fim;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var integer $multAluguel
      *
      * @ORM\Column(name="mult_aluguel", type="integer", nullable=false)
      */
-    private $multAluguel;
+    protected $multAluguel;
 
     /**
      * @var integer $multConteudo
      *
      * @ORM\Column(name="mult_conteudo", type="integer", nullable=true)
      */
-    private $multConteudo;
+    protected $multConteudo;
 
     /**
      * @var integer $multIncendio
      *
      * @ORM\Column(name="mult_incendio", type="integer", nullable=true)
      */
-    private $multIncendio;
+    protected $multIncendio;
 
     /**
      * @var integer $multEletrico
      *
      * @ORM\Column(name="mult_eletrico", type="integer", nullable=true)
      */
-    private $multEletrico;
+    protected $multEletrico;
 
     /**
      * @var integer $multVendaval
      *
      * @ORM\Column(name="mult_vendaval", type="integer", nullable=true)
      */
-    private $multVendaval;
+    protected $multVendaval;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=false)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var Administradoras
@@ -130,7 +130,7 @@ class Comissao extends Filtro
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
      */
-    private $administradora;
+    protected $administradora;
 
 
     /** 

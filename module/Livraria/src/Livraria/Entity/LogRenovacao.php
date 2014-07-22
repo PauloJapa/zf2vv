@@ -22,49 +22,49 @@ class LogRenovacao extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $controller
      *
      * @ORM\Column(name="controller", type="string", length=30, nullable=true)
      */
-    private $controller;
+    protected $controller;
 
     /**
      * @var string $action
      *
      * @ORM\Column(name="action", type="string", length=30, nullable=true)
      */
-    private $action;
+    protected $action;
 
     /**
      * @var string $mensagem
      *
      * @ORM\Column(name="mensagem", type="string", length=255, nullable=true)
      */
-    private $mensagem;
+    protected $mensagem;
 
     /**
      * @var string $dePara
      *
      * @ORM\Column(name="de_para", type="text", nullable=true)
      */
-    private $dePara;
+    protected $dePara;
 
     /**
      * @var \DateTime $data
      *
      * @ORM\Column(name="data", type="datetime", nullable=false)
      */
-    private $data;
+    protected $data;
 
     /**
      * @var string $ip
      *
      * @ORM\Column(name="ip", type="string", length=20, nullable=false)
      */
-    private $ip;
+    protected $ip;
 
     /**
      * @var User
@@ -74,7 +74,7 @@ class LogRenovacao extends Filtro
      *   @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
      * })
      */
-    private $user;
+    protected $user;
 
     /**
      * @var Renovacao
@@ -84,7 +84,7 @@ class LogRenovacao extends Filtro
      *   @ORM\JoinColumn(name="renovacao_id", referencedColumnName="id")
      * })
      */
-    private $renovacao;
+    protected $renovacao;
 
     /** 
      * Instacia um novo objeto se passado o parametro de dados

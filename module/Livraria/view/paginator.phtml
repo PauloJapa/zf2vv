@@ -4,19 +4,19 @@ if ($this->pageCount):
     <div class="pagination pagination-centered">
         <ul>
             <?php if (isset($this->previous)): ?>
-                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->first)->getParams()); ?>"><i class="icon-fast-backward"></i></a></li>
+                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->first)->getParams()), '?', rand(); ?>"><i class="icon-fast-backward"></i></a></li>
             <?php else: ?>
                 <li class="disabled"><a href="#"><i class="icon-fast-backward"></i></a></li>
             <?php endif; ?>
             <?php if (isset($this->previous)): ?>
-                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->previous)->getParams()); ?>"><i class="icon-step-backward"></i></a></li>
+                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->previous)->getParams()), '?', rand(); ?>"><i class="icon-step-backward"></i></a></li>
             <?php else: ?>
                 <li class="disabled"><a href="#"><i class="icon-step-backward"></i></a></li>
             <?php endif; ?>
             <?php foreach ($this->pagesInRange as $page): ?>
                 <?php if ($page != $this->current): ?>
                     <li>
-                        <a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $page)->getParams()); ?>"><?php echo $page; ?></a>
+                        <a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $page)->getParams()), '?', rand(); ?>"><?php echo $page; ?></a>
                     </li>               
                 <?php else: ?>
                     <li class="active">
@@ -25,12 +25,12 @@ if ($this->pageCount):
                 <?php endif; ?>
             <?php endforeach; ?>
             <?php if (isset($this->next)): ?>
-                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->next)->getParams()); ?>"><i class="icon-step-forward"></i></a></li>
+                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->next)->getParams()), '?', rand(); ?>"><i class="icon-step-forward"></i></a></li>
             <?php else: ?>
                 <li class="disabled"><a href="#"><i class="icon-step-forward"></i></a></li>
             <?php endif; ?>
             <?php if (isset($this->next)): ?>
-                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->last)->getParams()); ?>"><i class="icon-fast-forward"></i></a></li>
+                <li><a href="<?php echo $this->url($this->route->getMatchedRouteName(), $this->route->setParam('page', $this->last)->getParams()), '?', rand(); ?>"><i class="icon-fast-forward"></i></a></li>
             <?php else: ?>
                 <li class="disabled"><a href="#"><i class="icon-fast-forward"></i></a></li>
             <?php endif; ?>

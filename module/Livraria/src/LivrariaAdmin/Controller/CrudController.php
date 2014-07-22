@@ -238,8 +238,10 @@ abstract class CrudController extends AbstractActionController {
      */
     public function verificaSeUserAdmin(){
         $user = $this->getIdentidade();
-        if($user->getTipo() != 'admin')
+        if ($user->getTipo() != 'admin') {
             return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
+        }
+        return $user;
     }
     
     public function filtrosDaPaginacao(){
@@ -248,10 +250,8 @@ abstract class CrudController extends AbstractActionController {
         $post = $this->getRequest()->isPost();
         if(is_int($this->params()->fromRoute('page')) AND $post){
             $data = $this->getRequest()->getPost()->toArray();
-            if (!isset($data['administradora']) OR empty($data['administradora'])){
-                $this->getDefaultAdm($data);
-            }else{
-                $this->setDefaultAdm($data);            
+            if($this->getIdentidade()->getTipo() == 'admin'){
+                $this->configParamsAdm($data);
             }
             $this->setDatePeriodo($data);
             $this->sc->data = $data;
@@ -262,7 +262,14 @@ abstract class CrudController extends AbstractActionController {
             return [];
         }
     }
-       
+
+    public function configParamsAdm(&$data) {
+        if (!isset($data['administradora']) OR empty($data['administradora'])){
+            $this->getDefaultAdm($data);
+        }else{
+            $this->setDefaultAdm($data);            
+        }        
+    }       
 
     public function getDefaultAdm(&$data) {
         //Verifica se esta registrado a administradora na sessao

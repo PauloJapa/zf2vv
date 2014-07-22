@@ -19,84 +19,84 @@ class Seguradora
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $nome
      *
      * @ORM\Column(name="nome", type="string", length=150, nullable=false)
      */
-    private $nome;
+    protected $nome;
 
     /**
      * @var string $apelido
      *
      * @ORM\Column(name="apelido", type="string", length=45, nullable=true)
      */
-    private $apelido;
+    protected $apelido;
 
     /**
      * @var string $cnpj
      *
      * @ORM\Column(name="cnpj", type="string", length=45, nullable=false)
      */
-    private $cnpj;
+    protected $cnpj;
 
     /**
      * @var string $tel
      *
      * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
-    private $tel;
+    protected $tel;
 
     /**
      * @var string $email
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
-    private $email;
+    protected $email;
 
     /**
      * @var string $site
      *
      * @ORM\Column(name="site", type="string", length=255, nullable=true)
      */
-    private $site;
+    protected $site;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=false)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=true)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=true)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var Enderecos
@@ -104,7 +104,7 @@ class Seguradora
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
-    private $enderecos;
+    protected $enderecos;
     
 
     

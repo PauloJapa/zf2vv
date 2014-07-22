@@ -41,7 +41,7 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administradora['nome'], 'hidden' => 'id'],'inicio',$this, $form),
     "<td>",
-        $this->FormDefault(['comissaoEnt','administradora','administradoraDesc','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY'],'hidden'),
+        $this->FormDefault(['comissaoEnt','administradora','administradoraDesc','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY','fechadoOrigemId','mensalSeq','orcaReno','gerado'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
@@ -694,6 +694,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         }
         if((user === 'admin') && (obj.name === 'comissao')){
             return;
+        }
+        if($('#orcaReno').val() === 'reno'){
+            return; // não mexer na comissão de renovação
         }
         seg = $('#seguradora').val();
         flag =true;

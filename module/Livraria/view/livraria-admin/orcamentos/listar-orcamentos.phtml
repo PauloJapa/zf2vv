@@ -164,12 +164,53 @@ echo $this->FormDefault(['fecharSel'], 'submit');
 ?>
 <br />
 <div class="noPrint" align="center">
-    <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Fechar Todas Paginas" onclick="return fecharTodos()">
+    <input type="button" name="cancelSel" id="fecharTodos" class="btn-success" value="Fechar Todas Paginas" onclick="return fecharTodos()">
 </div>
 <br />
 <div class="noPrint" align="center">
     <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Cancelar Selecionados" onclick="return cancelSelecionados()">
 </div>
+<?php
+    // Usuario Administrador pode alterar data da Vigencia.    
+    if ($user->getTipo() == 'admin') :
+?>
+    <br />
+    <div class="noPrint" align="center">
+        <table>
+            <tr>
+                <td style="padding-left:1cm;">
+        <div cla|ss="input-append" id="popchangeInicio">
+            <label for="changeInicio">Inicio da Vigência</label>
+            <input name="changeInicio" id="changeInicio" placeholder="dd/mm/yyyy" type="text" value="" onkeydown="return changeEnterToTab(this,event)" onblur="toUp(this)" onclick="displayCalendar(this,dateFormat,this)" onkeyup="formataData(this);">
+            <span class="add-on hand" onClick="cleanInput('changeInicio')">
+                <i class="icon-remove"></i></span>
+            <span class="add-on hand" onClick="displayCalendar(document.getElementById('changeInicio'),dateFormat,this)">
+                <i class="icon-calendar"></i></span>
+        </div> 
+                    
+                </td>
+                <td style="padding-left:1cm;">
+        <div class="input-append" id="popchangeValidade">
+            <label for="validade">Validade</label>
+            <label><input type="radio" name="changeValidade" value="" checked onkeypress="return changeEnterToTab(this,event)" >Manter</label>
+            <label><input type="radio" name="changeValidade" value="mensal"   onkeypress="return changeEnterToTab(this,event)" >Mensal</label>
+            <label><input type="radio" name="changeValidade" value="anual"    onkeypress="return changeEnterToTab(this,event)" >Anual</label>
+        </div>   
+                    
+                </td>
+                <td style="padding-left:1cm;">
+                    
+        <input type="button" name="cancelSel" id="change" class="btn-success" value="Alterar Vigência Inicial e Validade Selecionados" onclick="return changeDateAndValidity()">
+                </td>
+            </tr>
+        </table>    
+                  
+                
+                
+    </div>
+<?php
+    endif ;
+?>
 <br />
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
@@ -217,6 +258,19 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
         envia(tar,'novo',null,'');        
     }
+    function changeDateAndValidity(){
+        if($('#changeInicio').val() === ''){
+            alert('Preencha a vigência inicial por favor!');
+            $('#changeInicio').focus();
+            return false;
+        }        
+        if(!oneChecked())return false;
+        var msg = "Deseja realmente alterar os registros selecionados? \n Aviso esta operação não poderá ser disfeita.";
+        if(!confirm(msg))return false; 
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'changeDateValidity')); ?>";
+        envia(tar,'novo',null,''); 
+        return false;        
+    }
     function getLogs(id){
         document.getElementById('id2').value = id ;
         document.getElementById('orcamento').value = id ;
@@ -251,26 +305,25 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     }
 
     function cancelSelecionados(){
-        //Verificar se algum orcamento foi marcado
-        var aux = false;
-        var elems = document.getElementsByName('Checkeds[]');
-        for (i=0; i < elems.length; i++){
-            if(elems[i].checked){
-                aux = true;
-                break;
-            }
-        }
-        if(!aux){
-            alert("Nenhum registro foi selecionado!!");
-            return false;
-        }
-    
+        if(!oneChecked())return;
         var motivo = document.getElementById('delobs2');
         motivo.style.display = 'none';
         var msg = "Deseja realmente cancelar orçamento(s) selecionados ?";
         if(!confirm(msg))return;
         motivo.style.display = 'block';
         
+    }
+    
+    function oneChecked(){
+        //Verificar se algum registro foi marcado
+        var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].checked){
+                return true;
+            }
+        }
+        alert("Nenhum registro foi selecionado!!");
+        return false;
     }
 
     function delVarios(){
@@ -349,20 +402,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         }
     }
     function fecharSelecionados(){
-        //Verificar se algum orcamento foi marcado
-        var aux = false;
-        var elems = document.getElementsByName('Checkeds[]');
-        for (i=0; i < elems.length; i++){
-            if(elems[i].checked){
-                aux = true;
-                break;
-            }
-        }
-        if(!aux){
-            alert("Nenhum registro foi selecionado!!");
-            return false;
-        }
-    
+        if(!oneChecked())return;    
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharSeguros')); ?>";
         envia(tar,'novo',null,''); 
         return false;

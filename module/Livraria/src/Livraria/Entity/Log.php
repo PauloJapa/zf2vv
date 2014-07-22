@@ -21,56 +21,56 @@ class Log
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $tabela
      *
      * @ORM\Column(name="tabela", type="string", length=30, nullable=false)
      */
-    private $tabela;
+    protected $tabela;
 
     /**
      * @var string $controller
      *
      * @ORM\Column(name="controller", type="string", length=30, nullable=false)
      */
-    private $controller;
+    protected $controller;
 
     /**
      * @var string $action
      *
      * @ORM\Column(name="action", type="string", length=30, nullable=false)
      */
-    private $action;
+    protected $action;
 
     /**
      * @var integer $idDoReg
      *
      * @ORM\Column(name="id_do_reg", type="integer", nullable=false)
      */
-    private $idDoReg;
+    protected $idDoReg;
 
     /**
      * @var string $dePara
      *
      * @ORM\Column(name="de_para", type="text", nullable=false)
      */
-    private $dePara;
+    protected $dePara;
 
     /**
      * @var \DateTime $data
      *
      * @ORM\Column(name="data", type="datetime", nullable=false)
      */
-    private $data;
+    protected $data;
 
     /**
      * @var string $ip
      *
      * @ORM\Column(name="ip", type="string", length=20, nullable=false)
      */
-    private $ip;
+    protected $ip;
 
     /**
      * @var Users
@@ -80,7 +80,7 @@ class Log
      *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      * })
      */
-    private $user;
+    protected $user;
 
     /** 
      * Instacia um novo objeto se passado o parametro de dados

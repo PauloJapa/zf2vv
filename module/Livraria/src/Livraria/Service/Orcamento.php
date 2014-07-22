@@ -70,6 +70,47 @@ class Orcamento extends AbstractService {
         }
         $log->insert($dataLog);
     }
+    
+    /**
+     * Altera os Registro selecionados para data(vigência inicio) ou validade(anual, mensal) comuns entre esses registro.
+     * Recalcula taxa, valor premio 
+     * @param objeto $controller
+     * @param array  $data
+     */
+    public function changeDateValidity($controller, $data) {
+        if(empty($data['changeInicio']) AND empty($data['changeValidade'])){
+            $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');  
+            return;
+        }
+        foreach ($data['Checkeds'] as $value) {
+            /* @var $entity \Livraria\Entity\Orcamento */
+            $entity = $this->em->find($this->entity, $value);
+            $dados = $entity->toArray();
+            $flag = TRUE;
+            if(!empty($data['changeInicio']) AND $dados['inicio'] != $data['changeInicio']){  
+                $flag = FALSE;
+                $dados['inicio']   = $data['changeInicio'];
+            }
+            if(!empty($data['changeValidade']) AND $dados['validade'] != $data['changeValidade']){
+                $flag = FALSE;
+                $dados['validade'] = $data['changeValidade'];
+            }
+            if($flag){                
+                $controller->flashMessenger()->addMessage("Este registro $value por ja ter os parametros iguais");
+                continue;
+            }
+//            echo '<pre>';            var_dump($dados['codano']); die;
+            $result = $this->update($dados);
+            if($result === TRUE){
+                $controller->flashMessenger()->addMessage("Registro $value atualizado com sucesso");
+                continue;
+            }
+            $controller->flashMessenger()->addMessage("Alerta Erros no registro $value !!!");
+            foreach ($result as $value) {
+                $controller->flashMessenger()->addMessage($value);
+            }
+        }
+    }
 
     /**
      * @ORM\OneToOne(targetEntity="Locador")
@@ -353,21 +394,25 @@ class Orcamento extends AbstractService {
      */    
     public function update(array $data, $onlyCalculo=false) { 
         $this->data        = $data;
-        if($onlyCalculo)
-            $this->setFlush (FALSE);
-        else
-            $this->setFlush (TRUE);
-        
-        if($data['status'] != 'A' AND $data['status'] != 'R' AND $this->getIdentidade()->getTipo() != 'admin')
-            return ['Este orçamento não pode ser editado!','Pois já esta finalizado!!'];
-        
-        if($data['status'] == 'C')
+        if ($onlyCalculo) {
+            $this->setFlush(FALSE);
+        } else {
+            $this->setFlush(TRUE);
+        }
+
+        if ($data['status'] != 'A' AND $data['status'] != 'R' AND $this->getIdentidade()->getTipo() != 'admin') {
+            return ['Este orçamento não pode ser editado!', 'Pois já esta finalizado!!'];
+        }
+
+        if ($data['status'] === 'C') {
             return ['Este orçamento está cancelado e não pode ser editado!!!'];
-        
+        }
+
         $ret = $this->setReferences();
-        if($ret !== TRUE)
+        if ($ret !== TRUE) {
             return $ret;
-        
+        }
+
         $this->calculaVigencia();
         
         $this->data['taxa'] = $this->em

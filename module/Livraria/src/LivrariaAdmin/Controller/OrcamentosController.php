@@ -29,6 +29,19 @@ class OrcamentosController extends CrudController {
     }
     
     /**
+     * Altera os Registro selecionados para data(vigência inicio) ou validade(anual, mensal) comuns entre esses registro.
+     * @return objeto que redireciona para listar Orçamentos.
+     */
+    public function changeDateValidityAction() {
+        $this->verificaSeUserAdmin();
+        $data = $this->getRequest()->getPost()->toArray();
+        /* @var $service \Livraria\Service\Orcamento */
+        $service = $this->getServiceLocator()->get($this->service);
+        $service->changeDateValidity($this,$data);
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'listarOrcamentos'));
+    }
+    
+    /**
      * Verifica:
      * Usuario do tipo admin redireciona para tela de escolha de administradora
      * Usuario nao é admin carrega administradora na sessão e redireciona para fazer novo Orçamento
@@ -201,6 +214,10 @@ class OrcamentosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         if((!isset($data['subOpcao'])) OR ($data['subOpcao'] == 'novo')){
             $data['subOpcao']     = '';
+            $data['fechadoOrigemId']     = '0';
+            $data['mensalSeq']     = '0';
+            $data['orcaReno']     = 'orca';
+            $data['gerado']       = 'N';
             $data['seguroEmNome'] = '02';
             $data['pais']         = '1';
             if(($this->getIdentidade()->getTipo() == 'admin')and(!isset($sessionContainer->expiraSessaoMontada))){
@@ -262,22 +279,20 @@ class OrcamentosController extends CrudController {
             }
         }
 
-        if($data['subOpcao'] == 'salvar'){
-            if ($this->formData->isValid()) {
-                $service = $this->getServiceLocator()->get($this->service);
-                $result = $service->insert($data);
-                if($result[0] === TRUE){
-                    $sessionContainer->idOrcamento = $result[1];
-                    unset($sessionContainer->administradora);
-                    $this->flashMessenger()->clearMessages();
-                    return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
-                }else{
-                    foreach ($result as $value) {
-                        $this->flashMessenger()->addMessage($value);
-                    }
-                }
-                $this->formData->setData($service->getNewInputs());
+        if($data['subOpcao'] == 'salvar' AND $this->formData->isValid()){
+            /* @var $service \Livraria\Service\Orcamento */
+            $service = $this->getServiceLocator()->get($this->service);
+            $result = $service->insert($data);
+            if($result[0] === TRUE){
+                $sessionContainer->idOrcamento = $result[1];
+                unset($sessionContainer->administradora);
+                $this->flashMessenger()->clearMessages();
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'edit'));
             }
+            foreach ($result as $value) {
+                $this->flashMessenger()->addMessage($value);
+            }
+            $this->formData->setData($service->getNewInputs());
         }
         
         // Pegar a rota atual do controler
@@ -489,6 +504,7 @@ class OrcamentosController extends CrudController {
         
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
+            /* @var $entity \Livraria\Entity\Orcamento */
             $entity = $repository->find($data['id']);
         }
         

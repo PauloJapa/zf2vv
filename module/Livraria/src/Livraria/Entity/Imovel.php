@@ -22,63 +22,63 @@ class Imovel extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $tel
      *
      * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
-    private $tel;
+    protected $tel;
 
     /**
      * @var string $refImovel
      *
      * @ORM\Column(name="ref_imovel", type="string", length=30, nullable=true)
      */
-    private $refImovel;
+    protected $refImovel;
 
     /**
      * @var string $rua
      *
      * @ORM\Column(name="rua", type="string", length=150, nullable=true)
      */
-    private $rua;
+    protected $rua;
 
     /**
      * @var string $numero
      *
      * @ORM\Column(name="numero", type="string", length=15, nullable=true)
      */
-    private $numero;
+    protected $numero;
 
     /**
      * @var string $bloco
      *
      * @ORM\Column(name="bloco", type="string", length=25, nullable=true)
      */
-    private $bloco;
+    protected $bloco;
 
     /**
      * @var string $apto
      *
      * @ORM\Column(name="apto", type="string", length=15, nullable=true)
      */
-    private $apto;
+    protected $apto;
 
     /**
      * @var string $cep
      *
      * @ORM\Column(name="cep", type="string", length=10, nullable=true)
      */
-    private $cep;
+    protected $cep;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    private $status;
+    protected $status;
     
     /**
      * @var Atividade
@@ -88,7 +88,7 @@ class Imovel extends Filtro
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
      */
-    private $atividade;
+    protected $atividade;
 
     /**
      * @var Endereco
@@ -98,7 +98,7 @@ class Imovel extends Filtro
      *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      * })
      */
-    private $endereco;
+    protected $endereco;
 
     /**
      * @var Locador
@@ -108,7 +108,7 @@ class Imovel extends Filtro
      *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      * })
      */
-    private $locador;
+    protected $locador;
 
     /**
      * @var Locatario
@@ -118,35 +118,35 @@ class Imovel extends Filtro
      *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      * })
      */
-    private $locatario;
+    protected $locatario;
 
     /**
      * @var integer $fechadoId
      *
      * @ORM\Column(name="fechados_id", type="integer", nullable=true)
      */
-    private $fechadoId;
+    protected $fechadoId;
 
     /**
      * @var integer $fechadoAno
      *
      * @ORM\Column(name="fechados_ano", type="integer", nullable=true)
      */
-    private $fechadoAno;
+    protected $fechadoAno;
 
     /**
      * @var float $vlrAluguel
      *
      * @ORM\Column(name="vlr_aluguel", type="decimal", nullable=true)
      */
-    private $vlrAluguel;
+    protected $vlrAluguel;
 
     /**
      * @var \DateTime $fechadoFim
      *
      * @ORM\Column(name="fechado_fim", type="datetime", nullable=true)
      */
-    private $fechadoFim;
+    protected $fechadoFim;
 
     /**
      * @ORM\Column(type="text")

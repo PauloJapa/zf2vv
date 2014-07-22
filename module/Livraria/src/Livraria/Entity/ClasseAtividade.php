@@ -23,56 +23,56 @@ class ClasseAtividade extends Filtro
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var \DateTime $inicio
      *
      * @ORM\Column(name="inicio", type="datetime", nullable=false)
      */
-    private $inicio;
+    protected $inicio;
 
     /**
      * @var \DateTime $fim
      *
      * @ORM\Column(name="fim", type="datetime", nullable=true)
      */
-    private $fim;
+    protected $fim;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=false)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=false)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var Classe
@@ -82,7 +82,7 @@ class ClasseAtividade extends Filtro
      *   @ORM\JoinColumn(name="classe_taxas_id", referencedColumnName="id")
      * })
      */
-    private $classeTaxas;
+    protected $classeTaxas;
 
     /**
      * @var Atividade
@@ -92,28 +92,28 @@ class ClasseAtividade extends Filtro
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
      */
-    private $atividade;
+    protected $atividade;
 
     /**
      * @var integer $codOld
      *
      * @ORM\Column(name="cod_old", type="integer", nullable=true)
      */
-    private $codOld;
+    protected $codOld;
 
     /**
      * @var integer $codciaOld
      *
      * @ORM\Column(name="codcia_old", type="integer", nullable=true)
      */
-    private $codciaOld;
+    protected $codciaOld;
 
     /**
      * @var string $seq
      *
      * @ORM\Column(name="seq", type="string", length=1, nullable=true)
      */
-    private $seq;
+    protected $seq;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados

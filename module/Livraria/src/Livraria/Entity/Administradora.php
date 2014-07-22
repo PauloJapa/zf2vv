@@ -102,7 +102,7 @@ class Administradora extends Filtro {
      *
      * @ORM\Column(name="criado_em", type="datetime")
      */
-    private $createdAt;
+    protected $createdAt;
 
     /**
      * @ORM\Column(name="user_id_alterado", type="integer")
@@ -115,7 +115,7 @@ class Administradora extends Filtro {
      *
      * @ORM\Column(name="alterado_em", type="datetime")
      */
-    private $updatedAt;
+    protected $updatedAt;
 
     /**
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")

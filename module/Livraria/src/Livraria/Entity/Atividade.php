@@ -23,105 +23,105 @@ class Atividade
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string $descricao
      *
      * @ORM\Column(name="descricao", type="string", length=150, nullable=false)
      */
-    private $descricao;
+    protected $descricao;
 
     /**
      * @var string $codSeguradora
      *
      * @ORM\Column(name="cod_seguradora", type="string", length=45, nullable=false)
      */
-    private $codSeguradora;
+    protected $codSeguradora;
 
     /**
      * @var string $ocupacao
      *
      * @ORM\Column(name="ocupacao", type="string", length=45, nullable=false)
      */
-    private $ocupacao;
+    protected $ocupacao;
 
     /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
      */
-    private $userIdCriado;
+    protected $userIdCriado;
 
     /**
      * @var \DateTime $criadoEm
      *
      * @ORM\Column(name="criado_em", type="datetime", nullable=false)
      */
-    private $criadoEm;
+    protected $criadoEm;
 
     /**
      * @var integer $userIdAlterado
      *
      * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      */
-    private $userIdAlterado;
+    protected $userIdAlterado;
 
     /**
      * @var \DateTime $alteradoEm
      *
      * @ORM\Column(name="alterado_em", type="datetime", nullable=true)
      */
-    private $alteradoEm;
+    protected $alteradoEm;
 
     /**
      * @var string $status
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=false)
      */
-    private $status;
+    protected $status;
 
     /**
      * @var string $danosEletricos
      *
      * @ORM\Column(name="danos_eletricos", type="string", length=1, nullable=false)
      */
-    private $danosEletricos;
+    protected $danosEletricos;
 
     /**
      * @var string $equipEletro
      *
      * @ORM\Column(name="equip_eletro", type="string", length=1, nullable=false)
      */
-    private $equipEletro;
+    protected $equipEletro;
 
     /**
      * @var string $vendavalFumaca
      *
      * @ORM\Column(name="vendaval_fumaca", type="string", length=1, nullable=false)
      */
-    private $vendavalFumaca;
+    protected $vendavalFumaca;
 
     /**
      * @var string $basica
      *
      * @ORM\Column(name="basica", type="string", length=10, nullable=false)
      */
-    private $basica;
+    protected $basica;
 
     /**
      * @var string $roubo
      *
      * @ORM\Column(name="roubo", type="string", length=10, nullable=false)
      */
-    private $roubo;
+    protected $roubo;
 
     /**
      * @var integer $seguradoraId
      *
      * @ORM\Column(name="seguradora_id", type="integer", nullable=true)
      */
-    private $seguradoraId;
+    protected $seguradoraId;
 
     /** 
      * Instacia um novo objeto se passado o parametro de dados

@@ -22,7 +22,7 @@ abstract class AbstractService {
 
     /**
      * Objeto para efetuar operações no banco
-     * @var Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $em;
     
@@ -656,15 +656,20 @@ abstract class AbstractService {
         if(!isset($this->data['validade'])){
             return ['Campo validade não existe!!'];
         }
-        $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        if(!isset($this->data['codano']) OR empty($this->data['codano'])){
+            $this->data['codano'] = $this->data['criadoEm']->format('Y');
+        }
         $this->data['fim'] = clone $this->data['inicio'];
         if($this->data['validade'] == 'mensal'){
             $this->data['fim']->add(new \DateInterval('P1M')); 
             $this->data['fim']->sub(new \DateInterval('P1D'));
+            $this->data['mesNiver'] = $this->data['inicio']->format('m');
+            $this->data['formaPagto'] = '01' ;
             return TRUE;
         } 
         if($this->data['validade'] == 'anual'){
             $this->data['fim']->add(new \DateInterval('P1Y')); 
+            $this->data['mesNiver'] = 0 ;
             //$this->data['fim']->sub(new \DateInterval('P1D'));
             return TRUE;
         } 
