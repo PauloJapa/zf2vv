@@ -1,0 +1,69 @@
+body	{
+    background: #FFF; 
+    color: #000; 
+    font: 12pt serif;
+    padding: 0;
+    margin: 0;
+}
+
+.paisagem {
+    size: A4 portrait;
+}
+
+nav, footer, video, audio, object, embed { 
+    display:none; 
+}
+
+table.data{
+    width: 100%;
+    border-left: 1pt #000 solid;
+    border-top:  1pt #000 solid;
+    border-spacing: 0;
+    padding: 0;
+    margin: 0;
+}
+
+table.data td, table.data th{
+    border-right:  1pt #000 solid;
+    border-bottom: 1pt #000 solid;
+}
+
+table.data, table.data td, table.data th{
+    padding: 0;
+    margin: 0;
+}
+
+table td.r {
+    text-align: right;
+}
+table td.l {
+    text-align: left;
+}
+table td.c {
+    text-align: center;
+}
+
+.f1{
+    font-size: 5pt;
+}
+.f2{
+    font-size: 6pt;
+}
+.f3{
+    font-size: 6pt;
+}
+.f4{
+    font-size: 6pt;
+}
+.f5{
+    font-size: 7pt;
+}
+.f6{
+    font-size: 8pt;
+}
+.f7{
+    font-size: 10pt;
+}
+.f8{
+    font-size: 12pt;
+}

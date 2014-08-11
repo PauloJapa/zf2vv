@@ -319,12 +319,15 @@ class FechadosRepository extends AbstractRepository {
      */
     public function getComissao($data){
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status AND o.comissao = :comissao AND o.seguradora = :seguradora';
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status AND o.seguradora = :seguradora';
         $this->parameters['inicio'] = $data['inicio'];
         $this->parameters['fim']    = $data['fim'];
         $this->parameters['status'] = 'A';
-        $this->parameters['comissao']   = $data['comissao'];
         $this->parameters['seguradora'] = $data['seguradora'];
+        if(!empty($data['comissao'])){            
+            $this->where = ' AND o.comissao = :comissao';
+            $this->parameters['comissao']   = $data['comissao'];
+        }
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
@@ -445,21 +448,18 @@ class FechadosRepository extends AbstractRepository {
                     $parameters['dataF'] = $this->dateToObject($filtro);
                     break;
                 case 'status':
-                    if($filtro == 'A'){ 
-                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
-                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key . ' AND l.orcamentoId <> :orcamentoId';
-                        $parameters[$key] = 'A';
-                        $parameters['orcamentoId'] = '0';
-                        break;
+                    // Em fechados para diferenciar renovacao de orcamento verificar o campo orcamentoId e renovacaoId
+                    if($filtro == 'A'){                         
+                        $where .= ' AND l.orcamentoId != :orcamento AND l.status = :status';
+                        $parameters['orcamento'] = '0';
+                        $parameters['status'] = 'A';
                     }
                     if($filtro == 'R'){
-                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
-                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key . ' AND l.renovacaoId <> :renovacaoId';
-                        $parameters[$key] = 'A';
-                        $parameters['renovacaoId'] = '0';
-                        break;
+                        $where .= ' AND l.renovacaoId != :renovacao AND l.status = :status';
+                        $parameters['renovacao'] = '0';
+                        $parameters['status'] = 'A';
                     }
-                    if($filtro != 'T'){
+                    if($filtro != 'A' AND $filtro != 'R' AND $filtro != 'T'){
                         $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
                         $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
                         $parameters[$key] = $filtro;
@@ -472,9 +472,10 @@ class FechadosRepository extends AbstractRepository {
                     break;
             }
         }
+//        echo '<pre>';        var_dump($where);var_dump($parameters); die;
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
-                ->select('l,u,i,ld','lc','ad','at')
+                ->select('l','u','i','ld','lc','ad','at')
                 ->from('Livraria\Entity\Fechados', 'l')
                 ->join('l.user', 'u')
                 ->join('l.imovel', 'i')
@@ -486,9 +487,9 @@ class FechadosRepository extends AbstractRepository {
                 ->setParameters($parameters);
         
         if(isset($parameters['administradora'])){
-            $query->orderBy('l.criadoEm', 'DESC');
+            $query->orderBy('l.inicio', 'DESC');
         }
-        
+                
         return $query;
     }
     

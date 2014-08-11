@@ -553,6 +553,7 @@ class RelatoriosController extends CrudController {
     
     public function listarRelatorioAction(){
         $data = $this->filtrosDaPaginacao();
+        /* @var $svr \Livraria\Service\Relatorio */
         $srv = new $this->service($this->getEm());
         $this->paginator = $srv->getRelatorio($data);
         $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');

@@ -121,6 +121,14 @@ class Endereco {
         $this->id = $id;
         return $this;
     }
+    
+    public function getIdEnde(){
+        return $this->getId();
+    }
+    
+    public function setIdEnde($id) {
+        return $this->setId($id);
+    }
 
     public function getRua() {
         return $this->rua;

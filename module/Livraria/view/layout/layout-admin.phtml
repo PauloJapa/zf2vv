@@ -14,6 +14,7 @@
                 ->prependStylesheet($this->basePath() . '/css/style.css')
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                 ->prependStylesheet($this->basePath() . '/css/dhtmlgoodies_calendar.css')
+                ->prependStylesheet($this->basePath() . '/css/print.css','print')
         ?>
 
         <!-- Scripts -->
@@ -49,12 +50,18 @@
                     <a class="brand" href="<?php echo $this->url('livraria-home'); ?>">Sistema Incêndio Locação</a>
                     <div class="nav-collapse">
                     <?php if ($user = $this->UserIdentity('LivrariaAdmin')){
-                              if($user->getTipo() == 'admin')
-                                  echo $this->navigation('NavAdmin')->menu()->setUlClass('nav'); 
-                              else
-                                  echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
-                          }else
-                              echo $this->navigation('Navigation')->menu()->setUlClass('nav');
+                              if($user->getTipo() == 'admin'){
+                                  if($user->getIsAdmin()){
+                                      echo $this->navigation('NavAdmin')->menu()->setUlClass('nav');                                       
+                                  }else{
+                                      echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav');                                                                             
+                                  }
+                              }else{
+                                  echo $this->navigation('NavUser')->menu()->setUlClass('nav');                                   
+                              }
+                          }else{
+                              echo $this->navigation('Navigation')->menu()->setUlClass('nav');                              
+                          }
                     ?>    
                     </div><!--/.nav-collapse -->
                 </div>

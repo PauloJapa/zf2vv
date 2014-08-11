@@ -38,12 +38,6 @@ class Relatorio extends AbstractService{
     protected $sc;
     
     /**
-     * String com endereço de email padrão
-     * @var type String
-     */
-    protected $mailDefault = 'incendiolocacao@vilavelha.com.br'; 
-    
-    /**
      * Contruct recebe EntityManager para manipulação de registros
      * @param \Doctrine\ORM\EntityManager $em
      */
@@ -612,7 +606,7 @@ class Relatorio extends AbstractService{
     }
     
     /**
-     * Faz o envio de email do seguros fechados pré faturamento.
+     * Faz o envio de email do seguros fechados faturamento.
      * @param type $servEmail
      * @param type $admNom
      * @param type $admEmai
@@ -622,7 +616,7 @@ class Relatorio extends AbstractService{
     public function sendEmailSegFechForAdm(&$servEmail, &$admNom, &$admEmai, &$data, $mes) {
         $servEmail->enviaEmail(['nome' => $admNom,
             'email' => $admEmai,
-            'subject' => $admNom . ' - Pré Fatura - Mês ' . $mes,
+            'subject' => $admNom . ' - Fatura - Mês ' . $mes,
             'data' => $data], 'seguro-fechado');
     }
     
@@ -764,8 +758,9 @@ class Relatorio extends AbstractService{
 //        $this->data['fim3']    = clone $this->data['fim'];
         
         $this->data['administradora'] = $data['administradora'];
-        
-        $lista = $this->em->getRepository("Livraria\Entity\Fechados")->getFaturar($this->data);
+        /* @var $rpstr \Livraria\Entity\FechadosRepository */
+        $rpstr = $this->em->getRepository("Livraria\Entity\Fechados");
+        $lista = $rpstr->getFaturar($this->data);
         //Armazena lista no cache para gerar outra saidas
         $this->getSc()->lista = $lista;
         

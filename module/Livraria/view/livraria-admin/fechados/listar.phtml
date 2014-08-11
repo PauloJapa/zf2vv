@@ -1,17 +1,18 @@
-<h2>Resultado Período Antes <? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); 
+<h3>Resultado Período Antes 
+<? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); 
 $this->date['inicio']->add(new \DateInterval('P1Y'));
 $this->date['fim']->add(new \DateInterval('P1Y'));
-?></h2>
-<h2>Resultado Período Atual <? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); ?></h2>
-<br />
+?><br />
+Resultado Período Atual <? echo $this->date['inicio']->format('d/m/Y'); ?> até <? echo $this->date['fim']->format('d/m/Y'); ?>
+</h3>
 <?php
 $coluns = array(
     'Seq',
     'U.E.',
     'Administradora',
-    'Anterior Quant. Seguros',
-    'Anterior Prêmio ',
-    'Quant. Seguros',
+    'Anterior<br />Quant.<br />Seguros',
+    'Anterior<br />Prêmio ',
+    'Quant.<br />Seguros',
     'Prêmio'
     );
 $td     = array(
@@ -23,8 +24,8 @@ $td     = array(
     'class="r"',
     'class="r"',
 );
-echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => false));
+echo $this->ViewIndex('table', 'data'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td, 'tr' => 'class="f7"','editLine' => false));
 
 $totFechado = $totFechadoA = $seq =  $totPremio =  $totPremioA =  0;
 foreach($this->data as $key => $values){
@@ -37,7 +38,8 @@ foreach($this->data as $key => $values){
                                                     number_format($values['antes']['total'], 2, ',', '.'),
                                                     $values['atual']['qtd'], 
                                                     number_format($values['atual']['total'], 2, ',', '.')
-                                                ]));
+                                                ],
+                                        'tr' => 'class="f6"'));
     // SOMATORIA GERAL 
     $totFechadoA += $values['antes']['qtd'];
     $totPremioA  += $values['antes']['total'];
@@ -45,11 +47,12 @@ foreach($this->data as $key => $values){
     $totPremio  += $values['atual']['total'];
 }
 // Totaliza Dados
-echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totFechadoA, number_format($totPremioA, 2, ',', '.'), $totFechado, number_format($totPremio, 2, ',', '.')]));
+echo $this->ViewIndex('tfoot',array('data' => ['', '', 'Totais', $totFechadoA, number_format($totPremioA, 2, ',', '.'), $totFechado, number_format($totPremio, 2, ',', '.')], 'tr' => 'class="f7"'));
 
 echo $this->ViewIndex('close');
 
 ?>
+<div class="noPrint" align="center">
 <br />
 <table width="100%">
     <tr>
@@ -58,6 +61,7 @@ echo $this->ViewIndex('close');
         </td>
     </tr>
 </table>
+</div>
 <form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">

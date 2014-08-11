@@ -250,6 +250,10 @@ class Orcamento extends AbstractService {
             return $result;
         }
         
+        if ($this->getIdentidade()->getIsAdmin() == '0') {
+            return ['Você não tem permissão para incluir registro'];
+        }
+        
         $this->trocaNaoCalcula();
 
         if(parent::insert())
@@ -316,6 +320,29 @@ class Orcamento extends AbstractService {
         return TRUE;
     }
     
+    public function checkDocLod() {
+        /* @var $locador  \Livraria\Entity\Locador             */
+        if(!is_object($this->data['locador'])){
+            $locador = $this->em->find('\Livraria\Entity\Locador', $this->data['locador']);
+        }else{
+            $locador = $this->data['locador'];
+        }
+        if($locador->getTipo() != $this->data['tipoLoc']){
+            $locador->setTipo($this->data['tipoLoc']);            
+        }         
+        if($locador->getTipo() == "fisica"   AND $locador->getCpf()  != $this->data['cpfLoc']){
+            $locador->setCpf($this->data['cpfLoc'])->setCnpj('');
+            $this->em->persist($locador);
+            $this->em->flush($locador);
+        }
+        if($locador->getTipo() == "juridica" AND $locador->getCnpj() != $this->data['cnpjLoc']){
+            $locador->setCpf('')->setCnpj($this->data['cnpjLoc']);
+            $this->em->persist($locador);
+            $this->em->flush($locador);
+        }
+        $this->data['locador'] = $locador;
+    }
+    
     /**
      * Faz um referencia ou tenta incluir o locador no BD
      * Caso não consiga retorna os erros 
@@ -323,10 +350,13 @@ class Orcamento extends AbstractService {
      */
     public function setLocador(){
         if(is_object($this->data['locador'])){
-            if($this->data['locador'] instanceof \Livraria\Entity\Locador)
+            if ($this->data['locador'] instanceof \Livraria\Entity\Locador) {
+                $this->checkDocLod();
                 return TRUE;
+            }
         }
         if(empty($this->data['locador'])){
+            /* @var $serviceLocador \Livraria\Service\Locador */
             $serviceLocador = new Locador($this->em);
             $data['id'] = '';
             $data['administradora'] = $this->data['administradora'];
@@ -335,21 +365,45 @@ class Orcamento extends AbstractService {
             $data['cpf'] = $this->data['cpfLoc'];
             $data['cnpj'] = $this->data['cnpjLoc'];
             $data['status'] = 'A';
+            $data['endereco'] = '1';
             $resul = $serviceLocador->setFlush($this->getFlush())->insert($data);
             if($resul === TRUE){
                 $this->data['locador'] = $serviceLocador->getEntity();
             }else{
                 if(substr($resul[0], 0, 15) == 'Já existe esse'){
                     $this->data['locador'] = $resul[1];
-                    $this->idToReference('locador', 'Livraria\Entity\Locador');
+                    $this->checkDocLod();
                 }else{
                     return array_merge(['Erro ao tentar incluir Locador no BD.'],$resul);
                 }
             }
         }else{
-            $this->idToReference('locador', 'Livraria\Entity\Locador');
+            $this->checkDocLod();
         }
         return TRUE;
+    }
+    
+    public function checkDocLoc() {
+        /* @var $locatario  \Livraria\Entity\Locatario             */
+        if(!is_object($this->data['locatario'])){
+            $locatario = $this->em->find('\Livraria\Entity\Locatario', $this->data['locatario']);
+        }else{
+            $locatario = $this->data['locatario'];
+        }
+        if($locatario->getTipo() != $this->data['tipo']){
+            $locatario->setTipo($this->data['tipo']);            
+        }         
+        if($locatario->getTipo() == "fisica"   AND $locatario->getCpf()  != $this->data['cpf']){
+            $locatario->setCpf($this->data['cpf'])->setCnpj('');
+            $this->em->persist($locatario);
+            $this->em->flush($locatario);
+        }
+        if($locatario->getTipo() == "juridica" AND $locatario->getCnpj() != $this->data['cnpj']){
+            $locatario->setCpf('')->setCnpj($this->data['cnpj']);
+            $this->em->persist($locatario);
+            $this->em->flush($locatario);
+        }
+        $this->data['locatario'] = $locatario;       
     }
     
     /**
@@ -359,11 +413,13 @@ class Orcamento extends AbstractService {
      */
     public function setLocatario(){
         if(is_object($this->data['locatario'])){
-            if($this->data['locatario'] instanceof \Livraria\Entity\Locatario)
+            if ($this->data['locatario'] instanceof \Livraria\Entity\Locatario) {
+                $this->checkDocLoc();
                 return TRUE;
+            }
         }
         if(!empty($this->data['locatario'])){
-            $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+            $this->checkDocLoc();
             return TRUE;
         }
         $serviceLocatario = new Locatario($this->em);
@@ -379,7 +435,7 @@ class Orcamento extends AbstractService {
         }else{
             if(substr($resul[0], 0, 13) == 'Já existe um'){
                 $this->data['locatario'] = $resul[1];
-                $this->idToReference('locatario', 'Livraria\Entity\Locatario');
+                $this->checkDocLoc();
             }else{
                 return array_merge(['Erro ao tentar incluir Locatario no BD.'],$resul);
             }
@@ -447,6 +503,10 @@ class Orcamento extends AbstractService {
             return $result;
         }
         
+        if ($this->getIdentidade()->getIsAdmin() == '0') {
+            return ['Você não tem permissão para alterar esse registro'];
+        }
+        
         $this->trocaNaoCalcula();
         
         if(parent::update()){
@@ -491,6 +551,9 @@ class Orcamento extends AbstractService {
     public function isValid(){ 
         if(!$this->isValid){
             return TRUE;
+        }
+        if ($this->getIdentidade()->getIsAdmin() == '0') {
+            return ['Você não tem permissão para incluir ou alterar registro'];
         }
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);

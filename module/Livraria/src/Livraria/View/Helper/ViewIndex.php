@@ -97,12 +97,18 @@ class ViewIndex extends AbstractHelper {
     public function openTable($options) {
         if(is_null($options)){
             echo '<table class="table table-striped table-bordered table-hover table-condensed">' , "\n";
-        }else{
-           echo '<table';
-            foreach ($options as $atributo => $value) {
-                echo ' ', $atributo, '="', $value, '"';
-            }
-            echo '>', "\n";   
+            return;
+        }
+        if(is_string($options)){
+            echo '<table class="table table-striped table-bordered table-hover table-condensed ' . $options . '">' , "\n";                
+            return;
+        }
+        if(!is_array($options)){
+           echo '<table>', "\n";   
+            
+        }
+        foreach ($options as $atributo => $value) {
+            echo ' ', $atributo, '="', $value, '"';
         }
     }
 
@@ -181,8 +187,8 @@ class ViewIndex extends AbstractHelper {
      */
     public function renderEditLine($value) {
         echo "\t<td nowrap>",
-                '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
-                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Deletar</span>',
+                '<span class="add-on hand" onClick="edit(\'', $value, '\')" title="Editar"><i class="icon-pencil"></i>Edit</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\')" title="Deletar"><i class="icon-remove"></i>Del</span>',
              "</td>\n";   
     }
 

@@ -138,7 +138,62 @@ class Fechados extends AbstractService {
     public function setServiceLocator($serviceLocator) {
         $this->serviceLocator = $serviceLocator;
     }
+
+    /**
+     * Estorna um seguro fechado colocando novamente em Orçamento.
+     * Gera o log com dados de quem e o motivo do estorno
+     * @param string $id
+     * @param string $motivo
+     * @param objet  $controller
+     * @return boolean
+     */
+    public function estornaFechado($id, $motivo, $controller = null) {
+        /* @var $entityF \Livraria\Entity\Fechados */
+        $entityF = $this->em->find('\Livraria\Entity\Fechados', $id);
+        if(!is_object($entityF)){
+            if(!is_null($controller)){
+                $controller->flashMessenger()->addMessage("Alerta!!! Seguro $id Não encontrado!!!!");
+            }
+            return FALSE;
+        }
+        /* @var $entityO \Livraria\Entity\Orcamento */
+        $entityO = $this->em->find('\Livraria\Entity\Orcamento', $entityF->getOrcamentoId());
+        if(!is_object($entityO)){
+            if(!is_null($controller)){
+                $controller->flashMessenger()->addMessage('Alerta!!! Orçamento' . $entityF->getOrcamentoId() . 'Não encontrado!!!!');
+            }
+            return FALSE;
+        }
+        // Desfaz as alterações em Orçamento
+        $entityO->setFechadoId('0');
+        if($entityO->getOrcaReno() == 'orca'){
+            $entityO->setStatus('A');
+        }else{
+            $entityO->setStatus('R');
+        }
+        $this->em->persist($entityO);
+        // Remover Fechado 
+        $this->em->remove($entityF); 
+        $controller->flashMessenger()->addMessage("Seguro $id estorna com sucesso!!!!");
+        //Gerar os log de estorno e salvar no BD
+        $this->logEstornoDeFechado($entityO, $id, $motivo);
+        $this->em->flush();
+        return TRUE;
+    }
     
+    public function logEstornoDeFechado($entityO, $fechado, $motivo) {        
+        //Criar serviço logorcamento
+        $log = new LogOrcamento($this->em);
+        $dataLog['orcamento']    = $entityO;
+        $dataLog['tabela']     = 'log_orcamento';
+        $dataLog['controller'] = 'fechados' ;
+        $dataLog['action']     = 'estornaVarios';
+        $orcamento = $entityO->getId() . '/' . $entityO->getCodano();
+        $dataLog['mensagem']   = 'Estornou Fechado(' . $fechado . ') para Orçamento(' . $orcamento . '). ';
+        $dataLog['mensagem']  .= $motivo;
+        $dataLog['dePara']     = '';
+        $log->insert($dataLog);
+    }
     /**
      * Exclui o seguro fechado e exclui tb o orçamento ou renovação referente
      * @param string $id
@@ -157,9 +212,9 @@ class Fechados extends AbstractService {
         }
         $this->logForDelete($id,$data);
         // Verificar se é usuario da imobiliaria e enviar email.
-        if($this->getIdentidade()->getTipo() != 'admin'){
-            $this->sendEmailCancelamento($enty);
-        }
+//        if($this->getIdentidade()->getTipo() != 'admin'){
+            $this->sendEmailCancelamento($enty, $data['motivoNaoFechou']);
+//        }
         // Cancelar tb o orcamento ou renovação que gerou este seguro fechado.
         $data['motivoNaoFechou'] = 'Excluido porque seu registro de fechado foi excluido fechado numero= '. $id . '. Motivo ' . $data['motivoNaoFechou'];
         $serOrca = new Orcamento($this->em);
@@ -341,6 +396,11 @@ class Fechados extends AbstractService {
                 ->find($id);
         }else{
             $this->Orcamento = $id;
+        }
+        
+        
+        if ($this->getIdentidade()->getIsAdmin() == '0') {
+            return [FALSE,'Você não tem permissão para incluir ou alterar registro'];
         }
 
         if(!$this->Orcamento){
@@ -1092,19 +1152,17 @@ class Fechados extends AbstractService {
         $dados['imovel'] = $this->entityReal->getImovel()->__toString();
         $dados['locador'] = $this->entityReal->getLocadorNome();
         $dados['locatario'] = $this->entityReal->getLocatarioNome();
-        $servEmail->enviaEmail(['nome' => 'Marisa',
-            'email' => 'marisa@vilavelha.com.br',
-           // 'email' => 'watakabe98@hotmail.com',
+        $servEmail->enviaEmail(['nome' => $this->getIdentidade()->getNome(),
             'subject' => 'Vistoria do Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
             'data' => $dados],'seguro-vistoria');         
     }
 
     /**
      * Envia email avisando que foi cancelado o seguro fechado
-     * @param object $enty
+     * @param \Livraria\Entity\Fechados $enty
      * @return no
      */
-    public function sendEmailCancelamento($enty){
+    public function sendEmailCancelamento($enty,$motivo=''){
         if(is_null($this->serviceLocator)){
             return;
         }
@@ -1114,11 +1172,20 @@ class Fechados extends AbstractService {
         $dados['imovel'] = $enty->getImovel()->__toString();
         $dados['locador'] = $enty->getLocadorNome();
         $dados['locatario'] = $enty->getLocatarioNome();
-        $servEmail->enviaEmail(['nome' => 'Marisa',
-           // 'email' => 'marisa@vilavelha.com.br',
-            'email' => 'watakabe98@hotmail.com',
+        $dados['vigencia'] = $enty->getInicio();
+        $dados['vigenciaF'] = $enty->getFim();
+        $dados['motivo'] = $motivo;
+        $nome = $this->getIdentidade()->getNome();
+        
+        $servEmail->enviaEmail(['emailNome' => $nome,
             'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
             'data' => $dados],'seguro-cancelado'); 
+        // Envia para a administradora se houver email cadastrado
+        if($dados['email'] != 'NAO'){
+            $servEmail->enviaEmail(['emailNome' => $nome, 'email', $dados['email'],
+                'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
+                'data' => $dados],'seguro-canceladoForAdm');             
+        }
     }
     
     /**
@@ -1141,7 +1208,7 @@ class Fechados extends AbstractService {
         foreach ($sc->faturados as $value) {
             //caso venha configurado para nao enviar email ou vazio
             if(strtoupper($value['administradora']['email']) == 'NAO' OR empty($value['administradora']['email'])){
-                continue; 
+                $value['administradora']['email'] = $this->mailDefault; 
             }
             //Filtro Administrador
             if(!empty($admFiltro) AND $admFiltro != $value['administradora']['id']){
@@ -1262,6 +1329,6 @@ class Fechados extends AbstractService {
             }
         }
         return $antes;
-    } 
+    }
 
 }

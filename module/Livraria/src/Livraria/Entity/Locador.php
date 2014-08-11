@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\Entity(repositoryClass="Livraria\Entity\LocadorRepository")
  */
-class Locador
+class Locador extends Filtro
 {
     /**
      * @var integer $id
@@ -78,7 +78,7 @@ class Locador
      *
      * @ORM\ManyToOne(targetEntity="Endereco")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id", nullable=true)
      * })
      */
     protected $endereco;
@@ -158,38 +158,46 @@ class Locador
     }
 
     /**
-     * CPF no formato 000.000.000-00
-     * @return string 
+     * Retorna cpf com ou sem formatação dos pontos
+     * @param bolean $formatado
+     * @return string
      */
-    public function getCpf() {
+    public function getCpf($formatado=true) {
+        if($formatado){
+            return $this->formatarCPF_CNPJ($this->cpf);
+        }
         return $this->cpf;
     }
 
     /**
-     * CPF no formato 000.000.000-00
+     * CPF no formato 00000000000
      * @param string $cpf
      * @return \Livraria\Entity\Locador
      */
     public function setCpf($cpf) {
-        $this->cpf = $this->formatarCPF_CNPJ($cpf);
+        $this->cpf = $this->cleanDocFomatacao($cpf);
         return $this;
     }
 
     /**
-     * CNPJ no formato 00.000.000/0001-00
+     * Retorna cnpj com ou sem formatação dos pontos
+     * @param bolean $formatado
      * @return string
      */
-    public function getCnpj() {
+    public function getCnpj($formatado=true) {
+        if($formatado){
+            return $this->formatarCPF_CNPJ($this->cnpj);
+        }
         return $this->cnpj;
     }
 
     /**
-     * 
+     * CNPJ no formato 00000000000000
      * @param string $cnpj
      * @return \Livraria\Entity\Locador
      */
     public function setCnpj($cnpj) {
-        $this->cnpj = $this->formatarCPF_CNPJ($cnpj);
+        $this->cnpj = $this->cleanDocFomatacao($cnpj);
         return $this;
     }
 
@@ -310,43 +318,5 @@ class Locador
     public function __toString() {
         return $this->nome;
     }
-
-    /**
-     * Coloca a mascara no campo digitado 
-     * Ou retorna campo limpo livre da formatação
-     * @param string  $campo
-     * @param boolean $formatado
-     * @return string 
-     */
-    public function formatarCPF_CNPJ($campo, $formatado = true){
-	//retira formato
-	$codigoLimpo = ereg_replace("[' '-./ t]",'',$campo);
-	// pega o tamanho da string menos os digitos verificadores
-	$tamanho = (strlen($codigoLimpo) -2);
-	//verifica se o tamanho do código informado é válido
-	if ($tamanho != 9 && $tamanho != 12){
-		return false; 
-	}
- 
-	if ($formatado){ 
-		// seleciona a máscara para cpf ou cnpj
-		$mascara = ($tamanho == 9) ? '###.###.###-##' : '##.###.###/####-##'; 
- 
-		$indice = -1;
-		for ($i=0; $i < strlen($mascara); $i++) {
-			if ($mascara[$i]=='#') $mascara[$i] = $codigoLimpo[++$indice];
-		}
-		//retorna o campo formatado
-		$retorno = $mascara;
- 
-	}else{
-		//se não quer formatado, retorna o campo limpo
-		$retorno = $codigoLimpo;
-	}
- 
-	return $retorno;
- 
-    }
-
 
 }

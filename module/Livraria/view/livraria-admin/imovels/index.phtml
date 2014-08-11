@@ -1,7 +1,7 @@
 <h1>Imóveis</h1>
 <br />
 
-<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Imovel</span></p>
+<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Novo Imovel</span></p>
 <?php
 
     if(!isset($noFilter)){
@@ -31,17 +31,53 @@
         $this->FormDefault([],'fim');
     }
 
-$coluns = array('ID','Locador','Locatario','Atividade','Ref.','Rua','Numero','Compl','Bloco','Apto','CEP','Status','Ação');
-$td     = array();
+$coluns = array(
+    'Ação',
+    'ID', 
+    'Fim Vigência',
+    'Seguro',
+    'Ref.', 
+    'Rua',
+    'Numero', 
+    'Compl', 
+    'Bloco',
+    'Apto', 
+    'CEP',
+    'Adm',
+    'Locador', 
+    'Locatario',
+    'Atividade',
+    'St.'
+    );
+$td     = array(
+    'nowrap',
+    'nowrap class="r"',
+    'nowrap class="r"',
+    'nowrap class="r"',
+    'nowrap class="r"',
+    'nowrap',
+    'nowrap class="r"',
+    'nowrap',
+    'nowrap class="r"',
+    'nowrap class="r"',
+    'nowrap class="r"',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+    'nowrap',
+);
+
+$tr = 'class="f4"';
+
 echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
-     
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'first'));
+/* @var $entity \Livraria\Entity\Imovel */     
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),
-        $entity->getLocador(),
-        $entity->getLocatario(),
-        $entity->getAtividade(),
+        $entity->getId(),
+        $entity->getFechadoFim(),
+        $entity->getFechadoId(),
         $entity->getRefImovel(),
         $entity->getRua(),
         $entity->getNumero(),
@@ -49,16 +85,19 @@ foreach($this->data as $entity){
         $entity->getBloco(),
         $entity->getApto(),
         $entity->getCep(),
+        $entity->getLocador()->getAdministradora(),
+        $entity->getLocador(),
+        $entity->getLocatario(),
+        $entity->getAtividade(),
         $entity->getStatus(),
-        $entity->getId(),
     );
-    echo $this->ViewIndex('line',array('data' => $linha));
+    echo $this->ViewIndex('line',array('data' => $linha,'tr' => $tr ));
 }
 echo $this->ViewIndex('close');
 ?>
 <br />
 <form name="form" id="form" method="POST">
-    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="subOpcao" id="subOpcao2" class="small">
     <input type="hidden" name="id" id="id2">
 </form>
 <script language="javascript">

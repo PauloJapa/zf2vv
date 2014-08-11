@@ -4,6 +4,7 @@ namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
 use Zend\Session\Container as SessionContainer;
+use Livraria\Service\Mysql;
 
 /**
  * Importar
@@ -17,6 +18,11 @@ class Importar extends AbstractService{
      * @var object 
      */
     protected $sc;
+    /**
+     *
+     * @var \Livraria\Service\Mysql
+     */
+    protected $sel;
     protected $data;
     protected $erro;
     protected $serLoct;
@@ -108,19 +114,37 @@ class Importar extends AbstractService{
         if(!$file){
             return FALSE;
         }
+        echo 'Inicio !!' , date('d/m/Y - h:i'), ' <br>';
         $lello = $this->em->find('Livraria\Entity\Administradora',3234);
         $this->assit24 = $lello->getAssist24();
         $arrayFile = file($file);
         $service = new Orcamento($this->em);
         // ferramentas para locador
+        /* @var $this->repLocd \Livraria\Entity\LocadorRepository */
         $this->repLocd = $this->em->getRepository('Livraria\Entity\Locador');
         $this->serLocd = new Locador($this->em);
         $this->serLocd->notValidateNew();
+           
+        // montar array de com locadores
+        $loc = $this->repLocd->findBy(['administradora' => '3234']);
+        /* @var $ent \Livraria\Entity\Locador */
+        foreach ($loc as $ent) {
+            $this->locador[$ent->getId()][0] = $ent->getNome();
+            if ($ent->getTipo() == 'fisica') {
+                $this->locador[$ent->getId()][1] = $this->cleanDocFomatacao($ent->getCpf());
+            }else{
+                $this->locador[$ent->getId()][1] = $this->cleanDocFomatacao($ent->getCnpj());
+            }
+//            $this->locador[$ent->getId()][2] = $ent->getAdministradora()->getId();
+        } 
+        unset($loc);
         
         // ferramentas para locatario
+        /* @var $this->repLoct \Livraria\Entity\LocatarioRepository */
         $this->repLoct = $this->em->getRepository('Livraria\Entity\Locatario');
         $this->serLoct = new Locatario($this->em);
         $this->serLoct->notValidateNew();
+        $this->listLocat = $this->repLoct->getListaLocatario();
         
         // ferramentas para imovel
         $this->repImovel = $this->em->getRepository('Livraria\Entity\Imovel');
@@ -133,6 +157,7 @@ class Importar extends AbstractService{
         $this->repFechado = $this->em->getRepository('Livraria\Entity\Fechados');
         $dataResul = [];
         $reg = 0;
+        $clean = $prox = 50;
         foreach ($arrayFile as $key => $value) {
             if($key == 0){
                 $dataResul[] = $this->csvToArray(utf8_encode($value)); 
@@ -164,9 +189,15 @@ class Importar extends AbstractService{
             }else{
                 $dataResul[]['result'] = $insertResul;
             }
-            $this->em->clear();
             $reg++;
+            if($reg > $clean){
+                $this->em->clear();
+                echo 'importando ', $prox, ' Aguarde !!' , date('d/m/Y - h:i'), ' <br>';
+                @flush();
+                $clean += $prox;
+            }
         }
+        echo 'Fim !!' , date('d/m/Y - h:i'), ' <br>';
         $this->getSc()->importacaoResul = $dataResul;
         $obs = 'Gerou os Orçamentos:<br>';
         $obs .= 'Quantidade de registro lidos = '. $reg .'.<br>';
@@ -408,38 +439,26 @@ class Importar extends AbstractService{
             $this->erro[] = 'Falha referencia do imovel obrigatorio verifique os dados por favor!';
             return;
         }
-        $this->data['refImovel'] = $ref ;
-        //$entity = $this->repImovel->findOneByRefImovel($ref);
-        $ents = $this->repImovel->findByRefImovel($ref);
-        $separado = $this->desmontaEnd($rua);
+        $ref = trim($ref);
+        $this->data['refImovel'] = $ref ;       
+        // Procura um igual na base importa
         $entity = false;
-        if(count($ents) == 1){
-            $entity = $ents[0];
-        }else{
-            foreach ($ents as $ent) {
-                if($this->rmAcentos($separado['rua']) == $this->rmAcentos($ent->getRua())){
-                    if($separado['numero'] == $ent->getNumero()){
-                        if(isset($separado['apto'])){ 
-                            if($this->rmAcentos($separado['apto']) != $this->rmAcentos($ent->getApto())){
-                                continue;
-                            }
-                        } 
-                        if(isset($separado['bloco'])){
-                            if($this->rmAcentos($separado['bloco']) != $this->rmAcentos($ent->getBloco())){
-                                continue;
-                            }
-                        } 
-                        if(isset($separado['compl'])){ 
-                            if($this->rmAcentos($separado['compl']) != $this->rmAcentos($ent->getCompl())){
-                                continue;
-                            } 
-                        } 
-                        $entity = $ent;
-                        break;
-                    }
+        if(!empty($this->data['locador'])){
+            $this->gSel()->p('Select id, ref_imovel from imovel where locador_id=?');
+            $this->gSel()->e([$this->data['locador']]);        
+            $r = $this->gSel()->fAll();
+            $cleanRef = $this->cleanRefFormatacao($ref);
+            foreach ($r as $reg) {
+                if($cleanRef == $this->cleanRefFormatacao($reg['ref_imovel'])){
+                    $this->data['imovel'] = $reg['id'];
+                    $entity = $this->repImovel->find($reg['id']);
+                    break;
                 }
-            }
-        }
+            }           
+        } 
+        
+        $separado = $this->desmontaEnd($rua);
+
         if($entity){
             // Verificar se imovel encontrado é de fato igual ao do arquivo caso contrario atualizar
             //echo "<p>", $this->rmAcentos($separado['rua']) , '<br>', $this->rmAcentos($entity->getRua()) , '</p>'; 
@@ -455,6 +474,7 @@ class Importar extends AbstractService{
                 $entity->setNumero($separado['numero']);
                 $entity->getEndereco()->setNumero($separado['numero']);
                 $entity->setCep($cep);
+                $entity->setRefImovel($ref);
                 $entity->getEndereco()->setCep($cep);
                 $entity->setApto(isset($separado['apto']) ? $separado['apto'] : '');
                 $entity->setBloco(isset($separado['bloco']) ? $separado['bloco'] : '');
@@ -561,6 +581,25 @@ class Importar extends AbstractService{
 //var_dump($array); echo '<br>';       
         return $res;
     }
+    
+    public function cleanRefFormatacao($ref) {
+        $clean = preg_replace("/[^0-9]/", "", $ref);
+        return (int) $clean ;
+    }
+    
+    public function cleanDocFomatacao($doc, &$tipo='') {
+        if(empty($doc)){
+            return '';
+        }
+        $clean = preg_replace("/[^0-9]/", "", $doc);
+        $tamanho = strlen($clean);
+        if($tamanho <= 11){
+            return str_pad($clean, 11, '0', STR_PAD_LEFT);  
+        }else{
+            $tipo = 'juridica';
+            return str_pad($clean, 14, '0', STR_PAD_LEFT);              
+        }        
+    }
 
     public function buscaLocador($nome, $doc) {
         /*
@@ -573,34 +612,56 @@ class Importar extends AbstractService{
         $nome = trim($nome);
         $this->data['locador'] = '' ;
         $this->data['locadorNome'] = $nome ;
-        $tamanho = strlen($doc);
-        $this->data['tipoLoc'] = ($tamanho <= 11)? 'fisica' : 'juridica';
-        //Arrumar tamanho da numeração do cpf
-        if($this->data['tipoLoc'] == 'fisica' AND $tamanho <> 11){
-            $doc = str_pad($doc, 11, '0', STR_PAD_LEFT);  
-        }      
-        //Arrumar tamanho da numeração do cnpj
-        if($this->data['tipoLoc'] == 'juridica' AND $tamanho <> 14){
-            $doc = str_pad($doc, 14, '0', STR_PAD_LEFT);  
-        }      
+        $this->data['tipoLoc'] = 'fisica';  // padrao fisica na limpeza do documento muda para juridica
+        $doc = $this->cleanDocFomatacao($doc, $this->data['tipoLoc']);
         $this->data['cpfLoc'] = ($this->data['tipoLoc'] == 'fisica') ? $doc : '' ;
         $this->data['cnpjLoc'] = ($this->data['tipoLoc'] == 'fisica') ? ''   : $doc ;
-        //procurar locador pelo nome
-        $lod = $this->repLocd->findOneBy(['nome' => $nome, 'administradora' => $this->data['administradora']]);
-        if ($lod) {
-            $this->data['locador']      = $lod;
-            if($this->data['tipoLoc'] == 'fisica'){
-                if($this->data['cpfLoc'] != $lod->formatarCPF_CNPJ($lod->getCpf(), false)){
-                    $lod->setCpf($this->data['cpfLoc']);
-                    $lod->setTipo($this->data['tipoLoc']);
+        
+        // Procura um igual na base importa
+        if(!empty($doc)){            
+            $this->gSel()->p('Select id, nome from locador where (cpf LIKE ? OR cnpj LIKE ?) AND administradoras_id=?');
+            $this->gSel()->e([$doc, $doc, $this->data['administradora']]);        
+            $r = $this->gSel()->fAll();
+            foreach ($r as $reg) {
+                if($nome == $reg['nome']){
+    //                echo '<p>locador encontrado na pesquisa ' , $nome, ' ',  $reg['nome'], '</p>';   
+                    $this->data['locador']      = $reg['id'];
+                    return ;                  
                 }
-            }else{
-                if($this->data['cnpjLoc'] != $lod->formatarCPF_CNPJ($lod->getCnpj(), false)){
-                    $lod->setCnpj($this->data['cnpjLoc']);
-                    $lod->setTipo($this->data['tipoLoc']);
-                }                
+                $cur_dist = levenshtein($nome, $reg['nome']);
+                if ($cur_dist <= 5) {
+    //                echo '<p>locador encontrado na pesquisa ' , $nome, ' ',  $reg['nome'], ' distancia ', $cur_dist, '</p>';   
+                    $this->data['locador']      = $reg['id'];
+                    return ;                  
+                }
             }
         }
+        // Compara por aproximação
+        $target   = 5;
+        $min_dist = 1000;
+        $sugestao = "";
+        foreach ($this->locador as $key => $loc){
+//echo '<p>deb 2 ', $nome, ' ', $doc, ' ', $loc[1], '</p>';die;
+            if($doc != $loc[1]){
+                continue;
+            }
+            $cur_dist = levenshtein($nome, $loc[0]);
+            if ($cur_dist < $min_dist) {
+                $min_dist = $cur_dist;
+                $sugestao = $key;
+                $nomeTar = $loc[0];
+            }
+            if($cur_dist <= 2){
+                $this->data['locador']      = $sugestao ;
+                return;
+            }
+        }        
+//        echo '<pre>';        var_dump($r);         die;
+        if($min_dist <= $target){           
+//            echo "distancia edicao:" . $nome . " -> " . $nomeTar . " = " . $min_dist . "<br/>", PHP_EOL;
+            $this->data['locador']      = $sugestao ;
+        }       
+        
     }
     
     public function buscaLocatario($nome, $doc) {       
@@ -615,33 +676,61 @@ class Importar extends AbstractService{
         $nome = trim($nome);
         $this->data['locatario'] = '' ;
         $this->data['locatarioNome'] = $nome ;
-        $tamanho = strlen($doc);
-        $this->data['tipo'] = ($tamanho <= 11)? 'fisica' : 'juridica';
-        //Arrumar tamanho da numeração do cpf
-        if($this->data['tipo'] == 'fisica' AND $tamanho <> 11){
-            $doc = str_pad($doc, 11, '0', STR_PAD_LEFT);  
-        }      
-        //Arrumar tamanho da numeração do cnpj
-        if($this->data['tipo'] == 'juridica' AND $tamanho <> 14){
-            $doc = str_pad($doc, 14, '0', STR_PAD_LEFT);  
-        }     
+        $this->data['tipo'] = 'fisica';  // padrao fisica na limpeza do documento muda para juridica
+        $doc = $this->cleanDocFomatacao($doc, $this->data['tipo']);
         $this->data['cpf'] =  ($this->data['tipo'] == 'fisica') ? $doc : '' ;
         $this->data['cnpj'] = ($this->data['tipo'] == 'fisica') ? '' : $doc ;
-        $loc = $this->repLoct->findOneByNome($nome);
-        if ($loc) {
-            $this->data['locatario']      = $loc;
-            if($this->data['tipo'] == 'fisica'){
-                if($this->data['cpf'] != $loc->formatarCPF_CNPJ($loc->getCpf(), false)){
-                    $loc->setCpf($this->data['cpf']);
-                    $loc->setTipo($this->data['tipo']);
+        if(!empty($doc)){            
+            $this->gSel()->p('Select id, nome from locatario where (cpf LIKE ? OR cnpj LIKE ?) ;');
+            $this->gSel()->e([$doc, $doc]);        
+            $r = $this->gSel()->fAll();
+            foreach ($r as $reg) {
+                if($nome == $reg['nome']){
+    //                echo '<p>locatario encontrado na pesquisa ' , $nome, ' ',  $reg['nome'], '</p>';   
+                    $this->data['locatario']      = $reg['id'];
+                    return ;                  
                 }
-            }else{
-                if($this->data['cnpj'] != $loc->formatarCPF_CNPJ($loc->getCnpj(), false)){
-                    $loc->setCnpj($this->data['cnpj']);
-                    $loc->setTipo($this->data['tipo']);
-                }                
+                $cur_dist = levenshtein($nome, $reg['nome']);
+                if ($cur_dist <= 5) {
+    //                echo '<p>locatario encontrado na pesquisa ' , $nome, ' ',  $reg['nome'], ' distancia ', $cur_dist, '</p>';   
+                    $this->data['locatario']      = $reg['id'];
+                    return ;                  
+                }
             }
         }
+        $target   = 5;
+        $min_dist = 1000;
+        $sugestao = "";
+        foreach ($this->listLocat as $key => $loc){
+//echo '<p>deb 2 ', $nome, ' ', $doc, ' ', $loc[1], '</p>';die;
+            if($doc != $loc[1]){
+                continue;
+            }
+            $cur_dist = levenshtein($nome, $loc[0]);
+            if ($cur_dist < $min_dist) {
+                $min_dist = $cur_dist;
+                $sugestao = $key;
+                $nomeTar = $loc[0];
+            }
+            if ($cur_dist <= 2) {
+                $this->data['locatario']  = $key ;
+                return;
+            }
+        }   
+//        echo '<pre>';        var_dump($r);         die;
+        if($min_dist <= $target){           
+//            echo "distancia edicao:" . $nome . " -> " . $nomeTar . " = " . $min_dist . "<br/>", PHP_EOL;
+            $this->data['locatario']  = $sugestao ;
+        } 
     }  
+    
+    public function gSel() {
+        if($this->sel){
+            return $this->sel;
+        }
+        $this->sel = new Mysql();
+//        $this->sel->ex('SET FOREIGN_KEY_CHECKS=0');
+        return $this->sel;
+    }
   
 }

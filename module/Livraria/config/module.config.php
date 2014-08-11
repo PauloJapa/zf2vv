@@ -118,6 +118,7 @@ return array(
             'translator' => 'Zend\I18n\Translator\TranslatorServiceFactory',
             'Navigation' => 'Zend\Navigation\Service\DefaultNavigationFactory',
             'NavAdmin'   => 'Livraria\Navigation\Service\AdminNavigationFactory',
+            'NavNoAdmin'   => 'Livraria\Navigation\Service\NoAdminNavigationFactory',
             'NavUser'    => 'Livraria\Navigation\Service\UserNavigationFactory',
         ),
     ),

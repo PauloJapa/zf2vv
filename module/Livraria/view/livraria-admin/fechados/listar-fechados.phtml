@@ -1,12 +1,12 @@
 <h1>Seguros Fechados</h1>
 <br />
 <style type="text/css">
-#delobs, #delobs2 {
-    left:150px;
+#delobs, #delobs2, #dvEstorna {
+    left:250px;
     margin:10px;
-    padding:10px;
+    padding:20px;
     position:absolute;
-    top:140%;
+    top:300px;
     width:650px;
     background-color: #ffffff;
     border: solid #000 1px;
@@ -37,6 +37,7 @@
         "</td>\r<td>",
             $this->FormDefault(['refImovel' => 'text']),
         "</td><td style='vertical-align: middle;' rowspan='2'>\r",
+            $this->FormDefault(['id' => 'text']),
             $this->FormDefault(['enviar'], 'submitOnly'),
         "</td>\r",
     "</tr><tr>\r",
@@ -136,7 +137,7 @@ $this->ViewIndex('setFuncEdit',$lambda);
 foreach($this->data as $entity){ 
     $status = $entity->getStatus();
     $campo1 = $entity->getId() .'/'. $entity->getCodAno() ;
-    if($status == 'A'){
+    if($status == 'A' OR $status == 'R'){
         $campo1 = '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $campo1 .'</label>';        
     }
     $linha = array(
@@ -156,9 +157,21 @@ foreach($this->data as $entity){
 echo $this->ViewIndex('close');
 ?>
 <br />
-<div class="noPrint">
+<div class="noPrint" align="center">
     <input type="button" name="cancelSel" id="cancelSel" class="btn-success" value="Cancelar Selecionados" onclick="return cancelSelecionados()">
 </div>
+<?php
+    // Usuario Administrador pode alterar data da Vigencia.    
+    if ($user->getTipo() == 'admin') :
+?>
+<br />
+<div class="noPrint" align="center">
+    <input type="button" name="estornaSel" id="estornaSel" class="btn-success" value="Estornar Selecionados" onclick="return estornarSelects()">    
+</div>
+
+<?php
+    endif ;
+?>
 <br />
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
@@ -190,7 +203,23 @@ echo $this->ViewIndex('close');
             </td>
             <td valign='top'>
                 <a href="javascript:desistir('delobs2')"><i class="icon-backward"></i>Desisitir!</a>
-                <br><br><br><a href="javascript:delVarios();"><i class="icon-trash"></i>Cancelar Todos!</a>
+                <br><br><br><a href="javascript:delVarios();"><i class="icon-trash"></i>Cancelar Selecionados!</a>
+            </td>
+        </tr>
+    </table>
+</div> 
+<div id="dvEstorna">
+    <table width="100%">
+        <tr>
+            <td>
+                <div class="input-append" id="popobservacao3">
+                    <label for="motivoEstorno">Motivo do estorno deste(s) seguro(s).</label>
+                    <textarea name="motivoEstorno" id="motivoEstorno" rows="6" class="span6"></textarea>
+                </div>
+            </td>
+            <td valign='top'>
+                <a href="javascript:desistir('dvEstorna')"><i class="icon-backward"></i>Desisitir!</a>
+                <br><br><br><a href="javascript:estornaVarios();"><i class="icon-trash"></i>Estornar</a>
             </td>
         </tr>
     </table>
@@ -236,26 +265,35 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         envia(tar,id);        
     }
-
-    function cancelSelecionados(){
-        //Verificar se algum foi marcado
-        var aux = false;
+    
+    function oneChecked(){
+        //Verificar se algum registro foi marcado
         var elems = document.getElementsByName('Checkeds[]');
         for (i=0; i < elems.length; i++){
             if(elems[i].checked){
-                aux = true;
-                break;
+                return true;
             }
         }
-        if(!aux){
-            alert("Nenhum registro foi selecionado!!");
-            return false;
-        }
+        alert("Nenhum registro foi selecionado!!");
+        return false;
+    }
+
+    function cancelSelecionados(){
+        if(!oneChecked())return;
         var motivo = document.getElementById('delobs2');
         motivo.style.display = 'none';
         var msg = "Deseja realmente cancelar este(s) Seguro(s) Fechado(s) selecionado(s) ?";
         if(!confirm(msg))return;
         motivo.style.display = 'block';        
+    }
+    
+    function estornarSelects(){        
+        if(!oneChecked())return;
+        var motivo = document.getElementById('dvEstorna');
+        motivo.style.display = 'none';
+        var msg = "Deseja realmente estornar este(s) Seguro(s) Fechado(s) selecionado(s) ?";
+        if(!confirm(msg))return;
+        motivo.style.display = 'block'; 
     }
 
     function delVarios(){
@@ -267,6 +305,16 @@ echo $this->ViewIndex('close');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delVarios')); ?>";
         envia(tar,'',null,''); 
         return false;
+    }
+    
+    function estornaVarios(){
+        if($('#motivoEstorno').val() == ''){
+            alert('Digite o motivo por favor!!!');
+            return;
+        }        
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'estornaVarios')); ?>";
+        envia(tar,'',null,''); 
+        return false;        
     }
     
     function printPdf(id){
@@ -342,10 +390,43 @@ echo $this->ViewIndex('close');
     
     document.getElementById('delobs2').style.display = 'none';
     
+    document.getElementById('dvEstorna').style.display = 'none';
+
+    //Funcao jquey para janela de flash mensagem rolar conforme o scrool
     $(document).ready(function(){
-        var y_fixo = 250 + $("#delobs").offset().top;
+        try{
+            var y_fixo = 300 + $("#delobs").offset().top;
+        }catch(e){
+            return ;
+        }
         $(window).scroll(function () {
             $("#delobs").stop().animate({
+                top: y_fixo+$(document).scrollTop()+"px"
+                },{duration:500,queue:false}
+            );
+        });
+    });
+    $(document).ready(function(){
+        try{
+            var y_fixo = 300 + $("#delobs2").offset().top;
+        }catch(e){
+            return ;
+        }
+        $(window).scroll(function () {
+            $("#delobs2").stop().animate({
+                top: y_fixo+$(document).scrollTop()+"px"
+                },{duration:500,queue:false}
+            );
+        });
+    });
+    $(document).ready(function(){
+        try{
+            var y_fixo = 300 + $("#dvEstorna").offset().top;
+        }catch(e){
+            return ;
+        }
+        $(window).scroll(function () {
+            $("#dvEstorna").stop().animate({
                 top: y_fixo+$(document).scrollTop()+"px"
                 },{duration:500,queue:false}
             );

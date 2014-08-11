@@ -8,12 +8,28 @@ $teste = $this->navigation('NavAdmin')->findOneByLabel('Cadastro');
 ?>
 
 <div class="nav-collapse">
-<?php if ($user = $this->UserIdentity('LivrariaAdmin')){
-          if($user->getTipo() == 'admin')
-              echo $this->navigation('NavAdmin')->menu()->setUlClass('nav')->renderMenu($teste); 
-          else
-              echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
-      }else
-          echo $this->navigation('Navigation')->menu()->setUlClass('nav');
+<?php
+    if ($user) {
+        if ($user->getTipo() == 'admin') {
+            if ($user->getIsAdmin()) {
+                echo $this->navigation('NavAdmin')->menu()->setUlClass('nav');
+            } else {
+                echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav');
+            }
+        } else {
+            echo $this->navigation('NavUser')->menu()->setUlClass('nav');
+        }
+    } else {
+        echo $this->navigation('Navigation')->menu()->setUlClass('nav');
+    }
+?>    
+<?php 
+//if ($user = $this->UserIdentity('LivrariaAdmin')){
+//          if($user->getTipo() == 'admin')
+//              echo $this->navigation('NavAdmin')->menu()->setUlClass('nav')->renderMenu($teste); 
+//          else
+//              echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
+//      }else
+//          echo $this->navigation('Navigation')->menu()->setUlClass('nav');
 ?>    
 </div>

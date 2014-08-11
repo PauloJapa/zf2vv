@@ -2,11 +2,11 @@
 <br />
 <style type="text/css">
 #delobs, #delobs2 {
-    left:150px;
-    margin:0;
-    padding:10px;
+    left:250px;
+    margin:10px;
+    padding:20px;
     position:absolute;
-    top:80%;
+    top:300px;
     width:650px;
     background-color: #ffffff;
     border: solid #000 1px;
@@ -164,7 +164,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
 ?>
 <br />
 <div class="noPrint" align="center">
-    <input type="button" name="cancelSel" id="fecharTodos" class="btn-success" value="Fechar Todas Paginas" onclick="return fecharTodos()">
+    <input type="button" name="fecharAll" id="fecharAll" class="btn-success" value="Fechar Todas Paginas" onclick="return fecharTodos()">
 </div>
 <br />
 <div class="noPrint" align="center">
@@ -430,10 +430,28 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     
     document.getElementById('delobs2').style.display = 'none';
     
+    //Funcao jquey para janela de flash mensagem rolar conforme o scrool
     $(document).ready(function(){
-        var y_fixo = 250 + $("#delobs").offset().top;
+        try{
+            var y_fixo = 300 + $("#delobs").offset().top;
+        }catch(e){
+            return ;
+        }
         $(window).scroll(function () {
             $("#delobs").stop().animate({
+                top: y_fixo+$(document).scrollTop()+"px"
+                },{duration:500,queue:false}
+            );
+        });
+    });
+    $(document).ready(function(){
+        try{
+            var y_fixo = 300 + $("#delobs2").offset().top;
+        }catch(e){
+            return ;
+        }
+        $(window).scroll(function () {
+            $("#delobs2").stop().animate({
                 top: y_fixo+$(document).scrollTop()+"px"
                 },{duration:500,queue:false}
             );

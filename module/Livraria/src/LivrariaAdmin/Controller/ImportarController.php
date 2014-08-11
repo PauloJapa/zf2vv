@@ -48,6 +48,7 @@ class ImportarController extends CrudController {
     public function gerarOrcamentoAction(){
         $this->verificaSeUserAdmin();
         // Pegando o serviço para gerar orçamento
+        /* @var $service \Livraria\Service\Importar */
         $service =  new $this->service($this->getEm()); 
         $data = $service->importar();
         // Pegar a rota atual do controler

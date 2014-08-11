@@ -78,5 +78,24 @@ class LocatarioRepository extends EntityRepository {
                 ->orderBy('u.nome');
     }
     
+    public function getListaLocatario() {        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u.id, u.nome, u.cpf, u.cnpj')
+                ->from('Livraria\Entity\Locatario', 'u')
+                ->getQuery();        
+        $reg = $query->getArrayResult();
+        $ret = [];
+        foreach ($reg as $value){
+            $ret[$value['id']][0] = $value['nome'];
+            if(!empty($value['cpf']) AND !is_null($value['cpf'])){
+                $ret[$value['id']][1] = $value['cpf'];                
+            }else{
+                $ret[$value['id']][1] = $value['cnpj'];                                
+            }
+        }
+        return $ret;
+    }
+    
 }
 

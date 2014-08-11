@@ -76,7 +76,7 @@ foreach($this->data as $ent):
             <table style="width: 100% ;" >
                 <tr>
                     <td></td>
-                    <td><? echo $ent->getAdministradora(); ?></td>
+                    <td><? echo $ent->getAdministradora()->getId(), ' - ', $ent->getAdministradora(); ?></td>
                 </tr>
             </table>
         </td>
@@ -94,11 +94,11 @@ foreach($this->data as $ent):
             $parc    = '1/1';
             break;
         case '02':
-            $prc = $mesSel - $ent->getInicio('obj')->format('m');
+            $prc = $mesSel - $ent->getInicio('obj')->format('m') + 1;
             $parcela = $parc = $prc . '/2';
             break;
         case '03':
-            $prc = $mesSel - $ent->getInicio('obj')->format('m');
+            $prc = $mesSel - $ent->getInicio('obj')->format('m') + 1;
             $parcela = $parc = $prc . '/3';
             break;
         default:
@@ -133,7 +133,7 @@ foreach($this->data as $ent):
         $ocupacaoOld = $ocupacao;
         ?>
 
-    <table class="Bt Bb"  style="width: 100% ;">
+    <table class="Bt Bb"  class="data" style="width: 100% ;">
     <tr>
         <th class="Bl">Tipo: <? switch ($ocupacao){
                                 case '01': echo 'Comércio ';break; 
@@ -145,7 +145,7 @@ foreach($this->data as $ent):
             <th class="Br">Parcela: <? echo $parcela; ?></th>
     </tr>  
     </table>    
-    <table class="Bt Bb"  style="width: 100% ;">
+    <table class="Bt Bb" style="width: 100% ;">
     <tr class="F1">
             <th class="Bl" style="width:9%;">Ref. do Imóvel</th>
             <th class="Bl" style="width:15%;">Locador</th>

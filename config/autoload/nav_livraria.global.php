@@ -1,5 +1,6 @@
 <?php
 return array(
+/*<============================================================================================>*/ 
     // All navigation-related configuration is collected in the 'navigation' key
     'navigation' => array(
         // The DefaultNavigationFactory we configured in (1) uses 'default' as the sitemap key
@@ -13,7 +14,8 @@ return array(
                 'label' => 'Login',
                 'route' => 'livraria-admin-auth',
             ),
-        ),
+        ),        
+/*<============================================================================================>*/
         'admin' => array(
             // And finally, here is where we define our page hierarchy
             'home' => array(
@@ -369,11 +371,180 @@ return array(
                     ),
                 ),
             ),
+            'senha' => array(
+                'label' => 'Alterar Senha',
+                'route' => 'livraria-admin',
+                'controller' => 'users',
+                'action' => 'alteraSenha',
+            ),
             'logout' => array(
                 'label' => 'Logout',
                 'route' => 'livraria-admin-logout',
             ),
         ),
+/*<============================================================================================>*/
+        'noRoot' => array(
+            // And finally, here is where we define our page hierarchy
+            'home' => array(
+                'label' => 'Home',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'bemVindo',
+            ),
+            'calculo' => array(
+                'label' => 'Calculo',
+                'route' => 'livraria-admin',
+                'controller' => 'orcamentos',
+                'action' => 'new',
+            ),
+            'consultas' => array(
+                'label' => 'Consultas',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'consulta',
+                'pages' => array(
+                    'orcamentos' => array(
+                        'label' => 'Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'orcamentos',
+                        'action' => 'listarOrcamentos',
+                    ),
+                    'renovacaos' => array(
+                        'label' => 'Renovação_Mensais',
+                        'route' => 'livraria-admin',
+                        'controller' => 'renovacaos',
+                        'action' => 'index',
+                        'pages' => array(
+                            'renovacao2' => array(
+                                'label' => 'Gerar_Mensais',
+                                'route' => 'livraria-admin',
+                                'controller' => 'renovacaos',
+                                'action' => 'buscar',
+                            ),
+                        ),
+                    ),
+                    'fechados' => array(
+                        'label' => 'Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'fechados',
+                        'action' => 'listarFechados',
+                    ),
+                ),
+            ),
+            'relatorios' => array(
+                'label' => 'Relatórios',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'relatorios',
+                'pages' => array(
+                    'relatorios1' => array(
+                        'label' => 'Consulta Query',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'query',
+                    ),
+                    'relatorios2' => array(
+                        'label' => 'Orçamento/Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'orcareno',
+                    ),
+                    'relatorios3' => array(
+                        'label' => 'Custo Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'custoRenovacao',
+                    ),
+                    'relatorios4' => array(
+                        'label' => 'Mapa de Renovação',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'mapaRenovacao',
+                    ),
+                    'relatorios5' => array(
+                        'label' => 'Imóveis Desocupados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'imoveisDesocupados',
+                    ),
+                    'relatorios6' => array(
+                        'label' => 'Email Fatura',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'fechamentoSeguro',
+                    ),
+                    'relatorios7' => array(
+                        'label' => 'Fatura',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'buscarRelatorio',
+                    ),
+                    'relatorios8' => array(
+                        'label' => 'Resumo Seguros Fechados',
+                        'route' => 'livraria-admin',
+                        'controller' => 'fechados',
+                        'action' => 'buscar',
+                    ),
+                    'relatorios10' => array(
+                        'label' => 'Comissão de Seguro',
+                        'route' => 'livraria-admin',
+                        'controller' => 'relatorios',
+                        'action' => 'comissaoSeguro',
+                    ),
+                ),
+            ),
+            'exportar' => array(
+                'label' => 'Exportar',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'exportar',
+                'pages' => array(
+                    'exportar1' => array(
+                        'label' => 'Maritima',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'maritima',
+                    ),
+                    'exportar2' => array(
+                        'label' => 'C.O.L.',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'col',
+                    ),
+                    'exportar3' => array(
+                        'label' => 'Emissão_de_Cartão',
+                        'route' => 'livraria-admin',
+                        'controller' => 'exportar',
+                        'action' => 'cartao',
+                    ),
+                ),
+            ),
+            'importar' => array(
+                'label' => 'Importar',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'importar',
+                'pages' => array(
+                    'importar1' => array(
+                        'label' => 'Orçamento',
+                        'route' => 'livraria-admin',
+                        'controller' => 'importar',
+                        'action' => 'selecionar',
+                    ),
+                ),
+            ),
+            'senha' => array(
+                'label' => 'Alterar Senha',
+                'route' => 'livraria-admin',
+                'controller' => 'users',
+                'action' => 'alteraSenha',
+            ),
+            'logout' => array(
+                'label' => 'Logout',
+                'route' => 'livraria-admin-logout',
+            ),
+        ),
+/*<============================================================================================>*/
         'user' => array(
             'home' => array(
                 'label' => 'Home',
@@ -444,5 +615,6 @@ return array(
                 'route' => 'livraria-admin-logout',
             ),
         ),
+/*<============================================================================================>*/
     ),
 );

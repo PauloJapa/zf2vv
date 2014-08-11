@@ -28,12 +28,9 @@ class ParametroSisController  extends CrudController {
     public function indexAction(array $filtro = [],array $orderBy = ['key' => 'ASC']) {
         $this->verificaSeUserAdmin();
         
-        if(empty($filtro))
-            $filtro['key'] = '%';
-        
         $list = $this->getEm()
                      ->getRepository($this->entity)
-                     ->findKey($filtro['key'],$orderBy);
+                     ->findBy($filtro,$orderBy);
 
         $this->page = $this->params()->fromRoute('page');
         // Pegar a rota atual do controler
@@ -41,10 +38,11 @@ class ParametroSisController  extends CrudController {
 
         $this->paginator = new Paginator(new ArrayAdapter($list));
         $this->paginator->setCurrentPageNumber($this->page);
-        $this->paginator->setDefaultItemCountPerPage(20);
+        $this->paginator->setDefaultItemCountPerPage(100);
         $this->paginator->setPageRange(15);
-        if($this->render)
+        if ($this->render) {
             return new ViewModel($this->getParamsForView());
+        }
     }
     
     /**

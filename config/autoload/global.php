@@ -13,6 +13,7 @@ return array(
             'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory'
         )
     ),
+    /*
     'mail' => array(
         'name' => 'smtp.vilavelha.com.br',
         'host' => 'smtp.vilavelha.com.br',
@@ -21,22 +22,23 @@ return array(
         'connection_config' => array(
             'username' => 'incendiolocacao@vilavelha.com.br',
             'password' => '111222',
-            'from' => 'incendiolocacao@vilavelha.com.br'
+            'from' => 'incendiolocacao@vilavelha.com.br',
+            'fromName' => 'Incendio Locacao'
         )
     )
-    /*
      * Usa este somente para testes
+     */
     'mail' => array(
         'name' => 'smtp.gmail.com',
         'host' => 'smtp.gmail.com',
         'connection_class' => 'login',
         'port' => 587,
         'connection_config' => array(
-            'username' => 'incendiolocacao@gmail.com',
-            'password' => '111222v!',
+            'username' => 'watakabe05@gmail.com',
+            'password' => '35413541',
             'ssl' => 'tls',
-            'from' => 'incendiolocacao@gmail.com'
+            'from' => 'watakabe05@gmail.com',
+            'fromName' => 'Google Paulo'
         )
     )
-     */
 );

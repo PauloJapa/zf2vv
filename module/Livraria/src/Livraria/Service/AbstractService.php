@@ -64,7 +64,13 @@ abstract class AbstractService {
      * Formato campo  nome; valor antes; valor depois;
      * @var string
      */
-    protected $dePara;
+    protected $dePara = '';
+    
+    /**
+     * String com endereço de email padrão
+     * @var type String
+     */
+    protected $mailDefault = 'incendiolocacao@vilavelha.com.br'; 
 
     /**
      * Contruct recebe EntityManager para manipulação de registros
@@ -111,9 +117,10 @@ abstract class AbstractService {
         if(!empty($data)){
             $this->data = $data;
         }
-        if ($user = $this->getIdentidade())
+        if ($user = $this->getIdentidade()) {
             $this->data['userIdCriado'] = $user->getId();
-        
+        }
+
         $this->entityReal = new $this->entity($this->data);
         
         $this->em->persist($this->entityReal);
@@ -158,24 +165,27 @@ abstract class AbstractService {
         if($data){
             $this->data = $data;
         }
-        if ($user = $this->getIdentidade())
+        if ($user = $this->getIdentidade()) {
             $this->data['userIdAlterado'] = $user->getId();
-        
+        }
+
         if(method_exists($this,'getDiff')){
-            $this->entityReal = $this->em->find($this->entity, $this->data['id']);
-            $this->getDiff($this->entityReal);            
-            if(empty($this->dePara)) 
+            $this->getDiff($this->getEntity());            
+            if (empty($this->dePara)) {
                 return TRUE;
+            }
         }else{
             $this->entityReal = $this->em->getReference($this->entity, $this->data['id']);
         }
         
         $this->entityReal = Configurator::configure($this->entityReal, $this->data);
         
-        $this->em->persist($this->entityReal);
-        if($this->getFlush())
-            $this->em->flush();
         
+        $this->em->persist($this->entityReal);
+        if ($this->getFlush()) {
+            $this->em->flush();
+        }
+
         return TRUE;
     }
     
@@ -410,23 +420,28 @@ abstract class AbstractService {
      * @return boolean | Entity
      */
     public function getEntity() {
-        if(empty($this->entityReal))
-            return FALSE;
-        
+        if ($this->entityReal) {
+            return $this->entityReal;
+        }
+        $this->entityReal = $this->em->find($this->entity, $this->data['id']);
         return $this->entityReal;
     }
     
     /**
      * Busca um paramentro especifico cadastrado com um key definida
      * @param string $key
-     * @return boolean | entity
+     * @return boolean | entity | array
      */
-    public function getParametroSis($key){
+    public function getParametroSis($key, $array = false){
         $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findByKey($key);
-        if($entity){
-            return $entity[0]->getConteudo();
-        }else
-            return FALSE;        
+        if ($entity) {
+            if ($array){
+                return $entity;
+            }else{
+                return $entity[0]->getConteudo();                
+            }
+        } 
+        return FALSE;
     }
 
     
@@ -441,7 +456,7 @@ abstract class AbstractService {
         //Coberturas 
         $incendio = ($this->data['incendio']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['incendio'], 'float');
         $conteudo = ($this->data['conteudo']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['conteudo'], 'float');            
-        $aluguel  = ($this->data['aluguel']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['aluguel'],  'float');
+        $aluguel  = ($this->data['aluguel'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['aluguel'],  'float');
         $eletrico = ($this->data['eletrico']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['eletrico'], 'float');
         $vendaval = ($this->data['vendaval']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['vendaval'], 'float');
         
@@ -475,7 +490,6 @@ abstract class AbstractService {
             $txIncendio = round($this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio'), 2) ;
             $total += $txIncendio;
         }
-        
         // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
         $txConteudo = 0.0;
         if ($this->data['tipoCobertura'] == '02' AND $conteudo != 0.0001){
@@ -605,7 +619,7 @@ abstract class AbstractService {
      * @param string $fMin   Parte do nome da funcao da entity multiplosMinimos ex Incendio
      * @return real
      */
-    public function calcTaxaMultMinMax($vlr, $fTaxa, $fMin='') {
+    public function calcTaxaMultMinMax(&$vlr, $fTaxa, $fMin='') {
         if($vlr == 0.0)    
             return 0.0;
 
@@ -630,14 +644,16 @@ abstract class AbstractService {
         
         // Se valor da cobertura for menor que o minimo calcula com o min
         $vlrMin = floatval($this->data['multiplosMinimos']->$fMin());
-        if ($vlrMin != 0.0 AND $vlr < $vlrMin)
+        if ($vlrMin != 0.0 AND $vlr < $vlrMin) {
             $vlr = $vlrMin;
+        }
 
         // Se valor da cobertura for maior que o maximo calcula com o max
         $vlrMax = floatval($this->data['multiplosMinimos']->$fMax());
-        if (($vlrMax != 0.0) AND ($vlr > $vlrMax))
+        if (($vlrMax != 0.0) AND ( $vlr > $vlrMax)) {
             $vlr = $vlrMax;
-        
+        }
+
         // Valor calculado
         $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
         
@@ -717,6 +733,10 @@ abstract class AbstractService {
         return (isset($this->data[$index])) ? $this->data[$index] : FALSE;
     }
 
+    /**
+     * Busca o valor a somar para seguros com assistencia 24 horas.
+     * @return float
+     */
     public function getAssist24Vlr() {
         return (floatval($this->getParametroSis('assist24_' . $this->data['ocupacao'] . '_' . $this->data['validade'])));
     }

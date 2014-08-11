@@ -20,6 +20,7 @@ class Mail
     protected $message;
     protected $subject;
     protected $to;
+    protected $toName;
     protected $data;
     protected $page;
     
@@ -36,9 +37,10 @@ class Mail
         return $this;
     }
     
-    public function setTo($to)
+    public function setTo($to,$name=null)
     {
         $this->to = $to;
+        $this->toName = $name;
         return $this;
     }
     
@@ -70,13 +72,20 @@ class Mail
         $config = $this->transport->getOptions()->toArray();
         
         $this->message = new Message;
-        $this->message->addFrom($config['connection_config']['from'])
-                ->addTo($this->to)
+        $this->message->addFrom($config['connection_config']['from'], $config['connection_config']['fromName'])
+                ->addTo($this->to,$this->toName)
                 ->setSubject($this->subject)
                 ->setBody($this->body)
                 ->setEncoding('UTF-8');
         
         return $this;
+    }
+    /**
+     * 
+     * @return Message
+     */
+    public function getMessage() {
+        return $this->message;
     }
     
     public function send()

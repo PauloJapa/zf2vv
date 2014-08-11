@@ -49,3 +49,28 @@ table td.c {
 .hand{
     cursor:pointer;
 }
+
+.f1{
+    font-size: 8px;
+}
+.f2{
+    font-size: 9px;
+}
+.f3{
+    font-size: 10px;
+}
+.f4{
+    font-size: 11px;
+}
+.f5{
+    font-size: 12px;
+}
+.f6{
+    font-size: 14px;
+}
+.f7{
+    font-size: 16px;
+}
+.f8{
+    font-size: 18px;
+}

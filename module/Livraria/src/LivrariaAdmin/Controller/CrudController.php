@@ -14,20 +14,20 @@ use Zend\Session\Container as SessionContainer;
 abstract class CrudController extends AbstractActionController {
 
     /**
-     *
-     * @var EntityManager
+     * Para Manipular Entity e outras coisas no BD
+     * @var \Doctrine\ORM\EntityManager
      */
     protected $em;
     
     /**
      * Objeto que pega os dados do usuario armazenado
-     * @var Zend\Authentication\AuthenticationService
+     * @var \Zend\Authentication\AuthenticationService
      */
     protected $authService;
     
     /**
      * Objeto que manipula os dados do usuario armazenado
-     * @var Zend\Session\Container
+     * @var \Zend\Session\Container
      */
     protected $sc;
     
@@ -53,7 +53,7 @@ abstract class CrudController extends AbstractActionController {
      * @param array $filtro
      * @param array $orderBy
      * @param array $list
-     * @return \Zend\View\Model\ViewModel|no return
+     * @return \Zend\View\Model\ViewModel | no return
      */
     public function indexAction(array $filtro = [],array $orderBy = [], $list = []) {
         if (empty($list)) {
@@ -154,12 +154,12 @@ abstract class CrudController extends AbstractActionController {
     }
 
     /**
-     * @return EntityManager
+     * @return \Doctrine\ORM\EntityManager
      */
     protected function getEm() {
-        if (null === $this->em)
+        if (null === $this->em) {
             $this->em = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-
+        }
         return $this->em;
     }
     
@@ -217,7 +217,7 @@ abstract class CrudController extends AbstractActionController {
      * Busca os dados do usuario da storage session
      * Retorna a entity com os dados do usuario
      * @param Array $data com os campos do registro
-     * @return Livraria\Entity\User | boolean
+     * @return \Livraria\Entity\User | boolean
      */     
     public function getIdentidade() { 
         if (is_object($this->authService)) {
@@ -234,7 +234,7 @@ abstract class CrudController extends AbstractActionController {
     
     /**
      * Verifica se usuario é do tipo admin se não for redireciona para tela de login
-     * @return void
+     * @return \Livraria\Entity\User 
      */
     public function verificaSeUserAdmin(){
         $user = $this->getIdentidade();

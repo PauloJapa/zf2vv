@@ -78,7 +78,7 @@ class Locatario extends Filtro
      *
      * @ORM\ManyToOne(targetEntity="Livraria\Entity\Endereco")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id", nullable=true)
      * })
      */
     protected $endereco;
@@ -149,38 +149,46 @@ class Locatario extends Filtro
     }
 
     /**
-     * CPF no formato 000.000.000-00
-     * @return string 
+     * Retorna cpf com ou sem formatação dos pontos
+     * @param bolean $formatado
+     * @return string
      */
-    public function getCpf() {
+    public function getCpf($formatado=true) {
+        if($formatado){
+            return $this->formatarCPF_CNPJ($this->cpf);
+        }
         return $this->cpf;
     }
 
     /**
-     * CPF no formato 000.000.000-00
+     * CPF no formato 00000000000
      * @param string $cpf
      * @return \Livraria\Entity\Locatario
      */
     public function setCpf($cpf) {
-        $this->cpf = $this->formatarCPF_CNPJ($cpf);
+        $this->cpf = $this->cleanDocFomatacao($cpf);
         return $this;
     }
 
     /**
-     * CNPJ no formato 00.000.000/0001-00
+     * Retorna cnpj com ou sem formatação dos pontos
+     * @param bolean $formatado
      * @return string
      */
-    public function getCnpj() {
+    public function getCnpj($formatado=true) {
+        if($formatado){
+            return $this->formatarCPF_CNPJ($this->cnpj);
+        }
         return $this->cnpj;
     }
 
     /**
-     * 
+     * CNPJ no formato 00000000000000
      * @param string $cnpj
      * @return \Livraria\Entity\Locatario
      */
     public function setCnpj($cnpj) {
-        $this->cnpj = $this->formatarCPF_CNPJ($cnpj);
+        $this->cnpj = $this->cleanDocFomatacao($cnpj);
         return $this;
     }
 

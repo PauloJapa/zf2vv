@@ -3,7 +3,7 @@
 namespace Livraria\Service;
 
 use Doctrine\ORM\EntityManager;
-use Livraria\Entity\Configurator;
+
 /**
  * Locador
  * Faz o CRUD da tabela Locador no banco de dados
@@ -16,10 +16,28 @@ class Locador extends AbstractService {
      * @var string 
      */
     protected $deParaEnd;
+    
+    /**
+     * Conexão com o direta com o BD
+     * @var Mysql
+     */
+    protected $con;
 
     public function __construct(EntityManager $em) {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Locador";
+    }
+    
+    /**
+     * Cria ou pega um instancia do PDO do Mysql
+     * @return Mysql
+     */
+    public function getCon() {
+        if($this->con){
+            return $this->con;
+        }
+        $this->con = new Mysql();
+        return $this->con;
     }
     
     public function setReferences(){
@@ -34,16 +52,22 @@ class Locador extends AbstractService {
      */     
     public function insert(array $data) { 
         $this->data = $data;
-        
-        $this->setReferences();
-        
+                
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
         
-        //Pegando o servico endereco e inserindo novo endereco do locador
-        $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);
+        $this->setReferences();
+        
+        //Pegando o servico endereco e inserindo novo endereco do locador se houver
+        if(isset($this->data['rua']) AND !empty($this->data['rua'])){
+            $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);            
+        }else{
+        // Setar endereço vazio para 1 pois não tem endereço
+            $this->data['endereco'] = '1';
+            $this->idToReference('endereco', 'Livraria\Entity\Endereco');            
+        }
 
         if(parent::insert())
             $this->logForNew();
@@ -72,17 +96,43 @@ class Locador extends AbstractService {
         if($result !== TRUE){
             return $result;
         }
-        
         //Pegando o servico endereco e atualizando endereco do locador
-        $serviceEndereco = new Endereco($this->em);
-        $this->data['endereco'] = $serviceEndereco->update($this->data);
-        $this->deParaEnd = $serviceEndereco->getDePara();
+        $serviceEnd = new Endereco($this->em);
+        /* @var $ent  \Livraria\Entity\Locador  */
+        $ent = $this->getEntity(); 
+        $this->data['idEnde'] = $ent->getEndereco()->getId();
+        $this->data['endereco'] = $serviceEnd->update($this->data);
+        $this->deParaEnd = $serviceEnd->getDePara();
+        //Verificar se mudou o nome para alterar nos Orcamentos e Fechados.
+        $this->getCon()->bg();
+        if($ent->getNome() != $this->data['nome']){
+            $this->changeNameAtSeguros($ent->getId(), $this->data['nome']);
+        }
         
-        
-        if(parent::update())
+        if (parent::update()) {
             $this->logForEdit();
-        
+            $this->getCon()->co();
+        }
+
         return TRUE;
+    }
+
+    /**
+     * Altera o nome em todos os Orçamento e Fechados desse Locador
+     * @param int $id
+     * @param string $nome
+     * @return void
+     */
+    public function changeNameAtSeguros($id, $nome) {
+        if(empty($nome)){
+            return;
+        }
+        $q1 = 'UPDATE `orcamento` SET `locador_nome` = ? WHERE `locador_id` = ? ;';
+        $this->getCon()->p($q1);
+        $this->getCon()->e([$nome, $id]);
+        $q2 = 'UPDATE `fechados` SET `locador_nome` = ? WHERE `locador_id` = ? ;';
+        $this->getCon()->p($q2);
+        $this->getCon()->e([$nome, $id]);        
     }
     
     /**

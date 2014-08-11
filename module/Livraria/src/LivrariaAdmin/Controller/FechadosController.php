@@ -24,6 +24,20 @@ class FechadosController extends CrudController {
     public function indexAction(array $filtro = array()){
         
     }
+    
+    public function estornaVariosAction() {        
+        $this->verificaSeUserAdmin();
+        $data = $this->getRequest()->getPost()->toArray();
+        /* @var $service \Livraria\Service\Fechados */
+        $service = $this->getServiceLocator()->get($this->service);
+        $qtd = 0;
+        foreach ($data['Checkeds'] as $id) {            
+            $service->estornaFechado($id,$data['motivoEstorno'], $this);
+            $qtd ++;
+        }
+        $service->logForSis('fechados','0','fechados','estornaVarios',"Estornou $qtd Fechados com o seguinte motivo. " . $data['motivoEstorno']);
+        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action'=>'listarFechados'));
+    }
     /**
      * Faz pesquisa no BD e retorna as variaveis de exbição
      * @param array $filtro

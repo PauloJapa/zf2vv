@@ -63,16 +63,20 @@ class Endereco extends AbstractService {
     
     public function insert(array $data, $flush=FALSE) {
         $this->data = $data;
+        unset($this->data['id']);
+        $this->data['idEnde'] = '';
         
         $this->setReferences();
         
+        /* @var $entity \Livraria\Entity\Endereco */
         $entity = new $this->entity($this->data);
-        
+        $entity->getId();
         $this->em->persist($entity);
         
-        if($flush)
+        if ($flush) {
             $this->em->flush();
-        
+        }
+
         return $entity;
         
     }
@@ -81,6 +85,10 @@ class Endereco extends AbstractService {
         $this->data = $data;
         unset($this->data['id']);
         
+        if($this->data['idEnde'] == '1' AND !empty($this->data['rua'])){            
+            $this->dePara .= $this->diffAfterBefore('Endereço', 'Sem Endereço', $this->data['rua']);
+            return $this->insert($data);
+        }        
         $this->setReferences();
         
         //Pega o registro endereço do banco para verificar modificações

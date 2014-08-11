@@ -90,33 +90,44 @@ class  Filtro
      * @return string 
      */
     public function formatarCPF_CNPJ($campo, $formatado = true){
-	//retira formato
-	$codigoLimpo = ereg_replace("[' '-./ t]",'',$campo);
-	// pega o tamanho da string menos os digitos verificadores
-	$tamanho = (strlen($codigoLimpo) -2);
-	//verifica se o tamanho do código informado é válido
-	if ($tamanho != 9 && $tamanho != 12){
-		return false; 
-	}
- 
+        if(empty($campo)){
+            return '';
+        }
+	//retira formatação do codigo
+	$codigoLimpo = $this->cleanDocFomatacao($campo);
 	if ($formatado){ 
-		// seleciona a máscara para cpf ou cnpj
-		$mascara = ($tamanho == 9) ? '###.###.###-##' : '##.###.###/####-##'; 
- 
-		$indice = -1;
-		for ($i=0; $i < strlen($mascara); $i++) {
-			if ($mascara[$i]=='#') $mascara[$i] = $codigoLimpo[++$indice];
-		}
-		//retorna o campo formatado
-		$retorno = $mascara;
- 
+            // seleciona a máscara para cpf ou cnpj
+            $mascara = (strlen($codigoLimpo) == 14)  ? '##.###.###/####-##' : '###.###.###-##' ;  
+            $indice = -1;
+            for ($i=0; $i < strlen($mascara); $i++) {
+                    if ($mascara[$i]=='#') $mascara[$i] = $codigoLimpo[++$indice];
+            }
+            //retorna o campo formatado
+            return $mascara; 
 	}else{
-		//se não quer formatado, retorna o campo limpo
-		$retorno = $codigoLimpo;
+            //se não quer formatado, retorna o campo limpo
+            return $codigoLimpo;
 	}
  
-	return $retorno;
- 
+    }
+    
+    /**
+     * Retirar tudo que não é numero e coloca zeros a esquerda 
+     * para completar 11 digitos para cpf e 14 para cnpf
+     * @param string $doc
+     * @return string formatada com zeros a esquedar
+     */
+    public function cleanDocFomatacao($doc) {
+        if(empty($doc)){
+            return '';
+        }
+        $clean = preg_replace("/[^0-9]/", "", $doc);
+        $tamanho = strlen($clean);
+        if($tamanho <= 11){
+            return str_pad($clean, 11, '0', STR_PAD_LEFT);  
+        }else{
+            return str_pad($clean, 14, '0', STR_PAD_LEFT);              
+        }        
     }
 }
 

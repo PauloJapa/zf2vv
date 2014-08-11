@@ -160,9 +160,9 @@ class Exporta extends AbstractService{
             $this->addSaida($value['locatario']['nome'], 100);
             //locatario documento
             if($value['locatario']['tipo'] == 'fisica'){
-                $this->addSaida($value['locatario']['cpf'], 15, '0', 'STR_PAD_LEFT');                
+                $this->saida .= $this->cleanDocFomatacao($value['locatario']['cpf'], 15);                
             }else{
-                $this->addSaida($value['locatario']['cnpj'], 15, '0', 'STR_PAD_LEFT');                                
+                $this->saida .= $this->cleanDocFomatacao($value['locatario']['cnpj'], 15);                
             }
             //endereço
             $end = $value['imovel']['rua'] . ', ' . $value['imovel']['numero'];
@@ -192,9 +192,9 @@ class Exporta extends AbstractService{
             $this->addSaida($value['locador']['nome'], 100);
             // Locador documento
             if($value['locador']['tipo'] == 'fisica'){
-                $this->addSaida($value['locador']['cpf'], 15, '0', 'STR_PAD_LEFT');                
+                $this->saida .= $this->cleanDocFomatacao($value['locador']['cpf'], 15);
             }else{
-                $this->addSaida($value['locador']['cnpj'], 15, '0', 'STR_PAD_LEFT');                                
+                $this->saida .= $this->cleanDocFomatacao($value['locador']['cnpj'], 15);
             }
             // Administradora
             $this->addSaida($value['administradora']['nome'], 40);
@@ -278,30 +278,30 @@ class Exporta extends AbstractService{
      */
     public function prepArqsForMaritima($admCod){
         // Separar Adm em arquivos por tipo de pagamento e tipo de ocupacao
-        $file['e0130'] = $this->baseWork . $admCod . '_empresarial_ato_30.KM2';
-        $file['e0230'] = $this->baseWork . $admCod . '_empresarial_1x1_30.KM2';
-        $file['e0330'] = $this->baseWork . $admCod . '_empresarial_1x2_30.KM2';
-        $file['e0430'] = $this->baseWork . $admCod . '_empresarial_mensal_30.KM2';
-        $file['e0150'] = $this->baseWork . $admCod . '_empresarial_ato_50.KM2';
-        $file['e0250'] = $this->baseWork . $admCod . '_empresarial_1x1_50.KM2';
-        $file['e0350'] = $this->baseWork . $admCod . '_empresarial_1x2_50.KM2';
-        $file['e0450'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
-        $file['e0169'] = $this->baseWork . $admCod . '_empresarial_ato_69.KM2';
-        $file['e0269'] = $this->baseWork . $admCod . '_empresarial_1x1_69.KM2';
-        $file['e0369'] = $this->baseWork . $admCod . '_empresarial_1x2_69.KM2';
-        $file['e0469'] = $this->baseWork . $admCod . '_empresarial_mensal_69.KM2';        
-        $file['r0130'] = $this->baseWork . $admCod . '_residencial_ato_30.KM2';
-        $file['r0230'] = $this->baseWork . $admCod . '_residencial_1x1_30.KM2';
-        $file['r0330'] = $this->baseWork . $admCod . '_residencial_1x2_30.KM2';
-        $file['r0430'] = $this->baseWork . $admCod . '_residencial_mensal_30.KM2';
-        $file['r0150'] = $this->baseWork . $admCod . '_residencial_ato_50.KM2';
-        $file['r0250'] = $this->baseWork . $admCod . '_residencial_1x1_50.KM2';
-        $file['r0350'] = $this->baseWork . $admCod . '_residencial_1x2_50.KM2';
-        $file['r0450'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
-        $file['r0169'] = $this->baseWork . $admCod . '_residencial_ato_69.KM2';
-        $file['r0269'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
-        $file['r0369'] = $this->baseWork . $admCod . '_residencial_1x2_69.KM2';
-        $file['r0469'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
+        $file['e0130.00'] = $this->baseWork . $admCod . '_empresarial_ato_30.KM2';
+        $file['e0230.00'] = $this->baseWork . $admCod . '_empresarial_1x1_30.KM2';
+        $file['e0330.00'] = $this->baseWork . $admCod . '_empresarial_1x2_30.KM2';
+        $file['e0430.00'] = $this->baseWork . $admCod . '_empresarial_mensal_30.KM2';
+        $file['e0150.00'] = $this->baseWork . $admCod . '_empresarial_ato_50.KM2';
+        $file['e0250.00'] = $this->baseWork . $admCod . '_empresarial_1x1_50.KM2';
+        $file['e0350.00'] = $this->baseWork . $admCod . '_empresarial_1x2_50.KM2';
+        $file['e0450.00'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
+        $file['e0169.99'] = $this->baseWork . $admCod . '_empresarial_ato_69.KM2';
+        $file['e0269.99'] = $this->baseWork . $admCod . '_empresarial_1x1_69.KM2';
+        $file['e0369.99'] = $this->baseWork . $admCod . '_empresarial_1x2_69.KM2';
+        $file['e0469.99'] = $this->baseWork . $admCod . '_empresarial_mensal_69.KM2';        
+        $file['r0130.00'] = $this->baseWork . $admCod . '_residencial_ato_30.KM2';
+        $file['r0230.00'] = $this->baseWork . $admCod . '_residencial_1x1_30.KM2';
+        $file['r0330.00'] = $this->baseWork . $admCod . '_residencial_1x2_30.KM2';
+        $file['r0430.00'] = $this->baseWork . $admCod . '_residencial_mensal_30.KM2';
+        $file['r0150.00'] = $this->baseWork . $admCod . '_residencial_ato_50.KM2';
+        $file['r0250.00'] = $this->baseWork . $admCod . '_residencial_1x1_50.KM2';
+        $file['r0350.00'] = $this->baseWork . $admCod . '_residencial_1x2_50.KM2';
+        $file['r0450.00'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
+        $file['r0169.99'] = $this->baseWork . $admCod . '_residencial_ato_69.KM2';
+        $file['r0269.99'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
+        $file['r0369.99'] = $this->baseWork . $admCod . '_residencial_1x2_69.KM2';
+        $file['r0469.99'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
         foreach ($file as $key => $arq) {
             if(!$this->setConteudo($key, $arq, $admCod)){
                 $this->writeFile();
@@ -368,7 +368,7 @@ class Exporta extends AbstractService{
         $head = TRUE;
         $ocupacao = substr($filtro, 0, 1);
         $formaPgto = substr($filtro, 1, 2);
-        $comissao = substr($filtro, 3, 2);
+        $comissao = substr($filtro, 3, 5);
         $this->item = 0;
         $this->saida = '';
         foreach ($this->getSc()->lista as $value) {
@@ -394,7 +394,8 @@ class Exporta extends AbstractService{
                 continue;
             }
             // Filtra comissão os 2 primeiros digitos
-            if($comissao != substr($value['comissao'], 0, 2)){
+//echo '<pre>';            var_dump($value['comissao']); die;
+            if($comissao != substr($value['comissao'], 0, 5)){
                 continue;
             }
             if($head){
@@ -459,7 +460,7 @@ class Exporta extends AbstractService{
         // Fim Vigencia
         $this->saida .= $value['fim']->format('d/m/Y');
         // Proponente tam 60
-        $this->saida .= str_pad($value['administradora']['nome'], 60);
+        $this->addSaida2($value['administradora']['nome'], 60);
         // Tipo Proponente
         $this->saida .= 'J';
         // Fator de calculo tam 5
@@ -593,16 +594,20 @@ class Exporta extends AbstractService{
         //Tipo de Pessoa do Inquilino	1
         $this->saida .= $this->tipoLocatario;
         //CPF / CNPJ Inquilino	14
-        $this->saida .= ($this->tipoLocatario == 'F')?str_pad($value['locatario']['cpf'], 14):str_pad($value['locatario']['cnpj'], 14);
+        if ($this->tipoLocatario == 'F'){
+            $this->saida .= $this->cleanDocFomatacao($value['locatario']['cpf']);
+        }else{
+            $this->saida .= $this->cleanDocFomatacao($value['locatario']['cnpj']);
+        }
         //Nome do Proprietário	60
         $this->addSaida2($value['locador']['nome'], 60);
         //Tipo de Pessoa do Proprietário	1
         $this->saida .= $this->tipoLocador;
         //CPF / CNPJ Proprietário	14
         if($this->tipoLocador == 'F'){
-            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 14, '0', 'STR_PAD_LEFT');
+            $this->saida .= $this->cleanDocFomatacao($value['locador']['cpf']);
         }else{
-            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 14, '0', 'STR_PAD_LEFT');
+            $this->saida .= $this->cleanDocFomatacao($value['locador']['cnpj']);
         }
         //Endereco	40
         $this->addSaida2($value['imovel']['rua'], 40);
@@ -707,14 +712,14 @@ class Exporta extends AbstractService{
         // Número de beneficiário	3
         $this->saida .= '001';    
         // Nome	60
-        $this->saida .= str_pad($value['locador']['nome'], 60);    
+        $this->addSaida2($value['locador']['nome'], 60);
         // Tipo de pessoa	1
         $this->saida .= ($this->tipoLocador == 'F')? '1' : '2';
         // CPF/CNPJ	14
         if($this->tipoLocador == 'F'){
-            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 14, '0', 'STR_PAD_LEFT');
+            $this->saida .= $this->cleanDocFomatacao($value['locador']['cpf']);    
         }else{
-            $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 14, '0', 'STR_PAD_LEFT');
+            $this->saida .= $this->cleanDocFomatacao($value['locador']['cnpj']);    
         }
         // Cobertura	1
         $this->saida .= '0';    
@@ -728,10 +733,10 @@ class Exporta extends AbstractService{
     
     /**
      * Incrementa variavel e formata para saida para gravação
-     * @param type $conteudo Dados a ser incrementado
-     * @param type $tam      Quantidade de caracteres
-     * @param type $compl    Completar com esse caractere(padrão spaços)
-     * @param type $opt      Para completar no lado esquerdo ou direito(Padrão)
+     * @param string $conteudo Dados a ser incrementado
+     * @param integer $tam      Quantidade de caracteres
+     * @param string $compl    Completar com esse caractere(padrão spaços)
+     * @param string $opt      Para completar no lado esquerdo ou direito(Padrão)
      */
     public function addSaida2($conteudo,$tam,$compl='',$opt=''){
         if(empty($opt)){
@@ -740,5 +745,18 @@ class Exporta extends AbstractService{
             $this->saida .= str_pad(substr(utf8_decode($conteudo),0,$tam), $tam, $compl, STR_PAD_LEFT);            
         }
     } 
+    
+    /**
+     * Limpar do documento a formatação e outros caracteres diferentes de numeros
+     * @param string $doc cpf ou cpnf a ser limpo
+     * @param int $tam tamanhos da string a ser retornada
+     * @param string $rep depois de limpar o documento preencher os espaços ou com padrão '0'.
+     * @return string string com o tamanho configurado ou padrão 14 posições
+     */
+    public function cleanDocFomatacao($doc , $tam = 14, $rep = '0') {
+        $clean = preg_replace("/[^0-9]/", "", $doc);
+        return str_pad($clean, $tam, $rep, STR_PAD_LEFT);              
+    }
+    
 }
     
