@@ -338,7 +338,7 @@ class Fechados extends AbstractService {
         $pdf->setL2($seg->getAdministradora()->getNome());
         $pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
         $pdf->setL4($seg->getLocador(), $seg->getLocador()->getCpf() . $seg->getLocador()->getCnpj());
-        //$pdf->setL5($seg->getImovel()->getEnderecoCompleto());
+        $pdf->setL5($seg->getImovel());
         $pdf->setL6($seg->getAtividade());
         $pdf->setL7($seg->getObservacao());
         $pdf->setL8($seg->floatToStr('valorAluguel'));

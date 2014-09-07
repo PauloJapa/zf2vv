@@ -10,14 +10,19 @@ $teste = $this->navigation('NavAdmin')->findOneByLabel('Cadastro');
 <div class="nav-collapse">
 <?php
     if ($user) {
-        if ($user->getTipo() == 'admin') {
-            if ($user->getIsAdmin()) {
-                echo $this->navigation('NavAdmin')->menu()->setUlClass('nav');
-            } else {
-                echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav');
-            }
-        } else {
-            echo $this->navigation('NavUser')->menu()->setUlClass('nav');
+        switch ($user->getMenu()) {
+        case 'adm':
+            echo $this->navigation('NavAdmin')->menu()->setUlClass('nav'); 
+            break;
+        case 'adm2':
+            echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav'); 
+            break;
+        case 'imob':
+            echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
+            break;
+        default:
+            echo $this->navigation('Navigation')->menu()->setUlClass('nav'); 
+            break;
         }
     } else {
         echo $this->navigation('Navigation')->menu()->setUlClass('nav');

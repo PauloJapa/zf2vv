@@ -74,13 +74,19 @@ class Filtros  extends AbstractForm {
         $this->setForUsuario();
     }
     
-    public function setOrcamento(){
+    public function setOrcamento($admin = ''){
         $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
-        $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
+        if($admin == 'admin'){
+            $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados','F'=>'Que Fecharam','X'=>'Todos']);
+            $this->get('status')->setValue('X'); 
+        }else{
+            $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados']);
+            $this->get('status')->setValue('T'); 
+        }
         $this->setInputRadio('validade', 'Tipo', [''=>'Ambos','anual'=>'Anual', 'mensal' => 'Mensal']);
-        $this->get('status')->setValue('T'); 
+        $this->get('validade')->setValue(''); 
         $this->setDate();
         $this->setForUsuario();
         $this->setForAdministradora();        

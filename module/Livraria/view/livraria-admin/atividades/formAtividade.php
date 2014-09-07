@@ -14,13 +14,18 @@ $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Dados da Atividade', 'hidden' => 'id'],'inicio',$this, $form),
     "<td>\r",
-        $this->FormDefault(['descricao' => 'text']),
         $this->FormDefault(['codSeguradora','subOpcao','danosEletricos','equipEletro','vendavalFumaca','basica','roubo'], 'hidden'),
+        $this->FormDefault(['descricao' => 'text']),
+        $this->FormDefault(['danosEletricos' => 'text']),
     "</td><td>\r",
         $this->FormDefault(['ocupacao' => 'select']),
+        $this->FormDefault(['equipEletro' => 'text']),
     "</td><td>\r",
         $this->FormDefault(['seguradoraId' => 'select']),
+        $this->FormDefault(['vendavalFumaca' => 'text']),
     "</td><td>\r",
+        $this->FormDefault(['basica' => 'text']),
+        $this->FormDefault(['roubo' => 'text']),
         $this->FormDefault(['status' => 'select']),
     "</td>\r";
         

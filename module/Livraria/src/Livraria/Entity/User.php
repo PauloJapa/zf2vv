@@ -72,7 +72,19 @@ class User {
      * @ORM\OneToOne(targetEntity="Livraria\Entity\Administradora")
      * @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      */
-    protected $administradora;    
+    protected $administradora;  
+
+    /**
+     * @ORM\Column(type="text")
+     * @var string
+     */
+    protected $email2;
+
+    /**
+     * @ORM\Column(type="text")
+     * @var string
+     */
+    protected $menu;  
 
     public function __construct($options = null) {
         $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
@@ -199,6 +211,25 @@ class User {
         return $this;
     }
 
+    public function getEmail2() {
+        return $this->email2;
+    }
+
+    public function setEmail2($email) {
+        $this->email2 = $email;
+        return $this;
+    }
+    
+    public function getMenu() {
+        return $this->menu;
+    }
+
+    public function setMenu($menu) {
+        $this->menu = $menu;
+        return $this;
+    }
+
+    
     public function toArray() {
         $data = $this->getEndereco()->toArray();
         $data['id']             = $this->getId();
@@ -211,6 +242,8 @@ class User {
         $data['status']         = $this->getStatus();
         $data['administradora'] = $this->getAdministradora()->getId();
         $data['administradoraDesc'] = $this->getAdministradora()->getNome();
+        $data['email2']          = $this->getEmail2();
+        $data['menu']          = $this->getMenu();
         return $data ;
     }
     

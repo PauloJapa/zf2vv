@@ -473,9 +473,9 @@ class Importar extends AbstractService{
                 $entity->getEndereco()->setRua($separado['rua']);
                 $entity->setNumero($separado['numero']);
                 $entity->getEndereco()->setNumero($separado['numero']);
-                $entity->setCep($cep);
+                $entity->setCep(str_pad($cep, 8, '0', STR_PAD_LEFT));
                 $entity->setRefImovel($ref);
-                $entity->getEndereco()->setCep($cep);
+                $entity->getEndereco()->setCep(str_pad($cep, 8, '0', STR_PAD_LEFT));
                 $entity->setApto(isset($separado['apto']) ? $separado['apto'] : '');
                 $entity->setBloco(isset($separado['bloco']) ? $separado['bloco'] : '');
                 $entity->setCompl(isset($separado['compl']) ? $separado['compl'] : '');

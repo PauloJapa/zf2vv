@@ -61,13 +61,13 @@ class User extends AbstractService {
             return $result;
         }
         
-        //Pegando o servico endereco e atualizando endereco do locador
+        //Pegando o servico endereco e atualizando endereco do usuario
         $serviceEndereco = new Endereco($this->em);
         $this->data['endereco'] = $serviceEndereco->update($this->data);
         $this->deParaEnd = $serviceEndereco->getDePara();
         //Se passord esta em branco é retirado do array para não alterar o BD
-        if (empty($data['password']))
-            unset($data['password']);
+        if (empty($this->data['password']))
+            unset($this->data['password']);
         
         if(parent::update())
             $this->logForEdit();
@@ -128,10 +128,12 @@ class User extends AbstractService {
     public function getDiff($ent){
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Nome', $ent->getNome(), $this->data['nome']);
-        $this->dePara .= $this->diffAfterBefore('Email', $ent->getEmail(), $this->data['email']);
+        $this->dePara .= $this->diffAfterBefore('Login', $ent->getEmail(), $this->data['email']);
         $this->dePara .= $this->diffAfterBefore('Tipo', $ent->getTipo(), $this->data['tipo']);
         $this->dePara .= $this->diffAfterBefore('Root', $ent->getIsAdmin(), $this->data['isAdmin']);
         $this->dePara .= $this->diffAfterBefore('Administradora', $ent->getAdministradora()->getId(), $this->data['administradora']->getId());
+        $this->dePara .= $this->diffAfterBefore('Email', $ent->getEmail2(), $this->data['email2']);
+        $this->dePara .= $this->diffAfterBefore('Menu', $ent->getMenu(), $this->data['menu']);
         if(isset($this->data['password']))
             $this->dePara .= $this->diffAfterBefore('Senha ', 'foi', 'Alterada!!');
         //Juntar as alterações no endereço se houver

@@ -26,6 +26,7 @@
                   ->prependFile($this->basePath() . '/js/ajaxCep.js')
                   ->prependFile($this->basePath() . '/js/ajaxAutoComp.js')
                   ->offsetSetFile(99, $this->basePath() . '/js/jquery.maskMoney.js')
+                  ->offsetSetFile(98, $this->basePath() . '/js/bootstrap.min.js')
                   ->offsetSetFile(100, $this->basePath() . '/js/funcoes.js')
                   ->prependFile($this->basePath() . '/js/dhtmlgoodies_calendar.js') , "\n";
         ?>
@@ -47,21 +48,26 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="<?php echo $this->url('livraria-home'); ?>">Sistema Incêndio Locação</a>
+                    <a class="brand" href="#">Incêndio Locação</a>
                     <div class="nav-collapse">
-                    <?php if ($user = $this->UserIdentity('LivrariaAdmin')){
-                              if($user->getTipo() == 'admin'){
-                                  if($user->getIsAdmin()){
-                                      echo $this->navigation('NavAdmin')->menu()->setUlClass('nav');                                       
-                                  }else{
-                                      echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav');                                                                             
-                                  }
-                              }else{
-                                  echo $this->navigation('NavUser')->menu()->setUlClass('nav');                                   
-                              }
-                          }else{
-                              echo $this->navigation('Navigation')->menu()->setUlClass('nav');                              
-                          }
+                    <?php   if ($user = $this->UserIdentity('LivrariaAdmin')){
+                                switch ($user->getMenu()) {
+                                case 'adm':
+                                    echo $this->navigation('NavAdmin')->menu()->setUlClass('nav'); 
+                                    break;
+                                case 'adm2':
+                                    echo $this->navigation('NavNoAdmin')->menu()->setUlClass('nav'); 
+                                    break;
+                                case 'imob':
+                                    echo $this->navigation('NavUser')->menu()->setUlClass('nav'); 
+                                    break;
+                                default:
+                                    echo $this->navigation('Navigation')->menu()->setUlClass('nav'); 
+                                    break;
+                                }
+                            }else{
+                                echo $this->navigation('Navigation')->menu()->setUlClass('nav');                              
+                            }
                     ?>    
                     </div><!--/.nav-collapse -->
                 </div>

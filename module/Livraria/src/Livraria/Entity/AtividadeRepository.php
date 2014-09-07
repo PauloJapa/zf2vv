@@ -33,8 +33,10 @@ class AtividadeRepository extends EntityRepository {
      * @return \Livraria\Entity\Atividade
      */
     public function autoComp($atividade,$ocupacao='',$seguradora=''){
-        $where = 'u.descricao LIKE :atividade';
-        $param['atividade'] = $atividade;
+        if(!empty($atividade)){
+            $where = 'u.descricao LIKE :atividade';
+            $param['atividade'] = $atividade;            
+        }
         if(!empty($ocupacao)){
             $where .= ' AND u.ocupacao LIKE :ocupacao';
             $param['ocupacao'] = $ocupacao;
@@ -50,7 +52,6 @@ class AtividadeRepository extends EntityRepository {
             ->from('Livraria\Entity\Atividade', 'u')
             ->where($where)
             ->setParameters($param)
-            ->setMaxResults(20)
             ->getQuery();
         
         return $query->getResult();

@@ -353,7 +353,15 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         if($('#administradoraDesc').val() == ''){
             $('#administradora').val('');
         }
-        if(($('#administradora').val() == '')&&($('#dataI').val() == '')&&($('#locatario').val() == '')&&($('#locador').val() == '')){
+        if(($('#administradora').val() == '')
+                &&($('#dataI').val() == '')
+                &&($('#locatario').val() == '')
+                &&($('#locador').val() == '')
+                &&($('#id').val() == '')
+                &&($('#refImovel').val() == '')
+                &&($('#usuarioNome').val() == '')
+          )
+        {
             alert('Atenção é necessário preencher alguns filtro:\n Ex: Administradora ou Periodo ou Locador or Locatario!');
             return false;
         }

@@ -17,13 +17,25 @@ class UserRepository extends EntityRepository {
         return false;
     }
     
-    public function autoComp($user){
+    /**
+     * Pesquisar usuarios caso usuario imobiliario filtra os dados
+     * @param string $user
+     * @param \Livraria\Entity\User $us
+     * @return array 
+     */
+    public function autoComp($user, $us){
+        $where =  "u.nome LIKE :user";
+        $parameters['user'] = $user ;
+        if($us->getTipo() != 'admin'){
+            $where .=  " AND u.administradora = :adm";
+            $parameters['adm'] = $us->getAdministradora()['id'] ;            
+        }
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('u')
                 ->from('Livraria\Entity\User', 'u')
-                ->where("u.nome LIKE :user")
-                ->setParameter('user', $user)
+                ->where($where)
+                ->setParameters($parameters)
                 ->setMaxResults(20)
                 ->getQuery()
                 ;

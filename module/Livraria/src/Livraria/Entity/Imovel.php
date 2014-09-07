@@ -516,9 +516,9 @@ class Imovel extends Filtro
      */
     public function __toString() {
         if($this->numero == 0){
-            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl;
+            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl . ' CEP ' . $this->cep;
         }else{
-            return $this->rua . ' n:' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl;
+            return $this->rua . ' n:' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl . ' CEP ' . $this->cep;
         }
     }
 

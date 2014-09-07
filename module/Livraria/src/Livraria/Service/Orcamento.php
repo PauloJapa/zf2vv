@@ -169,12 +169,12 @@ class Orcamento extends AbstractService {
         if($this->data['atividade']->getStatus() != "A"){
             return ['Atividade escolhida esta cancelada! Por Favor entre em contato com a Vila Velha.'];
         }
-       // if($this->getIdentidade()->getTipo() != 'admin'){
+        if($this->getIdentidade()->getTipo() != 'admin'){
             $basica = $this->data['atividade']->getBasica();
             if($basica == "EX" OR $basica == "SC"){
                 return ['Atividade escolhida esta bloqueada! Por Favor entre em contato com a Vila Velha.'];
             }            
-       // }
+        }
         return TRUE;
     }
 

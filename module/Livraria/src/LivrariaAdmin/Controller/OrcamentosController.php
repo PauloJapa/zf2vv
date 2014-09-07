@@ -124,9 +124,15 @@ class OrcamentosController extends CrudController {
      * @return \Zend\View\Model\ViewModel|no return
      */
     public function listarOrcamentosAction(array $filtro=[], $operadores=[]){
-        $data = $this->filtrosDaPaginacao();
+        $post = $this->getRequest()->getPost()->toArray();
+//        echo '<pre>';        var_dump($post); die;
+        if(isset($post['subOpcao']) AND $post['subOpcao'] == 'buscar'){
+            $data = $post;            
+        }else{
+            $data = $this->filtrosDaPaginacao();            
+        }
         $this->formData = new \LivrariaAdmin\Form\Filtros();
-        $this->formData->setOrcamento();
+        $this->formData->setOrcamento($this->getIdentidade()->getTipo());
         //usuario admin pode ver tudo os outros são filtrados
         if($this->getIdentidade()->getTipo() != 'admin'){
             $sessionContainer = new SessionContainer("LivrariaAdmin");
@@ -138,9 +144,9 @@ class OrcamentosController extends CrudController {
             $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }
         // Se filtro Status não exitir seta como padrão para Novos.
-        if(!isset($data['status'])){
-            $data['status'] = "T";
-        }
+//        if(!isset($data['status'])){
+//            $data['status'] = "T";
+//        }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade'];
         foreach ($inputs as $input) {

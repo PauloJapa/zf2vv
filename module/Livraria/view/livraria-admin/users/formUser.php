@@ -19,10 +19,10 @@ $this->FormDefault(['legend' => 'Dados do Usuário:', 'hidden' => 'id'],'inicio'
         $this->FormDefault(['password'  => 'pass']),
         $this->FormDefault(['password2' => 'pass']),
     "</td><td>\r",
-        $this->FormDefault(['nome'],'text'),
+        $this->FormDefault(['nome','email2'],'text'),
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
     "</td><td>\r",
-        $this->FormDefault(['tipo','isAdmin','status'],'select'),
+        $this->FormDefault(['tipo','isAdmin','status','menu'],'select'),
     "</td>\r",
 $this->FormDefault([],'fieldFim');
 

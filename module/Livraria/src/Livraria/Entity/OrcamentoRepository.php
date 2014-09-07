@@ -38,14 +38,21 @@ class OrcamentoRepository extends AbstractRepository {
                     $parameters['dataF'] = $this->dateToObject($filtro);
                     break;
                 case 'status':
-                    if($filtro != 'T'){
-                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
-                        $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
-                        $parameters[$key] = $filtro;
-                    }else{
-                        $where .= ' AND (l.status = :status1 OR  l.status = :status2)';
-                        $parameters['status1'] = 'A';                         
-                        $parameters['status2'] = 'R';                        
+                    switch ($filtro) {
+                        case 'T':
+                            $where .= ' AND (l.status = :status1 OR  l.status = :status2)';
+                            $parameters['status1'] = 'A';                         
+                            $parameters['status2'] = 'R'; 
+                            break;
+                        case 'X':
+                            continue;
+                            break;
+
+                        default:
+                            $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                            $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
+                            $parameters[$key] = $filtro;
+                            break;
                     }
                     break;
                 default:

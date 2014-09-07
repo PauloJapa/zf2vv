@@ -74,6 +74,7 @@ class UsersController extends CrudController {
         
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()){
+                /* @var $service \Livraria\Service\User */
                 $service = $this->getServiceLocator()->get($this->service);
                 $result = $service->update($data);
                 if($result === TRUE){

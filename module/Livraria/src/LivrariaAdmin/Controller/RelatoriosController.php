@@ -556,10 +556,13 @@ class RelatoriosController extends CrudController {
         /* @var $svr \Livraria\Service\Relatorio */
         $srv = new $this->service($this->getEm());
         $this->paginator = $srv->getRelatorio($data);
-        $formaPagto = $this->getEm()->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        /* @var $param \Livraria\Entity\ParametroSisRepository */
+        $param = $this->getEm()->getRepository('Livraria\Entity\ParametroSis');
+        $formaPagto = $param->fetchPairs('formaPagto');
+        $comissaoAlias = $param->fetchPairs('comissaoApelido');
         // Pegar a rota atual do controler
         $this->route2 = $this->getEvent()->getRouteMatch();
-        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto]));         
+        return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto, 'comissaoAp' => $comissaoAlias]));         
     }
     
 }

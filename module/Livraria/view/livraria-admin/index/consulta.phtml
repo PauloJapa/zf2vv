@@ -7,41 +7,52 @@ $user = $this->UserIdentity('LivrariaAdmin');
 <div class="nav-collapse">
 <ul class="nav">
     
-<?php if($user->getTipo() == 'admin'): ?> 
-    <li>Orçamento
-        <ul>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'orcamentos','action'=>'listarOrcamentos')); ?>">Consulta, Pesquisa, Edita, Imprimi Orçamento.</a></li>
-        </ul>
-    </li>   
-    <br />
-    <li>Renovação Mensal
-        <ul>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'buscar')); ?>">Busca fechados Mensais para Renovação.</a></li>
-            <!--
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'listarRenovados')); ?>">Consultar, Pesquisa, Edita, Imprimi Renovados Mensais.</a></li>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'buscarAbertos')); ?>">Lista Renovação Mensais para fechamento.</a></li>
-            -->
-        </ul>
-    </li>   
-    <br />
-    <li>Seguros Fechados
-        <ul>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'fechados','action'=>'listarFechados')); ?>">Consulta, Pesquisa, Edita, Imprimi Fechado.</a></li>
-        </ul>
-    </li>   
-<?php else: ?>    
-    <li>Orçamento
-        <ul>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'orcamentos','action'=>'listarOrcamentos')); ?>">Consulta, Pesquisa, Edita, Imprimi Orçamento.</a></li>
-        </ul>
-    </li>    
-    <br />
-    <li>Seguros Fechados
-        <ul>
-            <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'fechados','action'=>'listarFechados')); ?>">Consulta, Pesquisa, Imprimi Fechado.</a></li>
-        </ul>
-    </li>  
-<?php endif;    ?>    
+<?php 
+    if ($user) {
+        switch ($user->getMenu()) {
+        case 'adm': 
+?> 
+            <li>Orçamento
+                <ul>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'orcamentos','action'=>'listarOrcamentos')); ?>">Consulta, Pesquisa, Edita, Imprimi Orçamento.</a></li>
+                </ul>
+            </li>   
+            <br />
+            <li>Renovação Mensal
+                <ul>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'buscar')); ?>">Busca fechados Mensais para Renovação.</a></li>
+                    <!--
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'listarRenovados')); ?>">Consultar, Pesquisa, Edita, Imprimi Renovados Mensais.</a></li>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'renovacaos','action'=>'buscarAbertos')); ?>">Lista Renovação Mensais para fechamento.</a></li>
+                    -->
+                </ul>
+            </li>   
+            <br />
+            <li>Seguros Fechados
+                <ul>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'fechados','action'=>'listarFechados')); ?>">Consulta, Pesquisa, Edita, Imprimi Fechado.</a></li>
+                </ul>
+            </li>   
+<?php
+            break;
+        default:
+?>    
+            <li>Orçamento
+                <ul>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'orcamentos','action'=>'listarOrcamentos')); ?>">Consulta, Pesquisa, Edita, Imprimi Orçamento.</a></li>
+                </ul>
+            </li>    
+            <br />
+            <li>Seguros Fechados
+                <ul>
+                    <li><a href="<?php echo $this->url('livraria-admin',array('controller'=>'fechados','action'=>'listarFechados')); ?>">Consulta, Pesquisa, Imprimi Fechado.</a></li>
+                </ul>
+            </li>  
+<?php            
+            break;
+        }
+    }
+?>    
 </ul>
 </div>
 <br />

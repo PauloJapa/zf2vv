@@ -29,6 +29,12 @@ class Atividade extends AbstractForm {
         $status = $this->getParametroSelect('status');
         $this->setInputSelect('status', 'Situação', $status);
         
+        $this->setInputText('danosEletricos', 'Danos Eletricos');
+        $this->setInputText('equipEletro', 'Equipamento Eletrico');
+        $this->setInputText('vendavalFumaca', 'Vendaval Fumaça');
+        $this->setInputText('basica', 'Basica');
+        $this->setInputText('roubo', 'Roubo');
+        
         $this->seguradoras = $em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradoraId', '*Seguradora', $this->seguradoras);
 

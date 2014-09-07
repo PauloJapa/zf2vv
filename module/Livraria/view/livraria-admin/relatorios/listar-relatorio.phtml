@@ -1,12 +1,24 @@
 <style type="text/css" media="print">
+    .F2 {
+        font-size: 10pt;
+    }    
     .F1 {
-        font-size: 10px;
+        font-size: 8pt;
     }
     .F8 {
-        font-size: 8px;
+        font-size: 6pt;
     }
 </style>
 <style>
+    .F2 {
+        font-size: 12pt;
+    }    
+    .F1 {
+        font-size: 10pt;
+    }
+    .F8 {
+        font-size: 8pt;
+    }
     .Br {
         border-right:  #333 solid 1px ;
     }
@@ -30,6 +42,8 @@ $total2   = 0;
 $qtd2     = 0;
 $adm      = 0;
 $tipo     = '';
+$comissaoOld = '';
+$comissao = '';
 $ocupacaoOld = '';
 $ocupacao = '';
 $parcelaOld = '';
@@ -86,6 +100,7 @@ foreach($this->data as $ent):
     endif;
     // Verifica a sequencia da parcela e a forma de pagamento
     $fPg = $ent->getFormaPagto();
+    $comissao = $ent->getComissao();
     $ocupacao = $ent->getOcupacao();
     $frmPagto = isset($this->formaPagto[$fPg]) ? $this->formaPagto[$fPg] : 'Ñ encontrado' . $fPg;
     switch ($fPg) {
@@ -104,7 +119,7 @@ foreach($this->data as $ent):
         default:
             break;
     } 
-    if($parcelaOld != $parcela OR $ocupacaoOld != $ocupacao):
+    if($parcelaOld != $parcela OR $ocupacaoOld != $ocupacao OR $comissaoOld != $comissao):
         if(!empty($parcelaOld)):
 ?>
         <tr>
@@ -118,7 +133,7 @@ foreach($this->data as $ent):
         <table class="Bt Bb"  style="width: 100% ;">
         <tr><th class="Bl Br" align="center">Observação: </th></tr>  
         <tr>  
-                <td class="Bl Bb Bt Br F1" rowspan="3">Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão
+                <td class="Bl Bb Bt Br F1">Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão
         de apólice.</td>
         </tr>  
         </table> 
@@ -131,17 +146,19 @@ foreach($this->data as $ent):
         <? 
         $parcelaOld  = $parcela;
         $ocupacaoOld = $ocupacao;
+        $comissaoOld = $comissao;
         ?>
 
     <table class="Bt Bb"  class="data" style="width: 100% ;">
-    <tr>
-        <th class="Bl">Tipo: <? switch ($ocupacao){
+    <tr class="F2">
+        <th class="Bl F2">Comissão: <? echo $this->comissaoAp[number_format($comissao, 2, ',', '.')]; ?></th>
+            <th class="Bl">Tipo: <? switch ($ocupacao){
                                 case '01': echo 'Comércio ';break; 
                                 case '02': echo 'Residencial'; break; 
                                 case '03': echo 'Industria'; break; 
                                 default  : echo 'Desconhecido';}
-                             ?></th>
-            <th class="">Forma Pagto.: <? echo $frmPagto; ?></th>
+                                 ?></th>
+            <th class="Bl">Forma Pagto.: <? echo $frmPagto; ?></th>
             <th class="Br">Parcela: <? echo $parcela; ?></th>
     </tr>  
     </table>    

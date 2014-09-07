@@ -88,13 +88,13 @@ abstract class CrudController extends AbstractActionController {
         $this->paginator = new Paginator($paginatorAdapter);
         $this->paginator->setCurrentPageNumber($this->page);
         $this->paginator->setDefaultItemCountPerPage(100);
-        $this->paginator->setPageRange(25);
+        $this->paginator->setPageRange(20);
         if($this->render)
             return new ViewModel($this->getParamsForView());
     }
 
     public function newAction() {
-        $this->formData = new $this->form();
+        $this->formData = new $this->form(NULL, $this->getEm());
 
         $request = $this->getRequest();
 
@@ -107,20 +107,24 @@ abstract class CrudController extends AbstractActionController {
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
 
-        if($this->render)
-            return new ViewModel(array('form' => $this->formData));
+        if ($this->render) {
+            return new ViewModel($this->getParamsForView());
+        }
     }
 
     public function editAction() {
-        $this->formData = new $this->form();
+        $this->formData = new $this->form(NULL, $this->getEm());
         $request = $this->getRequest();
 
         $repository = $this->getEm()->getRepository($this->entity);
         $entity = $repository->find($this->params()->fromRoute('id', 0));
 
-        if ($this->params()->fromRoute('id', 0))
+        if ($this->params()->fromRoute('id', 0)) {
             $this->formData->setData($entity->toArray());
+        }
 
         if ($request->isPost()) {
             $this->formData->setData($request->getPost());
@@ -131,19 +135,23 @@ abstract class CrudController extends AbstractActionController {
                 return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
             }
         }
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
 
-        if($this->render)
-            return new ViewModel(array('form' => $this->formData));
+        if ($this->render) {
+            return new ViewModel($this->getParamsForView());
+        }
     }
 
     public function deleteAction() {
         $service = new $this->service($this->getEm());
         
-        if($this->params()->fromRoute('id', 0))
+        if ($this->params()->fromRoute('id', 0)) {
             $data['id'] = $this->params()->fromRoute('id', 0);
-        else
+        } else {
             $data = $this->getRequest()->getPost()->toArray();
-        
+        }
+
         $result = $service->delete($data['id'],$data);
         if ($result === TRUE){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
@@ -204,9 +212,10 @@ abstract class CrudController extends AbstractActionController {
         $autoComp = $this->getRequest()->getPost('autoComp');
         $param = trim($this->getRequest()->getPost($autoComp,''));
         $repository = $this->getEm()->getRepository($this->entity);
-        $resultSet = $repository->autoComp($param .'%');
-        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $param .'%');
+        $resultSet = $repository->autoComp($param .'%', $this->getIdentidade());
+        if (!$resultSet) {// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%' . $param . '%');
+        }
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
         $viewModel->setTerminal(true);
@@ -226,8 +235,9 @@ abstract class CrudController extends AbstractActionController {
             $sessionStorage = new SessionStorage("LivrariaAdmin");
             $this->authService = new AuthenticationService;
             $this->authService->setStorage($sessionStorage);
-            if ($this->authService->hasIdentity()) 
+            if ($this->authService->hasIdentity()) {
                 return $this->authService->getIdentity();
+            }
         }
         return FALSE;
     }
@@ -253,7 +263,7 @@ abstract class CrudController extends AbstractActionController {
             if($this->getIdentidade()->getTipo() == 'admin'){
                 $this->configParamsAdm($data);
             }
-            $this->setDatePeriodo($data);
+//            $this->setDatePeriodo($data);
             $this->sc->data = $data;
         }
         if (is_array($this->sc->data)){

@@ -28,7 +28,7 @@
 $coluns = array('ID','Descrição','Ocupação','Criado Em','Status');
 $td     = array();
 echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'false'));
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'first'));
      
 foreach($this->data as $entity){ 
     $linha = array(
