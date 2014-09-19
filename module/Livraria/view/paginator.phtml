@@ -1,6 +1,7 @@
 <?php
 if ($this->pageCount):
     ?>
+<div class="noPrint">
     <div class="pagination pagination-centered">
         <ul>
             <?php if (isset($this->previous)): ?>
@@ -36,4 +37,8 @@ if ($this->pageCount):
             <?php endif; ?>
         </ul>
     </div>
+    <p>Total de Registros Encontrados <?php echo $this->totalItemCount; ?></p>
+    <p>Itens por pagina <?php echo $this->currentItemCount; ?></p>
+    <p>Total de paginas <?php echo $this->pageCount; ?></p>
+</div>
 <?php endif; ?>

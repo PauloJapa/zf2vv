@@ -9,7 +9,7 @@ namespace Livraria\Entity;
  */
 class OrcamentoRepository extends AbstractRepository {
 
-    public function findOrcamento($filtros=[],$operadores=[]){
+    public function findOrcamento($filtros=[],$operadores=[],$data=[]){
         if(empty($filtros)){
             $query = $this->getEntityManager()
                     ->createQueryBuilder()
@@ -75,8 +75,8 @@ class OrcamentoRepository extends AbstractRepository {
                 ->where($where)
                 ->setParameters($parameters);
         
-        if(isset($parameters['administradora'])){
-            $query->orderBy('l.criadoEm', 'DESC');
+        if(isset($data['ordenador']) AND !empty($data['ordenador'])){  
+            $query->orderBy($data['ordenador'], $data['ascdesc']);
         }
         
         return $query;

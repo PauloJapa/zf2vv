@@ -452,7 +452,7 @@ class Exporta extends AbstractService{
             $this->saida .= '11801';
         }
         // Numero do orçamento tam 6
-        $this->saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+        $this->addSaida2($value['id'], 6, '0', 'STR_PAD_LEFT'); 
         // Data do calculo
         $this->saida .= $value['criadoEm']->format('d/m/Y');
         // Inicio Vigencia
@@ -655,7 +655,7 @@ class Exporta extends AbstractService{
         //Indicador de Assistência	1
         $this->saida .= '0';
         //Número do Orçamento	6
-        $this->saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+        $this->addSaida2($value['id'], 6, '0', 'STR_PAD_LEFT'); 
         //Data de Nascimento Inquilino	10
         $this->saida .= str_pad(' ', 10);
         //Observação	254
@@ -690,7 +690,7 @@ class Exporta extends AbstractService{
             // Número do Item	6
             $this->saida .= str_pad($this->item, 6, '0', STR_PAD_LEFT);
             // Número do Orçamento	6
-            $this->saida .= str_pad($value['id'], 6, '0', STR_PAD_LEFT);
+            $this->addSaida2($value['id'], 6, '0', 'STR_PAD_LEFT');
             // Código da Cobertura	6
             $this->saida .= $key;
             // Importância Segurada	17

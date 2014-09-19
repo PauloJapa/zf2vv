@@ -7,6 +7,7 @@
 <form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
+    <input type="hidden" name="administradora" id="administradora" value="<?php echo $this->administradora; ?>">
 </form>
 <script language="javascript">
     var formName = '<?php echo $this->formName ?>';
@@ -18,6 +19,15 @@
         document.getElementById('id2').value = id ;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
         envia(tar,'editar');
-    }   
-    edit('<?php echo $this->id; ?>');
+    }    
+    function novo(){
+        var tar = "/admin/comissaos/new";
+        envia(tar,'novo','form');  
+    }
+    var key = '<?php echo $this->id; ?>';
+    if(key == 'novo'){
+        novo();
+    }else{
+        edit(key);        
+    }
 </script>

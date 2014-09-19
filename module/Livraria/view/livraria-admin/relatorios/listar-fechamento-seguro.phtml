@@ -43,6 +43,9 @@ $admCod = 0 ;
 foreach($this->data as $key => $value){
     //calcula a parcela
     $frmPagto = isset($this->formaPagto[$value['formaPagto']]) ? $this->formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
+    if($value['validade'] == 'mensal'){
+        $frmPagto = 'Pag Mensal';
+    }        
     $valor = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);
     if($admCod != $value['administradora']['id']){
         echo $this->ViewIndex('line',array('data' => [

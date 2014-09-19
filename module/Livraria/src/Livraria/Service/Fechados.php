@@ -272,7 +272,7 @@ class Fechados extends AbstractService {
     
     /**
      * Retorna o Serviço da entidade Orçamento
-     * @return object
+     * @return \Livraria\Service\Orcamento
      */
     public function getSrvOrca(){
         if($this->servicoOrcamento)
@@ -375,14 +375,14 @@ class Fechados extends AbstractService {
             $this->strToFloat($seg->getPremioLiquido() * $seg->getTaxaIof()),
             $seg->floatToStr('premioTotal')
         ];
-        $pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
+        $pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100), $seg->getValidade());
         $par = [
             $seg->floatToStr('premioTotal'),
             $this->strToFloat($seg->getPremioTotal() / 2),
             $this->strToFloat($seg->getPremioTotal() / 3),
             $this->strToFloat($seg->getPremioTotal() / 12)
         ];
-        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto());
+        $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $pdf->setL14();
         $pdf->setObsGeral();
         $pdf->Output();
@@ -1152,7 +1152,7 @@ class Fechados extends AbstractService {
         $dados['imovel'] = $this->entityReal->getImovel()->__toString();
         $dados['locador'] = $this->entityReal->getLocadorNome();
         $dados['locatario'] = $this->entityReal->getLocatarioNome();
-        $servEmail->enviaEmail(['nome' => $this->getIdentidade()->getNome(),
+        $servEmail->enviaEmail(['nome' => $this->getIdentidade()->getNome(),'emailNome' => $this->getIdentidade()->getNome(),
             'subject' => 'Vistoria do Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
             'data' => $dados],'seguro-vistoria');         
     }
@@ -1177,15 +1177,10 @@ class Fechados extends AbstractService {
         $dados['motivo'] = $motivo;
         $nome = $this->getIdentidade()->getNome();
         
-        $servEmail->enviaEmail(['emailNome' => $nome,
-            'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
-            'data' => $dados],'seguro-cancelado'); 
         // Envia para a administradora se houver email cadastrado
-        if($dados['email'] != 'NAO'){
-            $servEmail->enviaEmail(['emailNome' => $nome, 'email', $dados['email'],
-                'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
-                'data' => $dados],'seguro-canceladoForAdm');             
-        }
+        $servEmail->enviaEmail(['emailNome' => $nome, 'email' => $dados['email'],
+            'subject' => 'Cancelamento de Seguro Fechado do Incêndio Locação.(' . $dados['nome'] . ')' ,
+            'data' => $dados],'seguro-canceladoForAdm');             
     }
     
     /**
@@ -1217,7 +1212,7 @@ class Fechados extends AbstractService {
             //se mudar adm faz envio e reseta os valores
             if($admCod != $value['administradora']['id']){
                 if($admCod != 0){
-                    $servEmail->enviaEmail(['nome' => $admNom,
+                    $servEmail->enviaEmail(['nome' => $admNom,'emailNome' => $admNom,
                         'email' => $admEmai,
                         'subject' => $admNom . ' -Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
                         'data' => $data],'seguro-faturado');                     
@@ -1239,7 +1234,7 @@ class Fechados extends AbstractService {
         
         //Envia ultima administradora se houver
         if($admCod != 0){
-            $servEmail->enviaEmail(['nome' => $admNom,
+            $servEmail->enviaEmail(['nome' => $admNom,'emailNome' => $admNom,
                 'email' => $admEmai,
                 'subject' => $admNom . ' -Confirmação dos Seguro(s) Fechado(s) do Incêndio Locação',
                 'data' => $data],'seguro-faturado');                     

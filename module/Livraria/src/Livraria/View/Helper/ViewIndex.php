@@ -23,6 +23,12 @@ class ViewIndex extends AbstractHelper {
     protected $coluns;
     
     /**
+     * Funcoes para executar do cabeçalho
+     * @var array $funcHead 
+     */
+    protected $funcHead;
+    
+    /**
      * com a lista do conteudo da linha.
      * @var array $data 
      */
@@ -86,7 +92,6 @@ class ViewIndex extends AbstractHelper {
         default:
             echo "<h1>error $acao </h1>";
             return $this;
-            break;
         }      
     }
 
@@ -96,15 +101,15 @@ class ViewIndex extends AbstractHelper {
      */
     public function openTable($options) {
         if(is_null($options)){
-            echo '<table class="table table-striped table-bordered table-hover table-condensed">' , "\n";
+            echo '<table class="table table-striped table-bordered table-hover table-condensed">' , PHP_EOL;
             return;
         }
         if(is_string($options)){
-            echo '<table class="table table-striped table-bordered table-hover table-condensed ' . $options . '">' , "\n";                
+            echo '<table class="table table-striped table-bordered table-hover table-condensed ' . $options . '">' , PHP_EOL;                
             return;
         }
         if(!is_array($options)){
-           echo '<table>', "\n";   
+           echo '<table>', PHP_EOL;   
             
         }
         foreach ($options as $atributo => $value) {
@@ -118,22 +123,49 @@ class ViewIndex extends AbstractHelper {
      * @return caso não for passado um array com coluns
      */
     public function renderThead($options) {
-        if(isset($options['tdopt'])) 
+        if (isset($options['tdopt'])) {
             $this->tdopt = $options['tdopt'];
-        
-        if(!isset($options['coluns'])) 
-            return ;
-        
+        }
+
+        if (!isset($options['coluns'])) {
+            return;
+        }
+
         $this->coluns = $options['coluns']; 
         
-        if(isset($options['editLine'])) 
+        if (isset($options['editLine'])) {
             $this->editLine = $this->getEditLine($options['editLine']);
-        
-        echo "<thead>\n<tr>\n";        
-        foreach ($this->coluns as $value) {
-            echo "\t<th>$value</th>\n";
-        }        
-        echo "<tr>\n</thead>\n<tbody>\n";
+        }
+
+        echo "<thead class='th'>", PHP_EOL;        
+        if (isset($options['tr'])) {
+            echo "<tr ", $options['tr'], ">", PHP_EOL;
+        } else {
+            echo "<tr>", PHP_EOL;
+        }
+        if(isset($options['func'])){
+            $this->funcHead = $options['func'];
+            $eve = 'onClick';
+            $lnk = 'link';
+            if(isset($this->funcHead['evento'])){
+                $eve = $this->funcHead['evento'];
+            }
+            if(isset($this->funcHead['css'])){
+                $lnk = $this->funcHead['css'];
+            }
+            foreach ($this->coluns as $key => $value) {
+                if(empty($this->funcHead[$key])){
+                    echo "\t", '<th>', $value, '</th>', PHP_EOL;
+                }else{
+                    echo "\t", '<th class="', $lnk, '"', $eve, '="', $this->funcHead[$key]  ,'" >', $value, '</th>', PHP_EOL;
+                }
+            }        
+        }else{
+            foreach ($this->coluns as $value) {
+                echo "\t<th>$value</th>", PHP_EOL;
+            }                    
+        }
+        echo "</tr></thead>", PHP_EOL, "<tbody>", PHP_EOL;
     }
 
     /**
@@ -142,14 +174,15 @@ class ViewIndex extends AbstractHelper {
      */
     public function renderTfoot($options) {
         $this->foot = $options['data'];
-        echo "</tbody>\n<tfoot>\n<tr>\n";        
+        echo "</tbody>\n<tfoot>\n<tr>", PHP_EOL;        
         foreach ($this->foot as $key => $value) {
-            if(isset($options['css'][$key]))
-                echo "\t<td ", $options['css'][$key], ">", $value, "</td>", "\n";
-            else
-                echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", "\n";
+            if (isset($options['css'][$key])) {
+                echo "\t<td ", $options['css'][$key], ">", $value, "</td>", PHP_EOL;
+            } else {
+                echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", PHP_EOL;
+            }
         }        
-        echo "<tr>\n</tfoot>\n";
+        echo "<tr>\n</tfoot>", PHP_EOL;
     }
 
     /**
@@ -159,26 +192,29 @@ class ViewIndex extends AbstractHelper {
      * @param array $options
      */
     public function renderLine($options) {
-        if(isset($options['tr']))
-            echo "<tr ", $options['tr'] , ">", "\n";
-        else    
-            echo "<tr>", "\n";
-        
+        if (isset($options['tr'])) {
+            echo "<tr ", $options['tr'], ">", PHP_EOL;
+        } else {
+            echo "<tr>", PHP_EOL;
+        }
+
         foreach ($options['data'] as $key => $value) {
             if(($this->editLine !== FALSE)AND($key == $this->editLine)){
-                if(is_callable($this->funcEdit)){
+                if (is_callable($this->funcEdit)) {
                     $lambda = $this->funcEdit;
-                    $lambda($value,$options['data']);
-                }else
+                    $lambda($value, $options['data']);
+                } else {
                     $this->renderEditLine($value);
-            }else{
-                if(isset($this->tdopt[$key]))
-                    echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", "\n";
-                else
-                    echo "\t<td>", $value, "</td>", "\n";
+                }
+                continue;
+            }
+            if (isset($this->tdopt[$key])) {
+                echo "\t<td ", $this->tdopt[$key], ">", $value, "</td>", PHP_EOL;
+            } else {
+                echo "\t<td>", $value, "</td>", PHP_EOL;
             }
         }
-        echo "</tr>", "\n";
+        echo "</tr>", PHP_EOL;
     }
 
     /**
@@ -189,7 +225,7 @@ class ViewIndex extends AbstractHelper {
         echo "\t<td nowrap>",
                 '<span class="add-on hand" onClick="edit(\'', $value, '\')" title="Editar"><i class="icon-pencil"></i>Edit</span>',
                 '<span class="add-on hand" onClick="del(\'', $value, '\')" title="Deletar"><i class="icon-remove"></i>Del</span>',
-             "</td>\n";   
+             "</td>", PHP_EOL;   
     }
 
     /**
@@ -198,10 +234,11 @@ class ViewIndex extends AbstractHelper {
      * @param string $options
      */
     public function renderCloseTable($options) {
-        if($this->foot)
-            echo "</table>\n";
-        else
-            echo "</tbody>\n</table>\n";
+        if ($this->foot) {
+            echo "</table>", PHP_EOL;
+        } else {
+            echo "</tbody>\n</table>", PHP_EOL;
+        }
     }
 
     /**
@@ -225,19 +262,15 @@ class ViewIndex extends AbstractHelper {
             
             case 'first':
                 return 0 ;
-                break;
             
             case 'last':
                 return (count($this->coluns) - 1 ) ;
-                break;
             
             case 'false':
                 return FALSE;
-                break;
             
             default:
                 return $option ;
-                break;
         }
     }
 

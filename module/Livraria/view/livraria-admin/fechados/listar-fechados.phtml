@@ -68,7 +68,7 @@
 
 $coluns = array(
     'Ação',
-    'Selecionar<br><label class="checkbox" onClick="setCheckbox()"><input type="checkbox" id="CheckTodos" value="">Todos</label>',
+    'Selecionar<br><label class="checkbox th" onClick="setCheckbox()"><input type="checkbox" id="CheckTodos" value="">Todos</label>',
     'Status',
     'Ref Imovél',
     'Locador',
@@ -77,33 +77,38 @@ $coluns = array(
     'Inicio',
     'Atividade',
     'Valor',
+    'Fechado',
 );
 $td     = array(
     'nowrap',
     'nowrap class="r"',
     'nowrap',
     'nowrap',
+    '',
+    '',
     'nowrap',
     'nowrap',
     'nowrap',
-    'nowrap',
-    'nowrap',
-    'class="r"'
+    'class="r"',
+    'class="r"',
 );  
 
 echo '<form name="form" id="form" method="POST">';
 
 echo $this->ViewIndex('table'),
-     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'First'));
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'First', 'tr' => 'class="f3"'));
 
 if($user->getTipo() == "admin"){
     $lambda = function($value,&$data){
         echo "\t<td nowrap>";
         switch ($data[2]) {
-            case "C":
+            case "Cancelado":
                 echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>';
                 break;
-            case "A":            case "I":            case "R":
+            case "Orçamento": 
+            case "Renovação": 
+            case "Importado": 
+            case "Fechado": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                      '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
                      '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Log</span>',
@@ -118,10 +123,13 @@ if($user->getTipo() == "admin"){
     $lambda = function($value,&$data){
         echo "\t<td nowrap>";
         switch ($data[2]) {
-            case "C":
+            case "Cancelado":
                 echo '<span class="add-on hand">cancelado</span>';
                 break;
-            case "A":            case "I":            case "R":
+            case "Orçamento": 
+            case "Renovação": 
+            case "Fechado": 
+            case "Importado": 
                 echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>',
                      '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>';
                 break;
@@ -136,23 +144,24 @@ $this->ViewIndex('setFuncEdit',$lambda);
     
 foreach($this->data as $entity){ 
     $status = $entity->getStatus();
-    $campo1 = $entity->getId() .'/'. $entity->getCodAno() ;
+    $campo1 = '' ;
     if($status == 'A' OR $status == 'R'){
         $campo1 = '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'">'. $campo1 .'</label>';        
     }
     $linha = array(
         $entity->getId(),
         $campo1,
-        $entity->getStatus(),
+        $entity->getStatus('str'),
         $entity->getRefImovel(),
         $entity->getLocadorNome(),
         $entity->getLocatarioNome(),
         $entity->getImovel(),
         $entity->getInicio(),
         $entity->getAtividade(),
-        $entity->floatToStr('premioTotal')
+        $entity->floatToStr('premioTotal'),
+        $entity->getId(),
     );
-    echo $this->ViewIndex('line',array('data' => $linha));
+    echo $this->ViewIndex('line',array('data' => $linha, 'tr' => 'class="f3"'));
 }
 echo $this->ViewIndex('close');
 ?>
@@ -261,6 +270,11 @@ echo $this->ViewIndex('close');
             alert('Digite o motivo por favor!!!');
             return;
         }
+        var palavras = obs.split(' ');
+        if(palavras.length < 5){
+            alert('No minimo 5 palavras devem ser Digitadas');
+            return;
+        } 
         if(id == '')return;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         envia(tar,id);        
@@ -302,16 +316,27 @@ echo $this->ViewIndex('close');
             alert('Digite o motivo por favor!!!');
             return;
         }        
+        var palavras = obs.split(' ');
+        if(palavras.length < 5){
+            alert('No minimo 5 palavras devem ser Digitadas');
+            return;
+        } 
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delVarios')); ?>";
         envia(tar,'',null,''); 
         return false;
     }
     
     function estornaVarios(){
-        if($('#motivoEstorno').val() == ''){
+        var obs = $('#motivoEstorno').val() ;
+        if(obs == ''){
             alert('Digite o motivo por favor!!!');
             return;
         }        
+        var palavras = obs.split(' ');
+        if(palavras.length < 5){
+            alert('No minimo 5 palavras devem ser Digitadas');
+            return;
+        } 
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'estornaVarios')); ?>";
         envia(tar,'',null,''); 
         return false;        

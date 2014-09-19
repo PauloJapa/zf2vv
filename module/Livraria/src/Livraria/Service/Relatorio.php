@@ -417,6 +417,7 @@ class Relatorio extends AbstractService{
     
     public function sendEmailMapaRenovacaoAnual(&$servEmail, &$admCod, &$sc, &$admEmai, &$mesPrazo, &$admNom, &$data) {
         $servEmail->enviaEmail(['nome' => $admNom,
+                'emailNome' => $admNom,
                 'cod' => $admCod,
                 'date' => $sc->data,
                 'email' => $admEmai,
@@ -485,6 +486,7 @@ class Relatorio extends AbstractService{
             if($admCod != $value['administradora']['id']){
                 if($admCod != 0){
                     $servEmail->enviaEmail(['nome' => $admNom,
+                        'emailNome' => $admNom,
                         'email' => $admEmai,
                         'subject' => $admNom . ' -Imóveis Desocupados do Incêndio Locação',
                         'data' => $data],'imovel-desocupado');                     
@@ -507,6 +509,7 @@ class Relatorio extends AbstractService{
         //Envia ultima administradora se houver
         if($admCod != 0){
             $servEmail->enviaEmail(['nome' => $admNom,
+                'emailNome' => $admNom,
                 'email' => $admEmai,
                 'subject' => $admNom . ' -Imóveis Desocupados do Incêndio Locação',
                 'data' => $data],'imovel-desocupado');                     
@@ -591,7 +594,11 @@ class Relatorio extends AbstractService{
             $data[$i][] = $value['locadorNome'];
             $data[$i][] = $value['locatarioNome'];
             $data[$i][] = $value['inicio']->format('d/m/Y');
-            $data[$i][] = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
+            $frmPagto = isset($formaPagto[$value['formaPagto']]) ? $formaPagto[$value['formaPagto']] : 'Ñ encontrado' . $value['formaPagto'];
+            if($value['validade'] == 'mensal'){
+                $frmPagto = 'Pag Mensal';
+            }  
+            $data[$i][] = $frmPagto;
             $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
             $i++;
         }
@@ -615,6 +622,7 @@ class Relatorio extends AbstractService{
      */
     public function sendEmailSegFechForAdm(&$servEmail, &$admNom, &$admEmai, &$data, $mes) {
         $servEmail->enviaEmail(['nome' => $admNom,
+            'emailNome' => $admNom,
             'email' => $admEmai,
             'subject' => $admNom . ' - Fatura - Mês ' . $mes,
             'data' => $data], 'seguro-fechado');
@@ -695,6 +703,7 @@ class Relatorio extends AbstractService{
      */
     public function sendEmailOnlyRenovacaoMonta(&$servEmail, &$admNom, &$admEmai, &$data, $mes) {
         $servEmail->enviaEmail(['nome' => $admNom,
+            'emailNome' => $admNom,
             'email' => $admEmai,
             'subject' => $admNom . ' - Renovação Pendente - Mês ' . $mes,
             'data' => $data], 'renovacao-pendente');

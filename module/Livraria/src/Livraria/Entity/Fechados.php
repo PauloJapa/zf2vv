@@ -475,6 +475,26 @@ class Fechados  extends AbstractSeguro
 
     /**
      * 
+     * @return string da situação do registro
+     */
+    public function getStatus($op='') {
+        if (empty($op)){
+            return $this->status;            
+        }
+        switch ($this->status) {
+            case 'A':
+            case 'R':
+            case 'F':
+                return 'Fechado';                     
+            case 'C':
+                return 'Cancelado'; 
+            default:
+                return 'Desconhecido'; 
+        }
+    }
+
+    /**
+     * 
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {

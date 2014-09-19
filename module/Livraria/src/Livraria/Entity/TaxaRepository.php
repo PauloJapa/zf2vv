@@ -47,7 +47,7 @@ class TaxaRepository extends EntityRepository {
         //Acertar tipo de cobertura
         if ($classeAtividade->getAtividade()->getOcupacao() == 2 AND $cob != '02'){
             $cob = '02';
-            echo 'Tipo de cobertura para residencial somente predio + conteudo <br />';
+//            echo 'Tipo de cobertura para residencial somente predio + conteudo <br />';
         }
         
         $query = $this->getEntityManager()

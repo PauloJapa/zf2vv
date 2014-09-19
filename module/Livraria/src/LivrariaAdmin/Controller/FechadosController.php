@@ -57,6 +57,12 @@ class FechadosController extends CrudController {
             $data['administradora'] = $sessionContainer->administradora['id'];
             $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }
+        // Se filtro datai não exitir seta como padrão para Novos.
+        if(!isset($data['dataI'])){
+            $dataAgora = new \DateTime('now');
+            $dataAgora->sub(new \DateInterval('P1M'));
+            $data['dataI'] = '01/' . $dataAgora->format('m/Y'); 
+        }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF'];
         foreach ($inputs as $input) {

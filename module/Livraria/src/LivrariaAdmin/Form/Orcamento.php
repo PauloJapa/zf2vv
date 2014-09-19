@@ -108,7 +108,7 @@ class Orcamento extends AbstractEndereco {
         $this->setInputRadio('ocupacao', 'Ocupação', $ocupacao,$attributes);
         
         $validade = $this->getParametroSelect('validade',true);
-        $this->setInputRadio('validade', 'Tipo do Seguro', $validade, ['onClick' => "travaFormaPagto();setMesNiverOfMensal();"]);
+        $this->setInputRadio('validade', 'Tipo do Seguro', $validade, ['onClick' => "checkValidade();travaFormaPagto();setMesNiverOfMensal();"]);
         
         $this->setInputText('codigoGerente', 'Cod. Gerente');
         
@@ -227,7 +227,7 @@ class Orcamento extends AbstractEndereco {
             return ;
         }
         $this->get('ocupacao')->setAttribute('disabled', 'true');   
-        $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+//        $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
         $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
     }
     

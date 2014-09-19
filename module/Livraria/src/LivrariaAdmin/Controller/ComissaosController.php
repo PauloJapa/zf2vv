@@ -41,6 +41,10 @@ class ComissaosController extends CrudController {
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
         
         $this->formData = new $this->form(null, $this->getEm());
+        
+        if(isset($data['administradora'])){
+            $this->formData->setComissaoOptions($data['administradora']);
+        }
         $this->formData->setData($data);
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
@@ -65,8 +69,10 @@ class ComissaosController extends CrudController {
     public function editAction() {
         $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
-        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
-        
+        if (!isset($data['subOpcao'])) {
+            $data['subOpcao'] = '';
+        }
+
         if($data['subOpcao'] == 'editar'){ 
             $repository = $this->getEm()->getRepository($this->entity);
             $entity = $repository->find($data['id']);
@@ -109,13 +115,14 @@ class ComissaosController extends CrudController {
         $repository = $this->getEm()->getRepository($this->entity);
         $entity = $repository->findOneBy(['administradora' => $data['administradora']],['inicio'=>'DESC']);
         if($entity){
-            // Pegar a rota atual do controler
-            $this->route2 = $this->getEvent()->getRouteMatch();
-            $view = new ViewModel(array_merge(['id' => $entity->getId()],$this->getParamsForView()));
-            return $view;
+            $id = $entity->getId();
+        }else{
+            $id = 'novo';
         }
-        return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
-        
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
+        $view = new ViewModel(array_merge(['id' => $id, 'administradora' => $data['administradora']],$this->getParamsForView()));
+        return $view;
     }
 
 }

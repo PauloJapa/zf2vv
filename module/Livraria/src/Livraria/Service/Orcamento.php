@@ -90,6 +90,7 @@ class Orcamento extends AbstractService {
             if(!empty($data['changeInicio']) AND $dados['inicio'] != $data['changeInicio']){  
                 $flag = FALSE;
                 $dados['inicio']   = $data['changeInicio'];
+                
             }
             if(!empty($data['changeValidade']) AND $dados['validade'] != $data['changeValidade']){
                 $flag = FALSE;
@@ -101,11 +102,12 @@ class Orcamento extends AbstractService {
             }
 //            echo '<pre>';            var_dump($dados['codano']); die;
             $result = $this->update($dados);
+            $this->clean();
             if($result === TRUE){
-                $controller->flashMessenger()->addMessage("Registro $value atualizado com sucesso");
+                $controller->flashMessenger()->addMessage("Registro $value ".$dados['inicio']." atualizado com sucesso ".$dados['validade']);
                 continue;
             }
-            $controller->flashMessenger()->addMessage("Alerta Erros no registro $value !!!");
+            $controller->flashMessenger()->addMessage("Alerta Erros no registro $value  !!!");
             foreach ($result as $value) {
                 $controller->flashMessenger()->addMessage($value);
             }
@@ -522,6 +524,13 @@ class Orcamento extends AbstractService {
         return TRUE;
     }
     
+    public function clean() {
+        $this->data       = null;
+        $this->dePara     = '';
+        $this->entityReal = null;
+        $this->em->clear();
+    }
+    
     /**
      * Grava no logs dados da alteção feita na Entity
      * @return no return
@@ -760,14 +769,14 @@ class Orcamento extends AbstractService {
             $this->strToFloat($seg->getPremioLiquido() * $seg->getTaxaIof()),
             $seg->floatToStr('premioTotal')
         ];
-        $this->pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100));
+        $this->pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100), $seg->getValidade());
         $par = [
             $seg->floatToStr('premioTotal'),
             $this->strToFloat($seg->getPremioTotal() / 2),
             $this->strToFloat($seg->getPremioTotal() / 3),
             $this->strToFloat($seg->getPremioTotal() / 12)
         ];
-        $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto());
+        $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $this->pdf->setL14();
         $this->pdf->setObsGeral();
         

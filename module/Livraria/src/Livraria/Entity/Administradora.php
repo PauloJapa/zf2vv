@@ -135,6 +135,12 @@ class Administradora extends Filtro {
      * @var string
      */
     protected $assist24;
+
+    /**
+     * @ORM\Column(name="prop_pag", type="string", length=2)
+     * @var string
+     */
+    protected $propPag;
     
 
     
@@ -430,6 +436,27 @@ class Administradora extends Filtro {
         $this->assist24 = $assist24;
         return $this;
     }
+        
+    /**
+     * Proposta da administradora só será exibido uma unica forma de pagamento
+     * @return string
+     */
+    public function getPropPag() {
+        if(empty($this->propPag)){
+            return 'N';
+        }
+        return $this->propPag;
+    }
+
+    /**
+     * Pega se na proposta da administradora só será exibido uma unica forma de pagamento
+     * @param string $propPag
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setPropPag($propPag) {
+        $this->propPag = $propPag;
+        return $this;
+    }
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -450,6 +477,7 @@ class Administradora extends Filtro {
         $data['userIdAlterado'] = $this->getUserIdAlterado(); 
         $data['seguradora']     = $this->getSeguradora()->getId(); 
         $data['assist24']       = $this->getAssist24(); 
+        $data['propPag']        = $this->getPropPag(); 
         return $data ;
     }
 

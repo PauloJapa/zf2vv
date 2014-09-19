@@ -144,9 +144,9 @@ class OrcamentosController extends CrudController {
             $data['administradoraDesc'] = $sessionContainer->administradora['nome'];
         }
         // Se filtro Status não exitir seta como padrão para Novos.
-//        if(!isset($data['status'])){
-//            $data['status'] = "T";
-//        }
+        if(!isset($data['status'])){
+            $data['status'] = "T";
+        }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade'];
         foreach ($inputs as $input) {
@@ -157,7 +157,7 @@ class OrcamentosController extends CrudController {
         
         $list = $this->getEm()
                      ->getRepository($this->entity)
-                     ->findOrcamento($filtro,$operadores);
+                     ->findOrcamento($filtro,$operadores,$data);
         
         return parent::indexAction($filtro,[],$list);
     }
@@ -239,13 +239,21 @@ class OrcamentosController extends CrudController {
                 ->findComissaoVigente($data['administradora'],  $data['criadoEm']);
             $data['comissaoEnt'] = $comissaoEnt->getId();
             $data['comissao']    = $comissaoEnt->floatToStr('comissao');
-            $data['formaPagto']    = $adm['formaPagto'];
-            $data['validade']      = $adm['validade'];
-            $data['tipoCobertura'] = $adm['tipoCobertura'];
-            $data['assist24']      = $adm['assist24'];
+            if(!empty($adm['formaPagto'])){
+                $data['formaPagto']    = $adm['formaPagto'];
+            }
+            if(!empty($adm['validade'])){
+                $data['validade']      = $adm['validade'];
+            }
+//            if(!empty($adm['tipoCobertura'])){
+//                $data['tipoCobertura'] = $adm['tipoCobertura'];
+//            }
+            if(!empty($adm['assist24'])){
+                $data['assist24']      = $adm['assist24'];
+            }
             //Se houver forma de pagamento dafult somente o usuario admin pode alterar
             if($this->getIdentidade()->getTipo() != 'admin'){
-                if($data['formaPagto'] != ''){
+                if(isset($data['formaPagto']) AND $data['formaPagto'] != ''){
                     $sessionContainer->userNotAdmin = true;
                 }
             }
@@ -267,7 +275,7 @@ class OrcamentosController extends CrudController {
             $this->formData->bloqueiaCampos();
         }
         
-        
+        $aviso = '0';
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
                 $service = $this->getServiceLocator()->get($this->service);
@@ -275,6 +283,7 @@ class OrcamentosController extends CrudController {
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
                     $this->flashMessenger()->clearMessages();
+                    $aviso = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -306,6 +315,10 @@ class OrcamentosController extends CrudController {
         $arrayParam = $this->getCalculoParams($adm['id']);
         $arrayParam['administradora'] = $sessionContainer->administradora ;
         $arrayParam['imprimeProp'] = '0' ;
+        $arrayParam['avisaCalc'] = $aviso ;
+        if(isset($data['comissao'])){
+            $arrayParam['comissao'] = $data['comissao'] ;
+        }
         return new ViewModel(array_merge($this->getParamsForView(), $arrayParam)); 
     }
     
@@ -342,6 +355,7 @@ class OrcamentosController extends CrudController {
             $param['coberturaComercial'] = $entAdm->getTipoCobertura();
             $param['coberturaResidencial'] = $entAdm->getTipoCoberturaRes();
             $param['seguradora'] = $entAdm->getSeguradora()->getId();
+            $param['validade'] = $entAdm->getValidade();                
         } 
         $parray['param'] = $param ;
 //        echo '<pre>'; var_dump($parray);die;
@@ -543,7 +557,7 @@ class OrcamentosController extends CrudController {
         if(($data['administradora'] != $sessionContainer->administradora['id'] && ($this->getIdentidade()->getTipo() != 'admin'))){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller));
         }
-        
+        $aviso = '0';
         $this->formData->setEdit();
         if($data['subOpcao'] == 'calcular'){
             if ($this->formData->isValid()){
@@ -552,6 +566,7 @@ class OrcamentosController extends CrudController {
                 if($result === TRUE){
                     $this->formData->setData($service->getNewInputs());
                     $this->flashMessenger()->clearMessages();
+                    $aviso = '1';
                 }else{
                     foreach ($result as $value) {
                         $this->flashMessenger()->addMessage($value);
@@ -585,6 +600,10 @@ class OrcamentosController extends CrudController {
         $arrayParam = $this->getCalculoParams($data['administradora']);
         $arrayParam['administradora'] = $sessionContainer->administradora ;
         $arrayParam['imprimeProp'] = $imprimeProp ;
+        $arrayParam['avisaCalc'] = $aviso ;
+        if(isset($data['comissao'])){
+            $arrayParam['comissao'] = $data['comissao'] ;
+        }
         return new ViewModel(array_merge($this->getParamsForView(),$arrayParam)); 
     }
     

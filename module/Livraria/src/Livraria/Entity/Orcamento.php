@@ -420,6 +420,8 @@ class Orcamento extends AbstractSeguro {
      * @param Array $options
      */    
     public function __construct($options = null) {
+        $this->criadoEm = new \DateTime('now');
+        $this->criadoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo'));
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
         Configurator::configure($this, $options);
@@ -468,6 +470,39 @@ class Orcamento extends AbstractSeguro {
     public function setOrcaReno($orcaReno) {
         $this->orcaReno = $orcaReno;
         return $this;
+    }
+
+    /**
+     * 
+     * @return string da situação do registro
+     */
+    public function getStatus($op='') {
+        if (empty($op)){
+            return $this->status;            
+        }
+        switch ($this->status) {
+            case 'A':
+            case 'R':
+                if($this->getOrcaReno() == 'orca'){
+                    return 'Orçamento';                     
+                }else{
+                    return 'Renovação';                     
+                }
+            case 'C':
+                if($this->getOrcaReno() == 'orca'){
+                    return 'Cancelado Orça';                     
+                }else{
+                    return 'Cancelado Reno';                     
+                }
+            case 'F':
+                if($this->getOrcaReno() == 'orca'){
+                    return 'Fechou Orça';                     
+                }else{
+                    return 'Fechou Reno';                     
+                }
+            default:
+                return 'Desconhecido'; 
+        }
     }
 
     /**

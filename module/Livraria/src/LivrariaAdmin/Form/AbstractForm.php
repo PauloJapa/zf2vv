@@ -168,7 +168,7 @@ abstract class AbstractForm extends Form {
         
         $attrib = array('id' => $name,
                         'value' => $label,
-                        'class' => 'btn-success',
+                        'class' => 'btn btn-success',
                         'onClick' => 'return salvar()');
         
         if(empty($attributes)){
@@ -193,7 +193,7 @@ abstract class AbstractForm extends Form {
         $bt->setLabel($label);
         $attrib = array('id' => $name,
                         'value' => $label,
-                        'class' => 'btn-success');
+                        'class' => 'btn btn-success');
         if(empty($attributes)){
             $bt->setAttributes($attrib);
         }else{

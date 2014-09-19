@@ -1,6 +1,7 @@
 body {
     padding-top: 60px;
     padding-bottom: 40px;
+    background-color: #c9c9c9;
 }
 
 .zf-green {
@@ -73,4 +74,15 @@ table td.c {
 }
 .f8{
     font-size: 18px;
+}
+
+.th{
+    background-color: #2C2C2C;
+    color: #FFF;
+}
+
+.link:hover{
+    cursor: pointer;
+    background-color: #FFF;
+    color: #2C2C2C;    
 }

@@ -56,18 +56,20 @@ class ImprimirSeguro extends FPDF{
     
     public function setL3($locatario,$doc){
         $l3 = ['Locatário:',$locatario,'CGC/CPF:',$this->formatarCPF_CNPJ($doc)];
-        $this->set2Cell($l3, 20, 21);
+        $this->set2Cell($l3, 19, 20);
     }
     
     public function setL4($locador,$doc){
         $l4 = ['Locador:',$locador,'CGC/CPF:',  $this->formatarCPF_CNPJ($doc)];
-        $this->set2Cell($l4, 20, 21);
+        $this->set2Cell($l4, 19, 20);
     }
     public function setL5($end){
+        $this->SetFont('Times','',10);
         $l5 = ['End. do Imóvel:',$end];
         $this->setCell($l5, 31);
     }
     public function setL6($ocupacao){
+        $this->SetFont('Times','',12);
         $l6 = ['Ocupação:',$ocupacao];
         $this->setCell($l6, 20);
     }
@@ -116,14 +118,20 @@ class ImprimirSeguro extends FPDF{
      * Valores totais do seguro
      * @param array $vlr
      * @param string $iof
+     * @param boolean $mensal
      */
-    public function setL12(array $vlr,$iof='7,38'){
+    public function setL12(array $vlr,$iof='7,38', $mensal=''){
+        if($mensal =='mensal'){
+            $labelTot = 'Valor Mensal';
+        }else{
+            $labelTot = 'Total a Vista';            
+        }
         $this->set4Cell(['Total liquido',$vlr[0]]);
         if($vlr[0] != $vlr[1]){
             $this->set4Cell(['Prêmio mínimo por emissão',$vlr[1]]);
         }
         $this->set4Cell(['IOF ('. $iof .'%)',$vlr[2]]);
-        $this->set4Cell(['Total a Vista',$vlr[3]],['B','B']);
+        $this->set4Cell([$labelTot,$vlr[3]],['B','B']);
         $this->Cell(0, 7,'',1,1);
     }
     /**
@@ -131,17 +139,28 @@ class ImprimirSeguro extends FPDF{
      * @param array $vlr
      * @param boolean $mensal Decide se exibe ou não valor para pagamento mensal 
      */
-    public function setL13(array $vlr,$mensal=TRUE, $formaPagto=''){
+    public function setL13(array $vlr,$mensal=TRUE, $formaPagto='', $showPag=''){
         if($mensal){
             return;
         }
         if(!empty($formaPagto)){
             $fill[$formaPagto] = true;
         }
-        $this->set5Cell(['Foma de Pagamento 1(ato)','Parcela(s) de',$vlr[0]], 12, 7, isset($fill['01'])?true:false);
-        $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5, isset($fill['02'])?true:false);
-        $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);
-        if($formaPagto == '04'){
+        if($showPag == 'S'){
+            switch ($formaPagto) {
+                case '02':
+                    $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5, isset($fill['02'])?true:false);
+                    break;
+                case '03':
+                    $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);            
+                    break;
+            }
+        }else{
+            $this->set5Cell(['Foma de Pagamento 1(ato)','Parcela(s) de',$vlr[0]], 12, 7, isset($fill['01'])?true:false);
+            $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5, isset($fill['02'])?true:false);
+            $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);            
+        }
+        if($formaPagto == '12'){
             $this->set5Cell(['Forma de Pagamento 12 (mensal)','Parcela(s) de',$vlr[3]], 8, 5, isset($fill['04'])?true:false);
         }
         $this->Ln();
@@ -181,22 +200,35 @@ class ImprimirSeguro extends FPDF{
         $this->MultiCell(0, 4, $obs, 1);
     }
 
-    public function setCell(array $txt,$w1=95){
+    public function setCell(array $txt,$w1=95, $h=7){
+        $h1 = $h;
+        if(strlen($txt[1]) > 70 ){
+            $h *= 2;
+        }
         $this->SetFont('Times','B',12);
-        $this->Cell($w1, 7, $txt[0], 'LTB',0);
+        $this->Cell($w1,     $h,  $txt[0], 'LTB',0);
+        $w = 190 - $w1;
         $this->SetFont('Times','',12);
-        $this->Cell(190 - $w1, 7, $txt[1], 'RTB',1);
+        $this->MultiCell($w, $h1, $txt[1], 'RTB');
     }
     
-    public function set2Cell(array $txt,$w1=45,$w2=45){
-        $this->SetFont('Times','B',12);
-        $this->Cell($w1, 7, $txt[0], 'LTB',0);
+    public function set2Cell(array $txt,$w1=45,$w2=45, $h=6){
+        $h1 = $h;
+        if(strlen($txt[1]) > 60 ){
+            $h *= 2;
+        }
+        $this->SetFont('Times','B',11);
+        $this->Cell($w1,       $h, $txt[0], 'LTB',0);
+        $x = $this->GetX();
+        $y = $this->GetY();
+        $w = 125 - $w1;
         $this->SetFont('Times','',12);
-        $this->Cell(125 - $w1, 7, $txt[1], 'RTB',0);
-        $this->SetFont('Times','B',12);
-        $this->Cell($w2, 7, $txt[2], 'LTB',0);
+        $this->MultiCell($w, $h1, $txt[1], 'RTB');
+        $this->SetXY($x + $w, $y);
+        $this->SetFont('Times','B',11);
+        $this->Cell($w2,       $h, $txt[2], 'LTB',0);
         $this->SetFont('Times','',12);
-        $this->Cell(65 - $w2, 7, $txt[3], 'RTB',1);
+        $this->Cell(65 - $w2,  $h, $txt[3], 'RTB',1);
     }
     
     public function set3Cell(array $txt){

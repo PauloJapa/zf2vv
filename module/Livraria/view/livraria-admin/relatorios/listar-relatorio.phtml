@@ -103,10 +103,16 @@ foreach($this->data as $ent):
     $comissao = $ent->getComissao();
     $ocupacao = $ent->getOcupacao();
     $frmPagto = isset($this->formaPagto[$fPg]) ? $this->formaPagto[$fPg] : 'Ñ encontrado' . $fPg;
+    if($ent->getValidade() == 'mensal'){
+        $frmPagto = 'Pag Mensal';
+    }  
     switch ($fPg) {
         case '01':
             $parcela = 'A Vista';
             $parc    = '1/1';
+            if($ent->getValidade() == 'mensal'){
+                $parcela = 'Pag Mensal';
+            } 
             break;
         case '02':
             $prc = $mesSel - $ent->getInicio('obj')->format('m') + 1;

@@ -659,7 +659,7 @@ abstract class AbstractService {
         
         if($calc < $premioMin){
             $calc = $premioMin;
-        }  
+        } 
         
         return $calc;
     }

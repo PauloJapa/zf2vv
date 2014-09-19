@@ -515,10 +515,15 @@ class Imovel extends Filtro
      * @return string
      */
     public function __toString() {
+        $rua = trim($this->rua);
+        $num = trim($this->numero);
+        $apt = trim($this->apto);
+        $blc = trim($this->bloco);
+        $cpt = trim($this->compl);
         if($this->numero == 0){
-            return $this->rua . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl . ' CEP ' . $this->cep;
+            return $rua . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $this->cep;
         }else{
-            return $this->rua . ' n:' . $this->numero . ' ' . $this->bloco . ' ' . $this->apto . ' ' . $this->compl . ' CEP ' . $this->cep;
+            return $rua . ' n:' . $num . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $this->cep;
         }
     }
 

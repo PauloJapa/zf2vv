@@ -82,9 +82,9 @@ echo
 $this->FormDefault(['legend' => 'Dados do Imovel:', 'hidden' => 'idEnde'],'fieldIni'),
 
     "<td colspan='3' nowrap>", PHP_EOL,
-        '<a href="javascript:autoCompImoveis();">Exibir Imoveis desse locador <i class="icon-search"></i></a>',
-        '<br /><span id="popImoveis" style="position:absolute"></span>',
         $this->FormDefault(['name' => 'cep','js' => 'buscarEndCep()', 'icone' => 'icon-search', 'span' => 'checar'],'icone'),
+        '<a class="btn btn-success" href="javascript:autoCompImoveis();">Exibir Imoveis cadastrados desse locador <i class="icon-search"></i></a>',
+        '<br /><span id="popImoveis" style="position:absolute"></span>',
         // Usuario Administrador pode alterar imovel
         ($user->getTipo() == 'admin') ? $this->FormDefault(['edImovel' => 'buttonOnly']) : '',
     "</td>",        
@@ -180,14 +180,19 @@ $this->FormDefault(['legend' => 'Coberturas'],'fieldIni'),
         
         $this->FormDefault(['premioTotal' => 'moedaLine']),
         $this->FormDefault(['parcelaVlr' => 'moedaLine']),
-        $this->FormDefault(['observacao' => 'textArea']),
     "</td><td style='vertical-align: middle; width:20%;'>", PHP_EOL,
         $this->FormDefault(['calcula'=>'submit']),
+        "<br /><br /><br /><p class='btn btn-warning' id='aviso'>Lembre-se de Salvar <span class='icon-ok-circle'></span></p>",
+        $this->FormDefault(['enviar'=>'submit']),
+    "</td>", PHP_EOL,        
+    "</tr><tr>",
+    "<td colspan='2'>",
+        $this->FormDefault(['observacao' => 'textArea']),
     "</td>", PHP_EOL,        
         
 $this->FormDefault([],'fieldFim'),
         
-$this->FormDefault(['enviar','getpdf','fecha','novoOrca'],'submits');
+$this->FormDefault(['getpdf','fecha','novoOrca'],'submits');
 
 $this->FormDefault([],'fim');
 
@@ -202,7 +207,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
     var dateFormat = 'dd/mm/yyyy';
     var varVazio = ''; //Var para testar se campo cnpj ou cpf esta vazio
-    var imprime = '<?php echo $this->imprimeProp ?>';
+//    var imprime = '<?php echo $this->imprimeProp ?>';
+    var imprime = '0';
+    var avisa = '<?php echo $this->avisaCalc ?>';
     var param = <?php echo json_encode($this->param); ?>;
     var user = '<?php echo $user->getTipo(); ?>';
     
@@ -253,6 +260,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         if(!valida(ides)){
             return false;
         }
+//        if(!isValido()){
+//            return false;
+//        }
         
         envia(tar,'salvar',formName,'');
         return false;
@@ -261,6 +271,14 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     function checkPrintProp(){
         if(imprime == '1'){
             printProposta(true);
+        }
+    }
+
+    function checkAvisoCalc(){
+        if(avisa == '1'){
+            $('#aviso').show();
+        }else{                
+            $('#aviso').hide();
         }
     }
 
@@ -276,8 +294,37 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function calcular(){
+//        if(!isValido()){
+//            return false;
+//        }
         envia(tar,'calcular',formName,'');
         return false;
+    }
+    
+    function isValido(){
+        if($('#tipoLoc').val() == 'fisica'){
+            if(!isCpf($('#cpfLoc'))){
+                alert('CPF do locador invalido!!!');
+                return false;
+            }
+        }else{
+            if(!isCnpj($('#cnpjLoc'))){
+                alert('CNPJ do locador invalido!!!');
+                return false;
+            }            
+        }
+        if($('#tipo').val() == 'fisica'){
+            if(!isCpf($('#cpf'))){
+                alert('CPF do locatario invalido!!!');
+                return false;
+            }
+        }else{
+            if(!isCnpj($('#cnpj'))){
+                alert('CNPJ do locatario invalido!!!');
+                return false;
+            }            
+        }        
+        return true;
     }
 
     function fechar(){
@@ -336,8 +383,21 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         var filtros = 'seguradora,ocupacao,atividadeDesc,autoComp';
         var servico = "<?php echo $this->url('livraria-admin',array('controller'=>'atividades','action'=>'autoComp')); ?>";
         var returns = Array('atividade','atividadeDesc');
-        var functionCall = '';
+        var functionCall = 'setPerdaAluguel()';
         autoComp2(filtros,servico,'popAtividade',returns,'2',functionCall);
+    }
+    
+    function setPerdaAluguel(){
+        switch($('#atividade').val()){
+            case '89':
+            case '312':
+                setEmpty('aluguel');
+                break; 
+            default:
+                if($('#aluguel').val() == 'Não Calcular'){
+                    $('#aluguel').val('');
+                }
+        }
     }
 
     function setMesNiverOfMensal(click){
@@ -589,12 +649,76 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             document.getElementById('cidade').value = '';
             document.getElementById('cidadeDesc').value = '';
             document.getElementById('estado').value = '';
-            document.getElementById('pais').value = '';
+            document.getElementById('pais').value = '1';
         }
     }
 
     //Funcao jquey para janela de flash mensagem rolar conforme o scrool
-    $(document).ready(function(){
+    $(document).ready(function(){       
+       // Atribuindo a função validate para o formulário form-contato
+        $('#orcamento').validate({
+            // Função que determinada as regras de validação do formulário
+             rules:{
+                // Pegando o campo CPF para inserir regras de validação
+                cpf: {
+                    // o required faz com que o preenchimento do campo sejá obrigatório
+                    required : true,
+                    // o cpf faz com que o cpf digitado seja um cpf valido
+                    cpf      : 'both'
+                },
+                // Pegando o campo CNPJ para inserir regras de validação
+                cnpj: {
+                    // o required faz com que o preenchimento do campo sejá obrigatório
+                    required : true,
+                    // o CNPJ faz com que o cpf digitado seja um CNPJ valido
+                    cnpj     : 'both'
+                },
+                // Pegando o campo CPF para inserir regras de validação
+                cpfLoc: {
+                    // o required faz com que o preenchimento do campo sejá obrigatório
+                    required : true,
+                    // o cpf faz com que o cpf digitado seja um cpf valido
+                    cpf      : 'both'
+                },
+                // Pegando o campo CNPJ para inserir regras de validação
+                cnpjLoc: {
+                    // o required faz com que o preenchimento do campo sejá obrigatório
+                    required : true,
+                    // o CNPJ faz com que o cpf digitado seja um CNPJ valido
+                    cnpj     : 'both'
+                },
+            },
+            // Atribuindo mensagens personalizadas para as validações
+            messages:{
+                // Seleciona as mensagens do campo CPF
+                cpf: {
+                    // Atribui uma mensagem padrão para o required do CPF
+                    required : "O CPF é obrigatório.",
+                    // Atribui uma mensagem padrão para a função CPF do campo CPF
+                    cpf      : "O CPF digitado é invalido"
+                },
+                // Seleciona as mensagens do campo CNPJ
+                cnpj: {
+                    // Atribui uma mensagem padrão para o required do CNPJ
+                    required : "O CNPJ é obrigatório.",
+                    // Atribui uma mensagem padrão para a função CNPJ do campo CNPJ
+                    cnpj     : "O CNPJ digitado é invalido"
+                },
+                cpfLoc: {
+                    // Atribui uma mensagem padrão para o required do CPF
+                    required : "O CPF é obrigatório.",
+                    // Atribui uma mensagem padrão para a função CPF do campo CPF
+                    cpf      : "O CPF digitado é invalido"
+                },
+                // Seleciona as mensagens do campo CNPJ
+                cnpjLoc: {
+                    // Atribui uma mensagem padrão para o required do CNPJ
+                    required : "O CNPJ é obrigatório.",
+                    // Atribui uma mensagem padrão para a função CNPJ do campo CNPJ
+                    cnpj     : "O CNPJ digitado é invalido"
+                },
+            } 
+        });
         try{
             var y_fixo = $("#mensagen").offset().top;
         }catch(e){
@@ -605,7 +729,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
                 top: y_fixo+$(document).scrollTop()+"px"
                 },{duration:500,queue:false}
             );
-        });
+        });    
     });
 
     function fecharPop(id){
@@ -663,6 +787,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function setCobertura(obj){
+        if((user === 'admin') && (obj === true)){
+            return;
+        }
         if(typeof obj === 'undefined'){
             obj = {'name': ''};
         }
@@ -674,18 +801,37 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         if(ocup[0].checked){ // Caso Comercial
             $.each(param, function(index, value) {
                 if(index === 'coberturaComercial'){
-                    tcob.selectedIndex = value ;                    
+                    if(value != ''){
+                        tcob.selectedIndex = value ;                    
+                    }
                 }
             });
         }
         if(ocup[1].checked){ // Caso residencial
             $.each(param, function(index, value) {
                 if(index === 'coberturaResidencial'){
-                    tcob.selectedIndex = value ;                    
+                    if(value != ''){
+                        tcob.selectedIndex = value ;                    
+                    }
                 }
             });
         }
         showIncOrIncCon();
+    }
+    
+    function checkValidade(){
+        if(user === 'admin') {
+            return;
+        }
+        // Caso residencial
+        $.each(param, function(index, value) {
+            if(index === 'validade'){
+                if(value != ''){
+                    $('input:radio[name="validade"][value="' + value + '"]').prop('checked', true);
+                }
+            }
+        });
+        
     }
     
     function setComissao(obj){
@@ -734,6 +880,11 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     // Verificar cpf ou cnpj do locador e locatario
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
-    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();setComissao();setCobertura();formataDoc();travaFormaPagto();setMesNiverOfMensal()',500);
+    setTimeout('showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();setComissao();setCobertura(true);formataDoc();travaFormaPagto();setMesNiverOfMensal();checkAvisoCalc()',500);
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
+    
+    var com = '<?php echo $this->comissao ; ?>';
+    if(com != ''){
+         window.setTimeout("$('#comissao').val(com)",1000);        
+    }
 </script>

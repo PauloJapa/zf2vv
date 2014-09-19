@@ -13,6 +13,7 @@ class Email extends AbstractService
     protected $transport;
     protected $view;
     protected $cco;
+    protected $cc;
     
     public function __construct(EntityManager $em, SmtpTransport $transport, $view) 
     {
@@ -31,8 +32,11 @@ class Email extends AbstractService
                     ->setTo($dataEmail['email'], $dataEmail['emailNome'])
                     ->setData($dataEmail)
                     ->prepare();
+            if($this->cc){
+                $mail->getMessage()->addCc($this->cc, 'Sistema Locação');
+            }
             if($this->cco){
-                $mail->getMessage()->addBcc($this->cco, 'Testes');
+                $mail->getMessage()->addBcc($this->cco, 'Testes Locação');
             }
             $mail->send();
         } catch (Exception $e) {
@@ -42,22 +46,32 @@ class Email extends AbstractService
     
     public function setMailTo(&$dataEmail) {
         $this->cco = 'watakabe98@hotmail.com';
+        $this->cc  = 'incendiolocacao@vilavelha.com.br' ;
         switch ($this->getIdentidade()->getEmail()) {
             case 'watakabe05@gmail.com':
+                $dataEmail['subject'] .=  '(' . $dataEmail['email'] . ')';
                 $dataEmail['email'] = 'watakabe98@hotmail.com'; 
                 $dataEmail['emailNome'] = 'Paulo Sistema';
+                 $this->cc = FALSE;
                 $this->cco = FALSE;
                 break;
-            case 'marisa':
-                $dataEmail['email'] = 'marisa@vilavelha.com.br'; 
-                $dataEmail['emailNome'] = 'Marisa Vila Velha';
-                break;
+//            case 'marisa':
+//                $dataEmail['email'] = 'marisa@vilavelha.com.br'; 
+//                $dataEmail['emailNome'] = 'Marisa Vila Velha';
+//                break;
             default:
-//                $dataEmail['email'] = 'incendiolocacao@vilavelha.com.br'; 
-                if(isset($dataEmail['email']) AND $dataEmail['email'] == 'incendiolocacao@vilavelha.com.br' ){
-                    $this->cco = 'marisa@vilavelha.com.br';
-                }else{
-                    $dataEmail['email'] = 'marisa@vilavelha.com.br';                     
+                if(!isset($dataEmail['email'])){
+                    $dataEmail['email']     = 'incendiolocacao@vilavelha.com.br';                    
+                }
+                if(is_null($dataEmail['email'])){
+                    $dataEmail['email']     = 'incendiolocacao@vilavelha.com.br';
+                }
+                if(strtoupper($dataEmail['email']) == 'NAO' OR empty($dataEmail['email']) OR $dataEmail['email'] == 'NATALIAOCTAVIANO@VILAVELHA.COM.BR' OR $dataEmail['email'] == '.'){
+                    $dataEmail['email']     = 'incendiolocacao@vilavelha.com.br';                    
+                }
+                if($dataEmail['email'] == 'incendiolocacao@vilavelha.com.br' ){
+                    $this->cc = FALSE;
+                    $dataEmail['emailNome'] = 'Sis. ADM sem EMAIL';
                 }
                 if(!isset($dataEmail['emailNome'])){
                     $dataEmail['emailNome'] = 'Incendio Locação Sistemas';
