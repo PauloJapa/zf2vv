@@ -12,6 +12,8 @@ class AdministradoraFilter extends EnderecoFilter {
         $this->emptyTrue('formaPagto');
         $this->emptyTrue('validade');
         $this->emptyTrue('tipoCobertura');
+        $this->emptyTrue('tipoCoberturaRes');
+        $this->emptyTrue('propPag');
 
         $this->notEmpty('id');
         $this->notEmpty('nome');

@@ -251,13 +251,21 @@ class Relatorio extends AbstractService{
         $this->data['fim']->add(new \DateInterval('P1M'));
         $this->data['fim']->sub(new \DateInterval('P1D'));
         
-        //Trata os filtro para data mensal
-        $this->data['inicioMensal'] = clone $this->data['inicio'];
-        // Pesquisar fechados mensal que terminam a vigencia no mes posterior
-        $this->data['inicioMensal']->sub(new \DateInterval('P3M'));
+        if(!empty($data['mesRefFiltro']) AND !empty($data['anoRefFiltro'])){
+            $this->data['inicioMensal'] = '01/' . $data['mesRefFiltro'] . '/' . $data['anoRefFiltro'];
+            $this->dateToObject('inicioMensal');
+            $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
+        }else{
+            //Trata os filtro para data mensal
+            $this->data['inicioMensal'] = clone $this->data['inicio'];
+            // Pesquisar fechados mensal que terminam a vigencia no mes posterior
+            $this->data['inicioMensal']->sub(new \DateInterval('P4M'));
+        }
+        
         $this->data['fimMensal'] = clone $this->data['inicioMensal'];
-        $this->data['fimMensal']->add(new \DateInterval('P1M'));
+        $this->data['fimMensal']->add(new \DateInterval('P1MT20H'));
         $this->data['fimMensal']->sub(new \DateInterval('P1D'));
+                
         $this->data['niver'] = (int)$data['mesFiltro'];
 
         //Filtro para ambos os casos
@@ -600,6 +608,18 @@ class Relatorio extends AbstractService{
             }  
             $data[$i][] = $frmPagto;
             $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
+            
+            $rua = trim($value['imovel']['rua']);
+            $num = trim($value['imovel']['numero']);
+            $apt = trim($value['imovel']['apto']);
+            $blc = trim($value['imovel']['bloco']);
+            $cpt = trim($value['imovel']['compl']);
+            if(empty($num) OR $num == 0){
+                $end = $rua . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $value['imovel']['cep'];
+            }else{
+                $end = $rua . ' n:' . $num . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $value['imovel']['cep'];
+            }
+            $data[$i][] = $end;
             $i++;
         }
         

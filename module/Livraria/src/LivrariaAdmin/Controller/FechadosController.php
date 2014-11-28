@@ -235,6 +235,7 @@ class FechadosController extends CrudController {
     public function deleteAction(){
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
+        /* @var $service \Livraria\Service\Fechados */
         $service = $this->getServiceLocator()->get($this->service);
         $result = $service->delete($data['id'], $data, $this->getServiceLocator());
         if($result === TRUE){

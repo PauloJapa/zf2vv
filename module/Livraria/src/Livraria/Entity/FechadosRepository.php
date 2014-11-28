@@ -201,20 +201,22 @@ class FechadosRepository extends AbstractRepository {
 
     /**
      * Faz a consulta no BD procurando registro com base no mes de aniversario e do tipo mensal
+     * 27/10/2014 ajuste para pegar o periodo pelo campo inicio e não pelo fim pois no fim do seguro é decrementado 1 dia
      * @param array $data
      * @return array
      */
     public function getMapaRenovacaoMensal($data) {
         $this->parameters = [];
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.fim BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver AND (o.status = :status OR o.status = :status2) AND o.status <> :status3';
+        $this->where = 'o.inicio BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver AND (o.status = :status OR o.status = :status2) AND o.status != :status3';
+        $this->where = 'o.inicio BETWEEN :inicio AND :fim AND o.validade = :valido AND o.mesNiver = :niver ';
         $this->parameters['valido']  = 'mensal';
         $this->parameters['niver']   = $data['niver'];
         $this->parameters['inicio']  = $data['inicioMensal'];
         $this->parameters['fim']     = $data['fimMensal'];
-        $this->parameters['status']  = 'A';     // SEGURO ATIVO
-        $this->parameters['status2']  = 'R';    // SEGURO RENOVADO
-        $this->parameters['status3']  = 'AR';   // DESPREZA SEGURO MENSAL ATUALIZAÇAO ANUAL DE VALOR
+//        $this->parameters['status']  = 'A';     // SEGURO ATIVO
+//        $this->parameters['status2']  = 'R';    // SEGURO RENOVADO
+//        $this->parameters['status3']  = 'AR';   // DESPREZA SEGURO MENSAL ATUALIZAÇAO ANUAL DE VALOR
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            
@@ -282,9 +284,10 @@ class FechadosRepository extends AbstractRepository {
      */
     public function getListaFechaSeguro($data){
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim';
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status <> :status';
         $this->parameters['inicio'] = $data['inicio'];
         $this->parameters['fim']    = $data['fim'];
+        $this->parameters['status'] = 'C';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];            

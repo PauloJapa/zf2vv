@@ -150,6 +150,7 @@ class RenovacaosController  extends CrudController {
         $service->setFlush(FALSE);
         $indClear = 100;
         $ok = $ng = 0;
+        $browserTimeOut = 0 ;
         foreach ($fechados as $key => $fechado) {
             $resul = $service->renovar($fechado);
             if($resul[0] !== TRUE){
@@ -164,6 +165,11 @@ class RenovacaosController  extends CrudController {
                 $this->getEm()->flush();
                 $this->getEm()->clear();
                 $this->flashMessenger()->addMessage('Renovou ' . $indClear. ' Seguros');
+            }
+            $browserTimeOut++;
+            if($browserTimeOut > 500){
+                $browserTimeOut = 0;
+                echo '<p>Fez leitura de 500 registros';
             }
         }
         $total = $ok + $ng;

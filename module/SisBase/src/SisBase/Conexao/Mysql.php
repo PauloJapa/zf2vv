@@ -92,18 +92,18 @@ class Mysql {
     public function fAll($param=''){
         switch ($param){
             case '':
-                return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+                return $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
                 break;
             
             case 'FETCH_COLUMN':
-                return $this->stmt->fetchAll(PDO::FETCH_COLUMN);
+                return $this->stmt->fetchAll(\PDO::FETCH_COLUMN);
                 break;
             
             case 'FETCH_NUM':
-                return $this->stmt->fetchAll(PDO::FETCH_NUM);
+                return $this->stmt->fetchAll(\PDO::FETCH_NUM);
                 break;
         }
-        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /** 

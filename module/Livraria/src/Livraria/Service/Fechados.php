@@ -45,7 +45,7 @@ class Fechados extends AbstractService {
 
     /**
      * Entity Orcamento
-     * @var type
+     * @var \Livraria\Entity\Orcamento
      */
     protected $Orcamento;
 
@@ -157,10 +157,15 @@ class Fechados extends AbstractService {
             return FALSE;
         }
         /* @var $entityO \Livraria\Entity\Orcamento */
-        $entityO = $this->em->find('\Livraria\Entity\Orcamento', $entityF->getOrcamentoId());
+        if(is_null($entityF->getOrcamentoId()) OR $entityF->getOrcamentoId() == 0){
+            $anterior = $entityF->getRenovacaoId();
+        }else{
+            $anterior = $entityF->getOrcamentoId();            
+        }        
+        $entityO = $this->em->find('\Livraria\Entity\Orcamento', $anterior);
         if(!is_object($entityO)){
             if(!is_null($controller)){
-                $controller->flashMessenger()->addMessage('Alerta!!! Orçamento' . $entityF->getOrcamentoId() . 'Não encontrado!!!!');
+                $controller->flashMessenger()->addMessage('Alerta!!! Orçamento' . $anterior . 'Não encontrado!!!!');
             }
             return FALSE;
         }
@@ -209,6 +214,9 @@ class Fechados extends AbstractService {
         }
         if(!parent::delete($id)){
             return ['Erro ao tentar excluir registro!!'];
+        }
+        if(empty($data['motivoNaoFechou']) AND isset($data['motivoNaoFechou2'])){
+            $data['motivoNaoFechou'] = $data['motivoNaoFechou2'];
         }
         $this->logForDelete($id,$data);
         // Verificar se é usuario da imobiliaria e enviar email.
@@ -401,6 +409,12 @@ class Fechados extends AbstractService {
         
         if ($this->getIdentidade()->getIsAdmin() == '0') {
             return [FALSE,'Você não tem permissão para incluir ou alterar registro'];
+        }
+        if ($this->getIdentidade()->getMenu() == 'imob'){
+            $hoje = new \DateTime('now');            
+            if($this->Orcamento->getInicio('obj')->format("Ymd") < $hoje->format("Ymd")){
+                return [FALSE,'Você não tem permissão para fechar com vigência retroativa caso precise ligar para Vila velha.'];                
+            }
         }
 
         if(!$this->Orcamento){
@@ -890,12 +904,15 @@ class Fechados extends AbstractService {
         $this->data = $this->entityReal->toArray();
         
         // Lista de metodos para atualizar$metodos[] = 'Locador';        
+        $metodos[] = 'Locador';            $param[] = '';
         $metodos[] = 'Locatario';          $param[] = '';
         $metodos[] = 'Imovel';             $param[] = '';
         $metodos[] = 'Taxa';               $param[] = '';
         $metodos[] = 'Atividade';          $param[] = '';
         $metodos[] = 'Seguradora';         $param[] = '';
         $metodos[] = 'Administradora';     $param[] = '';
+        $metodos[] = 'MultiplosMinimos';   $param[] = '';
+        $metodos[] = 'ComissaoEnt';        $param[] = '';
         $metodos[] = 'ValorAluguel';       $param[] = '';
         $metodos[] = 'Incendio';           $param[] = '';
         $metodos[] = 'Conteudo';           $param[] = '';
@@ -914,6 +931,7 @@ class Fechados extends AbstractService {
         $metodos[] = 'Inicio';             $param[] = 'obj';
         $metodos[] = 'Fim';                $param[] = 'obj';
         $metodos[] = 'CanceladoEm';        $param[] = 'obj';
+        $metodos[] = 'AlteradoEm';         $param[] = 'obj';
         $metodos[] = 'Codano';             $param[] = '';
         $metodos[] = 'LocadorNome';        $param[] = '';
         $metodos[] = 'LocatarioNome';      $param[] = '';
@@ -925,6 +943,8 @@ class Fechados extends AbstractService {
         $metodos[] = 'Observacao';         $param[] = '';
         $metodos[] = 'MesNiver';           $param[] = '';
         $metodos[] = 'Assist24';           $param[] = '';
+        $metodos[] = 'Validade';           $param[] = '';
+        $metodos[] = 'Ocupacao';           $param[] = '';
         // Atualizar campos modificados        
         foreach ($metodos as $key => $metodo) {
             if(empty($param[$key])){

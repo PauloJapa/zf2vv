@@ -329,7 +329,7 @@ abstract class AbstractService {
      */
     public function idToReference($index, $entity){
         if((!isset($this->data[$index])) OR (empty($this->data[$index]))){
-            echo "erro no indice e nao pode ser carregar entity ", $index;
+            echo "erro no indice e nao pode ser carregar entity ", $entity, ' id= ',$this->data[$index] , ' key=', $index;
             return FALSE;
         }
         
@@ -606,6 +606,7 @@ abstract class AbstractService {
             'apto'=>$this->data['imovel']->getApto(),
             'bloco'=>$this->data['imovel']->getBloco(),
             'compl'=>$this->data['imovel']->getEndereco()->getCompl(),
+            'fim'=>$this->data['fim']->format('d/m/Y'),
         );
     }
 
@@ -679,7 +680,7 @@ abstract class AbstractService {
         if($this->data['validade'] == 'mensal'){
             $this->data['fim']->add(new \DateInterval('P1M')); 
             $this->data['fim']->sub(new \DateInterval('P1D'));
-            $this->data['mesNiver'] = $this->data['inicio']->format('m');
+//            $this->data['mesNiver'] = $this->data['inicio']->format('m'); já é calculado via js
             $this->data['formaPagto'] = '01' ;
             return TRUE;
         } 

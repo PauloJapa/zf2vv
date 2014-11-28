@@ -520,11 +520,21 @@ class Imovel extends Filtro
         $apt = trim($this->apto);
         $blc = trim($this->bloco);
         $cpt = trim($this->compl);
-        if($this->numero == 0){
-            return $rua . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $this->cep;
-        }else{
-            return $rua . ' n:' . $num . ' ' . $blc . ' ' . $apt . ' ' . $cpt . ' CEP ' . $this->cep;
+        if($this->numero != 0){
+            $rua .= ' N:' . $num ;            
         }
+        if(!empty($apt)){
+            $rua .= ' Apto: ' . $apt ;            
+        }
+        if(!empty($blc)){
+            $rua .= ' Bloco: ' . $blc ;            
+        }
+        if(!empty($cpt)){
+            $rua .= ' Compl: ' . $cpt ;            
+        }
+        $rua .= ' CEP ' . $this->cep;           
+        
+        return $rua ;
     }
 
 

@@ -23,11 +23,14 @@ class ParametroSisRepository extends EntityRepository {
         return $query->getResult();
     }
     
-    public function fetchPairs($key) {
+    public function fetchPairs($key, $first = true) {
         $entities = $this->findKey($key);
         
-        $array = array('' => 'Selecione na lista');
-        
+        if ($first){
+            $array = array('' => 'Selecione na lista');
+        }else{
+            $array = array();            
+        }
         if(!is_array($entities)){
             return $array;
         }

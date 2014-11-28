@@ -214,7 +214,7 @@ class ImprimirSeguro extends FPDF{
     
     public function set2Cell(array $txt,$w1=45,$w2=45, $h=6){
         $h1 = $h;
-        if(strlen($txt[1]) > 60 ){
+        if(strlen($txt[1]) > 35 ){
             $h *= 2;
         }
         $this->SetFont('Times','B',11);

@@ -26,6 +26,7 @@ class RelatoriosController extends CrudController {
     }
     
     public function queryAction() {
+        /* @var $this->formData \LivrariaAdmin\Form\Relatorio */
         $this->formData = new $this->form($this->getEm());
         $this->formData->setQuery();
         // Pegar a rota atual do controler
@@ -63,6 +64,7 @@ class RelatoriosController extends CrudController {
         $label['c27'] = "UE";                  
         $label['c28'] = "Ref. Imovel";         
         $label['c29'] = "Mês Niver"; 
+        $label['c30'] = "Compl."; 
         $data = $this->getRequest()->getPost()->toArray();
         $service = new $this->service($this->getEm());
         $this->paginator = $service->montaQuery($data);

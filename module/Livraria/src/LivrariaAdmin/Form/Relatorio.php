@@ -32,10 +32,10 @@ class Relatorio  extends AbstractForm {
             "lc.nome" => "Locatário",
             "lc.Doc" => "CPF/CNPJ - Locatario",
             "i.rua" => "Endereço|Rua",
-            "i.numero" => "Numero",
-            "b.nome" => "Bairro",
-            "c.nome" => "Cidade",
-            "uf.sigla" => "Estado|UF",
+            "i.numero" => "Endereço|Numero",
+            "b.nome" => "Endereço|Bairro",
+            "c.nome" => "Endereço|Cidade",
+            "uf.sigla" => "Endereço|Estado|UF",
             "o.inicio" => "Vigência Inicial",
             "o.fim" => "Vigência Final",
             "at.descricao" => "Ocupacão",
@@ -43,6 +43,7 @@ class Relatorio  extends AbstractForm {
             "o.status" => "Status",
             "o.administradora" => "Administradora",
             "o.refImovel" => "Ref. Imóvel",
+            "i.compl" => "Endereço|Complemento",
         ];
         $this->setInputSelect('filtro[]', 'Filtrar', $campos);
         
@@ -81,6 +82,7 @@ class Relatorio  extends AbstractForm {
     public function setMesAnoAdm(){
         $meses =['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
         $this->setInputSelect('mesFiltro', '*Mês',$meses);
+        $this->setInputSelect('mesRefFiltro', 'Mês Referência',$meses);
         
         $anoAtual = date('Y');
         $anoAtual++;
@@ -89,6 +91,7 @@ class Relatorio  extends AbstractForm {
             $anoAtual--;
         }
         $this->setInputSelect('anoFiltro', '*Ano',$arrayAnos);
+        $this->setInputSelect('anoRefFiltro', 'Ano Referência',$arrayAnos);
         
         $this->setInputHidden('administradora');
         $this->setInputText('administradoraDesc', 'Administradora', ['placeholder' => 'Pesquise digitando ou em branco para Todas!','onKeyUp' => 'autoCompAdministradora();', 'autoComplete' => 'off']);

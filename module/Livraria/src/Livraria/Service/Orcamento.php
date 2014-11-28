@@ -71,6 +71,79 @@ class Orcamento extends AbstractService {
         $log->insert($dataLog);
     }
     
+    public function logForReativa(\Livraria\Entity\Orcamento $ent, $motivo) {
+        //serviço logorcamento
+        if($ent->getOrcaReno() == 'reno'){
+            $log = new LogRenovacao($this->em);
+            $dataLog['renovacao'] = $ent->getId();
+        }else{
+            $log = new LogOrcamento($this->em);
+            $dataLog['orcamento'] = $ent->getId();
+        }
+        $dataLog['tabela'] = 'log_orcamento';
+        $dataLog['controller'] = 'orcamentos';
+        $dataLog['action'] = 'reativa';
+        $dataLog['mensagem'] = 'Registro reativado numero ' . $ent->getId();
+        $dataLog['dePara'] = $motivo ;
+        $log->insert($dataLog);
+        
+    }
+    
+    public function logForReativaFechado(\Livraria\Entity\Fechados $ent, $motivo) {
+        $log = new LogFechados($this->em);
+        $dataLog['fechados'] = $ent->getId();
+        $dataLog['tabela'] = 'log_fechados';
+        $dataLog['controller'] = 'orcamentos';
+        $dataLog['action'] = 'reativa';
+        $dataLog['mensagem'] = 'Registro reativado numero ' . $ent->getId();
+        $dataLog['dePara'] = $motivo ;
+        $log->insert($dataLog);      
+    }
+    
+    public function reativar($controller, $data) {
+        if(empty($data['id']) OR empty($data['motivoReativa'])){
+            $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');  
+            return;
+        }
+        /* @var $entity \Livraria\Entity\Orcamento */
+        $entity = $this->em->find($this->entity, $data['id']);
+        if($entity->getStatus() != 'C'){
+            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');  
+            return;            
+        }
+        if($entity->getFechadoId() == '0'){
+            if($entity->getOrcaReno() == 'reno'){
+                $entity->setStatus('R'); 
+            }else{
+                $entity->setStatus('A'); 
+            }
+        }else{            
+            $entity->setStatus('F');
+            $this->reativarFechado($controller,$entity->getFechadoId(), $data['motivoReativa']);
+        }        
+        $this->logForReativa($entity, $data['motivoReativa']);
+        $this->em->persist($entity);
+        $this->em->flush();
+        $controller->flashMessenger()->addMessage('Este seguro foi reativado com sucesso!!');         
+//        var_dump($entity->getAluguel());die;
+    }
+    
+    public function reativarFechado($controller, $id='', $motivo) {
+        if(empty($id) OR $id == 0){
+            $controller->flashMessenger()->addMessage('Numero do seguro fechado em branco ou zerado!!');  
+            return;            
+        }
+        /* @var $f \Livraria\Entity\Fechados */
+        $f = $this->em->find('Livraria\Entity\Fechados', $id);
+        if($f->getStatus() != 'C'){
+            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');  
+            return;            
+        }
+        $f->setStatus('A');
+        $this->logForReativaFechado($f, $motivo);
+        $this->em->persist($f);
+    }
+    
     /**
      * Altera os Registro selecionados para data(vigência inicio) ou validade(anual, mensal) comuns entre esses registro.
      * Recalcula taxa, valor premio 
@@ -571,6 +644,7 @@ class Orcamento extends AbstractService {
             return array('Um imovel deve ser selecionado!');
         }
         $inicio = $this->data['inicio'];
+        $fim = $this->data['fim'];
         if (!is_object($inicio)) {
             return array('A data deve ser preenchida corretamente!');
         }
@@ -587,6 +661,10 @@ class Orcamento extends AbstractService {
         foreach ($entitys as $entity) {
             //Caso de edição pular o proprio registro.
             if(isset($this->data['id']) AND $this->data['id'] == $entity->getId()){
+                continue;
+            }
+            // Caso o fim desse orçamento for menor ou igual ao inicio do existente!!
+            if(($fim <= $entity->getInicio('obj'))){
                 continue;
             }
             // Validar data do inicio deste registro para que nao conflite com algum existente!!
@@ -633,8 +711,12 @@ class Orcamento extends AbstractService {
         // 10 referencia a outra entity
         $this->dePara .= $this->diffAfterBefore('Locador', $ent->getLocador(), $this->data['locador']);
         $this->dePara .= $this->diffAfterBefore('Locatario', $ent->getLocatario(), $this->data['locatario']);
-        $this->dePara .= $this->diffAfterBefore('Imovel bloco', $ent->getImovel()->getBloco(), $this->data['imovel']->getBloco());
+        $this->dePara .= $this->diffAfterBefore('Imovel id', $ent->getImovel()->getId(), $this->data['imovel']->getId());
+        $this->dePara .= $this->diffAfterBefore('Imovel Rua', $ent->getImovel()->getRua(), $this->data['imovel']->getRua());
+        $this->dePara .= $this->diffAfterBefore('Imovel numero.', $ent->getImovel()->getNumero(), $this->data['imovel']->getNumero());
         $this->dePara .= $this->diffAfterBefore('Imovel apto', $ent->getImovel()->getApto(), $this->data['imovel']->getApto());
+        $this->dePara .= $this->diffAfterBefore('Imovel bloco', $ent->getImovel()->getBloco(), $this->data['imovel']->getBloco());
+        $this->dePara .= $this->diffAfterBefore('Imovel compl.', $ent->getImovel()->getCompl(), $this->data['imovel']->getCompl());
         $this->dePara .= $this->diffAfterBefore('Imovel tel', $ent->getImovel()->getTel(), $this->data['imovel']->getTel());
         $this->dePara .= $this->diffAfterBefore('Taxa', $ent->getTaxa()->getId(), $this->data['taxa']->getId());
         $this->dePara .= $this->diffAfterBefore('Atividade', $ent->getAtividade(), $this->data['atividade']);
@@ -656,6 +738,7 @@ class Orcamento extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Data Fim', $ent->getFim(), $this->data['fim']->format('d/m/Y'));
         $this->dePara .= $this->diffAfterBefore('Cancelado Em', $ent->getCanceladoEm(), $this->data['canceladoEm']->format('d/m/Y'));
         // 15 campos comuns
+        $this->dePara .= $this->diffAfterBefore('Validade', $ent->getValidade(), $this->data['validade']);
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
         $this->dePara .= $this->diffAfterBefore('Ano Referência', $ent->getCodano(), $this->data['codano']);
         $this->dePara .= $this->diffAfterBefore('locadorNome', $ent->getLocadorNome(), $this->data['locadorNome']);

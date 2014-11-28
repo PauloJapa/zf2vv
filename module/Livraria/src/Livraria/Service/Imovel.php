@@ -85,6 +85,11 @@ class Imovel extends AbstractService {
             $this->data['status'] = $this->data['imovelStatus'];
         }
         
+        $result = $this->isValid();
+        if($result !== TRUE){
+            return $result;
+        }
+        
         //Pegando o servico endereco e inserindo novo endereco do imovel
         $serviceEndereco = new Endereco($this->em);
         $this->data['endereco'] = $serviceEndereco->update($this->data);
@@ -92,10 +97,6 @@ class Imovel extends AbstractService {
         
         $this->setReferences();
         
-        $result = $this->isValid();
-        if($result !== TRUE){
-            return $result;
-        }
         
         if(parent::update())
             $this->logForEdit();
@@ -148,17 +149,22 @@ class Imovel extends AbstractService {
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
         $filtro = array();
-        if(empty($this->data['rua']))
+        if (empty($this->data['rua'])) {
             return array('Rua não pode estar vazia!!');
-        if(empty($this->data['numero']))
+        }
+        if (empty($this->data['numero'])) {
             return array('Numero não pode estar vazio!!');
-            
+        }
+        if (empty($this->data['locador'])) {
+            return array('Um Locador deve ser escolhido!!');
+        }
+
         $filtro['rua']     = $this->data['rua'];
         $filtro['numero']  = $this->data['numero'];
         $filtro['compl']   = $this->data['compl'];
         $filtro['apto']    = $this->data['apto'];
         $filtro['bloco']   = $this->data['bloco'];
-        $filtro['locador'] = $this->data['locador']->getId();
+        $filtro['locador'] = $this->data['locador'];
         
         $entitys = $repository->findBy($filtro);
         $erro = array();

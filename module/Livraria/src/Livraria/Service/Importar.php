@@ -364,7 +364,10 @@ class Importar extends AbstractService{
         $this->data['aluguel']  = number_format($array[17] / 100, 2, ',', '.') ;
         $this->data['eletrico'] = number_format($array[18] / 100, 2, ',', '.') ;
         $this->data['valorAluguel'] = number_format($array[17] /100 / 6, 2, ',', '.') ;
-        $this->data['vendaval'] = '' ;
+        if($array[18] == 0){
+            $this->data['eletrico'] =  'Não Calcular';
+        }
+        $this->data['vendaval'] = 'Não Calcular' ;
         $this->data['premioTotal'] = '' ;
         
         

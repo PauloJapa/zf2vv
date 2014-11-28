@@ -226,9 +226,11 @@ class Orcamento extends AbstractEndereco {
             $this->isAdmin = TRUE;
             return ;
         }
-        $this->get('ocupacao')->setAttribute('disabled', 'true');   
-//        $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
-        $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+        if($this->get('status')->getValue() == 'F'){
+            $this->get('ocupacao')->setAttribute('disabled', 'true');   
+            $this->get('atividadeDesc')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));   
+            $this->get('fim')->setAttributes(array('readOnly' => 'true', 'onClick' => ''));              
+        } 
     }
     
     public function bloqueiaCampos(){

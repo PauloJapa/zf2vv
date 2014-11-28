@@ -1,7 +1,7 @@
 <h1>Orçamentos e Renovações</h1>
 <br />
 <style type="text/css">
-#delobs, #delobs2 {
+#delobs, #delobs2, #retobs {
     left:250px;
     margin:10px;
     padding:20px;
@@ -50,8 +50,8 @@
             $this->FormDefault(['dataI'], 'calend'),
         "</td>\r<td>",
             $this->FormDefault(['dataF'], 'calend'),
-        "</td><td style='vertical-align: middle;' rowspan='2'>\r",
-            $this->FormDefault(['enviar'], 'submitOnly'),
+        "</td><td>\r",
+            $this->FormDefault(['fechadoId' => 'text']),
         "</td>\r",
     "</tr><tr>\r",
         "<td>\r",
@@ -61,7 +61,8 @@
             $this->FormDefault(['status'=>'radio']),
         "</td><td>\r",
             ($user->getTipo() == 'admin')?$this->FormDefault(['validade'=>'radio']):'',
-        "</td><td>\r",
+        "</td><td style='vertical-align: middle;'>\r",
+            $this->FormDefault(['enviar'], 'submitOnly'),
         "</td>\r",
 
     $this->FormDefault([],'fim');
@@ -78,6 +79,8 @@ $coluns = array(
     'Local do Risco',
     'Inicio Vigência',
     'Atividade',
+    'Parc.',
+    'Vlr Parc.',
     'Valor',
     'Proposta',
 );
@@ -92,6 +95,8 @@ $func = array(
     "buscar('i.rua')",  
     "buscar('l.inicio')",  
     "buscar('l.atividade')",  
+    "",  
+    "",  
     "buscar('l.premioTotal')",
     "buscar('l.id')",        
 );
@@ -106,6 +111,8 @@ $td     = array(
     'nowrap',
     'nowrap',
     'nowrap',
+    'nowrap',
+    'nowrap class="r"',
     'nowrap class="r"',
     'class="r"',
 );
@@ -117,16 +124,24 @@ if($user->getTipo() == "admin"){
     $lambda = function($value, &$data) {
         echo "\t<td nowrap>";
         switch ($data[2]) {
+            case "Cancelado Reno":
+            case "Cancelado Orça":
             case "Cancelado":
-                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>';
+                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
+                '<span class="add-on hand" onClick="reativar(\'', $value, '\')"><i class="icon-fire"></i>Reativar.</span>';
                 break;
             case "Orçamento": 
             case "Renovação": 
-            case "Fechado":
             case "Importado": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                 '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
+                break;
+            case "Fechado":
+            case "Fechou Reno":
+            case "Fechou Orça":
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
                 break;
             default:
                 echo '<span class="add-on hand">Sem Ação</span>';
@@ -137,10 +152,14 @@ if($user->getTipo() == "admin"){
     $lambda = function($value,&$data){  
         echo "\t<td nowrap>";
         switch ($data[2]) {
+            case "Cancelado Reno":
+            case "Cancelado Orça":
             case "Cancelado":
                 echo '<span class="add-on hand">cancelado</span>';
                 break;
             case "Fechado":
+            case "Fechou Reno":
+            case "Fechou Orça":
                 echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
                 break;
             case "Orçamento": 
@@ -166,6 +185,11 @@ foreach($this->data as $entity){
     }else{
         $campo1 = '' ;
     }
+    if($entity->getFormaPagto() != "01"){
+        $vlrParc = number_format($entity->getPremioTotal() / $entity->getFormaPagto(), 2, ',', '.');
+    }else{
+        $vlrParc = '-';
+    }
     $linha = array(
         $entity->getId(),
         $campo1,
@@ -176,6 +200,8 @@ foreach($this->data as $entity){
         $entity->getImovel(),
         $entity->getInicio(),
         $entity->getAtividade(),
+        $entity->getFormaPagto(),
+        $vlrParc,
         $entity->floatToStr('premioTotal'),
         $entity->getId(),
     );
@@ -269,7 +295,23 @@ echo $this->FormDefault(['fecharSel'], 'submit');
             </td>
         </tr>
     </table>
-</div>    
+</div>   
+<div id="retobs">
+    <table width="100%">
+        <tr>
+            <td>
+                <div class="input-append" id="popobservacao">
+                    <label for="motivoReativa">Motivo para reativar este registro.</label>
+                    <textarea name="motivoReativa" id="motivoReativa" rows="6" class="span6"></textarea>
+                </div>
+            </td>
+            <td valign='top'>
+                <a href="javascript:desistir('retobs')"><i class="icon-backward"></i>Desisitir!</a>
+                <br><br><br><a href="javascript:reativando();"><i class="icon-fire"></i>Reativar!</a>
+            </td>
+        </tr>
+    </table>
+</div>   
 </form>
 <script language="javascript">
     function edit(id){
@@ -308,6 +350,14 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         motivo.style.display = 'block';
         document.getElementById('id2').value = id ;
     }  
+    function reativar(id){
+        var motivo = document.getElementById('retobs');
+        motivo.style.display = 'none';
+        var msg = "Deseja realmente Reativar este (orçamento ou Renovação)?";
+        if(!confirm(msg))return;
+        motivo.style.display = 'block';
+        document.getElementById('id2').value = id ;        
+    }
     function desistir(id){
         if(id == null){
             id = 'delobs';
@@ -317,6 +367,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     }
     function deleltar(){
         var id = document.getElementById('id2').value;
+        if(id == '')return;
         var obs = document.getElementById('motivoNaoFechou').value;
         if(obs == ''){
             alert('Digite o motivo por favor!!!');
@@ -327,9 +378,29 @@ echo $this->FormDefault(['fecharSel'], 'submit');
             alert('No minimo 5 palavras devem ser Digitadas');
             return;
         }            
-        if(id == '')return;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
         envia(tar,id,null,'');        
+    }
+    
+    function reativando(){
+        //alert('Em construção em breve estará liberada !!! =) ');
+        //return;
+        var id = $('#id2').val();
+        if(id == ''){
+            return;
+        }
+        var obs = $('#motivoReativa').val();
+        if(obs == ''){
+            alert('Digite o motivo por favor!!!');
+            return;
+        }
+        var palavras = obs.split(' ');
+        if(palavras.length < 3){
+            alert('No minimo 3 palavras devem ser Digitadas');
+            return;
+        }            
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'reativa')); ?>";
+        envia(tar,id,null,'');  
     }
 
     function cancelSelecionados(){
@@ -477,12 +548,16 @@ echo $this->FormDefault(['fecharSel'], 'submit');
 
     document.getElementById('delobs').style.display = 'none';
     
+    document.getElementById('retobs').style.display = 'none';
+    
     document.getElementById('delobs2').style.display = 'none';
     
     //Funcao jquey para janela de flash mensagem rolar conforme o scrool
     $(document).ready(function(){
         try{
             var y_fixo = 300 + $("#delobs").offset().top;
+            var y_fixo = 300 + $("#retobs").offset().top;
+            var y_fixo = 300 + $("#delobs2").offset().top;
         }catch(e){
             return ;
         }
@@ -491,15 +566,10 @@ echo $this->FormDefault(['fecharSel'], 'submit');
                 top: y_fixo+$(document).scrollTop()+"px"
                 },{duration:500,queue:false}
             );
-        });
-    });
-    $(document).ready(function(){
-        try{
-            var y_fixo = 300 + $("#delobs2").offset().top;
-        }catch(e){
-            return ;
-        }
-        $(window).scroll(function () {
+            $("#retobs").stop().animate({
+                top: y_fixo+$(document).scrollTop()+"px"
+                },{duration:500,queue:false}
+            );
             $("#delobs2").stop().animate({
                 top: y_fixo+$(document).scrollTop()+"px"
                 },{duration:500,queue:false}

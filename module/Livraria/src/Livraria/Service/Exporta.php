@@ -614,7 +614,15 @@ class Exporta extends AbstractService{
         //Número do Endereço	6
         $this->addSaida2($value['imovel']['numero'], 6, '0', 'STR_PAD_LEFT'); 
         //Compl. do Endereço	15
-        $this->addSaida2($value['imovel']['endereco']['compl'], 15);
+        $compl = '';
+        if(!empty($value['imovel']['apto'])){
+            $compl .= 'AP ' . $value['imovel']['apto'] . ' ';
+        }
+        if(!empty($value['imovel']['bloco'])){
+            $compl .= 'BL ' . $value['imovel']['bloco'] . ' ';
+        }
+        $compl .= $value['imovel']['endereco']['compl'];
+        $this->addSaida2($compl, 15);
         //Bairro	30
         $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
         //Cidade	30
@@ -755,6 +763,9 @@ class Exporta extends AbstractService{
      */
     public function cleanDocFomatacao($doc , $tam = 14, $rep = '0') {
         $clean = preg_replace("/[^0-9]/", "", $doc);
+        if(strlen($clean) > tam){
+            $clean = substr(utf8_decode($clean),0,$tam);
+        }
         return str_pad($clean, $tam, $rep, STR_PAD_LEFT);              
     }
     

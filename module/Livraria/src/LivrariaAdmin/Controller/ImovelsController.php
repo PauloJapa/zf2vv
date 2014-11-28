@@ -3,6 +3,7 @@
 namespace LivrariaAdmin\Controller;
 
 use Zend\View\Model\ViewModel;
+use SisBase\Conexao\Mysql;
 /**
  * Imovel
  * Recebe requisição e direciona para a ação responsavel depois de validar.
@@ -170,5 +171,120 @@ class ImovelsController extends CrudController {
         $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
         $viewModel->setTerminal(true);
         return $viewModel;
+    }
+    
+    public function acertarefAction(){
+        $this->mypdo = new Mysql();
+        $this->achou = 0;
+        $this->nachou = 0;
+        $this->tachou = 0;
+        $sql = "SELECT id, ref_imovel, locador_id, locatario_id, imovel_id "
+        . "FROM `orcamento` "
+        . "WHERE `inicio` "
+        . "BETWEEN '2014-09-01 00:00:00' AND '2014-09-31 00:00:00'"
+        . "AND (`ref_imovel` LIKE ''OR `ref_imovel` LIKE ' ')"
+        . "AND `administradoras_id` = 196";
+        $this->mypdo->p($sql);
+        $this->mypdo->e();
+        $data = $this->mypdo->fAll();
+        echo '<table>';
+        echo '<tr><td>id</td><td>ref_imovel</td><td>locador_id</td><td>locatario_id</td><td>imovel_id</td></tr>';
+        foreach ($data as $key => $value) {
+            echo '<tr><td>', $value['id'], '</td><td>', $value['ref_imovel'], '</td><td>', $value['locador_id'], '</td><td>', $value['locatario_id'], '</td><td>', $value['imovel_id'], '</td></tr>';
+            echo '<tr><td colspan=4>';
+            $this->findRef($value);
+            echo '</td></tr>';
+        }
+        echo '</table>';        
+        echo '<p>Achou total de ', $this->achou;        
+        echo '<p>Não achou total de', $this->nachou;        
+        echo '<p>Talvez achou total de', $this->tachou;        
+    }
+    
+    public function findRef($d){
+        $sql = "SELECT id, ref_imovel, locador_id, locatario_id, imovel_id 
+                FROM  `orcamento` 
+                WHERE  `inicio` >  '2012-01-01 00:00:00'
+                AND  `imovel_id` = " . $d['imovel_id'] . "
+                AND  `ref_imovel` NOT LIKE '' 
+                AND  `ref_imovel` NOT LIKE ' '
+                AND  `ref_imovel` NOT LIKE '  '
+                AND  `administradoras_id` =196
+                ORDER BY  `inicio` DESC limit 2";
+        $this->mypdo->p($sql);
+        $this->mypdo->e();
+        $data = $this->mypdo->fAll();
+        $this->head = 'ACHOU id';
+        if (empty($data)){
+            $data = $this->findRefByLocadorLocatario($d);
+            if (empty($data)){
+                echo 'não achou';
+                $this->nachou ++;
+                return;
+            }                
+            $this->tachou ++;
+        }else{            
+            $this->achou ++;
+        }
+        echo '<table>';
+        echo '<tr><td>', $this->head, '</td><td>ref_imovel</td><td>locador_id</td><td>locatario_id</td><td>imovel_id</td></tr>';
+        foreach ($data as $key => $value) {
+            echo '<tr><td>', $value['id'], '</td><td>', $value['ref_imovel'], '</td><td>', $value['locador_id'], '</td><td>', $value['locatario_id'], '</td><td>', $value['imovel_id'], '</td></tr>';
+            if (!empty($value['ref_imovel']) AND $this->gravaRef($d, $value)){                
+                break;
+            }
+        }
+        echo '</table>';  
+    }
+    
+    public function findRefByLocadorLocatario($d){        
+        $this->head = 'Talvez ACHOU id';
+        $sql = "SELECT id, ref_imovel, locador_id, locatario_id, imovel_id 
+                FROM  `orcamento` 
+                WHERE  `inicio` >  '2012-01-01 00:00:00'
+                AND  `locador_id` = " . $d['locador_id'] . "
+                AND  `locatario_id` = " . $d['locatario_id'] . "
+                AND  `ref_imovel` NOT LIKE '' 
+                AND  `ref_imovel` NOT LIKE ' '
+                AND  `ref_imovel` NOT LIKE '  '
+                AND  `administradoras_id` =196
+                ORDER BY  `inicio` DESC limit 2";
+        $this->mypdo->p($sql);
+        $this->mypdo->e();
+        $data = $this->mypdo->fAll();
+return $data;
+        if(!empty($data)){
+            return $data;
+        }        
+        $this->head = 'Talvez ACHOU sem locatario id';
+        $sql = "SELECT id, ref_imovel, locador_id, locatario_id, imovel_id 
+                FROM  `orcamento` 
+                WHERE  `inicio` >  '2012-01-01 00:00:00'
+                AND  `locador_id` = " . $d['locador_id'] . "
+                AND  `ref_imovel` NOT LIKE '' 
+                AND  `ref_imovel` NOT LIKE ' '
+                AND  `ref_imovel` NOT LIKE '  '
+                AND  `administradoras_id` =196
+                ORDER BY  `inicio` DESC limit 2";
+        $this->mypdo->p($sql);
+        $this->mypdo->e();
+        return $this->mypdo->fAll();
+    }
+    
+    public function gravaRef($tar, $get) {
+        $sql = "UPDATE imovel set ref_imovel = '" . $get['ref_imovel'] . "' where id = " . $tar['imovel_id'];
+        $imovel = $this->mypdo->q($sql);
+        $sql = "UPDATE orcamento set ref_imovel = '" . $get['ref_imovel'] . "' where id = " . $tar['id'];
+        $orcame = $this->mypdo->q($sql);
+        $sql = "UPDATE fechados  set ref_imovel = '" . $get['ref_imovel'] . "' where imovel_id = " . $tar['imovel_id'];
+        $fechad = $this->mypdo->q($sql);
+        if($imovel AND $orcame AND $fechad){
+            return true;
+        }
+        echo '<pre>';
+        var_dump($imovel);
+        var_dump($orcame);
+        var_dump($fechad);
+        echo '</pre>';
     }
 }

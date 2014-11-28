@@ -127,6 +127,10 @@ class ExportaCol extends AbstractService{
         
         // Carregar as formas de pagamento
         $this->formaPagto = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('formaPagto');
+        $this->comissao = $this->em->getRepository('Livraria\Entity\ParametroSis')->fetchPairs('comissaoParam00' . $data['seguradora'],false);
+        foreach ($this->comissao as $key => $value) {
+            $this->comissao[$key] = str_replace(',','.',$key);
+        }
         
         $this->openZipFile($zipFile);
         if(!empty($adm)){
@@ -151,26 +155,35 @@ class ExportaCol extends AbstractService{
     }
     
     public function prepArqsForCol($adm){
-        $arq = $this->baseWork . $adm . '_Col.txt';
-        if(!$this->setConteudo($arq, $adm)){
-            $this->writeFile();
-            $this->closeFile();  
-            $this->addFileToZip($arq);
+        foreach ($this->comissao as $value) {
+            $arq = $this->baseWork . $adm . '_' . $value . '_Col.txt';
+            if($this->setConteudo($arq, $adm, $value)){
+                $this->writeFile();
+                $this->closeFile();  
+                $this->addFileToZip($arq);
+            }
         }
     }
     
     /**
+     * 
      * Gera o todo conteudo a gravar no arquivo a ser exportado para o COL
-     * @param type $arq nome do arquivo na work
-     * @param type $adm codigo da administradora
+     * @param string $arq nome do arquivo na work
+     * @param string $adm filtro codigo da administradora
+     * @param float  $com filtro comissão para este arquivo
+     * @return boolean
      */
-    public function setConteudo($arq, $adm){
+    public function setConteudo($arq, $adm, $com){
         $head = TRUE;
         $this->item = 0;
         $this->saida = '';
         foreach ($this->getSc()->lista as $value) {
             // Filtrar a Administradora
             if($adm != $value['administradora']['id']){
+                continue;
+            }
+            // Filtrar comissão
+            if($com != number_format($value['comissao'], 2)){
                 continue;
             }
             if($head){
@@ -229,8 +242,8 @@ class ExportaCol extends AbstractService{
             $this->addSaida2(number_format($value['eletrico'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
             //ven
             $this->addSaida2(number_format($value['vendaval'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
-            //n_parc numero_parcela 10
-            $this->addSaida2($value['numeroParcela'], 10, '0', 'STR_PAD_LEFT'); 
+            //n_parc numero_parcelas 10
+            $this->addSaida2($value['formaPagto'], 10, '0', 'STR_PAD_LEFT'); 
             //premioliq
             $this->addSaida2(number_format($value['premioLiquido'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
             //totpremio
@@ -257,7 +270,13 @@ class ExportaCol extends AbstractService{
             $this->saida .= PHP_EOL; 
             
             $this->qtdExportado ++;
+            $this->item ++;
         }  
+        if($this->item == 0){
+            return false;
+        }else{
+            return true;
+        }
     } 
     
     /**
@@ -615,7 +634,7 @@ die;
         if($this->expt['validade'] == 'mensal'){
             $this->pr['vParcela']        = 1;
         }else{
-            $this->pr['vParcela']        = $this->expt['numeroParcela'];            
+            $this->pr['vParcela']        = $this->expt['formaPagto'];            
         }        
     }
     

@@ -212,6 +212,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     var avisa = '<?php echo $this->avisaCalc ?>';
     var param = <?php echo json_encode($this->param); ?>;
     var user = '<?php echo $user->getTipo(); ?>';
+    var hoje = <?php echo date('Ymd'); ?>;
     
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
@@ -260,12 +261,29 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         if(!valida(ides)){
             return false;
         }
+        if(!userDateIsValid()){
+            return false;
+        }
 //        if(!isValido()){
 //            return false;
 //        }
         
         envia(tar,'salvar',formName,'');
         return false;
+    }
+    
+    function userDateIsValid(){
+        if(user == 'admin'){
+            return true;
+        }
+        var inicio = $('#inicio').val();
+        var ini = inicio.split('/');
+        var inicio = ini[2] + ini[1] +ini[0] ;
+        if(inicio < hoje){
+            alert('Não é permitido salvar ou fechar seguro com data retroativa caso precise entre em contato com Vila Velha.');
+            return false;
+        }
+        return true;        
     }
 
     function checkPrintProp(){
@@ -297,6 +315,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 //        if(!isValido()){
 //            return false;
 //        }
+        if(!userDateIsValid()){
+            return false;
+        }
         envia(tar,'calcular',formName,'');
         return false;
     }
@@ -328,6 +349,9 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     }
 
     function fechar(){
+        if(!userDateIsValid()){
+            return false;
+        }
         envia(tar,'fechar',formName,'new');
         setTimeout("envia('<? echo $tar ?>','editar','"+ formName +"','')",1000);
         return false;
@@ -364,6 +388,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
         cleanInputAll('aluguel');
         cleanInputAll('eletrico');
         cleanInputAll('vendaval');
+        setPerdaAluguel();
     }
 
     function autoCompAtividade(){
@@ -410,6 +435,13 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
             return;
         }
         document.getElementById('popmesNiver').style.display = 'block';
+        if($('#orcaReno').val() === 'reno' && mesNiver != '0'){
+            if(mesNiver.length < 2){
+                mesNiver = '0' + mesNiver;
+            }
+            $('#mesNiver').val(mesNiver);
+            return; // não mexer no mes de aniversario
+        }
         var data = $('#inicio').val().split('/');
         $('#mesNiver').val(data[1]);
     }
@@ -884,6 +916,7 @@ $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
     
     var com = '<?php echo $this->comissao ; ?>';
+    var mesNiver = '<?php echo $this->mesNiver ; ?>';
     if(com != ''){
          window.setTimeout("$('#comissao').val(com)",1000);        
     }

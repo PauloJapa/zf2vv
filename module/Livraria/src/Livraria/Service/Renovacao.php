@@ -200,16 +200,26 @@ class Renovacao extends AbstractService {
 
         //Pegando o locatario atual desse imovel porque o locatario pode ter sido trocado no meio da vigencia do fechado
         //Quando a troca de locatario é apenas atualizado no imovel.
-        $this->data['locatario'] = $fechado->getImovel()->getLocatario()->getId();
-        $this->data['refImovel'] = $fechado->getImovel()->getRefImovel();
+        $idLocat = $fechado->getImovel()->getLocatario()->getId();
+        if(!empty($idLocat) AND $idLocat != 0){
+            $this->data['locatario'] = $idLocat;
+        }
+        $ref = $fechado->getImovel()->getRefImovel();
+        if(!empty($ref)){
+            $this->data['refImovel'] = $ref;
+        }
 
-/* Renovação mensal não precisa recalcular seguro mantem o preço do anterior
+        /* Renovação mensal não precisa recalcular seguro mantem o preço do anterior
+         * Segundo a natalia da VV deve ser recalculado sim para atualizar preço caso taxa mude
+         */
         //  Novo calculo do premio
         //  Comissão da Administradora padrão
-        $this->data['comissaoEnt'] = $this->getComissaoEntRep()
-            ->findComissaoVigente($this->data['administradora'],  $this->data['criadoEm']);
-        $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
+        //  Não atualizar comissão anterior     05/11/2014.
+//        $this->data['comissaoEnt'] = $this->getComissaoEntRep()
+//            ->findComissaoVigente($this->data['administradora'],  $this->data['criadoEm']);
+//        $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
         
+        $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');        
         $this->data['taxa'] = $this->getTaxaRep()->findTaxaVigente(
                 $this->data['seguradora'], 
                 $this->data['atividade'], 
@@ -219,15 +229,15 @@ class Renovacao extends AbstractService {
                 $this->data['tipoCobertura']
         );
 
-        if(!$this->data['taxa'])
+        if (!$this->data['taxa']) {
             return ['Taxas para esta classe e atividade vigênte nao encontrada!!!'];
-        
+        }
+
         $this->data['multiplosMinimos'] = $this->getMultiplosMinimosRep()
             ->findMultMinVigente($this->data['seguradora'],  $this->data['criadoEm']);
         
         //$this->data['administradora'] = $this->fechado->getAdministradora()->getObjeto();
         $resul = $this->CalculaPremio();
-*/
         
         $this->data['fechadoId'] = '0';
         
@@ -235,7 +245,9 @@ class Renovacao extends AbstractService {
         if($this->idInicial == 0){
             $this->setFlush(TRUE);
             $resul = $this->insert();
-            $this->idInicial = $this->data['id'];
+            if(!empty($this->data['id'])){
+                $this->idInicial = $this->data['id'];                
+            }
             $this->setFlush(FALSE);
         }else{
             $this->idInicial++;
@@ -252,9 +264,10 @@ class Renovacao extends AbstractService {
                 echo '<h1>erro ao atualiza seguro fechado com id da renovacao ', $this->fechado->getId();
             }
         }else{
-            $this->idInicial--; //caso de erro na inserção decrementa o idinicial que foi incrementado e não usado
+            if($this->idInicial != 0){
+                $this->idInicial--; //caso de erro na inserção decrementa o idinicial que foi incrementado e não usado
+            }
         }
-        
         return $resul;
     }
 
@@ -285,6 +298,10 @@ class Renovacao extends AbstractService {
         
         $this->data['fim'] = clone $this->data['inicio'];
         $this->data['fim']->add(new \DateInterval($interval_spec)); 
+        // retirar um dia do mes acrescentado para ficar ex: 01/01/2015 a 31/01/2015
+        if($this->data['validade'] == 'mensal'){
+            $this->data['fim']->sub(new \DateInterval('P1D'));
+        } 
         return TRUE;
     }
     
@@ -343,8 +360,9 @@ class Renovacao extends AbstractService {
      * @return entidade
      */
     public function insert(array $data=[]) {
-        if(!empty($data))
+        if (!empty($data)) {
             $this->data = $data;
+        }
 
         $this->setReferences();
 
@@ -353,8 +371,9 @@ class Renovacao extends AbstractService {
             return $result;
         }
 
-        if(parent::insert())
+        if (parent::insert()) {
             $this->logForNew();
+        }
 
         return array(TRUE,  $this->data['id']);
     }
@@ -456,7 +475,8 @@ class Renovacao extends AbstractService {
         if((empty($inicio)) or ($inicio < (new \DateTime('01/01/2000'))))
             return array('A data deve ser preenchida corretamente!');
             
-        $filtro['imovel'] = $this->data['imovel']->getId();
+        $filtro['imovel']         = $this->data['imovel']->getId();
+//        $filtro['administradora'] = $this->data['administradora']->getId();
         $entitys =$this->getOrcamentoRep()->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
@@ -471,15 +491,15 @@ class Renovacao extends AbstractService {
             }
             if($entity->getStatus() == "A"){
                 $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
-                $erro[] = "Já existe uma novo Orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                $erro[] = "Já existe uma novo Orçamento(" . $entity->getId() . ") com periodo vigente conflitando com N = " . $this->data['fechadoOrigemId'];
             }
             if($entity->getStatus() == "R"){
                 $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
-                $erro[] = "Já existe uma renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                $erro[] = "Já existe uma renovação(" . $entity->getId() . ") com periodo vigente conflitando com N = "  . $this->data['fechadoOrigemId'];
             }
             if($entity->getStatus() == "F"){
                 $erro[] = 'Alerta!Vigencia ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
-                $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
+                $erro[] = "Já existe um seguro fechado(" . $entity->getId() . ") com periodo vigente conflitando com N = " . $this->data['fechadoOrigemId'];
             }
         }
         

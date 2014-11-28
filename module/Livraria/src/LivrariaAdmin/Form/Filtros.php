@@ -77,6 +77,7 @@ class Filtros  extends AbstractForm {
     public function setOrcamento($admin = ''){
         $this->setLocadorLocatario();
         $this->setInputText('id', 'Nº do Orçamento',['class'=>'input-small']);
+        $this->setInputText('fechadoId', 'Nº do Fechado',['class'=>'input-small']);
         $this->setInputText('orcamento', 'Nº do Orçamento',['class'=>'input-small']);
         if($admin == 'admin'){
             $this->setInputRadio('status', 'Status', ['T'=>'Novos e Renovação','A'=>'N - Novos', 'R'=>'R - Renovação','C'=>'C - Cancelados','F'=>'Que Fecharam','X'=>'Todos']);
