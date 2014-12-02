@@ -33,7 +33,13 @@ class Email extends AbstractService
                     ->setData($dataEmail)
                     ->prepare();
             if($this->cc){
-                $mail->getMessage()->addCc($this->cc, 'Sistema Locação');
+                if(is_array($this->cc)){
+                    foreach ($this->cc as $key => $value) {
+                        $mail->getMessage()->addCc($value, 'Sistema Locação ' . ($key + 1));  
+                    }
+                }else{
+                    $mail->getMessage()->addCc($this->cc, 'Sistema Locação'); 
+                }
             }
             if($this->cco){
                 $mail->getMessage()->addBcc($this->cco, 'Testes Locação');
@@ -45,8 +51,22 @@ class Email extends AbstractService
     }
     
     public function setMailTo(&$dataEmail) {
+        /* @var $entity \Livraria\Entity\ParametroSis */
         $this->cco = 'watakabe98@hotmail.com';
         $this->cc  = 'incendiolocacao@vilavelha.com.br' ;
+        if(substr($dataEmail['email'], 0, 16) == 'REDIRECIONAEMAIL'){
+            $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey($dataEmail['email'])[0];
+            $emails = explode(';', $entity->getConteudo());
+            $this->cc = [];
+            foreach ($emails as $key => $email) {
+                if($key == 0){
+                    $dataEmail['email'] = $email;
+                    continue;
+                }
+                $this->cc[] = $email;
+            }
+        }
+        
         switch ($this->getIdentidade()->getEmail()) {
             case 'watakabe05@gmail.com':
                 $dataEmail['subject'] .=  '(' . $dataEmail['email'] . ')';

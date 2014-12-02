@@ -28,7 +28,8 @@ class FechadosRepository extends AbstractRepository {
     
     public function findFechados($data){        
         $this->parameters = $data;            
-        $this->where = 'o.inicio BETWEEN :inicio AND :fim';
+        $this->where = 'o.inicio BETWEEN :inicio AND :fim AND o.status != :status';
+        $this->parameters['status'] = 'C';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
         }  else {
