@@ -63,3 +63,43 @@ function setOCUPADO(vlr){
         clearTimeout(TEMPO);
     }
 }
+
+
+//funcao para juntar tudo em um paramentro para envio via get ou ajax
+//escolha entre pega um campo, obj ou array de campos.
+function getParams(nome){
+    if(isArray(nome)){
+        var par = "" ;
+        var sep = "" ;
+        for(var i in nome){
+            par += sep + setInput(document.getElementById(nome[i]));
+            sep = "&" ;
+        }
+        return par ;
+    }
+    if(isObject(nome)){
+        return setInput(nome) ;
+    }
+    return setInput(document.getElementById(nome)) ;
+}
+
+//Função que determina o tipo do obj e retorna em formato para envio Get ou AJAX
+function setInput(obj){
+    switch (obj.type) {
+        case "radio":
+        case "checkbox":
+            if(obj.checked != true) return ;
+            return obj.name + "=" + encodeURI(obj.value); 
+        break;
+        case "select":
+            var valor = exam.options[obj.selectedIndex].value ;            
+            return obj.name + "=" + encodeURI(valor); 
+        break;
+        case "button":
+            return obj.name + "=" + encodeURI(obj.value); 
+        break;
+        default :
+            return obj.name + "=" + encodeURI(obj.value); 
+        break;
+    }
+}

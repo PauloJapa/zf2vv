@@ -135,14 +135,16 @@ class LocadorsController extends CrudController {
         
         $subOpcao = $this->getRequest()->getPost('subOpcao','');
         $locadorNome = trim($this->getRequest()->getPost('locadorNome',''));
-        if (empty($locadorNome))
-            $locadorNome = trim($this->getRequest()->getPost('locadorDesc',''));
+        if (empty($locadorNome)) {
+            $locadorNome = trim($this->getRequest()->getPost('locadorDesc', ''));
+        }
         $administradora = trim($this->getRequest()->getPost('administradora',''));
         
         $repository = $this->getEm()->getRepository($this->entity);
         $resultSet = $repository->autoComp($locadorNome .'%',$administradora);
-        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $locadorNome .'%',$administradora);
+        if (!$resultSet) { // Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%' . $locadorNome . '%', $administradora);
+        }
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('resultSet' => $resultSet, 'subOpcao'=>$subOpcao));
         $viewModel->setTerminal(true);
@@ -227,6 +229,43 @@ class LocadorsController extends CrudController {
     public function csvToArray($str){
         $linha = str_replace("\r\n","",trim($str));
         return explode(';',  $linha);
+    }
+    
+    /**
+     * Função que altera ou inclui o Locador recebendo os dados via ajax.
+     * @return \Zend\View\Model\ViewModel
+     */    
+    public function saveAction(){
+        /* @var $service \Livraria\Service\Locador */
+        $service = $this->getServiceLocator()->get($this->service);
+        $data = $this->getRequest()->getPost()->toArray();
+        
+        $data['nome'] = $data['locadorNome'];
+        $data['tipo'] = $data['tipoLoc'];
+        $data['cpf']  = $data['cpfLoc'];
+        $data['cnpj'] = $data['cnpjLoc'];
+        if(empty($data['locador'])){
+            $data['id'] = '';
+            $resul = $service->insert($data);            
+            $ret['ok']['msg'] = "Locador incluido com sucesso!!";
+            if($resul === TRUE){
+                $ret['ok']['locador'] = $service->getEntity()->getId();
+            }
+        }else{
+            $data['id'] = $data['locador'];
+            $resul = $service->update($data);
+            $ret['ok']['msg'] = "Locador alterado com sucesso!!";
+        }
+        if($resul !== TRUE){
+            $ret = [];
+            $ret['msg'] = 'Não foi possivel salvar este Locador';
+            $ret['erro'] = $resul;
+        }
+        
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(['ret' => $ret]);
+        $viewModel->setTerminal(true);
+        return $viewModel;        
     }
 
 }

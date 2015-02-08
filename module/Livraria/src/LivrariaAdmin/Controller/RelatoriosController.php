@@ -234,8 +234,8 @@ class RelatoriosController extends CrudController {
             $end .= (!empty($arrayResul['imovel']['enderecos']['compl']))? ' - ' . $arrayResul['imovel']['enderecos']['compl'] :'';
             $registros[$seq][] = $end;
             //$registros[$seq][] = isset($formaPagto[$arrayResul['formaPagto']]) ? $formaPagto[$arrayResul['formaPagto']]  : $arrayResul['formaPagto'];
-            //$registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
             $registros[$seq][] = ($arrayResul['orcaReno'] == 'reno') ? 'Renovação' : 'Orçamento';
+            $registros[$seq][] = number_format($arrayResul['premioTotal'], 2, ',', '.');
             $seq++;
         }
         if($admEmai != 'NAO' AND $admCod != 0){

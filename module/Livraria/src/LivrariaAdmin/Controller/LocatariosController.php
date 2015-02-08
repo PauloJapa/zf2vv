@@ -120,5 +120,39 @@ class LocatariosController extends CrudController {
 
         return new ViewModel($this->getParamsForView()); 
     }
+    
+    /**
+     * Função que altera ou inclui o Locatario recebendo os dados via ajax.
+     * @return \Zend\View\Model\ViewModel
+     */    
+    public function saveAction(){
+        /* @var $service \Livraria\Service\Locatario */
+        $service = $this->getServiceLocator()->get($this->service);
+        $data = $this->getRequest()->getPost()->toArray();
+        
+        $data['nome'] = $data['locatarioNome'];
+        if(empty($data['locatario'])){
+            $data['id'] = '';
+            $resul = $service->insert($data);            
+            $ret['ok']['msg'] = "Locatario incluido com sucesso!!";
+            if($resul === TRUE){
+                $ret['ok']['locatario'] = $service->getEntity()->getId();
+            }
+        }else{
+            $data['id'] = $data['locatario'];
+            $resul = $service->update($data);
+            $ret['ok']['msg'] = "Locatario alterado com sucesso!!";
+        }
+        if($resul !== TRUE){
+            $ret = [];
+            $ret['msg'] = 'Não foi possivel salvar este Locatario';
+            $ret['erro'] = $resul;
+        }
+        
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(['ret' => $ret]);
+        $viewModel->setTerminal(true);
+        return $viewModel;        
+    }
 
 }

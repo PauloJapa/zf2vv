@@ -173,6 +173,97 @@ class ImovelsController extends CrudController {
         return $viewModel;
     }
     
+    /**
+     * Função que altera ou inclui o imovel recebendo os dados via ajax.
+     * @return \Zend\View\Model\ViewModel
+     */    
+    public function saveAction(){
+        /* @var $service \Livraria\Service\Imovel */
+        $service = $this->getServiceLocator()->get($this->service);
+        $data = $this->getRequest()->getPost()->toArray();
+        if(empty($data['imovel'])){
+            $resul = $service->insert($data);            
+            $ret['ok']['msg'] = "Imovel incluido com sucesso!!";
+            if($resul === TRUE){
+                /* @var $entity \Livraria\Entity\Imovel */
+                $entity = $service->getEntity();
+                $ret['ok']['imovel'] = $entity->getId();
+                $ret['ok']['idEnde'] = $entity->getEndereco()->getId();
+            }
+        }else{
+            $resul = $service->update($data);
+            $ret['ok']['msg'] = "Imovel alterado com sucesso!!";
+        }
+        if($resul !== TRUE){
+            $ret = [];
+            $ret['msg'] = 'Não foi possivel salvar este Imovel';
+            $ret['erro'] = $resul;
+        }
+        
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(['ret' => $ret]);
+        $viewModel->setTerminal(true);
+        return $viewModel;        
+    }
+    
+    public function acertaMes10RefAction(){
+        $this->mypdo = new Mysql();
+        $this->achou = 0;
+        $this->nachou = 0;
+        $this->tachou = 0;
+        
+        
+        $sql = "SELECT o.id, o.ref_imovel as ref_orc, o.locador_id, o.locatario_id, o.imovel_id, i.ref_imovel as ref_imo  "
+        . " FROM orcamento as o, imovel as i"
+        . " WHERE o.inicio BETWEEN '2014-10-01 00:00:00' AND '2014-10-31 00:00:00'"
+        . " AND o.imovel_id = i.id"
+        . " AND o.ref_imovel <> i.ref_imovel"
+        . " AND o.status <> 'C'"
+        . " AND o.administradoras_id = 196";
+        $this->mypdo->p($sql);
+        $this->mypdo->e();
+        $data = $this->mypdo->fAll();
+        echo '<table>';
+        echo '<tr><td>id</td><td>ref_orc</td><td>locador_id</td><td>locatario_id</td><td>imovel_id</td><td>ref_imo</td></tr>';
+        foreach ($data as $key => $value) {
+            echo '<tr>';
+            echo '<td>', $value['id'], '</td><td>', $value['ref_orc'], '</td><td>', $value['locador_id'], '</td><td>', $value['locatario_id'], '</td><td>', $value['imovel_id'], '</td><td>', $value['ref_imo'], '</td>';
+            echo '</tr>';
+            echo '<tr>';
+            echo '<td colspan=4>';
+            $this->setLocal($value);
+            echo '</td>';
+            echo '</tr>';
+            $this->achou ++;
+        }
+        echo '</table>';        
+        echo '<p>Achou total de ', $this->achou;        
+        echo '<p>atualizou total de', $this->nachou;        
+        echo '<p>não atualizou total de', $this->tachou; 
+        
+        
+    }
+    
+    public function setLocal($vl) {
+        $sql = "UPDATE imovel set ref_imovel = '" . $vl['ref_orc'] . "' where id = " . $vl['imovel_id'];
+        $imovel = $this->mypdo->q($sql);
+        $sql = "UPDATE orcamento set ref_imovel = '" . $vl['ref_orc'] . "' where imovel_id = " . $vl['imovel_id'];
+        $orcame = $this->mypdo->q($sql);
+        $sql = "UPDATE fechados  set ref_imovel = '" . $vl['ref_orc'] . "' where imovel_id = " . $vl['imovel_id'];
+        $fechad = $this->mypdo->q($sql);
+        if($imovel AND $orcame AND $fechad){
+            echo 'ok sucesso !!!!!!!!!!!!!!!!';
+            $this->nachou ++;
+            return true;
+        }
+        $this->tachou ++;
+        echo '<pre>';
+        var_dump($imovel);
+        var_dump($orcame);
+        var_dump($fechad);
+        echo '</pre>';
+    }
+    
     public function acertarefAction(){
         $this->mypdo = new Mysql();
         $this->achou = 0;

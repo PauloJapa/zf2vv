@@ -195,9 +195,15 @@ function cleanInputsForm(ind){
     }   
 }
 
-function cleanInput(obj){
+function cleanInput(obj, force){
     if(obj == '')return ;
     if(!isObject(obj)) obj = document.getElementById(obj) ;
+    if(obj.readOnly){
+        return;
+    }
+    if(force == null){
+        force = false;
+    }
     switch (obj.type) {
         case "radio":
         case "checkbox":
@@ -207,6 +213,11 @@ function cleanInput(obj){
             obj.selectedIndex = 0 ;            
         break;
         case "hidden":
+            if (force){
+                obj.value = "" ;
+            }else{
+                obj.value = obj.value;                
+            }
         case "button":
             obj.value = obj.value;
             break;
@@ -300,8 +311,18 @@ function envia(action,opc,frm,tar){
     }catch(e){
         erro = true;
     }
+    setSelectDisbledToFalse();
     frm.submit() ;
 }
+
+    function setSelectDisbledToFalse(){
+        var elems = document.getElementsByTagName('SELECT');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].disabled){
+                elems[i].disabled = false;
+            }
+        }
+    }
 
 function gMenu(action,frm){
     if(frm == null)frm = document.getElementById('fmenu'); else frm = document.getElementById(frm);
@@ -525,3 +546,88 @@ function LimparMoeda(valor, validos) {
     }
     return result;
 }
+
+
+function jAlertFalse(msg,tit,silent){
+    if(tit == null){
+        tit = 'Aviso!!';
+    }
+    if(silent != true){
+        jAlert(msg,tit);        
+    }
+    return false;
+}
+
+var jConfirmClick = '';
+function jConfirmS(msg){
+    jConfirm(msg, 'Confirmação do Usuario!', function(r) {
+        if(r){
+            jConfirmClick = true;            
+        }else{
+            jConfirmClick = false;            
+        }
+    });
+    return jConfirmClick;
+}
+
+
+function chekResul(str){
+    var msg = '';
+    var st = '';
+    var param = JSON.parse(str);
+    $.each(param, function(index, value) {
+        if(index == 'ok'){  
+            st = 'ok';
+            $.each(value, function(key, vlr){
+                if(key == 'msg'){  
+                    msg = vlr;
+                }else{
+                    $('#' + key).val(vlr);
+                    jAlertFalse($('#' + key).val());
+                }               
+            });
+        }
+        if(index == 'msg'){  
+            st = 'msg';
+            msg = value;
+        }
+        if(index == 'erro'){                
+            st = 'erro';
+            $.each(value, function(key, vlr){
+                msg += "\n\n" + vlr;
+            });
+        }
+    });
+    if(st == 'ok'){
+        if(checkResulSilentOK == false){
+            jAlertFalse(msg);                    
+        }
+    }else{
+        jAlertFalse(msg);                
+    }
+    execCheckResulCallBack(st);
+    checkResulSilentOK     = false ;
+}
+
+
+var checkResulCallBack     = '' ;
+var checkResulCallBackOK   = '' ;
+var checkResulCallBackERRO = '' ;
+var checkResulSilentOK     = false ;
+function execCheckResulCallBack(status){
+    if(checkResulCallBack != ''){
+        eval(checkResulCallBack);
+    }
+    checkResulCallBack = '';
+
+    if(checkResulCallBackOK != '' && status == 'ok'){
+        eval(checkResulCallBackOK);
+    }
+    checkResulCallBackOK = '';
+
+    if(checkResulCallBackERRO != '' && status == 'erro'){
+        eval(checkResulCallBackERRO);
+    }
+    checkResulCallBackERRO = '';
+}
+    

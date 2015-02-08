@@ -23,7 +23,16 @@ if($this->resultSet){
         echo $entity->getRua() . ' n' . $entity->getNumero() . ', ' . $entity->getEndereco()->getBairro() . ',' . $entity->getEndereco()->getCidade(), "|c|"; 
         
         echo $entity->getRua(), ', n ' , $entity->getNumero(),    "|c|"; 
-        echo 'apt. ' , $entity->getApto(), ' B.' , $entity->getBloco(),    "|c|"; 
+        $aptBlc = '';
+        $apt = $entity->getApto();
+        if (!empty($apt)) { // funçao empty so aceita variaveis como paramentro
+            $aptBlc .= 'apt. ' . $apt;
+        }
+        $bloco = $entity->getBloco();
+        if (!empty($bloco)) {
+            $aptBlc .= ' BL. ' . $bloco;
+        }       
+        echo  $aptBlc,    "|c|"; 
         echo $entity->getEndereco()->getCompl(),  "|c|"; 
         echo $entity->getEndereco()->getBairro(), "|c|"; 
         echo $entity->getEndereco()->getCidade(), "|c|"; 

@@ -332,6 +332,7 @@ class Fechados extends AbstractService {
 
     public function getPdfSeguro($id){
         //Carregar Entity Fechados
+        /*  @var $seg \Livraria\Entity\Fechados      */
         $seg = $this->em
             ->getRepository($this->entity)
             ->find($id);
@@ -392,7 +393,7 @@ class Fechados extends AbstractService {
         ];
         $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $pdf->setL14();
-        $pdf->setObsGeral();
+        $pdf->setObsGeral('',($seg->getAssist24() == 'S')? TRUE : FALSE);
         $pdf->Output();
     }
 

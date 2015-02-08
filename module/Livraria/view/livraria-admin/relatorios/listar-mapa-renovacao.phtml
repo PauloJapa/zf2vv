@@ -107,7 +107,13 @@ $total++;
                                             ' - ', 
                                             $array['validade'], 
                                            ($array['validade'] == 'mensal')?'('.$array['mesNiver'].')':''; ?></td>
-	<td class="Bl Bb Bt F1"><? echo $array['imovel']['rua'] ?></td>
+	<td class="Bl Bb Bt F1">
+            <? echo $array['imovel']['rua'] ?> 
+            <? if (!empty($array['imovel']['numero'])) {   echo ', ', $array['imovel']['numero'];    }            ?> 
+            <? if (!empty($array['imovel']['apto'])) {     echo ', ', $array['imovel']['apto'];    }              ?> 
+            <? if (!empty($array['imovel']['bloco'])) {    echo ', ', $array['imovel']['bloco'];    }             ?> 
+            <? if (!empty($array['imovel']['compl'])) {    echo ', ', $array['imovel']['compl'];    }             ?> 
+        </td>
 	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
         <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['incendio'], 2, ',', '.') ?></td>
         <td nowrap class="Bl Bb Bt" align="right"><? echo number_format($array['aluguel'], 2, ',', '.') ?></td>

@@ -47,6 +47,11 @@ class Imovel extends AbstractService {
     public function insert(array $data) { 
         $this->data = $data;
 
+        if(!empty($this->data['imovel'])){
+            $this->data['tel'] = $this->data['imovelTel'];
+            $this->data['status'] = $this->data['imovelStatus'];
+        }
+        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
@@ -157,6 +162,9 @@ class Imovel extends AbstractService {
         }
         if (empty($this->data['locador'])) {
             return array('Um Locador deve ser escolhido!!');
+        }
+        if(!isset($this->data['id'])){
+            $this->data['id'] = '';
         }
 
         $filtro['rua']     = $this->data['rua'];

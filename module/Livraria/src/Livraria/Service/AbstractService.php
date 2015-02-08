@@ -472,6 +472,12 @@ abstract class AbstractService {
         if($conteudo == 0.0 and $this->data['tipoCobertura'] == '02' AND $this->data['comissaoEnt']->getMultConteudo() != 0)
             $conteudo = $vlrAluguel * $this->data['comissaoEnt']->getMultConteudo();
         
+        if($this->data['tipoCobertura'] == '01'){
+            $base = $incendio ;
+        }else{
+            $base = $conteudo ;            
+        }
+        
         if($aluguel == 0.0)
             $aluguel  = $vlrAluguel * $this->data['comissaoEnt']->getMultAluguel();
         
@@ -480,7 +486,11 @@ abstract class AbstractService {
         
         if($vendaval == 0.0)
             $vendaval = $vlrAluguel * $this->data['comissaoEnt']->getMultVendaval();
-
+        
+        // Validar coberturas conforme contrato da Maritima
+        if((is_object($this->data['seguradora']) AND $this->data['seguradora']->getId() == '2') OR $this->data['seguradora'] == '2'){            
+            $this->validaMaritimaCoberturas($base, $aluguel, $eletrico, $vendaval);            
+        }
         
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
@@ -488,32 +498,33 @@ abstract class AbstractService {
         $txIncendio = 0.0;
         if ($this->data['tipoCobertura'] == '01' AND $incendio != 0.0001){
             $txIncendio = round($this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio'), 2) ;
-            $total += $txIncendio;
         }
         // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
         $txConteudo = 0.0;
         if ($this->data['tipoCobertura'] == '02' AND $conteudo != 0.0001){
             $txConteudo = round($this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo'), 2) ;
-            $total += $txConteudo;
         }
         
         $txAluguel = 0.0;
         if ($aluguel != 0.0001){
             $txAluguel = round($this->calcTaxaMultMinMax($aluguel,'Aluguel'), 2) ;
-            $total += $txAluguel;
         }
         
         $txEletrico = 0.0;
         if ($eletrico != 0.0001){
             $txEletrico = round($this->calcTaxaMultMinMax($eletrico,'Eletrico'), 2) ;
-            $total += $txEletrico;
         }
         
         $txVendaval = 0.0;
         if ($vendaval != 0.0001){
             $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
-            $total += $txVendaval;
         }
+        
+        $total += $txIncendio;
+        $total += $txConteudo;
+        $total += $txAluguel;
+        $total += $txEletrico;
+        $total += $txVendaval;
         
         //Verificar Se administradora tem total de cobertura minima e compara
         if(is_object($this->data['administradora'])){
@@ -567,6 +578,37 @@ abstract class AbstractService {
         $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
         
         return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
+    }
+
+    /**
+     * As coberturas de Perda Aluguel , Danos Eletricos, Vendaval não pode ser maior que 
+     * uma porcentagem pré definida da cobertura principal Incendio Conteudo
+     * @param float $base
+     * @param float $txAluguel
+     * @param float $txEletrico
+     * @param float $txVendaval
+     */
+    public function validaMaritimaCoberturas($base, &$txAluguel, &$txEletrico, &$txVendaval) {
+        if( $this->data['ocupacao'] == '02' ) {
+            // Residencial
+            $perdAluguel = $base * 0.3 ;
+            $eletrico    = $base * 0.2 ;
+            $vendaval    = $base * 0.4 ;
+        }else{
+            // Comercial
+            $perdAluguel = $base * 0.3 ;
+            $eletrico    = $base * 0.4 ;
+            $vendaval    = $base * 0.5 ;            
+        }
+        if ($perdAluguel < $txAluguel){
+            $txAluguel = $perdAluguel;
+        }
+        if ($eletrico < $txEletrico){
+            $txEletrico = $eletrico;
+        }
+        if ($vendaval < $txVendaval){
+            $txVendaval = $vendaval ;
+        }
     }
     
     /**

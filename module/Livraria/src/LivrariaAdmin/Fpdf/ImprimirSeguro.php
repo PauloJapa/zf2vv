@@ -179,9 +179,16 @@ class ImprimirSeguro extends FPDF{
         $this->Ln();
     }
     
-    public function setObsGeral($obs=''){
+    public function setObsGeral($obs = '', $assist = false){
         $txt = 'Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 100,00 será';
-        $txt .= '\nconsiderada o prêmio de R$ 100,00 por emissãode apólice.';
+        $txt .= "\n" . 'considerada o prêmio de R$ 100,00 por emissãode apólice.';
+        if($assist){
+            $txt .= "\n" . 'Seguro Com assistencia 24 horas.';
+            
+        }
+        if(!empty($obs)){
+            $txt .= "\n" . $obs;            
+        }
         $this->SetFont('Times','B',12);
         $this->Cell(190, 6, 'Observação',1,0,'C');
         $this->Ln();

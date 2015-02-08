@@ -351,10 +351,10 @@ class FechadosRepository extends AbstractRepository {
      */
     public function getListaExporta($data){
         //Faz tratamento em campos que sejam data ou adm e  monta padrao
-        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status = :status AND o.gerado = :gerado';
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status <> :status AND o.gerado = :gerado';
         $this->parameters['inicio'] = $data['inicio'];
         $this->parameters['fim']    = $data['fim'];
-        $this->parameters['status'] = 'A';
+        $this->parameters['status'] = 'C';
         $this->parameters['gerado'] = 'N';
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
@@ -524,10 +524,11 @@ class FechadosRepository extends AbstractRepository {
                 ->join('o.locatario', 'lc')
                 ->where($this->where)
                 ->setParameters($this->parameters)
-                ->addOrderBy('o.comissao')
                 ->addOrderBy('o.administradora')
                 ->addOrderBy('o.ocupacao', 'DESC')
-                ->addOrderBy('o.formaPagto')
+                ->addOrderBy('o.validade')
+                ->addOrderBy('o.formaPagto', 'ASC')
+                ->addOrderBy('o.comissao')
                 ->addOrderBy('o.inicio', 'DESC')
                 ;
         return $query->getQuery()->getResult();

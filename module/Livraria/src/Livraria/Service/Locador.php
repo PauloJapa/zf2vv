@@ -60,6 +60,22 @@ class Locador extends AbstractService {
         
         $this->setReferences();
         
+        if(!isset($this->data['endereco'])){
+            $this->data['endereco'] = '1';
+        }
+        if(!isset($this->data['compl'])){
+            $this->data['compl'] = '';
+        }
+        if(!isset($this->data['tel'])){
+            $this->data['tel'] = '';
+        }
+        if(!isset($this->data['email'])){
+            $this->data['email'] = '';
+        }
+        if(!isset($this->data['status'])){
+            $this->data['status'] = 'A';
+        }       
+        
         //Pegando o servico endereco e inserindo novo endereco do locador se houver
         if(isset($this->data['rua']) AND !empty($this->data['rua'])){
             $this->data['endereco'] = (new Endereco($this->em))->insert($this->data);            
@@ -90,16 +106,34 @@ class Locador extends AbstractService {
     public function update(array $data) {
         $this->data = $data;
         
-        $this->setReferences();
-        
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
+        
+        $this->setReferences();
+        
         //Pegando o servico endereco e atualizando endereco do locador
         $serviceEnd = new Endereco($this->em);
         /* @var $ent  \Livraria\Entity\Locador  */
         $ent = $this->getEntity(); 
+        
+        if(!isset($this->data['endereco'])){
+            $this->data['endereco'] = $ent->getEndereco()->getId();
+        }
+        if(!isset($this->data['compl'])){
+            $this->data['compl'] = $ent->getEndereco()->getCompl();
+        }
+        if(!isset($this->data['tel'])){
+            $this->data['tel'] = $ent->getTel();
+        }
+        if(!isset($this->data['email'])){
+            $this->data['email'] = $ent->getEmail();
+        }
+        if(!isset($this->data['status'])){
+            $this->data['status'] = $ent->getStatus();
+        }        
+        
         $this->data['idEnde'] = $ent->getEndereco()->getId();
         $this->data['endereco'] = $serviceEnd->update($this->data);
         $this->deParaEnd = $serviceEnd->getDePara();
@@ -170,32 +204,42 @@ class Locador extends AbstractService {
             return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
-        $filtro = array();
-        if(!empty($this->data['cpf']))
-            $filtro['cpf'] = $this->data['cpf'];
-        
-        if(!empty($this->data['cnpj']))
-            $filtro['cnpj'] = $this->data['cnpj'];
-        
-        if(!empty($this->data['administradora']))
+        if(empty($this->data['cpf']) AND empty($this->data['cnpj'])){
+            return ['Cadastro digitado sem documento'];
+        }
+        $filtro = array('status' => 'A');
+        if (!empty($this->data['cpf'])) {
+            $filtro['cpf'] = $this->validaDoc($this->data['cpf']);
+            if($filtro['cpf'] === FALSE){
+                return ['CPF Invalido por favor confira o numero digitado !!!!'];                             
+            }
+        }
+
+        if (!empty($this->data['cnpj'])) {
+            $filtro['cnpj'] = $this->validaDoc($this->data['cnpj'],'juridica');
+            if($filtro['cnpj'] === FALSE){
+                return ['CNPJ Invalido por favor confira o numero digitado !!!!'];                             
+            }
+        }
+        if (!empty($this->data['administradora'])) {
             $filtro['administradora'] = $this->data['administradora'];
-        
+        }
+        /* @var $entitys \Livraria\Entity\Locador */
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
-            if($this->data['id'] != $entity->getId()){
-                if($entity->getTipo() == 'fisica'){
-                    if(($entity->getCpf() == $this->data['cpf'])
-                    and ($entity->getAdministradora() == $this->data['administradora'])){
-                        $erro[] = 'Já existe esse cpf de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
-                        $erro[] = $entity->getId();
-                    }
-                }else{
-                    if(($entity->getCnpj() == $this->data['cnpj'])
-                    and ($entity->getAdministradora() == $this->data['administradora'])){
-                        $erro[] = 'Já existe esse cnpj de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
-                        $erro[] = $entity->getId();
-                    }
+            if($this->data['id'] == $entity->getId()){
+                continue;
+            }
+            if($entity->getTipo() == 'fisica'){
+                if(($entity->getCpf(FALSE) == $filtro['cpf'])){
+                    $erro[] = 'Já existe esse cpf de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
+                    $erro[] = $entity->getId();
+                }
+            }else{
+                if(($entity->getCnpj(FALSE) == $filtro['cnpj'])){
+                    $erro[] = 'Já existe esse cnpj de ' . $entity->getNome() . " nesta administradora " . $entity->getAdministradora();
+                    $erro[] = $entity->getId();
                 }
             }
         }
@@ -203,6 +247,112 @@ class Locador extends AbstractService {
             return $erro;
         }else{
             return TRUE;
+        }
+    }
+        
+    
+    public function validaDoc($doc, $tipo = 'fisica') {
+        if($tipo == 'fisica'){
+            return $this->validaCPF($doc);
+        }
+        return $this->validaCnpj($doc);
+    }    
+    
+    
+    public function validaCnpj($cnpj = null) {
+    	// Deixa o CNPJ com apenas números
+        $cnpj = str_pad(preg_replace( '/[^0-9]/', '', $cnpj ), 14, '0', STR_PAD_LEFT);
+        // O valor original
+        $cnpj_original = $cnpj;
+        // Captura os primeiros 12 números do CNPJ
+        $primeiros_numeros_cnpj = substr( $cnpj, 0, 12 );    
+        // Faz o primeiro cálculo
+        $primeiro_calculo = $this->multiplica_cnpj( $primeiros_numeros_cnpj );
+        // Se o resto da divisão entre o primeiro cálculo e 11 for menor que 2, o primeiro
+        // Dígito é zero (0), caso contrário é 11 - o resto da divisão entre o cálculo e 11
+        $primeiro_digito = ( $primeiro_calculo % 11 ) < 2 ? 0 :  11 - ( $primeiro_calculo % 11 );
+        // Concatena o primeiro dígito nos 12 primeiros números do CNPJ
+        // Agora temos 13 números aqui
+        $primeiros_numeros_cnpj .= $primeiro_digito;
+
+        // O segundo cálculo é a mesma coisa do primeiro, porém, começa na posição 6
+        $segundo_calculo = $this->multiplica_cnpj( $primeiros_numeros_cnpj, 6 );
+        $segundo_digito = ( $segundo_calculo % 11 ) < 2 ? 0 :  11 - ( $segundo_calculo % 11 );
+        // Concatena o segundo dígito ao CNPJ
+        $cnpj = $primeiros_numeros_cnpj . $segundo_digito;
+        // Verifica se o CNPJ gerado é idêntico ao enviado
+        if ($cnpj === $cnpj_original) {
+            return $cnpj_original;
+        }
+        return FALSE;
+    }
+    
+    	
+    /**
+     * Multiplicação do CNPJ
+     *
+     * @param string $cnpj Os digitos do CNPJ
+     * @param int $posicoes A posição que vai iniciar a regressão
+     * @return int O
+     *
+     */
+    public function multiplica_cnpj($cnpj, $posicao = 5) {
+        // Variável para o cálculo
+        $calculo = 0;
+        // Laço para percorrer os item do cnpj
+        for ($i = 0; $i < strlen($cnpj); $i++) {
+            // Cálculo mais posição do CNPJ * a posição
+            $calculo = $calculo + ( $cnpj[$i] * $posicao );
+            // Decrementa a posição a cada volta do laço
+            $posicao--;
+            // Se a posição for menor que 2, ela se torna 9
+            if ($posicao < 2) {
+                $posicao = 9;
+            }
+        }
+        // Retorna o cálculo
+        return $calculo;
+    }
+
+    public function validaCPF($cpf = null) {
+        // Verifica se um número foi informado
+        if(empty($cpf)) {
+            return false;
+        }
+        // Elimina possivel mascara
+        $cpf = ereg_replace('[^0-9]', '', $cpf);
+        $cpf = str_pad($cpf, 11, '0', STR_PAD_LEFT);
+
+        // Verifica se o numero de digitos informados é igual a 11
+        if (strlen($cpf) != 11) {
+            return false;
+        }
+        // Verifica se nenhuma das sequências invalidas abaixo
+        // foi digitada. Caso afirmativo, retorna falso
+        if ($cpf == '00000000000' ||
+            $cpf == '11111111111' ||
+            $cpf == '22222222222' ||
+            $cpf == '33333333333' ||
+            $cpf == '44444444444' ||
+            $cpf == '55555555555' ||
+            $cpf == '66666666666' ||
+            $cpf == '77777777777' ||
+            $cpf == '88888888888' ||
+            $cpf == '99999999999') {
+            return false;
+         // Calcula os digitos verificadores para verificar se o
+         // CPF é válido
+         } else {  
+            for ($t = 9; $t < 11; $t++) {
+                for ($d = 0, $c = 0; $c < $t; $c++) {
+                    $d += $cpf{$c} * (($t + 1) - $c);
+                }
+                $d = ((10 * $d) % 11) % 10;
+                if ($cpf{$c} != $d) {
+                    return false;
+                }
+            }
+            return $cpf;
         }
     }
 }

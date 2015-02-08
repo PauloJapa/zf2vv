@@ -48,7 +48,11 @@ class Endereco extends AbstractService {
                 $this->data['cidade'] = new Cidade(array('nome' => $this->data['cidadeDesc']));
                 $this->em->persist($this->data['cidade']);
             }
-        }else{            
+        }else{     
+            if($this->data['cidade'] > 500){
+                echo 'Por favor click em voltar e escolha uma cidade da lista de pesquisa do imovel!!';
+                die;
+            }
             $this->data['cidade'] = $this->em->getReference("Livraria\Entity\Cidade", $this->data['cidade']);
         }
         

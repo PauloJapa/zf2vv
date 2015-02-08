@@ -314,7 +314,7 @@ header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 header ("Content-Disposition: attachment; filename=\"".$filename.".txt\"" );
 print(utf8_decode($saida));
  */
-$filename = "Maritima_" . date('d-m-Y_H-i-s');
+$filename = "Maritima_" . date('d-m-Y_H-i-s') . ".zip";
 header('Content-type: application/zip');
 header('Content-disposition: attachment; filename="' . $filename . '"');
 readfile($this->data);

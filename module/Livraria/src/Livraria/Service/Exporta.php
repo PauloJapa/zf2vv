@@ -47,6 +47,9 @@ class Exporta extends AbstractService{
     protected $ativid;
     protected $qtdExportado;
     protected $fechadoRepository;
+    protected $locatarioRepository;
+    protected $locatarioService;
+    protected $locatarioAcertoLog;
 
 
     /**
@@ -66,6 +69,30 @@ class Exporta extends AbstractService{
             return $this->sc;
         $this->sc = new SessionContainer("LivrariaAdmin");
         return $this->sc;
+    }
+    
+    /**
+     * Retorna Instancia do repository do locatario
+     * @return \Livraria\Entity\LocatarioRepository 
+     */
+    public function getLtr(){
+        if ($this->locatarioRepository) {
+            return $this->locatarioRepository;
+        }
+        $this->locatarioRepository = $this->em->getRepository("Livraria\Entity\Locatario");
+        return $this->locatarioRepository;
+    }
+    
+    /**
+     * Retorna Instancia do serviço do locatario
+     * @return \Livraria\Service\Locatario 
+     */
+    public function getLts(){
+        if ($this->locatarioService) {
+            return $this->locatarioService;
+        }
+        $this->locatarioService = new Locatario($this->em);
+        return $this->locatarioService;
     }
      
     /**
@@ -229,6 +256,7 @@ class Exporta extends AbstractService{
         $this->baseWorkTemp = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         //$this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         $this->baseWork = '/mnt/share/locacaoincendio/';
+        $this->baseWork = '/var/www/zf2vv/data/work/maritima/';
         if(!is_dir($this->baseWork)){
             mkdir($this->baseWork , 0777);
         }
@@ -249,7 +277,7 @@ class Exporta extends AbstractService{
         }    
         $this->zip->close();
         if($this->qtdExportado != 0){
-            $obs = 'Gravou os dados da exportação com sucesso.';
+            $obs = 'Gravou os dados da exportação com sucesso.<br>' . json_encode($this->locatarioAcertoLog);
             $this->logForSis('fechados', '', 'Exportar', 'Exportar Registros', $obs);
         }
         return $zipFile;
@@ -375,6 +403,10 @@ class Exporta extends AbstractService{
             // Filtrar a Administradora
             if($admCod != $value['administradora']['id']){
                 continue;
+            }
+            // Verificar se nome do locatario esta correto provisoriamente.
+            if ($value['locatarioNome'] != $value['locatario']['nome']){
+                $this->acertaNomeLocatario($value);
             }
             $this->ativid = $value['atividade']['codSeguradora'];
             $this->tipoLocatario = strtoupper(substr($value['locatario']['tipo'], 0, 1));
@@ -582,7 +614,130 @@ class Exporta extends AbstractService{
         // Fim da linha 02
         $this->saida .= "\r\n";
     }
+    
+    public function acertaNomeLocatario(&$v){
+        $this->locatarioAcertoLog[] = '<p>Locatario diferente ' . $v['locatarioNome'] . ' Versus ' . $v['locatario']['nome'] . '</p>';
+        /* @var $entity \Livraria\Entity\Locatario */
+        $entity = $this->getLtr()->findOneBy(['nome' => $v['locatarioNome']]);
+        if($entity){
+            /* @var $seguroF \Livraria\Entity\Fechados */
+            $seguroF = $this->em->find("Livraria\Entity\Fechados", $v['id']);
+            if($seguroF){
+                if($seguroF->getLocatarioNome() != $entity->getNome()){
+                    $this->locatarioAcertoLog[] = '<p>Não encontrou o mesmo nome ' . $seguroF->getLocatarioNome() . ' com seu id correto ' . $entity->getNome() . '</p>';                    
+                    return;
+                }
+                $idOrigem = FALSE;
+                if($seguroF->getOrcamentoId() != 0 AND $seguroF->getOrcamentoId() != null){
+                    $idOrigem = $seguroF->getOrcamentoId();                    
+                }
+                if($seguroF->getRenovacaoId() != 0 AND $seguroF->getRenovacaoId() != null){
+                    $idOrigem = $seguroF->getRenovacaoId();                    
+                }
+                if(!$idOrigem){
+                    $this->locatarioAcertoLog[] = '<p>Não encontrou a origem desse seguro fechado renovaçao id '. $seguroF->getRenovacaoId() . ' orcamento id ' . $seguroF->getOrcamentoId() . '</p>';                    
+                    return;                    
+                }
+                /* @var $seguroO \Livraria\Entity\Orcamento */
+                $seguroO = $this->em->find("Livraria\Entity\Orcamento", $idOrigem);
+                if($seguroO){
+                    if($seguroF->getLocatario()->getId() != $seguroO->getLocatario()->getId()){
+                        $this->locatarioAcertoLog[] = '<p>Locatario do fechado diferente do orçamento  ' . $seguroF->getLocatario()->getId() . ' id locatario do orçamento ' . $seguroO->getLocatario()->getId() . '</p>';                    
+                        return;                        
+                    }
+                    $this->locatarioAcertoLog[] = '<p>Concertou ' . $v['locatarioNome'] . ' com seu id correto ' . $entity->getId() . '</p>';
+                    $seguroF->setLocatario($entity);
+                    $seguroO->setLocatario($entity);
+                    $this->em->persist($seguroF);
+                    $this->em->persist($seguroO);
+                    $this->em->flush();
+                    $v['locatario']['nome'] = $entity->getNome();
+                    $v['locatario']['tipo'] = $entity->getTipo();
+                    $v['locatario']['cpf'] = $entity->getCpf();
+                    $v['locatario']['cnpj'] = $entity->getCnpj();
+                }
+            }else{
+                $this->locatarioAcertoLog[] = '<p>Fechado não encontrado com esse id  ' . $v['id'] . '</p>';                    
+            }
+        }else{
+            $this->locatarioAcertoLog[] = '<p>Locatario não encontrado com esse nome  ' . $v['locatarioNome'] . '</p>';                    
+        }
+    }
+    
+    public function validaCNPJ($cnpj = null,$adm=0) {
+        if(empty($cnpj)){
+            if($adm == 196){
+                return '05117179897';                
+            }else{
+                return $cnpj;
+            }            
+        }
+        if($cnpj == 0){
+            if($adm == 196){
+                return '05117179897';                
+            }else{
+                return $cnpj;
+            }                
+        }
+        return $cnpj;        
+    }
+    
+    public function validaCPF($cpf = null,$adm=0) {
+        
+        // Verifica se um número foi informado
+        if(empty($cpf)) {
+            if($adm == 196){
+                return '05117179897';                
+            }else{
+                return $cpf;
+            }
+        }
+        
+        // Elimina possivel mascara
+        $cpf = ereg_replace('[^0-9]', '', $cpf);
+        $cpf = str_pad($cpf, 11, '0', STR_PAD_LEFT);        
+        // Verifica se nenhuma das sequências invalidas abaixo 
+        // foi digitada. Caso afirmativo, retorna falso
+        if ($cpf == '00000000000' || 
+            $cpf == '11111111111' || 
+            $cpf == '22222222222' || 
+            $cpf == '33333333333' || 
+            $cpf == '44444444444' || 
+            $cpf == '55555555555' || 
+            $cpf == '66666666666' || 
+            $cpf == '77777777777' || 
+            $cpf == '88888888888' || 
+            $cpf == '99999999999') {
+            if($adm == 196){
+                return '05117179897';                
+            }else{
+                return $cpf;
+            }
+         // Calcula os digitos verificadores para verificar se o
+         // CPF é válido
+        }   
 
+        for ($t = 9; $t < 11; $t++) {
+
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf{$c} * (($t + 1) - $c);
+            }
+            
+            $d = ((10 * $d) % 11) % 10;
+            
+            if ($cpf{$c} != $d) {
+                if($adm == 196){
+                    return '05117179897';                
+                }else{
+                    return $cpf;
+                }
+            }
+        }
+
+        return $cpf;
+        
+    }
+    
     public function setLine03(&$value) {
         //========= Linha 03 com DADOS DO LOCAL DE RISCO Obrigatorio =======================
         $item = $this->item;
@@ -591,13 +746,21 @@ class Exporta extends AbstractService{
         $this->saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
         //Nome do Inquilino	60
         $this->addSaida2($value['locatario']['nome'], 60);
-        //Tipo de Pessoa do Inquilino	1
-        $this->saida .= $this->tipoLocatario;
         //CPF / CNPJ Inquilino	14
         if ($this->tipoLocatario == 'F'){
-            $this->saida .= $this->cleanDocFomatacao($value['locatario']['cpf']);
+            //Tipo de Pessoa do Inquilino	1
+            $this->saida .= $this->tipoLocatario;
+            $this->saida .= $this->cleanDocFomatacao($this->validaCPF($value['locatario']['cpf'], $value['administradora']['id']));
         }else{
-            $this->saida .= $this->cleanDocFomatacao($value['locatario']['cnpj']);
+            if($this->validaCNPJ($value['locatario']['cnpj'],$value['administradora']['id']) == '05117179897'){
+                //Tipo de Pessoa do Inquilino	1
+                $this->saida .= 'F';                
+                $this->saida .= $this->cleanDocFomatacao('05117179897');
+            }else{
+                //Tipo de Pessoa do Inquilino	1
+                $this->saida .= $this->tipoLocatario;
+                $this->saida .= $this->cleanDocFomatacao($value['locatario']['cnpj']);                
+            }
         }
         //Nome do Proprietário	60
         $this->addSaida2($value['locador']['nome'], 60);

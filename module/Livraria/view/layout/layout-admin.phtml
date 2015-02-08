@@ -17,6 +17,7 @@
                 ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
                 ->prependStylesheet($this->basePath() . '/css/dhtmlgoodies_calendar.css')
                 ->prependStylesheet($this->basePath() . '/css/print.css','print')
+                ->prependStylesheet($this->basePath() . '/css/jquery.alerts.css')
         ?>
 
         <!-- Scripts -->
@@ -27,6 +28,8 @@
                   ->prependFile($this->basePath() . '/js/ajax.js')
                   ->prependFile($this->basePath() . '/js/ajaxCep.js')
                   ->prependFile($this->basePath() . '/js/ajaxAutoComp.js')
+                  ->offsetSetFile(94, $this->basePath() . '/js/jquery.ui.draggable.js')
+                  ->offsetSetFile(95, $this->basePath() . '/js/jquery.alerts.js')
                   ->offsetSetFile(96, $this->basePath() . '/js/jquery.validate.js')
                   ->offsetSetFile(97, $this->basePath() . '/js/util.validate.js')
                   ->offsetSetFile(98, $this->basePath() . '/js/bootstrap.min.js')

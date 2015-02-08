@@ -43,13 +43,14 @@ class Orcamento extends AbstractEndereco {
         
         //Dados do Locador
         $this->setInputHidden('locador');
-        $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
+        $attributes = ['placeholder' => 'Digite aqui nome, cpf ou cnpj para PESQUISAR!',
                        'onKeyUp' => 'autoCompLocador();',
+                       'class' => 'input-xlarge',
                        'autoComplete'=>'off'];        
         $this->setInputText('locadorNome', 'Locador', $attributes);
 
         $options = [''=>'','fisica'=>'Pessoa Fisica','juridica'=>'Pessoa Juridica'];
-        $this->setInputSelect('tipoLoc', 'Fisica/Juridica', $options, ['onChange' => 'showTipo()']);
+        $this->setInputSelect('tipoLoc', 'Fisica/Juridica', $options, ['onChange' => 'showTipoLoc()']);
         
         $attributes=[];
         $attributes['placeholder'] = 'xxx.xxx.xxx-xx';
@@ -62,8 +63,9 @@ class Orcamento extends AbstractEndereco {
         
         //Dados do Locatarioc
         $this->setInputHidden('locatario');
-        $attributes = ['placeholder' => 'Pesquise aqui pelo nome, cpf ou cnpj!',
+        $attributes = ['placeholder' => 'Digite aqui nome, cpf ou cnpj para PESQUISAR!',
                        'onKeyUp' => 'autoCompLocatario();',
+                       'class' => 'input-xlarge',
                        'autoComplete'=>'off'];        
         $this->setInputText('locatarioNome', 'Locatario', $attributes);
 
@@ -161,7 +163,7 @@ class Orcamento extends AbstractEndereco {
         
         $this->getEnderecoElements($em);
         
-        $this->addAttributeInputs('onchange', 'limpaImovel()');
+        //$this->addAttributeInputs('onchange', 'limpaImovel()');
         
         $this->setInputText('bloco', 'Predio Bloco', ['placeholder'=>'Predio Bloco', 'class'=>'input-small']);
 
@@ -178,8 +180,31 @@ class Orcamento extends AbstractEndereco {
         $this->setInputButton('logOrca', 'Exibir Logs',['onClick'=>'return viewLogsOrcamento()']);
         
         $this->setInputButton('novoOrca', 'Novo Orçamento',['onClick'=>'return newOrcamento()']);
+        
 
+        $this->setInputButton('nwLocador', 'Novo Locador', ['onClick'=>'newLocador();return false;']);
+        
+        $this->setInputButton('ccLocador', 'Cancelar', ['onClick'=>'cancelLocador();return false;']);
+        
+        $this->setInputButton('edLocador', 'Editar Locador', ['onClick'=>'editLocador();return false;']);
+        
+        $this->setInputButton('svLocador', 'Não esqueça de Salvar o Locador AQUI!!', ['onClick'=>'saveLocador();return false;']);
+        
+
+        $this->setInputButton('nwLocatario', 'Novo Locatario', ['onClick'=>'newLocatario();return false;']);
+        
+        $this->setInputButton('ccLocatario', 'Cancelar', ['onClick'=>'cancelLocatario();return false;']);
+
+        $this->setInputButton('edLocatario', 'Editar Locatario', ['onClick'=>'editLocatario();return false;']);
+        
+        $this->setInputButton('svLocatario', 'Não esqueça de Salvar o Locatario AQUI!!', ['onClick'=>'saveLocatario();return false;']);
+        
+
+        $this->setInputButton('ccImovel', 'Cancelar', ['onClick'=>'cancelImovel();return false;']);
+        
         $this->setInputButton('edImovel', 'Editar Imovel', ['onClick'=>'editImovel();return false;']);
+        
+        $this->setInputButton('svImovel', 'Não esqueça de Salvar o imovel AQUI!!', ['onClick'=>'saveImovel();return false;']);
         
         $file = new \Zend\Form\Element\File('content');
         $file->setLabel('Selecione um arquivo')

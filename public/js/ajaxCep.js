@@ -11,9 +11,12 @@ function carregando_cep(div,msg){
 }
 // Busca do CEP (Requisição AJAX) -
 function buscar_cep(cep){
+    if(cep == null)cep = document.getElementById('cep');
+    if(cep.readOnly){
+        return;
+    }
     carregando_cep('checar','Carregando');
-    if(cep == null)cep = document.getElementById('cep').value;
-    var params = "cep=" + cep; 
+    var params = "cep=" + cep.value; 
     var prog = "/admin/enderecos/buscaCep";
     executaAjax(prog,'popula_cep',params); 
 }

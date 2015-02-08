@@ -2,6 +2,9 @@
     .F1 {
         font-size: 10px;
     }
+    .F2 {
+        font-size: 6px;
+    }
 </style>
 <style>
     .Br {
@@ -15,6 +18,9 @@
     }
     .Bb {
         border-bottom: #333 solid 1px ;
+    }
+    .F2 {
+        font-size: 8pt;
     }
 </style>
 
@@ -30,6 +36,8 @@
 	<th class="Bl">Ref. do Imóvel</th>
 	<th class="Bl">Vigência Inicial</th>
 	<th class="Bl">Locatário</th>
+	<th class="Bl">Local</th>
+	<th class="Bl">Alguel</th>
 	<th class="Bl">Parc.</th>
 	<th class="Bl">Valor Parc.</th>
 	<th class="Bl Br">Prêmio</th>
@@ -39,11 +47,23 @@
         //calcula a parcela e descriçao da forma de pagamento
         $frmPagto = isset($this->formaPagto[$array['formaPagto']]) ? $this->formaPagto[$array['formaPagto']] : 'Ñ encontrado' . $array['formaPagto'];
         $valor = $array['premioTotal'] / intval(($array['formaPagto'] == '04') ? '12' : $array['formaPagto']);
+        $local = $array['imovel']['rua'] . ', N ' . $array['imovel']['numero'];
+        if(!empty($array['imovel']['apto'])){
+            $local .= ', apto ' . $array['imovel']['apto'];
+        }
+        if(!empty($array['imovel']['bloco'])){
+            $local .= ', BL ' . $array['imovel']['bloco'];
+        }
+        if(!empty($array['imovel']['compl'])){
+            $local .= ', ' . $array['imovel']['compl'];
+        }
 ?>
 <tr>
 	<td nowrap class="Bl Bb Bt F1 r" align="center"><? echo $array['refImovel'] ?></td>
 	<td nowrap class="Bl Bb Bt F1 c"><? echo $array['inicio']->format('d/m/Y'), ' - ', $array['validade'] ?></td>
 	<td class="Bl Bb Bt F1"><? echo $array['locatarioNome'] ?></td>
+	<td class="Bl Bb Bt F2"><? echo $local ?></td>
+	<td nowrap class="Bl Bb Bt F1" align="right"><? echo number_format($array['valorAluguel'], 2, ',', '.') ?></td>
 	<td nowrap class="Bl Bb Bt F1 r"><? echo $frmPagto ?></td>
 	<td nowrap class="Bl Bb Bt F1" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
         <td nowrap class="Bl Bb Bt Br F1" align="right"><? echo number_format($array['premioTotal'], 2, ',', '.') ?></td>

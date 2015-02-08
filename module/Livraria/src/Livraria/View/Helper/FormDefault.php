@@ -188,16 +188,20 @@ class FormDefault extends AbstractHelper {
      * @param Array $options 
      */
     public function renderFieldsetIni($options) {
-        echo "<fieldset>", PHP_EOL,
-                "<legend>";
-        if(isset($options['legend'])) 
+        echo "<fieldset>", PHP_EOL, "<legend>";
+        if (isset($options['legend'])) {
             echo $options['legend'];
-        echo    "</legend>", PHP_EOL;
-        if(isset($options['hidden'])) 
+        }
+        echo "</legend>", PHP_EOL;
+        if (isset($options['hidden'])) {
             $this->renderInputHidden($options['hidden']);
-        echo            
-                "<table style='width : 100% ;'>", PHP_EOL,
-                    "<tr valign='top'>", PHP_EOL; 
+        }
+        if (isset($options['beforeTable'])) {
+            echo $options['beforeTable'];
+        }
+        echo
+        "<table style='width : 100% ;'>", PHP_EOL,
+        "<tr valign='top'>", PHP_EOL;
     }
 
     /**
@@ -206,12 +210,14 @@ class FormDefault extends AbstractHelper {
      * @param Array $options
      */
     public function renderFieldsetFim($options) {
-        echo
-                "</tr>", PHP_EOL,
-            "</table>", PHP_EOL,
-        "</fieldset>", PHP_EOL;
-        if(isset($options['submit'])) 
+        echo "</tr>", PHP_EOL, "</table >", PHP_EOL ;        
+        if (isset($options['afterTable'])) {
+            echo $options['afterTable'];
+        }
+        echo "</fieldset>", PHP_EOL;
+        if (isset($options['submit'])) {
             $this->renderInputSubmit($options['submit']);
+        }
     }
 
     /**

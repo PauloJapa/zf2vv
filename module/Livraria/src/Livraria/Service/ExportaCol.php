@@ -157,12 +157,15 @@ class ExportaCol extends AbstractService{
     public function prepArqsForCol($adm){
         foreach ($this->comissao as $value) {
             $arq = $this->baseWork . $adm . '_' . $value . '_Col.txt';
+//            echo '<pre>';
+//        var_dump($arq);
             if($this->setConteudo($arq, $adm, $value)){
                 $this->writeFile();
                 $this->closeFile();  
                 $this->addFileToZip($arq);
             }
         }
+//        die;
     }
     
     /**
@@ -183,7 +186,8 @@ class ExportaCol extends AbstractService{
                 continue;
             }
             // Filtrar comissão
-            if($com != number_format($value['comissao'], 2)){
+            if($com != number_format($value['comissao'], 2, '.', ',')){
+//                var_dump(number_format($value['comissao'], 2, '.', ','));
                 continue;
             }
             if($head){

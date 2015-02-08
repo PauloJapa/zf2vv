@@ -437,6 +437,8 @@ class Importar extends AbstractService{
         $this->data['estado'] = '27' ;
         $this->data['pais'] = '1' ;
          */        
+        // Colocar CEP para validação do seguro
+        $this->data['cep'] = str_pad($cep, 8, '0', STR_PAD_LEFT);
         //procurar imovel pelo referencia
         if(empty($ref)){
             $this->erro[] = 'Falha referencia do imovel obrigatorio verifique os dados por favor!';

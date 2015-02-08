@@ -18,12 +18,6 @@ return array(
 /*<============================================================================================>*/
         'admin' => array(
             // And finally, here is where we define our page hierarchy
-            'home' => array(
-                'label' => 'Home',
-                'route' => 'livraria-admin',
-                'controller' => 'index',
-                'action' => 'bemVindo',
-            ),
             'cadastros' => array(
                 'label' => 'Cadastro',
                 'route' => 'livraria-admin',
@@ -299,6 +293,20 @@ return array(
                     ),
                 ),
             ),
+            'imprimir' => array(
+                'label' => 'Imprimir',
+                'route' => 'livraria-admin',
+                'controller' => 'index',
+                'action' => 'imprimir',
+                'pages' => array(
+                    'relatorios' => array(
+                        'label' => 'Seguros Pendentes',
+                        'route' => 'livraria-admin',
+                        'controller' => 'pendentes',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
             'auditoria' => array(
                 'label' => 'Auditoria',
                 'route' => 'livraria-admin',
@@ -371,15 +379,29 @@ return array(
                     ),
                 ),
             ),
-            'senha' => array(
-                'label' => 'Alterar Senha',
+            'outros' => array(
+                'label' => 'Outros',
                 'route' => 'livraria-admin',
-                'controller' => 'users',
-                'action' => 'alteraSenha',
-            ),
-            'logout' => array(
-                'label' => 'Logout',
-                'route' => 'livraria-admin-logout',
+                'controller' => 'index',
+                'action' => 'bemVindo',
+                'pages' => array(
+                    'outros1' => array(
+                        'label' => 'Home',
+                        'route' => 'livraria-admin',
+                        'controller' => 'index',
+                        'action' => 'bemVindo',
+                    ),
+                    'outros2' => array(
+                        'label' => 'Alterar Senha',
+                        'route' => 'livraria-admin',
+                        'controller' => 'users',
+                        'action' => 'alteraSenha',
+                    ),
+                    'outros3' => array(
+                        'label' => 'Logout',
+                        'route' => 'livraria-admin-logout',
+                    ),
+                ),
             ),
         ),
 /*<============================================================================================>*/

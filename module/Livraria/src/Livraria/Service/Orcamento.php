@@ -287,7 +287,7 @@ class Orcamento extends AbstractService {
                 ->findTaxaVigente(
                     $this->data['seguradora']->getId(), 
                         $this->data['atividade']->getId(), 
-                        $this->data['criadoEm'], 
+                        $this->data['inicio'], 
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
                         $this->data['tipoCobertura']
@@ -523,7 +523,7 @@ class Orcamento extends AbstractService {
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data, $onlyCalculo=false) { 
+    public function  update(array $data, $onlyCalculo=false) { 
         $this->data        = $data;
         if ($onlyCalculo) {
             $this->setFlush(FALSE);
@@ -551,7 +551,7 @@ class Orcamento extends AbstractService {
                 ->findTaxaVigente(
                     $this->data['seguradora']->getId(), 
                         $this->data['atividade']->getId(), 
-                        $this->data['criadoEm'], 
+                        $this->data['inicio'], 
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
                         $this->data['tipoCobertura']
@@ -642,6 +642,9 @@ class Orcamento extends AbstractService {
         $filtro = array();
         if (empty($this->data['imovel'])) {
             return array('Um imovel deve ser selecionado!');
+        }
+        if (empty($this->data['cep'])) {
+            return array('O CEP não pode ficar em branco!');
         }
         $inicio = $this->data['inicio'];
         $fim = $this->data['fim'];
@@ -811,6 +814,7 @@ class Orcamento extends AbstractService {
     }
     
     public function conteudoDaPagina($seg){
+        /*  @var $seg \Livraria\Entity\Orcamento      */
         $this->pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $this->pdf->setL2($seg->getAdministradora()->getNome());
         $this->pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());
@@ -861,7 +865,7 @@ class Orcamento extends AbstractService {
         ];
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $this->pdf->setL14();
-        $this->pdf->setObsGeral();
+        $this->pdf->setObsGeral('',($seg->getAssist24() == 'S')? TRUE : FALSE);
         
     }
     

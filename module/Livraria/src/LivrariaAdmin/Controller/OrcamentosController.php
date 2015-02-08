@@ -150,12 +150,16 @@ class OrcamentosController extends CrudController {
         }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF','validade','fechadoId'];
+        $operadores['refImovel'] = 'LIKE';
         foreach ($inputs as $input) {
             if ((isset($data[$input])) AND (!empty($data[$input]))) {
-                $filtro[$input] = $data[$input];
+                if($input == 'refImovel'){
+                    $filtro[$input] = '%' . $data[$input];
+                }else{
+                    $filtro[$input] = $data[$input];
+                }
             }
         }
-        
         $list = $this->getEm()
                      ->getRepository($this->entity)
                      ->findOrcamento($filtro,$operadores,$data);
