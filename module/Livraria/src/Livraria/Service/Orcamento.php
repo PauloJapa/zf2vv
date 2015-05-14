@@ -768,7 +768,7 @@ class Orcamento extends AbstractService {
      * @return PDF file 
      */
     public function getPdfOrcamento($id){
-        //Carregar Entity Fechados
+        //Carregar Entity Orcamento
         $seg = $this->em
             ->getRepository($this->entity)
             ->find($id);
@@ -776,12 +776,43 @@ class Orcamento extends AbstractService {
         if(!$seg){
             return ['Não foi encontrado um orçamento com esse numero!!!'];
         }
+        $this->acertaNomeLocatario($seg);
         $num = 'Orçamento/' . $seg->getId() . '/' . $seg->getCodano();
         $this->pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
         
         $this->conteudoDaPagina($seg);
         
         $this->sendPdf();
+    }
+    
+    /**
+     * 
+     * @param \Livraria\Entity\Orcamento $ent 
+     */
+    public function acertaNomeLocatario(&$ent){
+        if($ent->getLocatarioNome() == $ent->getLocatario()->getNome()){
+            return;
+        }
+        /* @var $locatario \Livraria\Entity\Locatario */
+        $locatario = $this->em->getRepository("Livraria\Entity\Locatario")->findOneBy(['nome' => $ent->getLocatarioNome()]);
+        if($locatario){            
+            if($ent->getLocatarioNome() != $locatario->getNome()){
+                $this->locatarioAcertoLog[] = '<p>Não encontrou o mesmo nome ' . $ent->getLocatarioNome() . ' com seu id correto ' . $locatario->getNome() . '</p>';                    
+                return;
+            }
+            if($ent->getFechadoId() != 0){
+                $fechado = $this->em->find("Livraria\Entity\Fechados", $ent->getFechadoId());
+                if($fechado){
+                    $fechado->setLocatario($locatario);
+                    $this->em->persist($fechado);                    
+                }
+            }
+            $ent->setLocatario($locatario);
+            $this->em->persist($ent);
+            $this->em->flush();
+        }else{
+            $this->locatarioAcertoLog[] = '<p>Locatario não encontrado com esse nome  ' . $ent->getLocatarioNome() . '</p>';                    
+        }
     }
     
     /**

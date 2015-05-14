@@ -255,6 +255,7 @@ class Relatorio extends AbstractService{
             $this->data['inicioMensal'] = '01/' . $data['mesRefFiltro'] . '/' . $data['anoRefFiltro'];
             $this->dateToObject('inicioMensal');
             $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
+            echo '<h1>', $this->data['inicioMensal']->format('d/m/Y'), '</h1>';
         }else{
             //Trata os filtro para data mensal
             $this->data['inicioMensal'] = clone $this->data['inicio'];

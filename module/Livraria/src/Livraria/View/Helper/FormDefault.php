@@ -143,6 +143,10 @@ class FormDefault extends AbstractHelper {
                 $this->renderInputFloat4($name);
                 break;
             
+            case "float8":
+                $this->renderInputFloat8($name);
+                break;
+            
             case "textLine":
                 $this->renderInputTextLine($name);
                 break;
@@ -460,6 +464,16 @@ class FormDefault extends AbstractHelper {
      */
     public function renderInputFloat4($name){
         $this->renderInputMoeda($name,'false','4');
+    }
+
+    /**
+     * Renderiza o input text no estilo float com um botao para limpar o conteudo  
+     * Adiciona js para mascara de 8 decimal
+     * Caso exista msg de erro sera exibo em vermelho
+     * @param String $name
+     */
+    public function renderInputFloat8($name){
+        $this->renderInputMoeda($name,'false','8');
     }
 
     /**

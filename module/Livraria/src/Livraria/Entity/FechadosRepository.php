@@ -196,6 +196,10 @@ class FechadosRepository extends AbstractRepository {
                 $this->parameters['admCod' . $key]  = $key;                
             }
         }
+//        echo '<pre>';
+//        var_dump($this->where);
+//        var_dump($this->parameters);
+//        die;
         // Retorna um array com todo os registros encontrados        
         return $this->executaQueryMapaRenovacao();
     }

@@ -223,7 +223,7 @@ class Renovacao extends AbstractService {
         $this->data['taxa'] = $this->getTaxaRep()->findTaxaVigente(
                 $this->data['seguradora'], 
                 $this->data['atividade'], 
-                $this->data['criadoEm'], 
+                $this->data['inicio'], 
                 str_replace(',', '.', $this->data['comissao']), 
                 $this->data['validade'], 
                 $this->data['tipoCobertura']

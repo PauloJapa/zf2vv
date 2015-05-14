@@ -26,7 +26,7 @@ class ImovelRepository extends EntityRepository {
                 ->join('e.pais', 'p')
                 ->where("i.locador = :locador")
                 ->setParameter('locador', $locador)
-                ->setMaxResults(20)
+                ->setMaxResults(100)
                 ->getQuery()
                 ;
         return $query->getResult();
