@@ -146,6 +146,38 @@ class OrcamentoRepository extends AbstractRepository {
     }
     
     /**
+     * lista de orcamento de um determinado periodo para acerar o locatario
+     * @param type $param
+     */
+    public function getListaArray($data) {
+        
+        //Faz tratamento em campos que sejam data ou adm e  monta padrao
+        $this->where = 'o.inicio >= :inicio AND o.inicio <= :fim AND o.status <> :status';
+        $this->parameters['inicio']  = $this->dateToObject($data['inicio']);
+        $this->parameters['fim']     = $this->dateToObject($data['fim']);
+        $this->parameters['status']     = "F";
+        if(!empty($data['administradora'])){
+            $this->where .= ' AND o.administradora = :administradora';
+            $this->parameters['administradora']    = $data['administradora'];            
+        }
+        
+        // Monta a dql para fazer consulta no BD
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('o,ad,at,i,ld,lc')
+                ->from('Livraria\Entity\Orcamento', 'o')
+                ->join('o.administradora', 'ad')
+                ->join('o.atividade', 'at')
+                ->join('o.imovel', 'i')
+                ->join('o.locador', 'ld')
+                ->join('o.locatario', 'lc')
+                ->where($this->where)
+                ->setParameters($this->parameters);
+        
+        return $query->getQuery()->getArrayResult();
+    }
+    
+    /**
      * Busca Fechados que estão vencendo para renovação
      * Filtra pela data de final da vigencia, administradora e validade(mensal ou anual)
      * Filtro automatico para administradoras inseridas no paramentro com a chave nao_gera_renovacao

@@ -52,7 +52,7 @@ class Email extends AbstractService
     
     public function setMailTo(&$dataEmail) {
         /* @var $entity \Livraria\Entity\ParametroSis */
-        $this->cco = 'watakabe98@hotmail.com';
+//        $this->cco = 'watakabe98@hotmail.com';
         $this->cc  = 'incendiolocacao@vilavelha.com.br' ;
         if(substr($dataEmail['email'], 0, 16) == 'REDIRECIONAEMAIL'){
             $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey($dataEmail['email'])[0];

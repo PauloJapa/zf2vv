@@ -125,23 +125,40 @@ if($user->getTipo() == "admin"){
         echo "\t<td nowrap>";
         switch ($data[2]) {
             case "Cancelado Reno":
+                echo '<span class="add-on hand" onClick="reativar(\'', $value, '\')"><i class="icon-fire"></i>Reativar.</span>';
+                echo '<span class="add-on hand" onClick="getLogsReno(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Ren</span>';
+                echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
+                break;
             case "Cancelado Orça":
             case "Cancelado":
-                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>',
-                '<span class="add-on hand" onClick="reativar(\'', $value, '\')"><i class="icon-fire"></i>Reativar.</span>';
+                echo '<span class="add-on hand" onClick="reativar(\'', $value, '\')"><i class="icon-fire"></i>Reativar.</span>';
+                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Orc</span>';
+                echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
                 break;
-            case "Orçamento": 
             case "Renovação": 
             case "Importado": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                 '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
+                echo '<span class="add-on hand" onClick="getLogsReno(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Ren</span>';
+                break;
+            case "Orçamento": 
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
+                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
+                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Orc</span>';
                 break;
             case "Fechado":
-            case "Fechou Reno":
             case "Fechou Orça":
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
+                echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Orc</span>';
+                break;
+            case "Fechado":
+            case "Fechou Reno":
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
+                echo '<span class="add-on hand" onClick="getLogsReno(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Ren</span>';
                 break;
             default:
                 echo '<span class="add-on hand">Sem Ação</span>';
@@ -182,8 +199,10 @@ foreach($this->data as $entity){
     $status = $entity->getStatus();
     if($status == 'A' OR $status == 'R'){
         $campo1 = '<label class="checkbox"><input type="checkbox" name="Checkeds[]" value="'. $entity->getId() .'"></label>';        
-    }else{
-        $campo1 = '' ;
+    }else if($status == 'F'){
+        $campo1 = '<label class="checkbox"><input type="checkbox" name="CheckedsFechados[]" value="'. $entity->getId() .'"></label>';        
+    }  else {
+        $campo1 = '';
     }
     if($entity->getFormaPagto() != "01"){
         $vlrParc = number_format($entity->getPremioTotal() / $entity->getFormaPagto(), 2, ',', '.');
@@ -248,6 +267,16 @@ echo $this->FormDefault(['fecharSel'], 'submit');
                     
                 </td>
                 <td style="padding-left:1cm;">
+        <div class="input-append" id="popchangeValidade">
+            <label for="validade">Forma de Pagamento</label>
+            <label><input type="radio" name="changeFormaPagto" value="" checked onkeypress="return changeEnterToTab(this,event)" >Manter</label>
+            <label><input type="radio" name="changeFormaPagto" value="01"       onkeypress="return changeEnterToTab(this,event)" >A vista(no ato)</label>
+            <label><input type="radio" name="changeFormaPagto" value="02"       onkeypress="return changeEnterToTab(this,event)" >2 vezes(1+1)</label>
+            <label><input type="radio" name="changeFormaPagto" value="03"       onkeypress="return changeEnterToTab(this,event)" >3 vezes(1+2)</label>
+        </div>   
+                    
+                </td>
+                <td style="padding-left:1cm;">
                     
         <input type="button" name="cancelSel" id="change" class="btn-success" value="Alterar Vigência Inicial e Validade Selecionados" onclick="return changeDateAndValidity()">
                 </td>
@@ -264,6 +293,7 @@ echo $this->FormDefault(['fecharSel'], 'submit');
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
     <input type="hidden" name="orcamento" id="orcamento">
+    <input type="hidden" name="renovacao" id="renovacao">
 <div id="delobs">
     <table width="100%">
         <tr>
@@ -324,12 +354,12 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         envia(tar,'novo',null,'');        
     }
     function changeDateAndValidity(){
-        if($('#changeInicio').val() === ''){
-            alert('Preencha a vigência inicial por favor!');
-            $('#changeInicio').focus();
-            return false;
-        }        
-        if(!oneChecked())return false;
+//        if($('#changeInicio').val() === ''){
+//            alert('Preencha a vigência inicial por favor!');
+//            $('#changeInicio').focus();
+//            return false;
+//        }        
+        if(!oneChecked(false) && !oneCheckedFechados())return false;
         var msg = "Deseja realmente alterar os registros selecionados? \n Aviso esta operação não poderá ser disfeita.";
         if(!confirm(msg))return false; 
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'changeDateValidity')); ?>";
@@ -342,6 +372,12 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logOrcamento')); ?>";
         envia(tar,id,null,'');        
     }
+    function getLogsReno(id){
+        document.getElementById('id2').value = id ;
+        document.getElementById('renovacao').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logRenovacao')); ?>";
+        envia(tar,id,null,'');        
+    }    
     function del(id){
         var motivo = document.getElementById('delobs');
         motivo.style.display = 'none';
@@ -413,9 +449,23 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         
     }
     
-    function oneChecked(){
+    function oneChecked(msg){
         //Verificar se algum registro foi marcado
         var elems = document.getElementsByName('Checkeds[]');
+        for (i=0; i < elems.length; i++){
+            if(elems[i].checked){
+                return true;
+            }
+        }
+        if(msg == null || msg){
+            alert("Nenhum registro foi selecionado!!");            
+        }
+        return false;
+    }
+    
+    function oneCheckedFechados(){
+        //Verificar se algum registro foi marcado
+        var elems = document.getElementsByName('CheckedsFechados[]');
         for (i=0; i < elems.length; i++){
             if(elems[i].checked){
                 return true;
@@ -520,9 +570,13 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         for (i=0; i < elems.length; i++){
             elems[i].checked = todos.checked;
         }
+        var elems = document.getElementsByName('CheckedsFechados[]');
+        for (i=0; i < elems.length; i++){
+            elems[i].checked = todos.checked;
+        }
     }
     function fecharSelecionados(){
-        if(!oneChecked())return;    
+        if(!oneChecked())return false;    
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'fecharSeguros')); ?>";
         envia(tar,'novo',null,''); 
         return false;

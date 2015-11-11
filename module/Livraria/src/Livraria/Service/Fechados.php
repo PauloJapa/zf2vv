@@ -5,6 +5,7 @@ namespace Livraria\Service;
 use Doctrine\ORM\EntityManager;
 use LivrariaAdmin\Fpdf\ImprimirSeguro;
 use Zend\Session\Container as SessionContainer;
+use Livraria\Service\Mysql;
 
 /**
  * Fechados
@@ -147,8 +148,9 @@ class Fechados extends AbstractService {
      * @param objet  $controller
      * @return boolean
      */
-    public function estornaFechado($id, $motivo, $controller = null) {
+    public function estornaFechado($id, $motivo, &$controller = null) {
         /* @var $entityF \Livraria\Entity\Fechados */
+        /* @var $entityO \Livraria\Entity\Orcamento */
         $entityF = $this->em->find('\Livraria\Entity\Fechados', $id);
         if(!is_object($entityF)){
             if(!is_null($controller)){
@@ -170,7 +172,7 @@ class Fechados extends AbstractService {
             return FALSE;
         }
         // Desfaz as alterações em Orçamento
-        $entityO->setFechadoId('0');
+        $entityO->setFechadoId(0);
         if($entityO->getOrcaReno() == 'orca'){
             $entityO->setStatus('A');
         }else{
@@ -179,7 +181,7 @@ class Fechados extends AbstractService {
         $this->em->persist($entityO);
         // Remover Fechado 
         $this->em->remove($entityF); 
-        $controller->flashMessenger()->addMessage("Seguro $id estorna com sucesso!!!!");
+        $controller->flashMessenger()->addMessage("Seguro $id estornado com sucesso!!!!");
         //Gerar os log de estorno e salvar no BD
         $this->logEstornoDeFechado($entityO, $id, $motivo);
         $this->em->flush();
@@ -1007,10 +1009,14 @@ class Fechados extends AbstractService {
             return array('Um imovel deve ser selecionado!');
         }
         $inicio = $this->data['inicio'];
+        $fim = $this->data['fim'];
         if (!is_object($inicio)) {
             return array('A data deve ser preenchida corretamente!');
         }
         $filtro['imovel'] = $this->data['imovel']->getId();
+        $filtro['administradora'] = $this->data['administradora']->getId();
+        $filtro['locador'] = $this->data['locador']->getId();
+        $filtro['locatario'] = $this->data['locatario']->getId();
         $entitys = $repository->findBy($filtro);
         $erro = array();
         foreach ($entitys as $entity) {
@@ -1018,6 +1024,9 @@ class Fechados extends AbstractService {
                 continue;
             }
             if(($inicio >= $entity->getFim('obj'))){
+                continue;
+            }
+            if(($fim <= $entity->getInicio('obj'))){
                 continue;
             }
             switch ($entity->getStatus()) {
@@ -1345,6 +1354,84 @@ class Fechados extends AbstractService {
             }
         }
         return $antes;
+    }
+    
+    public function checkFechados() {
+        $sql = new Mysql();
+        $q  = "SELECT `fechados`.`id`";
+        $q .= ",`fechados`.`orcamento_id`";
+        $q .= ",`fechados`.`renovacao_id`";
+        $q .= ",`orcamento`.`fechado_id`";
+        $q .= ",`orcamento`.`id`";
+        $q .= ",`orcamento`.`status`";
+        $q .= ",`fechados`.`status`";
+        $q .= ",`orcamento`.`locador_id`";
+        $q .= ",`fechados`.`locador_id`";
+        $q .= ",`orcamento`.`administradoras_id`";
+        $q .= ",`fechados`.`administradoras_id`";
+        $q .= ",`orcamento`.`inicio`";
+        $q .= ",`fechados`.`inicio`";
+        $q .= ",`orcamento`.`validade`";
+        $q .= ",`fechados`.`validade`";
+        $q .= " FROM `fechados`, `orcamento` ";
+        $q .= " WHERE `orcamento`.`inicio` >= '2014-10-01 00:00:00'";
+        $q .= " AND `orcamento`.`status` <> 'C'";
+        $q .= " AND `orcamento`.`fechado_id` = ''";
+        $q .= " AND `fechados`.`status` <> 'C'";
+//        $q .= " AND `orcamento`.`inicio` = `fechados`.`inicio`";
+        $q .= " AND `orcamento`.`locador_id` = `fechados`.`locador_id`";
+        $q .= " AND (`orcamento`.`id` = `fechados`.`orcamento_id` OR `orcamento`.`id` = `fechados`.`renovacao_id`)";
+//        $q .= " AND `orcamento`.`locador_id` <> `fechados`.`locador_id`";
+//        $q .= " AND `orcamento_id` IS NULL AND `renovacao_id` IS NULL";
+        $sql->p($q);
+        $sql->e();
+        $data = $sql->fAll('FETCH_NUM');
+        $seq = 0;
+        echo '<pre>';
+        echo $q;
+        echo '<pre>';
+        echo '<table>';
+        echo 
+            '<tr>'
+                , '<td>', 'seq', '</td>'
+                , '<td>', 'fechado', '</td>'
+                , '<td>', 'fec orcamento', '</td>'
+                , '<td>', 'fec renovocao', '</td>'
+                , '<td>', 'orcamento fechado', '</td>'
+                , '<td>', 'orcamento id', '</td>'
+                , '<td>', 'orcamento status', '</td>'
+                , '<td>', 'fechado status', '</td>'
+                , '<td>', 'orcamento locador', '</td>'
+                , '<td>', 'fechado locador', '</td>'
+                , '<td>', 'orcamento adm', '</td>'
+                , '<td>', 'fechado adm', '</td>'
+                , '<td>', 'orcamento inicio', '</td>'
+                , '<td>', 'fechado inicio', '</td>'
+                , '<td>', 'orcamento validade', '</td>'
+                , '<td>', 'fechado validade', '</td>'
+            , '</tr>';
+        foreach ($data as $d){
+            $seq++;
+            echo '<tr>'
+                , '<td>', $seq, '</td>'
+                , '<td>', $d[0], '</td>'
+                , '<td>', $d[1], '</td>'
+                , '<td>', $d[2], '</td>'
+                , '<td>', $d[3], '</td>'
+                , '<td>', $d[4], '</td>'
+                , '<td>', $d[5], '</td>'
+                , '<td>', $d[6], '</td>'
+                , '<td>', $d[7], '</td>'
+                , '<td>', $d[8], '</td>'
+                , '<td>', $d[9], '</td>'
+                , '<td>', $d[10], '</td>'
+                , '<td>', $d[11], '</td>'
+                , '<td>', $d[12], '</td>'
+                , '<td>', $d[13], '</td>'
+                , '<td>', $d[14], '</td>'
+            ,'</tr>';                
+        }
+        echo '</table>';
     }
 
 }

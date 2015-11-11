@@ -102,6 +102,8 @@ if($user->getTipo() == "admin"){
     $lambda = function($value,&$data){
         echo "\t<td nowrap>";
         switch ($data[2]) {
+            case "Cancelado Reno":
+            case "Cancelado Orça":
             case "Cancelado":
                 echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs</span>';
                 break;
@@ -109,6 +111,8 @@ if($user->getTipo() == "admin"){
             case "Renovação": 
             case "Importado": 
             case "Fechado": 
+            case "Fechou Reno":
+            case "Fechou Orça":
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                      '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
                      '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Log</span>',
@@ -124,11 +128,15 @@ if($user->getTipo() == "admin"){
         echo "\t<td nowrap>";
         switch ($data[2]) {
             case "Cancelado":
+            case "Cancelado Reno":
+            case "Cancelado Orça":
                 echo '<span class="add-on hand">cancelado</span>';
                 break;
             case "Orçamento": 
             case "Renovação": 
             case "Fechado": 
+            case "Fechou Reno":
+            case "Fechou Orça":
             case "Importado": 
                 echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>',
                      '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>';

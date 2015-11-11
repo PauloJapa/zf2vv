@@ -472,6 +472,27 @@ class Fechados  extends AbstractSeguro
         $this->renovacaoId = $renovacaoId;
         return $this;
     }
+//
+//    /**
+//     * 
+//     * @return string da situação do registro
+//     */
+//    public function getStatus($op='') {
+//        if (empty($op)){
+//            return $this->status;            
+//        }
+//        switch ($this->status) {
+//            case 'A':
+//            case 'R':
+//            case 'F':
+//                return 'Fechado';                     
+//            case 'C':
+//                return 'Cancelado'; 
+//            default:
+//                return 'Desconhecido'; 
+//        }
+//    }
+//    
 
     /**
      * 
@@ -483,13 +504,25 @@ class Fechados  extends AbstractSeguro
         }
         switch ($this->status) {
             case 'A':
+                return 'Fechou Orça';                    
             case 'R':
-            case 'F':
-                return 'Fechado';                     
+                return 'Fechou Reno';                     
             case 'C':
-                return 'Cancelado'; 
+                if(!is_null($this->getRenovacaoId()) AND $this->getRenovacaoId() != 0){
+                    return 'Cancelado Reno';                     
+                }else{
+                    return 'Cancelado Orça';                     
+                }
+            case 'F':
+                if(!is_null($this->getRenovacaoId()) AND $this->getRenovacaoId() != 0){
+                    return 'Fechou Reno';                     
+                }else{
+                    return 'Fechou Orça';                     
+                }
+            case 'AR':
+                return 'Fechou Reno';                     
             default:
-                return 'Desconhecido'; 
+                return 'Desconhecido ' . $this->status; 
         }
     }
 

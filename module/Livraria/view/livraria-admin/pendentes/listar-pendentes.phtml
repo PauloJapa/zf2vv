@@ -22,6 +22,9 @@
     .F2 {
         font-size: 8pt;
     }
+    .F3 {
+        font-size: 6pt;
+    }
 </style>
 
 <table style="width: 100% ;" >
@@ -68,7 +71,7 @@
 	<td nowrap class="Bl Bb Bt F1 r"><? echo $frmPagto ?></td>
 	<td nowrap class="Bl Bb Bt F1" align="right"><? echo number_format($valor, 2, ',', '.') ?></td>
         <td nowrap class="Bl Bb Bt F1" align="right"><? echo number_format($array['premioTotal'], 2, ',', '.') ?></td>
-        <td class="Bl Bb Bt Br F1"><? echo $array['atividade']['descricao']; ?></td>
+        <td class="Bl Bb Bt Br F3"><? echo $array['atividade']['descricao']; ?></td>
 </tr> 
 <? endforeach; ?>
 </table>

@@ -547,12 +547,11 @@ class FechadosRepository extends AbstractRepository {
             $this->colunas = empty($this->colunas)? '2': '3';            
             $this->where  .= ' OR (o.inicio >= :inicio'.$this->colunas.' AND o.inicio <= :fim'.$this->colunas.' AND o.formaPagto = :formaPagto'.$this->colunas;
         }
-        $this->where .= ' AND (o.status = :status'.$this->colunas.' OR o.status = :statusB'.$this->colunas.')';
+        $this->where .= ' AND o.status <> :status'.$this->colunas ;
         $this->parameters['inicio'.$this->colunas]  = $this->dateToObject($ini);
         $this->parameters['fim'.$this->colunas]     = $this->dateToObject($fim);
         $this->parameters['formaPagto'.$this->colunas]  = $pag;
-        $this->parameters['status'.$this->colunas]  = 'A';
-        $this->parameters['statusB'.$this->colunas] = 'R';
+        $this->parameters['status'.$this->colunas]  = 'C';
         if(!empty($adm)){
             $this->where .= ' AND o.administradora = :administradora'.$this->colunas;
             $this->parameters['administradora'.$this->colunas]    = $adm;            

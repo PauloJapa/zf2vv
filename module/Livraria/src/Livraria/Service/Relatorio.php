@@ -255,7 +255,6 @@ class Relatorio extends AbstractService{
             $this->data['inicioMensal'] = '01/' . $data['mesRefFiltro'] . '/' . $data['anoRefFiltro'];
             $this->dateToObject('inicioMensal');
             $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
-            echo '<h1>', $this->data['inicioMensal']->format('d/m/Y'), '</h1>';
         }else{
             //Trata os filtro para data mensal
             $this->data['inicioMensal'] = clone $this->data['inicio'];
@@ -387,7 +386,7 @@ class Relatorio extends AbstractService{
             $data[$i][1] = $value['fim']->format('d/m');
             $data[$i][2] = $value['refImovel'];
             $data[$i][3] = $value['validade'];
-            $data[$i][4] = $value['imovel']['rua'] . ' n-' . $value['imovel']['numero']. ' ' . $value['imovel']['apto']. ' ' . $value['imovel']['bloco'];
+            $data[$i][4] = $value['imovel']['rua'] . ' n-' . $value['imovel']['numero']. ' ' . $value['imovel']['apto']. ' ' . $value['imovel']['bloco']. ' ' . $value['imovel']['compl'];
             $data[$i][5] = $value['locatarioNome'];
             $data[$i][6] = number_format($value['incendio'], 2, ',', '.');
             $data[$i][7] = number_format($value['aluguel'], 2, ',', '.');

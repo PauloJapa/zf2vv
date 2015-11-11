@@ -106,7 +106,7 @@ class Importar extends AbstractService{
      */
     public function csvToArray($str){
         $linha = str_replace("\r\n","",trim($str));
-        return explode(';',  $linha);
+        return explode('|',  $linha);
     }
     
     public function importar(){
@@ -165,7 +165,7 @@ class Importar extends AbstractService{
                 continue;
             }
             $registro = $this->csvToArray(utf8_encode($value)); 
-            if(empty($registro[0])){
+            if($registro[0] != "01"){
                 continue;
             }            
             $dataResul[] = $registro; 
@@ -316,6 +316,10 @@ class Importar extends AbstractService{
         if(sizeof($array) < 20){
             $this->erro[] = 'Quantidade de campos menor que 20 campos!';
             return;
+        }
+        if($array[0] != "01"){
+            $this->erro[] = 'tipo de registro esperado é 01 e veio o ' . $array[0];
+            return;            
         }
         $this->data['id'] = '' ;
         $this->data['codano'] = '' ;
