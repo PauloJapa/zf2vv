@@ -63,13 +63,13 @@ class User {
     protected $status;
 
     /**
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
+     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
     protected $endereco;
 
     /**
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Administradora")
+     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Administradora")
      * @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      */
     protected $administradora;  

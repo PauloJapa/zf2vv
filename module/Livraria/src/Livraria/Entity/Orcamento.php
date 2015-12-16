@@ -288,7 +288,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Locador
      *
-     * @ORM\OneToOne(targetEntity="Locador")
+     * @ORM\ManyToOne(targetEntity="Locador")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      * })
@@ -298,7 +298,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Locatario
      *
-     * @ORM\OneToOne(targetEntity="Locatario")
+     * @ORM\ManyToOne(targetEntity="Locatario")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      * })
@@ -308,7 +308,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Imovel
      *
-     * @ORM\OneToOne(targetEntity="Imovel")
+     * @ORM\ManyToOne(targetEntity="Imovel")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
      * })
@@ -318,7 +318,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Taxa
      *
-     * @ORM\OneToOne(targetEntity="Taxa")
+     * @ORM\ManyToOne(targetEntity="Taxa")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
      * })
@@ -328,7 +328,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Atividade
      *
-     * @ORM\OneToOne(targetEntity="Atividade")
+     * @ORM\ManyToOne(targetEntity="Atividade")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })
@@ -338,7 +338,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Seguradora
      *
-     * @ORM\OneToOne(targetEntity="Seguradora")
+     * @ORM\ManyToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -349,7 +349,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var Administradora
      *
-     * @ORM\OneToOne(targetEntity="Administradora")
+     * @ORM\ManyToOne(targetEntity="Administradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -359,7 +359,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var User
      *
-     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      * })
@@ -369,7 +369,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var MultiplosMinimos
      *
-     * @ORM\OneToOne(targetEntity="MultiplosMinimos")
+     * @ORM\ManyToOne(targetEntity="MultiplosMinimos")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
      * })
@@ -379,7 +379,7 @@ class Orcamento extends AbstractSeguro {
     /**
      * @var ComissaoEnt
      *
-     * @ORM\OneToOne(targetEntity="Comissao")
+     * @ORM\ManyToOne(targetEntity="Comissao")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
      * })

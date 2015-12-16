@@ -32,7 +32,7 @@ class Categoria {
     protected $nome;
     
     /**
-     * @ORM\OneToMany(targetEntity="Livraria\Entity\Livro", mappedBy="categoria")
+     * @ORM\OneToMany(targetEntity="\Livraria\Entity\Livro", mappedBy="categoria")
      */
     protected $livros;
     
