@@ -556,6 +556,8 @@ abstract class AbstractService {
         
         $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
         
+        //aplicacar regras de desconto ou acrescimo aqui.
+        
         $totalBruto = round($total * (1 + $iof), 2) ;
         
         if($totalAntes != 0.0){

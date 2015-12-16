@@ -60,6 +60,13 @@ class Mail
         return $this->view->render($model);
     }
     
+    /**
+     * Foi feito um ajuste em /var/www/zf2vv/vendor/zendframework/zendframework/library/Zend/Mime/Mime.php
+     * para o EOL ser do tipo windows \r\n
+     * @author PauloWatakabe <watakabe05@gmailcom>
+     * @version 1.0
+     * @return \SisBase\Mail\Mail
+     */
     public function prepare()
     {
         $html = new MimePart($this->renderView($this->page, $this->data));

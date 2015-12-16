@@ -221,27 +221,24 @@ class Fechados extends AbstractService {
             $data['motivoNaoFechou'] = $data['motivoNaoFechou2'];
         }
         $this->logForDelete($id,$data);
-        // Verificar se é usuario da imobiliaria e enviar email.
-//        if($this->getIdentidade()->getTipo() != 'admin'){
-            $this->sendEmailCancelamento($enty, $data['motivoNaoFechou']);
-//        }
         // Cancelar tb o orcamento ou renovação que gerou este seguro fechado.
         $data['motivoNaoFechou'] = 'Excluido porque seu registro de fechado foi excluido fechado numero= '. $id . '. Motivo ' . $data['motivoNaoFechou'];
         $serOrca = new Orcamento($this->em);
         $orca = $enty->getOrcamentoId();
         $reno = $enty->getRenovacaoId();
-        $force = TRUE;
-        if($orca != 0){
+        $force = $resul = TRUE;
+        if(!is_null($orca) AND $orca != 0){
             $resul = $serOrca->delete($orca, $data, $force) ;
-            if($resul !== true){
-                return $resul;
-            }
         }
-        if($reno != 0){
+        if(!is_null($reno) AND $reno != 0){
             $resul = $serOrca->delete($reno, $data, $force);
-            if($resul !== true){
-                return $resul;
-            }
+        }
+        // Verificar se é usuario da imobiliaria e enviar email.
+//        if($this->getIdentidade()->getTipo() != 'admin'){
+            $this->sendEmailCancelamento($enty, $data['motivoNaoFechou']);
+//        }
+        if($resul !== true){
+            return $resul;
         }
         return TRUE;
     }

@@ -22,7 +22,7 @@ class Email extends AbstractService
         $this->view = $view;
     }
     
-    public function enviaEmail(array $dataEmail, $template='add-user') {
+    public function enviaEmail(array &$dataEmail, $template='add-user') {
         $baseUrl = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey('baseUrl')[0]->getDescricao();
         try {
             $dataEmail['baseUrl'] = $baseUrl;
@@ -40,6 +40,7 @@ class Email extends AbstractService
                 }else{
                     $mail->getMessage()->addCc($this->cc, 'Sistema Locação'); 
                 }
+                echo '<pre>Lista copia' , var_dump($this->cc), '</pre>';
             }
             if($this->cco){
                 $mail->getMessage()->addBcc($this->cco, 'Testes Locação');
@@ -72,8 +73,14 @@ class Email extends AbstractService
                 $dataEmail['subject'] .=  '(' . $dataEmail['email'] . ')';
                 $dataEmail['email'] = 'watakabe98@hotmail.com'; 
                 $dataEmail['emailNome'] = 'Paulo Sistema';
-                 $this->cc = FALSE;
-                $this->cco = FALSE;
+//                $this->cc = [
+//                    'watakabe05@gmail.com', 
+//                    'dorival@vilavelha.com.br', 
+//                    'alessandroalzani@vilavelha.com.br',
+//                    'deploy.microsoft@dedalusprime.com.br',
+//                ];
+                $this->cc = false;
+                $this->cco = false;
                 break;
 //            case 'marisa':
 //                $dataEmail['email'] = 'marisa@vilavelha.com.br'; 
