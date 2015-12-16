@@ -26,7 +26,7 @@ class Livro {
     protected $nome;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Categoria", inversedBy="livro")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Categoria", inversedBy="livros")
      * @ORM\JoinColumn(name="categoria_id", referencedColumnName="id")
      */
     protected $categoria;

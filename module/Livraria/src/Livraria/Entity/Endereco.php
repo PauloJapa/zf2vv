@@ -71,25 +71,25 @@ class Endereco {
     protected $updatedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Bairro", inversedBy="endereco")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Bairro", inversedBy="enderecos")
      * @ORM\JoinColumn(name="bairros_id", referencedColumnName="id")
      */
     protected $bairro;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Cidade", inversedBy="endereco")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Cidade", inversedBy="enderecos")
      * @ORM\JoinColumn(name="cidades_id", referencedColumnName="id")
      */
     protected $cidade;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Estado", inversedBy="endereco")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Estado", inversedBy="enderecos")
      * @ORM\JoinColumn(name="estados_id", referencedColumnName="id")
      */
     protected $estado;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Livraria\Entity\Pais", inversedBy="endereco")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Pais", inversedBy="enderecos")
      * @ORM\JoinColumn(name="paises_id", referencedColumnName="id")
      */
     protected $pais;
