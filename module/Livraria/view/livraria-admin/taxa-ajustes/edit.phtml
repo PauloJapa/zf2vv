@@ -1,0 +1,12 @@
+<h3>Editando Taxa de Ajuste</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin-interna',array('controller'=>'taxaAjustes','action'=>'edit')));
+
+include 'formTaxaAjuste.php';
+
+?>

@@ -1,0 +1,12 @@
+<h3>Nova Taxa de Ajuste</h3>
+
+<br />
+
+<?php
+$form = $this->form; 
+
+$form->setAttribute('action', $this->url('livraria-admin',array('controller'=>'taxaAjustes','action'=>'new')));
+
+include 'formTaxaAjuste.php';
+
+?>

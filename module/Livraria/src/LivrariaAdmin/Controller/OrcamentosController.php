@@ -4428,26 +4428,4 @@ $array[] = '1080970';
         
     }
     
-    public function acertaLocatarioAction() {
-        $this->verificaSeUserAdmin();
-        /* @var $service \Livraria\Service\Orcamento */
-        $service = $this->getServiceLocator()->get($this->service);
-      
-        echo "<!DOCTYPE html>",
-        "<html><head>",
-        '<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >',
-        '<meta http-equiv="content-language" content="pt-br" />',
-        '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
-        '<title>Vila Velha Seguros</title>',
-        '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
-        "</head><body>",
-        '<h1> Acertar nome dos Locatarios </h1>'
-        ;
-        $service->verificaLocatario(['adm'=>'','ini'=>'01/04/2015','fim'=>'31/04/2015',]);
-        
-        echo                 
-             "</body></html>"
-        ; 
-        
-    }
 }
