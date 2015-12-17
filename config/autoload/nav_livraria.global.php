@@ -41,6 +41,12 @@ return array(
                                 'controller' => 'taxas',
                                 'action' => 'index',
                             ),
+                            'taxasAjuste' => array(
+                                'label' => 'Taxa_de_Ajuste',
+                                'route' => 'livraria-admin',
+                                'controller' => 'taxaAjustes',
+                                'action' => 'index',
+                            ),
                             'Mult_Min1' => array(
                                 'label' => 'Limites_de_Contratação',
                                 'route' => 'livraria-admin',

@@ -1,0 +1,121 @@
+<h1>Coberturas</h1>
+<br />
+
+<p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Cobertura</span></p>
+<?php
+
+//    if(!isset($noFilter)){
+//        $form = $this->form; 
+//        $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
+//        $form->prepare();
+//        echo 
+//        $this->FormDefault(['legend' => 'Filtro(s)'],'inicio',$this, $form),
+//            "<td>\r",
+//                $this->FormDefault(['ajaxStatus', 'subOpcao','autoComp'], 'hidden'),
+//                $this->FormDefault(['seguradora' => 'select']),
+//            "</td>\r<td>",
+//                $this->FormDefault(['classe' => 'select']),
+//            "</td>\r<td>",
+//                $this->FormDefault(['comissao' => 'select']),
+//            "</td>\r<td>",
+//                $this->FormDefault(['tipoCobertura' => 'select']),
+//            "</td>\r<td style='width:40%; vertical-align: middle;' rowspan='2'>",
+//                $this->FormDefault(['enviar'], 'submitOnly'),
+//            "</td>\r",
+//        "</tr><tr>\r",
+//            "<td>",
+//                $this->FormDefault(['validade' => 'select']),
+//            "</td>\r<td>",
+//                $this->FormDefault(['ocupacao' => 'select']),
+//            "</td>\r<td>",
+//                $this->FormDefault(['status' => 'select']),
+//            "</td>\r<td>",
+//            "</td>\r",
+//        $this->FormDefault([],'fim');
+//    }
+    
+$coluns = array(
+    'ID',
+    'Inicio',
+    'Fim',
+    'Seguradora',
+    'Classe',
+    'Comissao',
+    'Ocupação',
+    'Validade',
+    'Incêndio',
+    'Inc. Conteúdo',
+    'Aluguel',
+    'Eletrico',
+    'Vendaval',
+    'Status',
+    'Ação'
+    );
+$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
+echo $this->ViewIndex('table'),
+     $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
+     
+foreach($this->data as $entity){ 
+    $linha = array(
+        $entity->getId(),
+        $entity->getInicio(),
+        $entity->getFim(),
+        $entity->getSeguradora(),
+        $entity->getClasse(),
+        $entity->floatToStr('comissao'),
+        $entity->getOcupacao('str'),
+        $entity->getValidade(),
+        $entity->floatToStr('incendio',4),
+        $entity->floatToStr('IncendioConteudo',4),
+        $entity->floatToStr('Aluguel',4),
+        $entity->floatToStr('Eletrico',8),
+        $entity->floatToStr('Vendaval',8),
+        $entity->getStatus(),
+        $entity->getId(),
+    );
+    echo $this->ViewIndex('line',array('data' => $linha));
+}
+echo $this->ViewIndex('close');
+?>
+<br />
+<form name="form" id="form" method="POST">
+    <input type="hidden" name="subOpcao" id="subOpcao2">
+    <input type="hidden" name="id" id="id2">
+</form>
+<script language="javascript">
+    var formName = '<?php echo $this->formName ?>';
+    function buscar(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
+        envia(tar,'buscar',formName);
+    }  
+    function edit(id){
+        try{
+            var vlr = document.getElementById('seguradora').value;
+            var ele = document.createElement("input");
+            var frm = document.getElementById('form');
+            ele.setAttribute("type","hidden");
+            ele.setAttribute("name","seguradora");
+            ele.setAttribute("id","seguradora2");
+            ele.setAttribute("value",vlr);
+            frm.appendChild(ele);    
+        }catch(e){
+            var vlr = e ;
+        }        
+        document.getElementById('id2').value = id ;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'edit')); ?>";
+        envia(tar,'editar');
+    }    
+    function novo(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
+        envia(tar,'novo');        
+    }    
+    function del(id){
+        var msg = "Deseja realmente excluir este registro?";
+        if(!confirm(msg))return;
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'delete')); ?>";
+        document.getElementById('id2').value = id ;
+        envia(tar,id);        
+    }
+</script>
+
+<?php echo $this->paginationControl($this->data,'Sliding','paginator',array('route' => $this->route)); ?>
