@@ -71,6 +71,7 @@ return array(
             'livros' => 'LivrariaAdmin\Controller\LivrosController',
             'users' => 'LivrariaAdmin\Controller\UsersController',
             'taxas' => 'LivrariaAdmin\Controller\TaxasController',
+            'taxaAjustes' => 'LivrariaAdmin\Controller\TaxaAjustesController',
             'atividades' => 'LivrariaAdmin\Controller\AtividadesController',
             'classeAtividades' => 'LivrariaAdmin\Controller\ClasseAtividadesController',
             'comissaos' => 'LivrariaAdmin\Controller\ComissaosController',
