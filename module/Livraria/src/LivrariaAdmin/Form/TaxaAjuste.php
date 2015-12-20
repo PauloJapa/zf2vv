@@ -5,6 +5,16 @@ namespace LivrariaAdmin\Form;
 
 class TaxaAjuste extends AbstractForm {
     /**
+     * inputs que podem se repetir para comercio e industria
+     * @var array 
+     */
+    protected $inputs;  
+    /**
+     * Label dos inputs que podem se repetir para comercio e industria
+     * @var array 
+     */
+    protected $inputsL;  
+    /**
      * Registros para preencher o input select
      * @var array 
      */
@@ -40,7 +50,16 @@ class TaxaAjuste extends AbstractForm {
         $this->setInputSelect('status', '*Situação', $status);
 
 
-        $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
+        $classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
+        foreach ($classes as $key => $classe) {
+            if(strpos( $classe, 'CLASSE') === FALSE){
+                continue;
+            }
+            if(strpos($classe, 'SEM') !== FALSE){
+                continue;
+            }
+            $this->classes[$key] = $classe;
+        }
         $this->setInputSelect('classe', '*Classe', $this->classes);
         
         $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
@@ -52,20 +71,38 @@ class TaxaAjuste extends AbstractForm {
         $validade = $this->getParametroSelect('validade');
         $this->setInputSelect('validade', '*Validade', $validade);
         
-        $ocupacao = $this->getParametroSelect('ocupacao');
-        $this->setInputSelect('ocupacao', '*Ocupação', $ocupacao);
-        
-        
-        $this->setInputText('contEle'      , 'TaxaAjuste p/ contEle'      , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('conteudo'     , 'TaxaAjuste p/ conteudo'     , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('eletrico'     , 'TaxaAjuste p/ eletrico'     , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('semContEle'   , 'TaxaAjuste p/ semContEle'   , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('comEletrico'  , 'TaxaAjuste p/ comEletrico'  , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('semEletrico'  , 'TaxaAjuste p/ semEletrico'  , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('unica'        , 'TaxaAjuste p/ unica'        , ['placeholder' => 'XXX,XX']);
-        $this->setInputText('contEle'      , 'TaxaAjuste p/ contEle'      , ['placeholder' => 'XXX,XX']);
-        
-        
+        $ocupacao = [
+            '04' => 'Apartamento',
+            '02' => 'Casa',
+            '01' => 'Comercio',
+            '03' => 'Industria',
+        ];
+        $this->setInputRadio('ocupacao', '*Ocupação', $ocupacao);
+                
+        $this->inputs = ['contEle'             
+                   ,'conteudo'                
+                   ,'eletrico'               
+                   ,'semContEle'                
+                   ,'comEletrico'             
+                   ,'semEletrico'               
+                   ,'unica'      ]; 
+        $this->inputsL = ['Taxa COM Conteudo e Dano Eletrico'         
+                   ,'Taxa COM Conteudo'                             
+                   ,'Taxa COM Dano Eletrico'                       
+                   ,'Taxa SEM Conteudo e Dano Eletrico'               
+                   ,'Taxa COM Dano Eletrico'                        
+                   ,'Taxa SEM Dano Eletrico'                          
+                   ,'Taxa Unica'                        ];          
+        // Carrega para casa e apto
+        foreach ($this->inputs as $key => $value) {
+            $this->setInputText($value, $this->inputsL[$key]  , ['placeholder' => 'XXX,XX']);
+        }
+        // Carrega para comercio e industria
+        foreach ($this->classes as $key => $classe){
+            foreach ($this->inputs as $k => $value) {
+                $this->setInputText($value . '[' . $key . ']' , $this->inputsL[$k]  , ['placeholder' => 'XXX,XX', 'id' => $value . '_' . $key ]);
+            }
+        }       
         $this->setInputSubmit('enviar', 'Salvar');
 
         $file = new \Zend\Form\Element\File('content');
@@ -90,4 +127,23 @@ class TaxaAjuste extends AbstractForm {
         }
     }
     
+    public function getClasses() {
+        return $this->classes;
+    }
+    
+    public function getInputs($opt = FALSE) {
+        if ($opt){
+            unset($this->inputs[4]);
+            unset($this->inputs[5]);
+        }
+        return $this->inputs;
+    }
+    
+    public function getLabelOfInputs($opt = FALSE) {
+        if ($opt){
+            unset($this->inputsL[4]);
+            unset($this->inputsL[5]);
+        }
+        return $this->inputsL;
+    }
 }

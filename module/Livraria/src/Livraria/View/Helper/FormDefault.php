@@ -166,6 +166,10 @@ class FormDefault extends AbstractHelper {
             case "moedaLine":
                 $this->renderInputMoedaLine($name);
                 break;
+            
+            case "radioLine":
+                $this->renderInputRadioLine($name);
+                break;
 
             default:
                 echo
@@ -426,20 +430,22 @@ class FormDefault extends AbstractHelper {
      * @param String $symbol para exibir ou não o simbolo da moeda
      */
     public function renderInputMoeda($name,$symbol='true',$dec='2') {
+        /* @var $element \Zend\Form\Element\Text */
         $element = $this->form->get($name);
         $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
+        $id = $element->getAttribute('id');
         if($element->getAttribute('readOnly'))
-            $name = '';
+            $id = '';
         echo
-        '<div class="input-append" id="pop' . $name . '">',
+        '<div class="input-append" id="pop' . $id . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
-            '<span class="add-on hand" onClick="cleanInput(\'', $name ,'\')"><i class="icon-remove"></i></span>',
+            '<span class="add-on hand" onClick="cleanInput(\'', $id ,'\')"><i class="icon-remove"></i></span>',
         "</div>", PHP_EOL,
         '<script language="javascript">',
         '$(function(){$("#',
-                $name,
+                $id,
         '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay:true, precision:', $dec, '});});',
         '</script>',
          
@@ -633,6 +639,36 @@ class FormDefault extends AbstractHelper {
         '<div class="input-append" id="pop' . $name . '">',
             $this->formView->formLabel($element),
             $this->formView->formRadio($element),
+        "</div>", PHP_EOL;
+        if($disabled)
+            echo '<script language="javascript">',
+                    'setInputDisabledMulti("', $name, '");',
+                 '</script>',
+                 '<input type="hidden" name="', $name, '" value="', $element->getValue() ,'">';
+        $this->checkError();
+    }
+    
+    
+    public function renderInputRadioLine($name){
+        /* @var $hRadio \Zend\Form\View\Helper\FormRadio */
+        $element = $this->form->get($name);
+        if(!$element){
+            echo '<h1>Erro ao tentar carregar input= ' . $name ;
+            return;
+        }
+        $disabled = $element->getAttribute('disabled');
+     //   if($disabled){ //OnClick nao é necessario quando desativa o campo =)
+     //       if($element->getAttribute('onClick')) $element->getAttribute('onClick') = '';
+     //   }
+        $this->checkError($element);
+        $hRadio = $this->formView->formRadio();
+        $hRadio->setSeparator(' -|- ');
+        echo 
+        '<div class="form-inline" id="pop' . $name . '">',
+            $this->formView->formLabel($element),
+            $hRadio->getSeparator(),
+            $hRadio->render($element),
+            $hRadio->getSeparator(),
         "</div>", PHP_EOL;
         if($disabled)
             echo '<script language="javascript">',
