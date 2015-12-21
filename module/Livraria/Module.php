@@ -19,6 +19,7 @@ use Livraria\Service\Administradora as AdministradoraService;
 use Livraria\Service\Classe as ClasseService;
 use Livraria\Service\Seguradora as SeguradoraService;
 use Livraria\Service\User as UserService;
+use Livraria\Service\TaxaAjuste as TaxaAjusteService;
 use Livraria\Service\Taxa as TaxaService;
 use Livraria\Service\ClasseAtividade as ClasseAtividadeService;
 use Livraria\Service\Atividade as AtividadeService;
@@ -134,6 +135,9 @@ class Module {
                 },
                 'Livraria\Service\Taxa' => function($service) {
                     return new TaxaService($service->get('Doctrine\ORM\EntityManager'));
+                },
+                'Livraria\Service\TaxaAjuste' => function($service) {
+                    return new TaxaAjusteService($service->get('Doctrine\ORM\EntityManager'));
                 },
                 'Livraria\Service\ClasseAtividade' => function($service) {
                     return new ClasseAtividadeService($service->get('Doctrine\ORM\EntityManager'));
