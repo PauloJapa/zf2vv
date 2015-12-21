@@ -435,20 +435,21 @@ class FormDefault extends AbstractHelper {
         $element->setAttribute('style','text-align:right;');
         $this->checkError($element);
         $id = $element->getAttribute('id');
-        if($element->getAttribute('readOnly'))
+        if ($element->getAttribute('readOnly')) {
             $id = '';
+        }
         echo
         '<div class="input-append" id="pop' . $id . '">',
             $this->formView->formLabel($element),
-            $this->formView->formText($element),
+            $this->formView->formText($element);
+        echo
             '<span class="add-on hand" onClick="cleanInput(\'', $id ,'\')"><i class="icon-remove"></i></span>',
         "</div>", PHP_EOL,
         '<script language="javascript">',
         '$(function(){$("#',
                 $id,
         '").maskMoney({symbol:"R$ ", showSymbol:', $symbol, ', thousands:".", decimal:",", symbolStay:true, precision:', $dec, '});});',
-        '</script>',
-         
+        '</script>',         
         $this->checkError();
     }
 
@@ -539,17 +540,20 @@ class FormDefault extends AbstractHelper {
     public function renderInpuIcone($options) {
         $element = $this->form->get($options['name']);
         $this->checkError($element);
-        if($element->getAttribute('readOnly'))
-            $options['name'] = '';
+        $id = $element->getAttribute('id');
+        if ($element->getAttribute('readOnly')) {
+            $id = '';
+        }
         echo
-        '<div class="input-append" id="pop' . $options['name'] . '">',
+        '<div class="input-append" id="pop' . $id . '">',
             $this->formView->formLabel($element),
             $this->formView->formText($element),
-            '<span class="add-on hand" onClick="cleanInput(\'', $options['name'] ,'\')"><i class="icon-remove"></i></span>',
+            '<span class="add-on hand" onClick="cleanInput(\'', $id ,'\')"><i class="icon-remove"></i></span>',
             '<span class="add-on hand" onClick="', $options['js'] ,'"><i class="', $options['icone'] ,'"></i></span>',
         "</div>", PHP_EOL;
-        if(isset($options['span'])) 
-            echo "<span id='", $options['span'] ,"'></span></font>";    
+        if (isset($options['span'])) {
+            echo "<span id='", $options['span'], "'></span></font>";
+        }
         $this->checkError();        
     }
 

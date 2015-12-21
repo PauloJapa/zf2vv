@@ -24,8 +24,16 @@ class TaxaAjuste extends AbstractService {
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
         $this->idToReference('seguradora', 'Livraria\Entity\Seguradora');
-        $this->idToReference('classe', 'Livraria\Entity\Classe');
-        $this->idToReference('administradora', 'Livraria\Entity\Administradora');
+        if(isset($this->data['classe']) AND !empty($this->data['classe'])){
+            $this->idToReference('classe', 'Livraria\Entity\Classe');            
+        }else{
+            unset($this->data['classe']);
+        }
+        if(isset($this->data['administradora']) AND !empty($this->data['administradora'])){
+            $this->idToReference('administradora', 'Livraria\Entity\Administradora');
+        }else{
+            unset($this->data['administradora']);
+        }
         
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
@@ -45,8 +53,23 @@ class TaxaAjuste extends AbstractService {
         if($result !== TRUE){
             return $result;
         }      
+       
+        $resul = false;
+        switch($this->data['ocupacao']){
+            case '04': //apto
+            case '02': // casa
+                $resul = parent::insert();
+                break;
+            case '01': // comercio
+            case '03': // industria
+                $resul = $this->saveLoteDeTaxas();
+                break;
+            default:    
+                echo '<pre>Error ocupacao ' ,  var_dump($this->data['ocupacao']); 
+                die;
+        } 
 
-        if(parent::insert())
+        if($resul)
             $this->logForNew();
         
         return TRUE;
@@ -75,10 +98,70 @@ class TaxaAjuste extends AbstractService {
             return $result;
         }
         
-        if(parent::update())
+        $resul = false;
+        switch($this->data['ocupacao']){
+            case '04': //apto
+            case '02': // casa
+                $resul = parent::update();
+                break;
+            case '01': // comercio
+            case '03': // industria
+                $resul = $this->saveLoteDeTaxas();
+                break;
+            default:    
+                echo '<pre>Error ocupacao ' ,  var_dump($this->data['ocupacao']); 
+                die;
+        } 
+
+        if($resul)
             $this->logForEdit();
         
         return TRUE;
+    }
+  
+    /** 
+     * Esclui o registro ou marca como cancelado se existir os campo status
+     * @param $id do registro
+     * @return boolean
+     */   
+    public function delete($id) {
+        $this->entityReal = $this->em->getReference($this->entity, $id);
+        if($this->entityReal) {
+            $this->em->remove($this->entityReal);
+            if ($this->getFlush())
+                $this->em->flush();
+            return TRUE ;
+        }
+        return FALSE ;
+    }
+    
+    public function saveLoteDeTaxas() {
+        $inputs = ['contEle'             
+                   ,'conteudo'                
+                   ,'eletrico'               
+                   ,'semContEle'                
+                   ,'unica'      ];
+        foreach ($this->data['idArray'] as $key => $id){
+            $this->data['id']     = $id;
+            $this->data['classe'] = $key;
+            $inserir              = FALSE;
+            foreach ($inputs as $input){
+                $this->data[$input] = $this->data[$input . 'Array'][$key];
+                if(!empty($this->data[$input])){
+                    $inserir = true;
+                }
+            }
+            $this->idToReference('classe', 'Livraria\Entity\Classe');  
+            if(empty($id)){
+                if($inserir){
+                    parent::insert();                               
+                }
+            }else{
+                $this->entityReal = null;
+                parent::update();                               
+            }    
+        }
+        return true;
     }
     
     /**
@@ -95,8 +178,12 @@ class TaxaAjuste extends AbstractService {
     public function getDiff($ent){
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Seguradora'            , $ent->getSeguradora()->getId()          , $this->data['seguradora']->getId()               ); 
-        $this->dePara .= $this->diffAfterBefore('Classe'                , $ent->getClasse()->getId()              , $this->data['classe']->getId()                   );
-        $this->dePara .= $this->diffAfterBefore('Administradora'        , $ent->getAdministradora()->getId()      , $this->data['administradora']->getId()           );
+        if(!is_null($ent->getClasse())){
+            $this->dePara .= $this->diffAfterBefore('Classe'                , $ent->getClasse()->getId()              , $this->data['classe']->getId()                   );
+        }
+        if(!is_null($ent->getAdministradora())){
+            $this->dePara .= $this->diffAfterBefore('Administradora'        , $ent->getAdministradora()->getId()      , $this->data['administradora']->getId()           );
+        }
         $this->dePara .= $this->diffAfterBefore('Data inicio'           , $ent->getInicio()                       , $this->data['inicio']->format('d/m/Y')           );
         $fim = $this->data['fim']->format('d/m/Y');
         if ('01/01/0001' == $fim) {
@@ -127,14 +214,18 @@ class TaxaAjuste extends AbstractService {
         return TRUE;
         // Valida se o registro esta conflitando com algum registro existente
         $repository = $this->em->getRepository($this->entity);
-        $entitys = $repository->findBy(array('seguradora'     => $this->data['seguradora'], 
-                                             'classe'         => $this->data['classe'],
-                                             'validade'       => $this->data['validade'],
-                                             'ocupacao'       => $this->data['ocupacao'],
-                                             'administradora' => $this->data['administradora'],
-                                             'status'         => 'A'
-                                            )
-                                      );
+        $filters = array('seguradora'     => $this->data['seguradora'], 
+                         'validade'       => $this->data['validade'],
+                         'ocupacao'       => $this->data['ocupacao'],
+                         'status'         => 'A'
+        );
+        if(!empty($this->data['administradora'])){
+            $filters['administradora'] = $this->data['administradora'];
+        }
+        if(!empty($this->data['classe'])){
+            $filters['classe'] = $this->data['classe'];
+        }
+        $entitys = $repository->findBy($filters);
         $diferenca = 3650 ;
         if(!$entitys)
             $diferenca = 0 ;

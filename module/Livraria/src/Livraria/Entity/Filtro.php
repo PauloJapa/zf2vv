@@ -46,6 +46,9 @@ class  Filtro
             return 'Não Calcular';
         if(is_null($float))
             $float = 0.0;
+        if($float == 0){
+            return '';
+        }
         return number_format($float, $dec, ',','.');
     }
  
@@ -60,7 +63,7 @@ class  Filtro
             //return number_format($valor, $dec, ',','.');
         }
         if(is_string($valor)){
-            $valor = str_replace(",", ".", preg_replace("/[^0-9,]/", "", $valor));
+            $valor = str_replace(",", ".", preg_replace("/[^0-9,-]/", "", $valor));
             return floatval($valor);
         }
         return FALSE;

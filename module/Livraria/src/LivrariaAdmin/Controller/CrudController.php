@@ -200,6 +200,50 @@ abstract class CrudController extends AbstractActionController {
         return $viewData;    
     }
     
+   /**
+     * Metodo usado para converte os prefix do form html em array simples
+     * Necessario para validaçao dos filters em forms que tem dependencia de outros forms
+     * Percorre todos os itens do post desmontando array em itens comuns do post
+     *
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0
+     * @param array multidimencional $data
+     * @return array simples
+     */
+    public function getFormatFormData(array $data) {
+        $newData = [];
+        $this->extractData($newData, $data);
+        return $newData;
+    }
+
+    /**
+     * Metodo resursivo para transformar array multidimensional em array simples baseado em seus prefix
+     *
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0
+     * @param array $newData
+     * @param array $data
+     * @param string $prefix
+     */
+    public function extractData(&$newData, $data, $prefix = '') {
+        foreach ($data as $key => $value) {
+            if (!is_array($value)) {
+                if (empty($prefix)) {
+                    $newData[$key] = $value;
+                } else {
+                    $newData[$prefix . '[' . $key . ']'] = $value;
+                }
+                continue;
+            }
+            if (empty($prefix)) {
+                $pf = $key;
+            } else {
+                $pf = $prefix . '[' . $key . ']';
+            }
+            $this->extractData($newData, $value, $pf);
+        }
+    }
+
     /**
      * 
      * Configura um chamada para o repositorio que
