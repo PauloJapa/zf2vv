@@ -8,7 +8,6 @@ class TaxaAjusteFilter extends AbstractFilter {
         
         $this->notEmpty('inicio');
         $this->notEmpty('status');
-        $this->notEmpty('classe');
         $this->notEmpty('seguradora');
         $this->notEmpty('validade');
         $this->notEmpty('ocupacao');

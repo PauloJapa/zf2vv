@@ -33,25 +33,28 @@
 //            "</td>\r",
 //        $this->FormDefault([],'fim');
 //    }
-    
+  [
+      ];   
 $coluns = array(
     'ID',
     'Inicio',
     'Fim',
+    'Administradora',
     'Seguradora',
     'Classe',
-    'Comissao',
     'Ocupação',
     'Validade',
-    'Incêndio',
-    'Inc. Conteúdo',
-    'Aluguel',
-    'Eletrico',
-    'Vendaval',
+    'contEle'     ,       
+    'conteudo'    ,           
+    'eletrico'    ,          
+    'semContEle'  ,             
+    'comEletrico' ,           
+    'semEletrico' ,             
+    'unica' ,     
     'Status',
     'Ação'
     );
-$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
+$td     = array('','','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
@@ -60,16 +63,18 @@ foreach($this->data as $entity){
         $entity->getId(),
         $entity->getInicio(),
         $entity->getFim(),
+        is_null($entity->getAdministradora())?'-':$entity->getAdministradora(),
         $entity->getSeguradora(),
         $entity->getClasse(),
-        $entity->floatToStr('comissao'),
         $entity->getOcupacao('str'),
         $entity->getValidade(),
-        $entity->floatToStr('incendio',4),
-        $entity->floatToStr('IncendioConteudo',4),
-        $entity->floatToStr('Aluguel',4),
-        $entity->floatToStr('Eletrico',8),
-        $entity->floatToStr('Vendaval',8),
+        $entity->floatToStr('contEle'),
+        $entity->floatToStr('conteudo'),
+        $entity->floatToStr('eletrico'),
+        $entity->floatToStr('semContEle'),
+        $entity->floatToStr('comEletrico'),
+        $entity->floatToStr('semEletrico'),
+        $entity->floatToStr('unica'),
         $entity->getStatus(),
         $entity->getId(),
     );

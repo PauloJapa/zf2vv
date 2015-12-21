@@ -42,12 +42,12 @@ class TaxaAjuste extends AbstractForm {
         $this->setInputHidden('id');
 
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
-        $this->setInputText('inicio', '*Inicio da Vigência', $attributes);
+        $this->setInputText('inicio', '*Inicio da Vigência', $attributes, ['value' => date('d/m/Y')]);
         
         $this->setInputText('fim', '*Fim da Vigência', $attributes);
         
         $status = $this->getParametroSelect('status');
-        $this->setInputSelect('status', '*Situação', $status);
+        $this->setInputSelect('status', '*Situação', $status, ['value' => 'A']);
 
 
         $classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
@@ -95,22 +95,26 @@ class TaxaAjuste extends AbstractForm {
                    ,'Taxa Unica'                        ];          
         // Carrega para casa e apto
         foreach ($this->inputs as $key => $value) {
-            $this->setInputText($value, $this->inputsL[$key]  , ['placeholder' => 'XXX,XX']);
+            $this->setInputText($value, $this->inputsL[$key]  , ['placeholder' => 'XXX,XX', 'id' => $value, 'onChange' => 'cleanAnother(this)' ]);
         }
         // Carrega para comercio e industria
         foreach ($this->classes as $key => $classe){
+            $this->setInputHidden('idArray[' . $key . ']');
             foreach ($this->inputs as $k => $value) {
-                $this->setInputText($value . '[' . $key . ']' , ' '  , ['placeholder' => 'XXX,XX', 'id' => $value . '_' . $key ,'class' => 'input-small']);
+                $this->setInputText(
+                    $value . 'Array[' . $key . ']' , 
+                    ' ' , 
+                    [
+                        'placeholder' => 'XXX,XX', 
+                        'id' => $value . '_' . $key ,
+                        'class' => 'input-small',
+                        'onChange' => 'cleanAnother(this)',
+                    ]
+                );
             }
         }       
         $this->setInputSubmit('enviar', 'Salvar');
 
-        $file = new \Zend\Form\Element\File('content');
-        $file->setLabel('Selecione um arquivo')
-             ->setAttribute('id', 'content');
-        $this->add($file);
-        
-        $this->setInputSubmit('importar', 'Importar CSV', ['onClick'=>'importarFile();return false;']);
     }
     
     /**

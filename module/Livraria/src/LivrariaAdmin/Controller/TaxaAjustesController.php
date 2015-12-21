@@ -21,7 +21,7 @@ class TaxaAjustesController extends CrudController {
     
     public function indexAction(array $filtro = array('status' => 'A')){
         $this->verificaSeUserAdmin();
-        $orderBy = ['seguradora'=>'ASC','administradora'=>'ASC','classe'=>'ASC','ocupacao'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
+        $orderBy = ['seguradora'=>'ASC','administradora'=>'ASC','ocupacao'=>'ASC','classe'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
         if(!$this->render){
             return parent::indexAction($filtro,$orderBy);
         }
@@ -47,14 +47,12 @@ class TaxaAjustesController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
-        
         if(($data['subOpcao'] == 'salvar') or ($data['subOpcao'] == 'buscar')){
-            if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
-            if(!empty($data['seguradora']))$filtro['seguradora'] = $data['seguradora'];
-            if(!empty($data['ocupacao']))  $filtro['ocupacao']   = $data['ocupacao'];
-            if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
-            $this->formData->setData($data);
-            $this->formData->setComissao($data);
+//            if(!empty($data['classe']))    $filtro['classe']     = $data['classe'];
+//            if(!empty($data['seguradora']))$filtro['seguradora'] = $data['seguradora'];
+//            if(!empty($data['ocupacao']))  $filtro['ocupacao']   = $data['ocupacao'];
+//            if(!empty($data['validade']))   $filtro['validade']   = $data['validade'];
+            $this->formData->setData($this->getFormatFormData($data));
         }
         if($data['subOpcao'] == 'salvar'){
             if ($this->formData->isValid()) {
@@ -67,12 +65,12 @@ class TaxaAjustesController extends CrudController {
                 foreach ($result as $value) {
                     $this->flashMessenger()->addMessage($value);
                 }
+            }else{
+                echo '<pre>isvalid false ', var_dump($this->formData->getMessages()), '</pre>';
             }
         }
-        
-        $this->setRender(FALSE);
-        $this->indexAction($filtro);
-        
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch();
         
         return new ViewModel($this->getParamsForView()); 
     }
@@ -87,22 +85,21 @@ class TaxaAjustesController extends CrudController {
         
         switch ($data['subOpcao']){
         case 'editar':    
-            $entity = $this->getEm()->find($this->entity,$data['id']);
-            $filtro['seguradora']     = $entity->getSeguradora()->getId();
-            $filtro['classe']         = $entity->getClasse()->getId();
-            $filtro['administradora'] = $entity->getAdministradora();
-            $filtro['validade']       = $entity->getValidade();
-            $data = $entity->toArray();
+            $data = $this->getEm()->getRepository($this->entity)->getData($data['id']);
+//            $filtro['seguradora']     = $entity->getSeguradora()->getId();
+//            $filtro['classe']         = $entity->getClasse()->getId();
+//            $filtro['administradora'] = $entity->getAdministradora();
+//            $filtro['validade']       = $entity->getValidade();
             $this->formData->setData($data);
             break;
-        case 'buscar':  
-            if(!empty($data['classe']))           $filtro['classe']          = $data['classe'];
-            if(!empty($data['seguradora']))       $filtro['seguradora']      = $data['seguradora'];
-            if(!empty($data['ocupacao']))         $filtro['ocupacao']        = $data['ocupacao'];
-            if(!empty($data['administradora']))   $filtro['administradora']  = $data['administradora'];
-            if(!empty($data['validade']))         $filtro['validade']        = $data['validade'];
-            $this->formData->setData($data);  
-            break;
+//        case 'buscar':  
+//            if(!empty($data['classe']))           $filtro['classe']          = $data['classe'];
+//            if(!empty($data['seguradora']))       $filtro['seguradora']      = $data['seguradora'];
+//            if(!empty($data['ocupacao']))         $filtro['ocupacao']        = $data['ocupacao'];
+//            if(!empty($data['administradora']))   $filtro['administradora']  = $data['administradora'];
+//            if(!empty($data['validade']))         $filtro['validade']        = $data['validade'];
+//            $this->formData->setData($data);  
+//            break;
         case 'salvar': 
             $this->formData->setData($data);
             if ($this->formData->isValid()){
@@ -117,11 +114,12 @@ class TaxaAjustesController extends CrudController {
                 }
             }   
             break;
-        }        
-        $this->formData->setComissao($data);
+        }       
+        // Pegar a rota atual do controler
+        $this->route2 = $this->getEvent()->getRouteMatch(); 
             
-        $this->setRender(FALSE);
-        $this->indexAction($filtro);
+//        $this->setRender(FALSE);
+//        $this->indexAction($filtro);
 
         return new ViewModel($this->getParamsForView()); 
     }

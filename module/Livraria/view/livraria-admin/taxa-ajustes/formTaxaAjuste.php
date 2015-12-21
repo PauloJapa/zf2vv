@@ -1,5 +1,6 @@
 
-<p class=""><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span></p>
+<p class=""><span class="add-on hand" onClick="voltar();"><i class="icon-backward"></i>Voltar</span>
+<span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Taxa de Ajuste</span></p>
 <?php if(count($flashMessages)) : ?>
 <div class="control-group error">
 <ul class="help-inline">
@@ -53,6 +54,8 @@ $this->FormDefault(['legend'=>'Parametrizar Taxas'],'fieldIni');
 <div id='fieldTaxa'>        
 <?
 $inputs = $form->getInputs();
+//echo '<pre>', var_dump($inputs);
+//die;
 foreach ($inputs as $input) {
     echo $this->FormDefault([$input => 'float']);
 }
@@ -60,8 +63,10 @@ $inputs = $form->getInputs(TRUE);
 $classes = $form->getClasses();
 foreach ($classes as $key => $classe) {    
     foreach ($inputs as $input) {
-        echo $this->FormDefault([$input . '[' . $key . ']'  => 'float']);
+//        echo $this->FormDefault(['name' => $input . '[' . $key . ']', 'icone' => 'icon-plus', 'js' => 'setEqual(this)'], 'float');
+        echo $this->FormDefault([$input . 'Array[' . $key . ']' => 'float']);
     }
+    echo $this->FormDefault(['idArray[' . $key . ']' => 'hidden']);
 }
 echo        
 "</div>",       
@@ -84,6 +89,11 @@ $noFilter=true;
     var inputs = <?php echo json_encode($inputs) ?>;
     var Labels = <?php echo json_encode($form->getLabelOfInputs(TRUE)) ?>;
     var classes = <?php echo json_encode($classes) ?>;
+      
+    var novo = function(){
+        var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'new')); ?>";
+        envia(tar,'',formName);        
+    };  
     
     var escondeFields = function(id){
         $('#' + id).hide();
@@ -158,7 +168,17 @@ $noFilter=true;
         console.log('resetado resetFieldsOfComercia');        
     };
     
-    var resetFieldsOfIndustria = function(){        
+    var resetFieldsOfIndustria = function(){ 
+        var $fieldTaxa = $("#fieldTaxa");
+        var $field = $("#fieldIndu"); 
+        $.each(inputs, function(i,e){
+            console.log(e);
+            ipt = e;
+            $.each(classes, function(ind, ele){
+                $fieldTaxa.append($field.find('#pop' + ipt + '_' + ind).remove());                 
+            });            
+        });
+        $field.hide();         
         console.log('resetado resetFieldsOfIndustria');        
     };
     
@@ -208,8 +228,32 @@ $noFilter=true;
         console.log('setFieldsOfComercia ok');        
     };
     
-    var setFieldsOfIndustria = function(){        
-        console.log('ok3');        
+    var setFieldsOfIndustria = function(){ 
+        var $fieldTaxa = $("#fieldTaxa");
+        var $field = $("#fieldIndu"); 
+        var $table = $('#tableCome');
+        var $tr    = $('<tr/>');
+        var $td    = $('<td/>');
+        $tr.append($td.clone().html('Classe'));
+        $.each(Labels, function(i,e){
+            $tr.append($td.clone().html(e));        
+        });
+        $table.html('');
+        $table.attr("width","100%");
+        $table.append($tr);
+        $tr2    = $('<tr/>');
+        $.each(classes, function(ind, ele){
+            idclasse = ind;
+            $tr2.append($td.clone().html(ele));        
+            $.each(inputs, function(i,e){
+                $tr2.append($td.clone().html($fieldTaxa.find('#pop' + e + '_' + idclasse).remove()));        
+            });
+            $table.append($tr2);
+            $tr2 = $tr2.clone().html('');
+        });            
+        $field.append($table);                 
+        $field.show();       
+        console.log('setFieldsOfIndustria');        
     };
     
     var setFieldsOf = function(opt){  
@@ -229,6 +273,37 @@ $noFilter=true;
             default:    
                 console.log(opt);        
         }        
+    };
+    
+    var setEqual = function(){
+        alert('ok');
+    };
+    
+    var cleanAnother = function(ele){
+        if(ele.id.search("unica") !== -1){
+            $input = $(ele).closest('tr').find('input');
+            $input.each(function(){
+                if(this.id.search("unica") === -1){
+                    $(this).val('');
+                }
+            });
+        }else{
+            $input = $(ele).closest('tr').find('input');
+            $input.each(function(){
+                if(this.id.search("unica") !== -1){
+                    $(this).val('');
+                }
+            });
+        }
+    };
+    
+    var showInput = function(){
+        var $radios = $('#popocupacao').find('input');
+        $radios.each(function(){
+            if(this.checked){
+                $(this).click();
+            }
+        });  
     };
     
     function buscaSeguradora(){
@@ -255,6 +330,8 @@ $noFilter=true;
         escondeFields('fieldCome');  
         escondeFields('fieldIndu');  
         
-        $("#popocupacao").on('click',setFieldsTaxa);        
+        $("#popocupacao").on('click',setFieldsTaxa);      
+        
+        showInput();
     });
 </script>

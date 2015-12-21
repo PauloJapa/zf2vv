@@ -53,7 +53,7 @@ class TaxaAjuste extends Filtro
     /**
      * @var Classe
      *
-     * @ORM\OneToOne(targetEntity="Classe")
+     * @ORM\ManyToOne(targetEntity="Classe")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
      * })
@@ -134,7 +134,7 @@ class TaxaAjuste extends Filtro
     /**
      * @var Administradora
      *
-     * @ORM\OneToOne(targetEntity="Administradora")
+     * @ORM\ManyToOne(targetEntity="Administradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -144,7 +144,7 @@ class TaxaAjuste extends Filtro
     /**
      * @var Seguradora
      *
-     * @ORM\OneToOne(targetEntity="Seguradora")
+     * @ORM\ManyToOne(targetEntity="Seguradora")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -296,9 +296,12 @@ class TaxaAjuste extends Filtro
             case '03':
                 return 'Industria';
                 break;
+            case '04':
+                return 'Apto';
+                break;
 
             default:
-                return 'Desconhecido';
+                return '-';
                 break;
         }
     }
@@ -458,17 +461,17 @@ class TaxaAjuste extends Filtro
         $data['inicio']        = $this->getInicio();
         $data['fim']           = $this->getFim();
         $data['status']        = $this->getStatus();
-        $data['contEle']       = $this->floatToStr('contEle',4);
-        $data['conteudo']      = $this->floatToStr('conteudo',4);
-        $data['eletrico']      = $this->floatToStr('eletrico',4);
-        $data['semContEle']    = $this->floatToStr('semContEle',4);
-        $data['comEletrico']   = $this->floatToStr('comEletrico',4);
-        $data['semEletrico']   = $this->floatToStr('semEletrico',4);
-        $data['unica']         = $this->floatToStr('unica',4);
+        $data['contEle']       = $this->floatToStr('contEle');
+        $data['conteudo']      = $this->floatToStr('conteudo');
+        $data['eletrico']      = $this->floatToStr('eletrico');
+        $data['semContEle']    = $this->floatToStr('semContEle');
+        $data['comEletrico']   = $this->floatToStr('comEletrico');
+        $data['semEletrico']   = $this->floatToStr('semEletrico');
+        $data['unica']         = $this->floatToStr('unica');
         $data['validade']      = $this->getValidade();
         $data['ocupacao']      = $this->getOcupacao();
-        $data['adminitradora'] = $this->getAdministradora()->getId(); 
-        $data['classe']        = $this->getClasse()->getId(); 
+        $data['adminitradora'] = is_null($this->getAdministradora()) ? '': $this->getAdministradora()->getId(); 
+        $data['classe']        = is_null($this->getClasse()        ) ? '': $this->getClasse()->getId(); 
         $data['seguradora']    = $this->getSeguradora()->getId(); 
         return $data ;
     }
