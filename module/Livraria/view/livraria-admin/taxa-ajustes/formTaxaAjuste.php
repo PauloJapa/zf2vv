@@ -82,7 +82,7 @@ $noFilter=true;
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
     var inputs = <?php echo json_encode($inputs) ?>;
-    var Labels = <?php echo json_encode($form->getLabelOfInputs()) ?>;
+    var Labels = <?php echo json_encode($form->getLabelOfInputs(TRUE)) ?>;
     var classes = <?php echo json_encode($classes) ?>;
     
     var escondeFields = function(id){
@@ -190,15 +190,20 @@ $noFilter=true;
         $.each(Labels, function(i,e){
             $tr.append($td.clone().html(e));        
         });
+        $table.html('');
+        $table.attr("width","100%");
         $table.append($tr);
-//        $tr.html('');
-        $.each(inputs, function(i,e){
-            console.log(e);
-            ipt = e;
-            $.each(classes, function(ind, ele){
-                $fieldCome.append($fieldTaxa.find('#pop' + ipt + '_' + ind).remove());                 
-            });            
-        });
+        $tr2    = $('<tr/>');
+        $.each(classes, function(ind, ele){
+            idclasse = ind;
+            $tr2.append($td.clone().html(ele));        
+            $.each(inputs, function(i,e){
+                $tr2.append($td.clone().html($fieldTaxa.find('#pop' + e + '_' + idclasse).remove()));        
+            });
+            $table.append($tr2);
+            $tr2 = $tr2.clone().html('');
+        });            
+        $fieldCome.append($table);                 
         $fieldCome.show();
         console.log('setFieldsOfComercia ok');        
     };
