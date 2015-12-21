@@ -100,7 +100,7 @@ class TaxaAjuste extends AbstractForm {
         // Carrega para comercio e industria
         foreach ($this->classes as $key => $classe){
             foreach ($this->inputs as $k => $value) {
-                $this->setInputText($value . '[' . $key . ']' , $this->inputsL[$k]  , ['placeholder' => 'XXX,XX', 'id' => $value . '_' . $key ]);
+                $this->setInputText($value . '[' . $key . ']' , ' '  , ['placeholder' => 'XXX,XX', 'id' => $value . '_' . $key ,'class' => 'input-small']);
             }
         }       
         $this->setInputSubmit('enviar', 'Salvar');
