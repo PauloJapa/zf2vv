@@ -457,22 +457,22 @@ class TaxaAjuste extends Filtro
      * @return array com todos os campos formatados para o form
      */
     public function toArray() {
-        $data['id']            = $this->getId();
-        $data['inicio']        = $this->getInicio();
-        $data['fim']           = $this->getFim();
-        $data['status']        = $this->getStatus();
-        $data['contEle']       = $this->floatToStr('contEle');
-        $data['conteudo']      = $this->floatToStr('conteudo');
-        $data['eletrico']      = $this->floatToStr('eletrico');
-        $data['semContEle']    = $this->floatToStr('semContEle');
-        $data['comEletrico']   = $this->floatToStr('comEletrico');
-        $data['semEletrico']   = $this->floatToStr('semEletrico');
-        $data['unica']         = $this->floatToStr('unica');
-        $data['validade']      = $this->getValidade();
-        $data['ocupacao']      = $this->getOcupacao();
-        $data['adminitradora'] = is_null($this->getAdministradora()) ? '': $this->getAdministradora()->getId(); 
-        $data['classe']        = is_null($this->getClasse()        ) ? '': $this->getClasse()->getId(); 
-        $data['seguradora']    = $this->getSeguradora()->getId(); 
+        $data['id']             = $this->getId();
+        $data['inicio']         = $this->getInicio();
+        $data['fim']            = $this->getFim();
+        $data['status']         = $this->getStatus();
+        $data['contEle']        = $this->floatToStr('contEle');
+        $data['conteudo']       = $this->floatToStr('conteudo');
+        $data['eletrico']       = $this->floatToStr('eletrico');
+        $data['semContEle']     = $this->floatToStr('semContEle');
+        $data['comEletrico']    = $this->floatToStr('comEletrico');
+        $data['semEletrico']    = $this->floatToStr('semEletrico');
+        $data['unica']          = $this->floatToStr('unica');
+        $data['validade']       = $this->getValidade();
+        $data['ocupacao']       = $this->getOcupacao();
+        $data['administradora'] = is_null($this->getAdministradora()) ? '': $this->getAdministradora()->getId(); 
+        $data['classe']         = is_null($this->getClasse()        ) ? '': $this->getClasse()->getId(); 
+        $data['seguradora']     = $this->getSeguradora()->getId(); 
         return $data ;
     }
 

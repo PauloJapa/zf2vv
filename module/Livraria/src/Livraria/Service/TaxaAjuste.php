@@ -179,10 +179,10 @@ class TaxaAjuste extends AbstractService {
         $this->dePara = '';
         $this->dePara .= $this->diffAfterBefore('Seguradora'            , $ent->getSeguradora()->getId()          , $this->data['seguradora']->getId()               ); 
         if(!is_null($ent->getClasse())){
-            $this->dePara .= $this->diffAfterBefore('Classe'                , $ent->getClasse()->getId()              , $this->data['classe']->getId()                   );
+            $this->dePara .= $this->diffAfterBefore('Classe'            , $ent->getClasse()->getId()              , $this->data['classe']->getId()                   );
         }
         if(!is_null($ent->getAdministradora())){
-            $this->dePara .= $this->diffAfterBefore('Administradora'        , $ent->getAdministradora()->getId()      , $this->data['administradora']->getId()           );
+            $this->dePara .= $this->diffAfterBefore('Administradora'    , $ent->getAdministradora()->getId()      , $this->data['administradora']->getId()           );
         }
         $this->dePara .= $this->diffAfterBefore('Data inicio'           , $ent->getInicio()                       , $this->data['inicio']->format('d/m/Y')           );
         $fim = $this->data['fim']->format('d/m/Y');
