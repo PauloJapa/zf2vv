@@ -556,7 +556,32 @@ abstract class AbstractService {
         
         $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
         
-        //aplicacar regras de desconto ou acrescimo aqui.
+        //aplicacar regras de desconto ou acrescimo aqui(taxa de ajuste).
+        
+        /* @var $repTaxaAjuste    \Livraria\Entity\TaxaAjusteRepository */
+        $repTaxaAjuste = $this->em->getRepository('Livraria\Entity\TaxaAjuste');
+        $entTaxaAjuste = $repTaxaAjuste->getTaxaAjusteFor(
+            $this->data['seguradora']
+            , $this->data['administradora']
+            , (is_object($this->data['inicio']) ? $this->data['inicio'] : $this->dateToObject($this->data['inicio']))
+            , $this->data['validade']
+            , $this->data['atividade']
+            , $this->data['ocupacao']
+        );
+        /* @var $entTaxaAjuste    \Livraria\Entity\TaxaAjuste */
+        $taxaAjuste = 0;
+        if($entTaxaAjuste){
+            $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste);
+        }
+        if($taxaAjuste != 0){
+            if($taxaAjuste > 0){
+                $total = $total * (1 + ($taxaAjuste / 100));
+            }else{
+                $desconto = $total * ($taxaAjuste / 100);
+                $total = $total + $desconto;
+            }
+        }
+        
         
         $totalBruto = round($total * (1 + $iof), 2) ;
         

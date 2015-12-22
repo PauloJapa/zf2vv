@@ -3,6 +3,7 @@
 namespace Livraria\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Atividade
@@ -123,6 +124,13 @@ class Atividade
      */
     protected $seguradoraId;
 
+    /**
+     * @var \Doctrine\Common\Collections\ArrayCollection $classeAtividades
+     *
+     * @ORM\OneToMany(targetEntity="ClasseAtividade", mappedBy="atividade")
+     */
+    protected $classeAtividades;
+
     /** 
      * Instacia um novo objeto se passado o parametro de dados
      * Faz automaticamente todos os seters com a classe configurator
@@ -136,6 +144,7 @@ class Atividade
         $this->alteradoEm = new \DateTime('now');
         $this->alteradoEm->setTimezone(new \DateTimeZone('America/Sao_Paulo')); 
         $this->userIdCriado = 1 ;
+        $this->classeAtividades = new ArrayCollection();
     }
 
     /**
@@ -423,6 +432,36 @@ class Atividade
      */
     public function __toString() {
         return $this->descricao;
+    }
+    
+    public function listClasseAtividade() {
+        return $this->classeAtividades->toArray();
+    }
+    
+    public function addClasseAtividade($classeAtividade) {
+        $this->classeAtividades->add($classeAtividade);
+    }
+    
+    public function findClasseFor(\DateTime $date = null) {
+        /* @var $classeAtividade \Livraria\Entity\ClasseAtividade */
+        $classeAtividades = $this->listClasseAtividade();
+        // procura uma ativa e dentro do periodo
+        foreach ($classeAtividades as $key => $classeAtividade) {
+            if($classeAtividade->getStatus() == 'A' AND $classeAtividade->getInicio('obj') <= $date){
+                return $classeAtividade->getClasseTaxas();
+            }
+        }
+        // procura apensa no periodo
+        foreach ($classeAtividades as $key => $classeAtividade) {
+            if($classeAtividade->getStatus() == 'A'){
+                continue;
+            }
+            if($classeAtividade->getInicio('obj') <= $date AND $classeAtividade->getFim('obj') >= $date){
+                return $classeAtividade->getClasseTaxas();
+            }
+        }
+        
+        return FALSE;
     }
 
 }
