@@ -1022,6 +1022,7 @@ class AbstractSeguro  extends Filtro {
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['assist24']       = $this->getAssist24(); 
+        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
         return $data ;
     }
     
@@ -1080,7 +1081,26 @@ class AbstractSeguro  extends Filtro {
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['assist24']       = $this->getAssist24(); 
+        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
         return $data ;
+    }
+    
+    /**
+     * 
+     * @return \Livraria\Entity\AbstractSeguro
+     */
+    public function getTaxaAjuste() {
+        return $this->taxaAjuste;
+    }
+
+    /**
+     * 
+     * @param type $taxaAjuste
+     * @return \Livraria\Entity\AbstractSeguro
+     */
+    public function setTaxaAjuste($taxaAjuste) {
+        $this->taxaAjuste = $taxaAjuste;
+        return $this;
     }
     
 }

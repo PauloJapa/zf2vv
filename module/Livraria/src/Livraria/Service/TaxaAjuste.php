@@ -32,7 +32,8 @@ class TaxaAjuste extends AbstractService {
         if(isset($this->data['administradora']) AND !empty($this->data['administradora'])){
             $this->idToReference('administradora', 'Livraria\Entity\Administradora');
         }else{
-            unset($this->data['administradora']);
+            $this->data['administradora'] = '1';
+            $this->idToReference('administradora', 'Livraria\Entity\Administradora');
         }
         
         $this->dateToObject('inicio');
