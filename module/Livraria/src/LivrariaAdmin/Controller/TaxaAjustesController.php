@@ -79,6 +79,7 @@ class TaxaAjustesController extends CrudController {
         $this->verificaSeUserAdmin();
         $this->formData = new $this->form(null, $this->getEm());
         $this->formData->setEdit($this->getIdentidade()->getIsAdmin());
+        $this->formData->setEditDisabled();
         $data = $this->getRequest()->getPost()->toArray();
         $filtro = array();
         if(!isset($data['subOpcao']))$data['subOpcao'] = '';
