@@ -581,6 +581,7 @@ abstract class AbstractService {
                 $total = $total + $desconto;
             }
         }
+        $this->data['taxaAjuste'] = $taxaAjuste;
         
         
         $totalBruto = round($total * (1 + $iof), 2) ;

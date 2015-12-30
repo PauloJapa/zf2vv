@@ -412,6 +412,13 @@ class Orcamento extends AbstractSeguro {
      * @var string
      */
     protected $assist24;
+
+    /**
+     * @var float $taxaAjuste
+     *
+     * @ORM\Column(name="taxa_ajuste", type="decimal", nullable=false)
+     */
+    protected $taxaAjuste;
     
     /** 
      * Instacia um novo objeto se passado o parametro de dados

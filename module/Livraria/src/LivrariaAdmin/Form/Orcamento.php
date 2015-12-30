@@ -41,6 +41,8 @@ class Orcamento extends AbstractEndereco {
         $this->setInputHidden('user');
         $this->setInputHidden('multiplosMinimos');
         
+        $this->setInputHidden('taxaAjuste');
+        
         //Dados do Locador
         $this->setInputHidden('locador');
         $attributes = ['placeholder' => 'Digite aqui nome, cpf ou cnpj para PESQUISAR!',

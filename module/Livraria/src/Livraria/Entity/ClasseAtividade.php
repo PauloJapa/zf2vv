@@ -87,7 +87,7 @@ class ClasseAtividade extends Filtro
     /**
      * @var Atividade
      *
-     * @ORM\ManyToOne(targetEntity="Atividade")
+     * @ORM\ManyToOne(targetEntity="Atividade", inversedBy="classeAtividades")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      * })

@@ -63,9 +63,12 @@ class TaxaAjuste extends AbstractForm {
         $this->setInputSelect('classe', '*Classe', $this->classes);
         
         $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
+        asort($this->seguradoras);
         $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
         
         $this->administradoras = $this->em->getRepository('Livraria\Entity\Administradora')->fetchPairs(['status'=>'A']);
+        asort($this->administradoras);
+        $this->administradoras = ['1' => 'TODAS ADMINISTRADORAS'] + $this->administradoras;
         $this->setInputSelect('administradora', '*Administradoras', $this->administradoras );
         
         $validade = $this->getParametroSelect('validade');
@@ -129,6 +132,13 @@ class TaxaAjuste extends AbstractForm {
             $this->isAdmin = TRUE;
             return ;
         }
+    }
+    
+    public function setEditDisabled() {
+        $this->get('seguradora')->setAttribute('disabled', 'true'); 
+        $this->get('administradora')->setAttribute('disabled', 'true'); 
+        $this->get('validade')->setAttribute('disabled', 'true'); 
+        $this->get('ocupacao')->setAttribute('disabled', 'true'); 
     }
     
     public function getClasses() {
