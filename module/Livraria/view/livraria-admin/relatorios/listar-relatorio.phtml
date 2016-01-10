@@ -231,11 +231,21 @@ de apólice.</td>
 <br />
 
 <div align='center' class="noPrint">
-    <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Imprimir" onclick="return imprimi()">
+<table width="100%">
+    <tr>
+        <td align='center' width="50%">
+            <input type="submit" name="fecharSel" id="fecharSel" class="btn-success" value="Imprimir" onclick="return imprimi()">
+        </td>
+        <td align='center'>
+            <input type="button" name="enviar" id="enviar" class="btn-success" value="Gerar Excel" onclick="toExcel('')">            
+        </td>
+    </tr>
+</table>
 </div>
 <form name="form" id="form" method="POST">
     <input type="hidden" name="subOpcao" id="subOpcao2">
     <input type="hidden" name="id" id="id2">
+    <input type="hidden" name="mesFiltro" value="<?=$mesSel ?>">
 </form>
 <script language="javascript">
     function gerarMapa(){
@@ -246,4 +256,9 @@ de apólice.</td>
         window.print();
         return false;
     }
+    function toExcel(){
+        var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'toExcelRelatorio')); ?>";
+        envia(tar2, "");
+        return false;
+    } 
 </script>

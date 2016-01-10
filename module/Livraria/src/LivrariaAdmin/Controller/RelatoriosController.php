@@ -567,4 +567,23 @@ class RelatoriosController extends CrudController {
         return new ViewModel(array_merge($this->getParamsForView(),['date' => $data, 'formaPagto' => $formaPagto, 'comissaoAp' => $comissaoAlias]));         
     }
     
+    /**
+     * Enviar excel com listagem dos seguros fechados separados por comissao para usuario fazer download.
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function toExcelRelatorioAction(){
+        //Pegar os parametros que em de post
+        $data = $this->getRequest()->getPost()->toArray();
+        //ler Dados do cacheado da ultima consulta.
+        $sc = new SessionContainer("LivrariaAdmin");
+        /* @var $param \Livraria\Entity\ParametroSisRepository */
+        $param = $this->getEm()->getRepository('Livraria\Entity\ParametroSis');
+        $formaPagto = $param->fetchPairs('formaPagto');
+        $comissaoAlias = $param->fetchPairs('comissaoApelido');
+        // instancia uma view sem o layout da tela
+        $viewModel = new ViewModel(array_merge($this->getParamsForView(),['date' => $data,'data' => $sc->lista, 'formaPagto' => $formaPagto, 'comissaoAp' => $comissaoAlias]));         
+        $viewModel->setTerminal(true);
+        return $viewModel;        
+    }
+    
 }
