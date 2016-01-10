@@ -217,4 +217,4 @@ header("Content-Type:  application/vnd.ms-excel; charset=UTF-8; encoding=UTF-8")
 header("Expires: 0");
 header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
 header ("Content-Disposition: attachment; filename=\"".$filename.".xls\"" );
-print(utf8_decode($tabela_dados));
+print(($tabela_dados));
