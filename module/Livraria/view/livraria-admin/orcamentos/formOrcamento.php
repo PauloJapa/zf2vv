@@ -284,7 +284,24 @@ echo $this->headScript()->appendFile('/js/formOrcamento.js')
     // Se não tiver salvo o orçamento não exibe o botao de fechar
     // Oculta select pais.
 
-    setTimeout('checkPrintProp();showTipo();setButtonFechaOrc();setOcultar();showIncOrIncCon();setComissao();setCobertura(true);formataDoc();travaFormaPagto();setMesNiverOfMensal();checkAvisoCalc();checkShowLocatario("ini");checkShowLocador("ini");checkShowImoveis()',500);
+    setTimeout(function(){
+            checkPrintProp();
+            showTipo();
+            setButtonFechaOrc();
+            setOcultar();
+            showIncOrIncCon();
+            setComissao();
+            setCobertura(true);
+            formataDoc();
+            travaFormaPagto();
+            setMesNiverOfMensal();
+            checkAvisoCalc();
+            checkShowLocatario("ini");
+            checkShowLocador("ini");
+            checkShowImoveis();
+        }
+        ,500
+    );
     window.setTimeout("scroll(document.getElementById('scrolX').value,document.getElementById('scrolY').value)", 600);
     
     var com = '<?php echo $this->comissao ; ?>';

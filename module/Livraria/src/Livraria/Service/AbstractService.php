@@ -66,6 +66,8 @@ abstract class AbstractService {
      */
     protected $dePara = '';
     
+    protected $debug = true;
+    
     /**
      * String com endereço de email padrão
      * @var type String
@@ -78,6 +80,13 @@ abstract class AbstractService {
      */
     public function __construct(EntityManager $em) {
         $this->em = $em;
+    }
+    
+    public function showdebug($msg, $var) {
+        if(!$this->debug){
+            return;
+        }
+        echo '<pre>', $msg, ($var)? var_dump($var) : '', '</pre>';
     }
     
     /**
@@ -492,6 +501,75 @@ abstract class AbstractService {
             $this->validaMaritimaCoberturas($base, $aluguel, $eletrico, $vendaval);            
         }
         
+        //aplicacar regras de desconto ou acrescimo aqui(taxa de ajuste).
+        
+        /* @var $repTaxaAjuste    \Livraria\Entity\TaxaAjusteRepository */
+        $repTaxaAjuste = $this->em->getRepository('Livraria\Entity\TaxaAjuste');
+        $entTaxaAjuste = $repTaxaAjuste->getTaxaAjusteFor(
+            $this->data['seguradora']
+            , $this->data['administradora']
+            , (is_object($this->data['inicio']) ? $this->data['inicio'] : $this->dateToObject($this->data['inicio']))
+            , $this->data['validade']
+            , $this->data['atividade']
+            , $this->data['ocupacao']
+        );
+        $this->data['taxaAjuste'] = 1;
+        // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
+        $txIncendio = 0.0;
+        $bkpDebug = $this->debug;
+        $this->debug = false;
+        if ($this->data['tipoCobertura'] == '01' AND $incendio != 0.0001){
+            $bkpVlr = $incendio;
+            $txIncendio = round($this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio'), 2) ;
+            $incendio = $bkpVlr;
+        }
+        // Se o tipo é Cobertura Incendo + Conteudo(02) calcula com a taxa propria de incendio + conteudo
+        $txConteudo = 0.0;
+        if ($this->data['tipoCobertura'] == '02' AND $conteudo != 0.0001){
+            $bkpVlr = $conteudo;
+            $txConteudo = round($this->calcTaxaMultMinMax($conteudo,'Incendio','Conteudo'), 2) ;
+            $conteudo = $bkpVlr;
+        }
+        
+        $txAluguel = 0.0;
+        if ($aluguel != 0.0001){
+            $bkpVlr = $aluguel;
+            $txAluguel = round($this->calcTaxaMultMinMax($aluguel,'Aluguel'), 2) ;
+            $aluguel = $bkpVlr;
+        }
+        
+        $txEletrico = 0.0;
+        if ($eletrico != 0.0001){
+            $bkpVlr = $eletrico;
+            $txEletrico = round($this->calcTaxaMultMinMax($eletrico,'Eletrico'), 2) ;
+            $eletrico = $bkpVlr;
+        }
+        
+        $txVendaval = 0.0;
+        if ($vendaval != 0.0001){
+            $bkpVlr = $vendaval;
+            $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
+            $vendaval = $bkpVlr;
+        }
+        /* @var $entTaxaAjuste    \Livraria\Entity\TaxaAjuste */
+        $this->debug = $bkpDebug;
+        $taxaAjuste = 1;
+        if($entTaxaAjuste){
+            $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste);
+        }
+        switch (TRUE) {
+            case $taxaAjuste == 1:
+                $taxaAjuste = 1;
+                break;
+            case !is_numeric($taxaAjuste) :
+                $taxaAjuste = 1;
+                break;
+            default:
+                $taxaAjuste = round(1 + ($taxaAjuste / 100), 4);
+                break;
+        }
+        $this->data['taxaAjuste'] = $taxaAjuste;
+        
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
         // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
@@ -519,8 +597,15 @@ abstract class AbstractService {
         if ($vendaval != 0.0001){
             $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
         }
+
+//            
+//        $txIncendio = $txIncendio * $taxaAjuste;
+//        $txConteudo = $txConteudo * $taxaAjuste;
+//        $txAluguel  = $txAluguel  * $taxaAjuste;
+//        $txEletrico = $txEletrico * $taxaAjuste;
+//        $txVendaval = $txVendaval * $taxaAjuste;
         
-        $total += $txIncendio;
+        $total += $txIncendio ;
         $total += $txConteudo;
         $total += $txAluguel;
         $total += $txEletrico;
@@ -555,35 +640,7 @@ abstract class AbstractService {
         $iof = floatval($this->getParametroSis('taxaIof')); 
         
         $this->data['taxaIof'] = $this->strToFloat($iof,'',4);
-        
-        //aplicacar regras de desconto ou acrescimo aqui(taxa de ajuste).
-        
-        /* @var $repTaxaAjuste    \Livraria\Entity\TaxaAjusteRepository */
-        $repTaxaAjuste = $this->em->getRepository('Livraria\Entity\TaxaAjuste');
-        $entTaxaAjuste = $repTaxaAjuste->getTaxaAjusteFor(
-            $this->data['seguradora']
-            , $this->data['administradora']
-            , (is_object($this->data['inicio']) ? $this->data['inicio'] : $this->dateToObject($this->data['inicio']))
-            , $this->data['validade']
-            , $this->data['atividade']
-            , $this->data['ocupacao']
-        );
-        /* @var $entTaxaAjuste    \Livraria\Entity\TaxaAjuste */
-        $taxaAjuste = 0;
-        if($entTaxaAjuste){
-            $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste);
-        }
-        if($taxaAjuste != 0){
-            if($taxaAjuste > 0){
-                $total = $total * (1 + ($taxaAjuste / 100));
-            }else{
-                $desconto = $total * ($taxaAjuste / 100);
-                $total = $total + $desconto;
-            }
-        }
-        $this->data['taxaAjuste'] = $taxaAjuste;
-        
-        
+                
         $totalBruto = round($total * (1 + $iof), 2) ;
         
         if($totalAntes != 0.0){
@@ -726,11 +783,18 @@ abstract class AbstractService {
         }
 
         // Valor calculado
-        $calc = $vlr * ($this->data['taxa']->$fTaxa() / 100);
+        $taxaCalculada = round($this->data['taxa']->$fTaxa() * $this->data['taxaAjuste'], 4) / 100;
+        $calc = $vlr * $taxaCalculada;
         
         if($calc < $premioMin){
             $calc = $premioMin;
         } 
+        
+        $this->showdebug('$vlr ',$vlr); 
+        $this->showdebug('$taxa ',($this->data['taxa']->$fTaxa())); 
+        $this->showdebug('taxaAjuste ',$this->data['taxaAjuste']); 
+        $this->showdebug('$taxaCalculada ',(round($taxaCalculada * 100,4))); 
+        $this->showdebug(' $calc ' , ($calc));
         
         return $calc;
     }

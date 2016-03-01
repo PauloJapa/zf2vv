@@ -61,7 +61,7 @@ class Taxa extends AbstractForm {
         $ocupacao = $this->getParametroSelect('ocupacao');
         $this->setInputSelect('ocupacao', '*Ocupação', $ocupacao, ['onChange'=>'buscaClasse();']);
         
-        $this->setComissao();
+        $this->setComissao([]);
         
         $tipoCobertura = $this->getParametroSelect('tipoCobertura');
         $this->setInputSelect('tipoCobertura', 'Tipo de Cobertura', $tipoCobertura, ['onChange'=>'buscaClasse();']);
