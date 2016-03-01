@@ -42,6 +42,12 @@
             return false;
         }
         
+        $formaPagto = $('#formaPagto');
+        if($formaPagto.val() == ''){
+            alert('Dever ser selecionado a forma de pagamento!!!');
+            $formaPagto.focus();
+            return false;
+        }
         envia(tar,'salvar',formName,'');
         return false;
     }
@@ -677,6 +683,12 @@
             return false;
         }
         if(!userDateIsValid()){
+            return false;
+        }
+        $formaPagto = $('#formaPagto');
+        if($formaPagto.val() == ''){
+            alert('Dever ser selecionado a forma de pagamento!!!');
+            $formaPagto.focus();
             return false;
         }
         envia(tar,'calcular',formName,'');

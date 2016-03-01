@@ -36,6 +36,7 @@ class TaxaAjusteRepository extends EntityRepository {
         // trata os filtros
         $idSeg = is_object($seguradora)     ? $seguradora->getId()     : $seguradora;
         $idAdm = is_object($administradora) ? $administradora->getId() : $administradora;
+        
         $classe = $atividade->findClasseFor($inicio);
         if(!$classe){
             echo 'Classe não encontrada para atividade ', $atividade->getDescricao(), ' periodo ' , $inicio->format('d/m/Y');
@@ -88,6 +89,15 @@ class TaxaAjusteRepository extends EntityRepository {
             }
         } 
 
+        echo '<pre>';
+        echo 'Not found' , '<br>';
+        echo 'inicio ', var_dump($inicio->format('d-m-Y')), '<br>';
+        echo 'validade ', var_dump($validade), '<br>';
+        echo 'ativ ', var_dump($atividade->toArray()), '<br>';
+        echo 'ocup ', var_dump($ocupacao), '<br>';
+        echo 'SEG ', var_dump($idSeg), '<br>';
+        echo 'ADM ', var_dump($idAdm), '<br>';
+        echo '</pre>';
         return FALSE;
     }
     
