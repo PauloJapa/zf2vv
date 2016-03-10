@@ -39,8 +39,7 @@ class TaxaAjusteRepository extends EntityRepository {
         
         $classe = $atividade->findClasseFor($inicio);
         if(!$classe){
-            echo 'Classe não encontrada para atividade ', $atividade->getDescricao(), ' periodo ' , $inicio->format('d/m/Y');
-            return 0;
+            throw new \Exception('Classe não encontrada para atividade ', $atividade->getDescricao(), ' periodo ' , $inicio->format('d/m/Y'));
         }
         if($ocupacao == '02'){
             if(strpos($classe->getDescricao(), 'APTO') !== FALSE){
@@ -50,8 +49,12 @@ class TaxaAjusteRepository extends EntityRepository {
         $this->ocupacao = $ocupacao;
         $this->entity   = false;
         // Procura pelo taxa especifica da administradora.
+        $filters = ['administradora' => $idAdm, 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao];
+        if('01' == $ocupacao OR '03' == $ocupacao){
+            $filters['classe'] = $classe->getId();
+        }
         
-        $taxaAjustes = $this->findBy(['administradora' => $idAdm, 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao]);
+        $taxaAjustes = $this->findBy($filters);
         //procura em ativos
         foreach ($taxaAjustes as $taxaAjuste) {
             if($taxaAjuste->getInicio('obj') <= $inicio AND $taxaAjuste->getStatus() == 'A'){
@@ -70,7 +73,8 @@ class TaxaAjusteRepository extends EntityRepository {
             }
         }
         // Procura pelo taxa especifica para todas administradoras.
-        $taxaAjustes = $this->findBy(['administradora' => '1', 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao]);
+        $filters['administradora'] = 1;
+        $taxaAjustes = $this->findBy($filters);
         //procura em ativos
         foreach ($taxaAjustes as $taxaAjuste) {
             if($taxaAjuste->getInicio('obj') <= $inicio AND $taxaAjuste->getStatus() == 'A'){
@@ -89,16 +93,17 @@ class TaxaAjusteRepository extends EntityRepository {
             }
         } 
 
-        echo '<pre>';
-        echo 'Not found' , '<br>';
-        echo 'inicio ', var_dump($inicio->format('d-m-Y')), '<br>';
-        echo 'validade ', var_dump($validade), '<br>';
-        echo 'ativ ', var_dump($atividade->toArray()), '<br>';
-        echo 'ocup ', var_dump($ocupacao), '<br>';
-        echo 'SEG ', var_dump($idSeg), '<br>';
-        echo 'ADM ', var_dump($idAdm), '<br>';
-        echo '</pre>';
-        return FALSE;
+        throw new \Exception(
+            '<pre>'.
+            'Not found' . '<br>'.
+            'inicio '. var_dump($inicio->format('d-m-Y')). '<br>'.
+            'validade '. var_dump($validade). '<br>'.
+            'ativ '. var_dump($atividade->toArray()). '<br>'.
+            'ocup '. var_dump($ocupacao). '<br>'.
+            'SEG '. var_dump($idSeg). '<br>'.
+            'ADM '. var_dump($idAdm). '<br>'.
+            '</pre>'
+        );
     }
     
     /**

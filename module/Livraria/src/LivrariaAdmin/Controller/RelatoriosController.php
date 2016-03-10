@@ -252,7 +252,7 @@ class RelatoriosController extends CrudController {
      * @param type $registros
      */
     public function sendEmailForOrcaReno(&$sm, &$admNome, &$admEmai, &$registros) {
-        $sm->enviaEmail(['nome' => $admNome, 'emailNome' => $admNom,
+        $sm->enviaEmail(['nome' => $admNome, 'emailNome' => $admNome,
                              'email' => $admEmai, 
                              'subject' => $admNome . ' - Seguros não fechados',
                              'data' => $registros]);

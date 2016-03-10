@@ -48,6 +48,13 @@
             $formaPagto.focus();
             return false;
         }
+        
+        $numero = $('#numero');
+        if($numero.val() == ''){
+            alert('O numero do imovel não poder estar vazio !!!');
+            $numero.focus();
+            return false;
+        }
         envia(tar,'salvar',formName,'');
         return false;
     }
@@ -689,6 +696,12 @@
         if($formaPagto.val() == ''){
             alert('Dever ser selecionado a forma de pagamento!!!');
             $formaPagto.focus();
+            return false;
+        }
+        $numero = $('#numero');
+        if($numero.val() == ''){
+            alert('O numero do imovel não poder estar vazio !!!');
+            $numero.focus();
             return false;
         }
         envia(tar,'calcular',formName,'');

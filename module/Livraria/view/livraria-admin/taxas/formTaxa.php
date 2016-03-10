@@ -44,13 +44,13 @@ echo
         
 $this->FormDefault(['legend'=>'Coberturas'],'fieldIni'),
     "<td>\r",
-        $this->FormDefault(['incendio' => 'float4']),
+        $this->FormDefault(['incendio' => 'float8']),
         $this->FormDefault(['eletrico' => 'float8']),
     "</td><td>\r",
-        $this->FormDefault(['incendioConteudo' => 'float4']),
+        $this->FormDefault(['incendioConteudo' => 'float8']),
         $this->FormDefault(['vendaval' => 'float8']),
     "</td><td>\r",
-        $this->FormDefault(['aluguel' => 'float4']),
+        $this->FormDefault(['aluguel' => 'float8']),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),
         
