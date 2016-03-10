@@ -416,7 +416,10 @@ class Taxa extends Filtro
      */
     public function getAlteradoEm($op = null) {
         if(is_null($op)){
-            return $this->alteradoEm->format('d/m/Y');
+            if($this->alteradoEm){
+                return $this->alteradoEm->format('d/m/Y');
+            }
+            return '-';
         }
         return $this->alteradoEm;
     }
@@ -600,11 +603,11 @@ class Taxa extends Filtro
         $data['inicio']           = $this->getInicio();
         $data['fim']              = $this->getFim();
         $data['status']           = $this->getStatus();
-        $data['incendio']         = $this->floatToStr('Incendio',4);
-        $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo',4);
-        $data['aluguel']          = $this->floatToStr('Aluguel',4);
-        $data['eletrico']         = $this->floatToStr('Eletrico',4);
-        $data['vendaval']         = $this->floatToStr('Vendaval',4);
+        $data['incendio']         = $this->floatToStr('Incendio',6);
+        $data['incendioConteudo'] = $this->floatToStr('IncendioConteudo',6);
+        $data['aluguel']          = $this->floatToStr('Aluguel',6);
+        $data['eletrico']         = $this->floatToStr('Eletrico',6);
+        $data['vendaval']         = $this->floatToStr('Vendaval',6);
         $data['validade']         = $this->getValidade();
         $data['ocupacao']         = $this->getOcupacao();
         $data['comissao']         = $this->floatToStr('Comissao');

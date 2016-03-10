@@ -293,7 +293,7 @@ class Orcamento extends AbstractService {
         }else{
             $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
         }
-        
+        /* @var $this->data['taxa'] \Livraria\Entity\Taxa */
         $this->data['taxa'] = $this->em
                 ->getRepository('Livraria\Entity\Taxa')
                 ->findTaxaVigente(
