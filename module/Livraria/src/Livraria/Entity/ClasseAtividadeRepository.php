@@ -66,11 +66,12 @@ class ClasseAtividadeRepository extends EntityRepository {
             return $rs[0];
         }
         
-        echo '<h2>Erro ao procurar classe na data especificada</h2><pre>';
-        var_dump($atividade);
-        var_dump($date);
-        var_dump($ativo);
-        echo '</pre>';
+        throw  new \Exception(
+            '<h2>Erro ao procurar classe na data especificada</h2><pre>'
+            . var_dump($atividade)
+            . var_dump($date)
+            . '</pre>'
+        );
         
         //Procurar novamente mas com data de hoje
         $query = $this->getEntityManager()
