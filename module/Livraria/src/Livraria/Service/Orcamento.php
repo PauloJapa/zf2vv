@@ -11,19 +11,19 @@ use LivrariaAdmin\Fpdf\ImprimirSeguro;
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
 class Orcamento extends AbstractService {
-    
+
     /**
      * Registra os campos monitorados e afetados do endereço do imovel
-     * @var string 
+     * @var string
      */
     protected $deParaImovel;
-    
+
     /**
      * Para gerar o pdf com orçamento
-     * @var objet 
+     * @var objet
      */
     protected $pdf;
-    
+
     /**
      * Locatario repository
      * @var  \Livraria\Entity\LocatarioRepository
@@ -35,14 +35,14 @@ class Orcamento extends AbstractService {
         parent::__construct($em);
         $this->entity = "Livraria\Entity\Orcamento";
     }
-    
+
     public function delete($id, $data, $force=false) {
         $enty = $this->em->find($this->entity,$id);
         if(!$force AND $enty->getStatus() == 'F'){
-            return ['Erro este orçamento já foi fechado!!'];            
+            return ['Erro este orçamento já foi fechado!!'];
         }
         if($enty->getStatus() == 'C'){
-            return ['Erro este orçamento já foi cancelado anteriormente!!'];            
+            return ['Erro este orçamento já foi cancelado anteriormente!!'];
         }
         if(!parent::delete($id)){
             return ['Erro ao tentar excluir registro!!'];
@@ -50,7 +50,7 @@ class Orcamento extends AbstractService {
         $this->logForDelete($id, $data, $enty->getOrcaReno());
         return TRUE;
     }
-    
+
     /**
      * Registra a exclusão do registro com seu motivo.
      * @param string $id
@@ -77,7 +77,7 @@ class Orcamento extends AbstractService {
         }
         $log->insert($dataLog);
     }
-    
+
     public function logForReativa(\Livraria\Entity\Orcamento $ent, $motivo) {
         //serviço logorcamento
         if($ent->getOrcaReno() == 'reno'){
@@ -93,9 +93,9 @@ class Orcamento extends AbstractService {
         $dataLog['mensagem'] = 'Registro reativado numero ' . $ent->getId();
         $dataLog['dePara'] = $motivo ;
         $log->insert($dataLog);
-        
+
     }
-    
+
     public function logForReativaFechado(\Livraria\Entity\Fechados $ent, $motivo) {
         $log = new LogFechados($this->em);
         $dataLog['fechados'] = $ent->getId();
@@ -104,63 +104,63 @@ class Orcamento extends AbstractService {
         $dataLog['action'] = 'reativa';
         $dataLog['mensagem'] = 'Registro reativado numero ' . $ent->getId();
         $dataLog['dePara'] = $motivo ;
-        $log->insert($dataLog);      
+        $log->insert($dataLog);
     }
-    
+
     public function reativar($controller, $data) {
         if(empty($data['id']) OR empty($data['motivoReativa'])){
-            $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');  
+            $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');
             return;
         }
         /* @var $entity \Livraria\Entity\Orcamento */
         $entity = $this->em->find($this->entity, $data['id']);
         if($entity->getStatus() != 'C'){
-            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');  
-            return;            
+            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');
+            return;
         }
         if($entity->getFechadoId() == '0'){
             if($entity->getOrcaReno() == 'reno'){
-                $entity->setStatus('R'); 
+                $entity->setStatus('R');
             }else{
-                $entity->setStatus('A'); 
+                $entity->setStatus('A');
             }
-        }else{            
+        }else{
             $entity->setStatus('F');
             $this->reativarFechado($controller,$entity->getFechadoId(), $data['motivoReativa']);
-        }        
+        }
         $this->logForReativa($entity, $data['motivoReativa']);
         $this->em->persist($entity);
         $this->em->flush();
-        $controller->flashMessenger()->addMessage('Este seguro foi reativado com sucesso!!');         
+        $controller->flashMessenger()->addMessage('Este seguro foi reativado com sucesso!!');
 //        var_dump($entity->getAluguel());die;
     }
-    
+
     public function reativarFechado($controller, $id='', $motivo) {
         if(empty($id) OR $id == 0){
-            $controller->flashMessenger()->addMessage('Numero do seguro fechado em branco ou zerado!!');  
-            return;            
+            $controller->flashMessenger()->addMessage('Numero do seguro fechado em branco ou zerado!!');
+            return;
         }
         /* @var $f \Livraria\Entity\Fechados */
         $f = $this->em->find('Livraria\Entity\Fechados', $id);
         if($f->getStatus() != 'C'){
-            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');  
-            return;            
+            $controller->flashMessenger()->addMessage('Este seguro não esta mais cancelado!!');
+            return;
         }
         $f->setStatus('A');
         $this->logForReativaFechado($f, $motivo);
         $this->em->persist($f);
     }
-    
+
     /**
      * Altera os Registro selecionados para data(vigência inicio) ou validade(anual, mensal) comuns entre esses registro.
-     * Recalcula taxa, valor premio 
+     * Recalcula taxa, valor premio
      * @param objeto $controller
      * @param array  $data
      */
     public function changeDateValidity($controller, $data) {
         switch (TRUE) {
             case empty($data['changeInicio']) AND empty($data['changeValidade']) AND empty($data['changeFormaPagto']):
-                $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');  
+                $controller->flashMessenger()->addMessage('NÃO EXISTE PARAMETROS');
                 return;
         }
         foreach ($data['Checkeds'] as $value) {
@@ -168,10 +168,10 @@ class Orcamento extends AbstractService {
             $entity = $this->em->find($this->entity, $value);
             $dados = $entity->toArray();
             $flag = TRUE;
-            if(!empty($data['changeInicio']) AND $dados['inicio'] != $data['changeInicio']){  
+            if(!empty($data['changeInicio']) AND $dados['inicio'] != $data['changeInicio']){
                 $flag = FALSE;
                 $dados['inicio']   = $data['changeInicio'];
-                
+
             }
             if(!empty($data['changeValidade']) AND $dados['validade'] != $data['changeValidade']){
                 $flag = FALSE;
@@ -181,7 +181,7 @@ class Orcamento extends AbstractService {
                 $flag = FALSE;
                 $dados['formaPagto'] = $data['changeFormaPagto'];
             }
-            if($flag){                
+            if($flag){
                 $controller->flashMessenger()->addMessage("Este registro $value por ja ter os parametros iguais");
                 continue;
             }
@@ -213,7 +213,7 @@ class Orcamento extends AbstractService {
      * @var \DateTime $criadoEm
      * @var \DateTime $canceladoEm
      * @var \DateTime $alteradoEm
-     
+
      */
     public function setReferences(){
         //Pega uma referencia do registro da tabela classe
@@ -226,7 +226,7 @@ class Orcamento extends AbstractService {
         $this->dateToObject('criadoEm');
         $this->dateToObject('canceladoEm');
         $this->dateToObject('alteradoEm');
-        
+
         $locadorResul = $this->setLocador();
         if($locadorResul !== TRUE){
             return $locadorResul;
@@ -245,10 +245,10 @@ class Orcamento extends AbstractService {
         }
         return TRUE;
     }
-    
+
     /**
      * Valida se atividade escolhida esta ativa
-     * Caso não retorna o erro 
+     * Caso não retorna o erro
      * @return boolean | array
      */
     public function setAtividade(){
@@ -260,30 +260,30 @@ class Orcamento extends AbstractService {
             $basica = $this->data['atividade']->getBasica();
             if($basica == "EX" OR $basica == "SC"){
                 return ['Atividade escolhida esta bloqueada! Por Favor entre em contato com a Vila Velha.'];
-            }            
+            }
         }
         return TRUE;
     }
 
-    /** 
+    /**
      * Inserir no banco de dados o registro
      * @param Array $data com os campos do registro
-     * @return entidade 
-     */   
-    public function insert(array $data, $onlyCalculo=false) { 
+     * @return entidade
+     */
+    public function insert(array $data, $onlyCalculo=false) {
         $this->data        = $data;
         if($onlyCalculo)
             $this->setFlush (FALSE);
-        
+
         if (empty($this->data['user']))
             $this->data['user'] = $this->getIdentidade()->getId();
-        
+
         $ret = $this->setReferences();
         if($ret !== TRUE)
             return $ret;
-        
+
         $this->calculaVigencia();
-       
+
         //Comissão da Administradora padrão
         if(empty($this->data['comissao'])){
             $this->data['comissaoEnt'] = $this->em
@@ -297,14 +297,14 @@ class Orcamento extends AbstractService {
         $this->data['taxa'] = $this->em
                 ->getRepository('Livraria\Entity\Taxa')
                 ->findTaxaVigente(
-                    $this->data['seguradora']->getId(), 
-                        $this->data['atividade']->getId(), 
-                        $this->data['inicio'], 
+                    $this->data['seguradora']->getId(),
+                        $this->data['atividade']->getId(),
+                        $this->data['inicio'],
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
                         $this->data['tipoCobertura']
         );
-        
+
         if(!$this->data['taxa']){
             echo 'Seguradora', $this->data['seguradora']->getId() , '<br />';
             echo 'Atividade', $this->data['atividade']->getId() , '<br />';
@@ -315,42 +315,42 @@ class Orcamento extends AbstractService {
             echo '<br />';
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
         }
-        
+
         $this->data['multiplosMinimos'] = $this->em
             ->getRepository('Livraria\Entity\MultiplosMinimos')
             ->findMultMinVigente($this->data['seguradora']->getId(), $this->data['criadoEm']);
-        
+
         $resul = $this->CalculaPremio();
-        
+
         $this->data['fechadoId'] = '0';
-        
+
         if(!isset($this->data['status']) OR empty($this->data['status'])){
             $this->data['status'] = 'A';
         }
-        
+
         if($onlyCalculo){
-            return TRUE; 
+            return TRUE;
         }
-        
+
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
-        
+
         if ($this->getIdentidade()->getIsAdmin() == '0') {
             return ['Você não tem permissão para incluir registro'];
         }
-        
+
         $this->trocaNaoCalcula();
 
         if(parent::insert())
             $this->logForNew();
-        
+
         $this->trocaNaoCalcula(true);
-        
-        return array(TRUE,  $this->data['id']);      
-    }   
-    
+
+        return array(TRUE,  $this->data['id']);
+    }
+
     /**
      * Grava em logs de quem, quando, tabela e id que inseriu o registro
      */
@@ -362,7 +362,7 @@ class Orcamento extends AbstractService {
         }
         $log = new LogOrcamento($this->em);
         $log->setFlush($this->getFlush());
-        $dataLog['orcamento']  = $this->data['id']; 
+        $dataLog['orcamento']  = $this->data['id'];
         $dataLog['tabela']     = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos' ;
         $dataLog['action']     = 'new';
@@ -370,7 +370,7 @@ class Orcamento extends AbstractService {
         $dataLog['dePara']     = '';
         $log->insert($dataLog);
     }
-    
+
     /**
      * Pegando o servico endereco e inserindo ou referenciando o imovel
      * @return boolean | array
@@ -406,7 +406,7 @@ class Orcamento extends AbstractService {
         }
         return TRUE;
     }
-    
+
     public function checkDocLod() {
         /* @var $locador  \Livraria\Entity\Locador             */
         if(!is_object($this->data['locador'])){
@@ -415,8 +415,8 @@ class Orcamento extends AbstractService {
             $locador = $this->data['locador'];
         }
         if($locador->getTipo() != $this->data['tipoLoc']){
-            $locador->setTipo($this->data['tipoLoc']);            
-        }         
+            $locador->setTipo($this->data['tipoLoc']);
+        }
         if($locador->getTipo() == "fisica"   AND $locador->getCpf()  != $this->data['cpfLoc']){
             $locador->setCpf($this->data['cpfLoc'])->setCnpj('');
             $this->em->persist($locador);
@@ -429,10 +429,10 @@ class Orcamento extends AbstractService {
         }
         $this->data['locador'] = $locador;
     }
-    
+
     /**
      * Faz um referencia ou tenta incluir o locador no BD
-     * Caso não consiga retorna os erros 
+     * Caso não consiga retorna os erros
      * @return boolean | array
      */
     public function setLocador(){
@@ -469,7 +469,7 @@ class Orcamento extends AbstractService {
         }
         return TRUE;
     }
-    
+
     public function checkDocLoc() {
         /* @var $locatario  \Livraria\Entity\Locatario             */
         if(!is_object($this->data['locatario'])){
@@ -478,8 +478,8 @@ class Orcamento extends AbstractService {
             $locatario = $this->data['locatario'];
         }
         if($locatario->getTipo() != $this->data['tipo']){
-            $locatario->setTipo($this->data['tipo']);            
-        }         
+            $locatario->setTipo($this->data['tipo']);
+        }
         if($locatario->getTipo() == "fisica"   AND $locatario->getCpf()  != $this->data['cpf']){
             $locatario->setCpf($this->data['cpf'])->setCnpj('');
             $this->em->persist($locatario);
@@ -490,12 +490,12 @@ class Orcamento extends AbstractService {
             $this->em->persist($locatario);
             $this->em->flush($locatario);
         }
-        $this->data['locatario'] = $locatario;       
+        $this->data['locatario'] = $locatario;
     }
-    
+
     /**
      * Faz um referencia ou tenta incluir o locatario no BD
-     * Caso não consiga retorna os erros 
+     * Caso não consiga retorna os erros
      * @return boolean | array
      */
     public function setLocatario(){
@@ -530,12 +530,12 @@ class Orcamento extends AbstractService {
         return TRUE;
     }
 
-    /** 
+    /**
      * Alterar no banco de dados o registro
      * @param Array $data com os campos do registro
-     * @return boolean|array 
-     */    
-    public function  update(array $data, $onlyCalculo=false) { 
+     * @return boolean|array
+     */
+    public function  update(array $data, $onlyCalculo=false) {
         $this->data        = $data;
         if ($onlyCalculo) {
             $this->setFlush(FALSE);
@@ -557,45 +557,45 @@ class Orcamento extends AbstractService {
         }
 
         $this->calculaVigencia();
-        
+
         $this->data['taxa'] = $this->em
                 ->getRepository('Livraria\Entity\Taxa')
                 ->findTaxaVigente(
-                    $this->data['seguradora']->getId(), 
-                        $this->data['atividade']->getId(), 
-                        $this->data['inicio'], 
+                    $this->data['seguradora']->getId(),
+                        $this->data['atividade']->getId(),
+                        $this->data['inicio'],
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
                         $this->data['tipoCobertura']
         );
-        
+
         if(!$this->data['taxa'])
             return ['Taxas para esta classe e atividade vigente nao encontrada!!!'];
-        
-        
+
+
         $this->idToEntity('comissaoEnt', 'Livraria\Entity\Comissao');
-        
+
         $this->idToEntity('multiplosMinimos', 'Livraria\Entity\MultiplosMinimos');
 
         $this->CalculaPremio();
-        
+
         $this->idToReference('user', 'Livraria\Entity\User');
 
         if($onlyCalculo){
-            return TRUE; 
+            return TRUE;
         }
-        
+
         $result = $this->isValid();
         if($result !== TRUE){
             return $result;
         }
-        
+
         if ($this->getIdentidade()->getIsAdmin() == '0') {
             return ['Você não tem permissão para alterar esse registro'];
         }
-        
+
         $this->trocaNaoCalcula();
-        
+
         if(parent::update()){
             $this->logForEdit();
             if($data['status'] == 'F' AND !empty($this->dePara)){
@@ -603,19 +603,19 @@ class Orcamento extends AbstractService {
                 $srvFechado->update($this->entityReal,$this->dePara, 'orcamentos');
             }
         }
-        
+
         $this->trocaNaoCalcula(true);
-        
+
         return TRUE;
     }
-    
+
     public function clean() {
         $this->data       = null;
         $this->dePara     = '';
         $this->entityReal = null;
         $this->em->clear();
     }
-    
+
     /**
      * Grava no logs dados da alteção feita na Entity
      * @return no return
@@ -623,11 +623,11 @@ class Orcamento extends AbstractService {
     public function logForEdit(){
         //parent::logForEdit('orcamento');
         //serviço logorcamento
-        if(empty($this->dePara)) 
+        if(empty($this->dePara))
             return ;
-        
+
         $log = new LogOrcamento($this->em);
-        $dataLog['orcamento']  = $this->data['id']; 
+        $dataLog['orcamento']  = $this->data['id'];
         $dataLog['tabela']     = 'log_orcamento';
         $dataLog['controller'] = 'orcamentos' ;
         $dataLog['action']     = 'edit';
@@ -642,7 +642,7 @@ class Orcamento extends AbstractService {
      * Caso ok retorna true
      * @return array|boolean
      */
-    public function isValid(){ 
+    public function isValid(){
         if(!$this->isValid){
             return TRUE;
         }
@@ -665,11 +665,11 @@ class Orcamento extends AbstractService {
         }
         // Lello validar pela referencia do imovel.
         if(!empty($this->data['refImovel']) AND $this->data['administradora']->getId() == 3234){
-            $filtro['refImovel'] = $this->data['refImovel'];            
-            $filtro['administradora'] = $this->data['administradora']->getId();            
+            $filtro['refImovel'] = $this->data['refImovel'];
+            $filtro['administradora'] = $this->data['administradora']->getId();
         }else{
-            $filtro['imovel'] = $this->data['imovel']->getId();            
-            $filtro['administradora'] = $this->data['administradora']->getId();            
+            $filtro['imovel'] = $this->data['imovel']->getId();
+            $filtro['administradora'] = $this->data['administradora']->getId();
         }
         $entitys = $repository->findBy($filtro);
         $erro = array();
@@ -709,14 +709,14 @@ class Orcamento extends AbstractService {
                 $erro[] = "Já existe um orçamento de renovação com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
         }
-        
+
         if(!empty($erro)){
             return $erro;
         }else{
             return TRUE;
         }
     }
-    
+
     /**
      * Monta string de campos afetados para registrar no log
      * @param \Livraria\Entity\Orcamento $ent
@@ -773,58 +773,58 @@ class Orcamento extends AbstractService {
         //Juntar as alterações no imovel se houver
         $this->dePara .= $this->deParaImovel;
     }
-    
+
     /**
      * Gerar o pdf do Orçamento inserido
      * @param strin $id
-     * @return PDF file 
+     * @return PDF file
      */
     public function getPdfOrcamento($id){
         //Carregar Entity Orcamento
         $seg = $this->em
             ->getRepository($this->entity)
             ->find($id);
-        
+
         if(!$seg){
             return ['Não foi encontrado um orçamento com esse numero!!!'];
         }
         $this->acertaNomeLocatarioEntity($seg);
         $num = 'Orçamento/' . $seg->getId() . '/' . $seg->getCodano();
         $this->pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
-        
+
         $this->conteudoDaPagina($seg);
-        
+
         $this->sendPdf();
     }
-    
+
     public function acertaNomeLocatarioEntity(&$ent){
         if($ent->getLocatarioNome() == $ent->getLocatario()->getNome()){
             return;
         }
         /* @var $locatario \Livraria\Entity\Locatario */
         $locatario = $this->em->getRepository("Livraria\Entity\Locatario")->findOneBy(['nome' => $ent->getLocatarioNome()]);
-        if($locatario){            
+        if($locatario){
             if($ent->getLocatarioNome() != $locatario->getNome()){
-                $this->locatarioAcertoLog[] = '<p>Não encontrou o mesmo nome ' . $ent->getLocatarioNome() . ' com seu id correto ' . $locatario->getNome() . '</p>';                    
+                $this->locatarioAcertoLog[] = '<p>Não encontrou o mesmo nome ' . $ent->getLocatarioNome() . ' com seu id correto ' . $locatario->getNome() . '</p>';
                 return;
             }
             if($ent->getFechadoId() != 0){
                 $fechado = $this->em->find("Livraria\Entity\Fechados", $ent->getFechadoId());
                 if($fechado){
                     $fechado->setLocatario($locatario);
-                    $this->em->persist($fechado);                    
+                    $this->em->persist($fechado);
                 }
             }
             $ent->setLocatario($locatario);
             $this->em->persist($ent);
             $this->em->flush();
         }else{
-            $this->locatarioAcertoLog[] = '<p>Locatario não encontrado com esse nome  ' . $ent->getLocatarioNome() . '</p>';                    
+            $this->locatarioAcertoLog[] = '<p>Locatario não encontrado com esse nome  ' . $ent->getLocatarioNome() . '</p>';
         }
     }
-        
+
     /**
-     * Gerar vario pdfs do Orçamento 
+     * Gerar vario pdfs do Orçamento
      * @param strin $id
      * @param objet $objPdf
      */
@@ -833,25 +833,25 @@ class Orcamento extends AbstractService {
         $seg = $this->em
             ->getRepository($this->entity)
             ->find($id);
-        
+
         if(!$seg){
             return ['Não foi encontrado um orçamento com esse numero!!!'];
         }
-        
+
         if(!is_null($objPdf))
             $this->pdf = $objPdf;
-        
+
         $num = 'Orçamento/' . $seg->getId() . '/' . $seg->getCodano();
-        
+
         if(!is_object($this->pdf))
             $this->pdf = new ImprimirSeguro($num, $seg->getSeguradora()->getId());
         else
             $this->pdf->novaPagina($num, $seg->getSeguradora()->getId());
-        
+
         $this->conteudoDaPagina($seg);
-        
+
     }
-    
+
     public function conteudoDaPagina($seg){
         /*  @var $seg \Livraria\Entity\Orcamento      */
         $this->pdf->setL1($seg->getRefImovel(), $seg->getInicio());
@@ -905,9 +905,9 @@ class Orcamento extends AbstractService {
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $this->pdf->setL14();
         $this->pdf->setObsGeral('',($seg->getAssist24() == 'S')? TRUE : FALSE);
-        
+
     }
-    
+
     public function sendPdf($opc=''){
         switch ($opc) {
             case '':
@@ -921,17 +921,17 @@ class Orcamento extends AbstractService {
                 break;
         }
     }
-    
+
     public function getObjectPdf(){
         return $this->pdf;
     }
-    
-    public function verificaLocatario($param) {        
+
+    public function verificaLocatario($param) {
         // tratar paramentros
         if(isset($param['adm'])){
             $this->data['administradora'] = $param['adm'];
         }  else {
-            $this->data['administradora'] = '';            
+            $this->data['administradora'] = '';
         }
         if(isset($param['ini'])){
             $this->data['inicio'] = $param['ini'];
@@ -941,8 +941,8 @@ class Orcamento extends AbstractService {
         }
         // pegar lista de orçamento ou renovações
         /* @var $rep \Livraria\Entity\OrcamentoRepository */
-        $rep = $this->em->getRepository("Livraria\Entity\Orcamento"); 
-        $lista = $rep->getListaArray($this->data);  
+        $rep = $this->em->getRepository("Livraria\Entity\Orcamento");
+        $lista = $rep->getListaArray($this->data);
         $total = count($lista);
         $achou = 0;
         $ok = 0;
@@ -953,17 +953,17 @@ class Orcamento extends AbstractService {
                 echo 'Achou ', $value['locatarioNome'] , ' diferente de ', $value['locatario']['nome'], '<br>' ;
                 $this->acertaNomeLocatario($value, $ng, $ok);
                 $achou ++;
-            }            
-        }        
+            }
+        }
         echo '<h1>Total ', $total , '</h1>';
         echo '<h1>Achou ', $achou , '</h1>';
         echo '<h1>acertados ', $ok , '</h1>';
         echo '<h1>nao acertador ', $ng , '</h1>';
-    }   
-    
+    }
+
     /**
      * Retorna Instancia do repository do locatario
-     * @return \Livraria\Entity\LocatarioRepository 
+     * @return \Livraria\Entity\LocatarioRepository
      */
     public function getLtr(){
         if ($this->locatarioRepository) {
@@ -972,7 +972,7 @@ class Orcamento extends AbstractService {
         $this->locatarioRepository = $this->em->getRepository("Livraria\Entity\Locatario");
         return $this->locatarioRepository;
     }
-    
+
     public function acertaNomeLocatario(&$v, &$ng, &$ok){
         /* @var $entity \Livraria\Entity\Locatario */
         $entity = $this->getLtr()->findOneBy(['nome' => $v['locatarioNome']]);
@@ -981,22 +981,22 @@ class Orcamento extends AbstractService {
             $orcaReno = $this->em->find("Livraria\Entity\Orcamento", $v['id']);
             if($orcaReno){
                 if($orcaReno->getLocatarioNome() != $entity->getNome()){
-                    echo '<p>Não encontrou o mesmo nome ' . $orcaReno->getLocatarioNome() . ' com seu id correto ' . $entity->getNome() . ' id '.$orcaReno->getId().'</p>';                    
+                    echo '<p>Não encontrou o mesmo nome ' . $orcaReno->getLocatarioNome() . ' com seu id correto ' . $entity->getNome() . ' id '.$orcaReno->getId().'</p>';
                     $ng ++;
                     return;
                 }
                 $orcaReno->setLocatario($entity);
                 $this->em->persist($orcaReno);
-                $this->em->flush();    
+                $this->em->flush();
                 $ok++;
             }  else {
                 echo '<p>Fechado não encontrado com esse id  ' . $v['id'] . '</p>';
                 $ng ++;
-            }              
-        }else {                
-            echo '<p>Locatario não encontrado com esse nome  ' . $v['locatarioNome'] . '</p>';                    
+            }
+        }else {
+            echo '<p>Locatario não encontrado com esse nome  ' . $v['locatarioNome'] . '</p>';
             $ng ++;
         }
     }
-    
+
 }
