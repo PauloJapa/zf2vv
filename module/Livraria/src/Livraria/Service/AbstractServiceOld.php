@@ -12,7 +12,7 @@ use Zend\Authentication\AuthenticationService,
  * Tem os metodos basicos para o Crud no BD
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-abstract class AbstractService {
+abstract class AbstractServiceOld {
 
     /**
      * Para Casos em que não se pode validar registro

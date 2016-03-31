@@ -234,9 +234,9 @@ class Module {
     public function getViewHelperConfig() {
         return array(
             'invokables' => array(
-                'UserIdentity' => new View\Helper\UserIdentity(),
-                'FormDefault' => new View\Helper\FormDefault(),
-                'ViewIndex' => new View\Helper\ViewIndex(),
+                'UserIdentity' => '\Livraria\View\Helper\UserIdentity',
+                'FormDefault'  => '\Livraria\View\Helper\FormDefault',
+                'ViewIndex'    => '\Livraria\View\Helper\ViewIndex',
             )
         );
     }

@@ -19,11 +19,11 @@ class TaxaAjustesController extends CrudController {
         
     }
     
-    public function indexAction(array $filtro = array('status' => 'A')){
+    public function indexAction(array $filtro = ['status' => 'A'],array $orderBy = [], $list = []){
         $this->verificaSeUserAdmin();
         $orderBy = ['seguradora'=>'ASC','administradora'=>'ASC','ocupacao'=>'ASC','classe'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
         if(!$this->render){
-            return parent::indexAction($filtro,$orderBy);
+            return parent::indexAction($filtro,$orderBy,$list);
         }
 //        $data = $this->filtrosDaPaginacao();
 //        $this->formData = new \LivrariaAdmin\Form\Filtros([],  $this->getEm());

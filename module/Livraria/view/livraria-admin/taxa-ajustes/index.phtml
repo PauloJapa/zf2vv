@@ -58,6 +58,8 @@ $td     = array('','','','','','class="r"','class="r"','class="r"','class="r"','
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
+//        echo 'asçsfdfldkfj' , get_class($this->data);
+//        die;
 foreach($this->data as $entity){ 
     $linha = array(
         $entity->getId(),

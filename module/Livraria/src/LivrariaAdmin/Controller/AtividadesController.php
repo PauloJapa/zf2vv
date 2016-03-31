@@ -27,7 +27,7 @@ class AtividadesController extends CrudController {
      * @param array $filtro
      * @return \Zend\View\Model\ViewModel|no return
      */
-    public function indexAction(array $filtro = array()){
+    public function indexAction(array $filtro = array(), array $orderBy = array(), $list = array()) {
         $this->verificaSeUserAdmin();
         $orderBy = ['descricao'=>'ASC'];
         if(!$this->render){
@@ -43,8 +43,7 @@ class AtividadesController extends CrudController {
         $list = $this->getEm()
                     ->getRepository($this->entity)
                     ->pesquisa($data);
-        
-        return parent::indexAction($filtro,$orderBy,$list);
+        parent::indexAction($filtro, $orderBy, $list);
     }
     
     public function newAction() {

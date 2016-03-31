@@ -18,8 +18,7 @@ class LocatariosController extends CrudController {
         $this->route = "livraria-admin";
         
     }
-    
-    public function indexAction(array $filtro = array()){
+    public function indexAction(array $filtro = array(), array $orderBy = array(), $list = array()) {
         $this->verificaSeUserAdmin();
         $orderBy = array('nome' => 'ASC');
         if(!$this->render){
@@ -42,8 +41,7 @@ class LocatariosController extends CrudController {
         $list = $this->getEm()
                     ->getRepository($this->entity)
                     ->pesquisa($filtro);
-        
-        return parent::indexAction($filtro, $orderBy, $list);
+        parent::indexAction($filtro, $orderBy, $list);
     }
 
     public function newAction() {
