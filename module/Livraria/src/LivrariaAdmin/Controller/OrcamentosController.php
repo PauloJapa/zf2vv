@@ -119,9 +119,10 @@ class OrcamentosController extends CrudController {
         return new ViewModel($this->getParamsForView()); 
     }
 
-    public function indexAction(){
+    public function indexAction(array $filtro = array(), array $orderBy = array(), $list = array()) {
         return new ViewModel();
     }
+    
     /**
      * Faz pesquisa no BD e retorna as variaveis de exbição
      * @param array $filtro

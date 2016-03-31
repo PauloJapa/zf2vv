@@ -64,7 +64,9 @@ class TaxaAjuste extends AbstractForm {
         
         $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
         asort($this->seguradoras);
-        $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras);
+        $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ['value' => '']);
+        
+//        $this->setComissao();
         
         $this->administradoras = $this->em->getRepository('Livraria\Entity\Administradora')->fetchPairs(['status'=>'A']);
         asort($this->administradoras);
@@ -118,6 +120,28 @@ class TaxaAjuste extends AbstractForm {
         }       
         $this->setInputSubmit('enviar', 'Salvar');
 
+    }
+    
+    /**
+     * Seta as comissões se baseando na seguradora selecionada
+     * @param array $data
+     * @return no return
+     */
+    public function setComissao($data){
+        if(!$this->isAdmin){
+            return;
+        }
+        $this->remove('comissao');
+        if(isset($data['seguradora'])){
+            $comissaoKey = 'comissaoParam' . str_pad($data['seguradora'], 3, '0', STR_PAD_LEFT);
+        }else{
+            $comissaoKey = 'comissaoParam%';
+        }            
+        $comissao = $this->getParametroSelect($comissaoKey, TRUE);
+        $this->setInputSelect('comissao', 'Comissão da Administradora',$comissao, ['onChange'=>'setComissao(this);']);
+        if(isset($data['comissao'])){
+            $this->get('comissao')->setValue($data['comissao']);
+        }
     }
     
     /**

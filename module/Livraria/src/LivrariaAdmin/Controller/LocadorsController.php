@@ -18,8 +18,7 @@ class LocadorsController extends CrudController {
         $this->route = "livraria-admin";
         
     }
-    
-    public function indexAction(array $filtro = array()){
+    public function indexAction(array $filtro = array(), array $orderBy = array(), $list = array()) {
         $this->verificaSeUserAdmin();
         $orderBy = array('nome' => 'ASC');
         if(!$this->render){

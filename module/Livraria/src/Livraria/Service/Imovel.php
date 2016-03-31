@@ -43,8 +43,8 @@ class Imovel extends AbstractService {
      * Inserir no banco de dados o registro
      * @param Array $data com os campos do registro
      * @return entidade 
-     */     
-    public function insert(array $data) { 
+     */   
+    public function insert(array $data = array()) {
         $this->data = $data;
 
         if(!empty($this->data['imovel'])){
@@ -72,8 +72,8 @@ class Imovel extends AbstractService {
     /**
      * Grava em logs de quem, quando, tabela e id que inseriu o registro em imovels
      */
-    public function logForNew(){
-        parent::logForNew('imovel');
+    public function logForNew($tabela='',$controller='', $obs='Inseriu um novo registro'){
+        parent::logForNew('imovel',$controller, $obs);
     }
  
     /** 
@@ -81,7 +81,7 @@ class Imovel extends AbstractService {
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data) {
+    public function update(array $data = null) {
         $this->data = $data;
         
         if(!empty($this->data['imovel'])){
@@ -112,8 +112,8 @@ class Imovel extends AbstractService {
     /**
      * Grava no logs dados da alteção feita em imovels De/Para
      */
-    public function logForEdit(){
-        parent::logForEdit('imovel');
+    public function logForEdit($tabela = 'imovel', $controller = '') {
+        parent::logForEdit($tabela, $controller);
     }
     
     /**

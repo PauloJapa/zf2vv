@@ -151,6 +151,12 @@ class TaxaAjuste extends Filtro
      */
     protected $seguradora;
 
+    /**
+     * @var float $comissao
+     *
+     * @ORM\Column(name="comissao", type="decimal", nullable=true)
+     */
+    protected $comissao;
 
  
     /** 
@@ -448,6 +454,25 @@ class TaxaAjuste extends Filtro
      */
     public function setUnica($unica) {
         $this->unica = $this->trataFloat($unica);
+        return $this;
+    }
+
+    /**
+     * Valor da comissão para Administradora 
+     * @return float
+     */
+    public function getComissao() {
+        return $this->comissao;
+    }
+
+    /**
+     * Valor da comissão para Administradora 
+     * Preenchido com base na comissão na entity de Comissao
+     * @param string $comissao
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
+     */
+    public function setComissao($comissao) {
+        $this->comissao = $this->trataFloat($comissao,8);
         return $this;
     }
 
