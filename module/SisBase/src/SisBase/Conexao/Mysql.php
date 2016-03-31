@@ -5,9 +5,9 @@ namespace SisBase\Conexao;
 
 class Mysql {
     private $host     = 'localhost';
-    private $schema   = 'zf2vv';
+    private $schema   = 'homologacao';
     private $user     = 'root';
-    private $password = 'root01';
+    private $password = 't3cn0m3d';
     private $pdo ;
     private $dsn ;
     private $stmt ;

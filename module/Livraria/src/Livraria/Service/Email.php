@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace Livraria\Service;
 
@@ -22,7 +22,7 @@ class Email extends AbstractService
         $this->view = $view;
     }
     
-    public function enviaEmail(array &$dataEmail, $template='add-user') {
+    public function enviaEmail(array $dataEmail, $template='add-user') {
         $baseUrl = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey('baseUrl')[0]->getDescricao();
         try {
             $dataEmail['baseUrl'] = $baseUrl;
