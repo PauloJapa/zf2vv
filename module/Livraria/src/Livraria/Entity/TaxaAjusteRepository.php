@@ -75,6 +75,7 @@ class TaxaAjusteRepository extends EntityRepository {
         // Procura pelo taxa especifica para todas administradoras.
         $filters['administradora'] = 1;
         $taxaAjustes = $this->findBy($filters);
+        $taxaAjustes = $this->findBy(['administradora' => '1', 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao]);
         //procura em ativos
         foreach ($taxaAjustes as $taxaAjuste) {
             if($taxaAjuste->getInicio('obj') <= $inicio AND $taxaAjuste->getStatus() == 'A'){
