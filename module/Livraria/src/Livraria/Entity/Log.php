@@ -73,12 +73,9 @@ class Log
     protected $ip;
 
     /**
-     * @var Users
-     *
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\User
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\User")
+     * @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      */
     protected $user;
 

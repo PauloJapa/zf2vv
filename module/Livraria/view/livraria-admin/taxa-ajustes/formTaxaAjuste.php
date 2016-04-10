@@ -19,6 +19,7 @@ $this->FormDefault(['legend' => 'Dados das Taxas de Ajuste', 'hidden' => 'id'],'
         $this->FormDefault(['subOpcao' => 'hidden']),
         $this->FormDefault(['administradora' => 'select']),
         $this->FormDefault(['seguradora' => 'select']),
+        $this->FormDefault(['comissao' => 'select']),
     "</td>\r<td>",
         $this->FormDefault(['inicio' => 'calend']),
         $this->FormDefault(['validade' => 'select']),
@@ -27,7 +28,8 @@ $this->FormDefault(['legend' => 'Dados das Taxas de Ajuste', 'hidden' => 'id'],'
         $this->FormDefault(['status' => 'select']),
     "</td>\r",
 "</tr><tr>\r",
-    "\r<td colspan=3>",
+    "</td>\r<td>",
+    "\r<td colspan=2>",
         $this->FormDefault(['ocupacao' => 'radioLine']),
     "</td>\r",
 "</tr>\r",
@@ -39,13 +41,19 @@ $this->FormDefault(['legend'=>'Parametrizar Taxas'],'fieldIni');
 <div id='fieldApto'>
     <table width="100%">
         <tr>
-            <td width="45%" id="celApt1"></td>
-            <td width="10%" align="center"> OU </td>
-            <td width="45%" id="celApt2"></td>
+            <td width="50%" id="celApt1"></td>
+            <td width="50%" id="celApt2"></td>
         </tr>
     </table>
 </div>        
-<div id='fieldCasa'></div>
+<div id='fieldCasa'>
+    <table width="100%">
+        <tr>
+            <td width="50%" id="celCasa1"></td>
+            <td width="50%" id="celCasa2"></td>
+        </tr>
+    </table>
+</div>
 <div id='fieldCome'>    
     <table width="100%" id="tableCome">
     </table>
@@ -87,7 +95,7 @@ $noFilter=true;
     var tar = '<?php echo $this->url($this->matchedRouteName,$this->params); ?>';
     var formName = '<?php echo $this->formName ?>';
     var inputs = <?php echo json_encode($inputs) ?>;
-    var Labels = <?php echo json_encode($form->getLabelOfInputs(TRUE)) ?>;
+    var Labels = <?php echo json_encode($form->getLabelOfInputs()) ?>;
     var classes = <?php echo json_encode($classes) ?>;
       
     var novo = function(){
@@ -141,7 +149,6 @@ $noFilter=true;
         var $fieldApto = $("#fieldApto");
         $fieldTaxa.append($fieldApto.find('#popcomEletrico').remove());
         $fieldTaxa.append($fieldApto.find('#popsemEletrico').remove());
-        $fieldTaxa.append($fieldApto.find('#popunica').remove()); 
         $fieldApto.hide();
         console.log('resetado apartamento');        
     };
@@ -149,7 +156,8 @@ $noFilter=true;
     var resetFieldsOfCasa = function(){   
         var $fieldTaxa = $("#fieldTaxa");
         var $fieldCasa = $("#fieldCasa");     
-        $fieldTaxa.append($fieldCasa.find('#popunica').remove()); 
+        $fieldTaxa.append($fieldCasa.find('#popcomEletrico').remove());
+        $fieldTaxa.append($fieldCasa.find('#popsemEletrico').remove());
         $fieldCasa.hide();
         console.log('resetado resetFieldsOfCasa');        
     };
@@ -187,15 +195,15 @@ $noFilter=true;
         var $fieldApto = $("#fieldApto");
         $fieldApto.find('#celApt1').append($fieldTaxa.find('#popcomEletrico').remove());
         $fieldApto.find('#celApt1').append($fieldTaxa.find('#popsemEletrico').remove());
-        $fieldApto.find('#celApt2').append($fieldTaxa.find('#popunica').remove()); 
         $fieldApto.show();
         console.log('setFieldsOfApartamento ok');        
     };
     
     var setFieldsOfCasa = function(){ 
         var $fieldTaxa = $("#fieldTaxa");
-        var $fieldCasa = $("#fieldCasa");       
-        $fieldCasa.append($fieldTaxa.find('#popunica').remove()); 
+        var $fieldCasa = $("#fieldCasa");   
+        $fieldCasa.find('#celCasa1').append($fieldTaxa.find('#popcomEletrico').remove());
+        $fieldCasa.find('#celCasa1').append($fieldTaxa.find('#popsemEletrico').remove());    
         $fieldCasa.show();
         console.log('setFieldsOfCasa ok');        
     };
@@ -319,6 +327,29 @@ $noFilter=true;
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'index')); ?>";
         envia(tar,'',formName);
     }
+    
+//    function setComissao(obj){
+//        if(typeof obj === 'undefined'){
+//            obj = {'name': ''};
+//        }
+//        seg = $('#seguradora').val();
+//        switch($("input[name=ocupacao]:checked").val()){
+//        case '01':                
+//            $.each(param, function(index, value) {
+//                if((index === 'comissaoComercial') && (value !== '')){
+//                    $('#comissao').val(value);
+//                }
+//            });
+//            break;
+//        case '02':              
+//            $.each(param, function(index, value) {
+//                if((index === 'comissaoResidencial') && (value !== '')){
+//                    $('#comissao').val(value);
+//                }
+//            });
+//            break;
+//        }
+//    }
 
     $(function(){
         /**

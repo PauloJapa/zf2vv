@@ -51,9 +51,9 @@ class TaxaAjuste extends Filtro
     protected $status;
     
     /**
-     * @var Classe
+     * @var \Livraria\Entity\Classe
      *
-     * @ORM\ManyToOne(targetEntity="Classe")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Classe")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
      * })
@@ -81,7 +81,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="cont_ele", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $contEle;
+     protected $contEle = 0;
 	
     /**
      * com conteudo e sem dano ele
@@ -89,7 +89,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="conteudo", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $conteudo;
+     protected $conteudo = 0;
 	
     /**
      * sem conteudo e com dano ele
@@ -97,7 +97,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="eletrico", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $eletrico;
+     protected $eletrico = 0;
 	
     /**
      * sem conteudo e sem dano ele
@@ -105,7 +105,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="sem_cont_ele", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-    protected $semContEle;
+    protected $semContEle = 0;
 	
     /**
      * com dano ele
@@ -113,7 +113,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="com_eletrico", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $comEletrico;
+     protected $comEletrico = 0;
 	
     /**
      * sem dano ele
@@ -121,7 +121,7 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="sem_eletrico", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $semEletrico;
+     protected $semEletrico = 0;
 
     /**
      * unica
@@ -129,12 +129,12 @@ class TaxaAjuste extends Filtro
      *
      * @ORM\Column(name="unica", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
-     protected $unica;
+     protected $unica = 0;
     
     /**
-     * @var Administradora
+     * @var \Livraria\Entity\Administradora
      *
-     * @ORM\ManyToOne(targetEntity="Administradora")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Administradora", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      * })
@@ -142,9 +142,9 @@ class TaxaAjuste extends Filtro
     protected $administradora;
     
     /**
-     * @var Seguradora
+     * @var \Livraria\Entity\Seguradora
      *
-     * @ORM\ManyToOne(targetEntity="Seguradora")
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Seguradora", fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      * })
@@ -154,7 +154,7 @@ class TaxaAjuste extends Filtro
     /**
      * @var float $comissao
      *
-     * @ORM\Column(name="comissao", type="decimal", nullable=true)
+     * @ORM\Column(name="comissao", type="decimal", precision=10, scale=4, nullable=true, options={"default" = 0})
      */
     protected $comissao;
 
@@ -493,6 +493,7 @@ class TaxaAjuste extends Filtro
         $data['comEletrico']    = $this->floatToStr('comEletrico');
         $data['semEletrico']    = $this->floatToStr('semEletrico');
         $data['unica']          = $this->floatToStr('unica');
+        $data['comissao']       = $this->floatToStr('comissao');
         $data['validade']       = $this->getValidade();
         $data['ocupacao']       = $this->getOcupacao();
         $data['administradora'] = is_null($this->getAdministradora()) ? '': $this->getAdministradora()->getId(); 

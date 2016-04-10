@@ -137,11 +137,15 @@ class TaxaAjuste extends AbstractService {
     }
     
     public function saveLoteDeTaxas() {
-        $inputs = ['contEle'             
-                   ,'conteudo'                
-                   ,'eletrico'               
-                   ,'semContEle'                
-                   ,'unica'      ];
+        $inputs = [
+//                    'contEle'             
+//                   ,'conteudo'                
+//                   ,'eletrico'               
+//                   ,'semContEle'                
+                    'comEletrico'             
+                   ,'semEletrico'               
+//                   ,'unica'     
+        ];
         foreach ($this->data['idArray'] as $key => $id){
             $this->data['id']     = $id;
             $this->data['classe'] = $key;

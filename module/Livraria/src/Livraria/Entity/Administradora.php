@@ -14,7 +14,8 @@ class Administradora extends Filtro {
 
     /**
      * @ORM\Id
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @var int
      */
     protected $id;
@@ -118,14 +119,15 @@ class Administradora extends Filtro {
     protected $updatedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
+     * @var \Livraria\Entity\Endereco
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
     protected $endereco;
 
     /**
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Seguradora")
+     * @var \Livraria\Entity\Seguradora
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Seguradora")
      * @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      */
     protected $seguradora;

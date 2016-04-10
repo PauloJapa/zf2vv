@@ -383,12 +383,9 @@ class Renovacao  extends AbstractSeguro
     protected $multiplosMinimos;
 
     /**
-     * @var ComissaoEnt
-     *
-     * @ORM\OneToOne(targetEntity="Comissao")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Comissao
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Comissao")
+     * @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
      */
     protected $comissaoEnt;
 

@@ -295,102 +295,72 @@ class Fechados  extends AbstractSeguro
     protected $cobVendaval;
 
     /**
-     * @var Locador
-     *
-     * @ORM\OneToOne(targetEntity="Locador")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Locador
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Locador")
+     * @ORM\JoinColumn(name="locador_id", referencedColumnName="id")
      */
     protected $locador;
 
     /**
-     * @var Locatario
-     *
-     * @ORM\OneToOne(targetEntity="Locatario")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Locatario
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Locatario")
+     * @ORM\JoinColumn(name="locatario_id", referencedColumnName="id")
      */
     protected $locatario;
 
     /**
-     * @var Imovel
-     *
-     * @ORM\OneToOne(targetEntity="Imovel")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Imovel
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Imovel")
+     * @ORM\JoinColumn(name="imovel_id", referencedColumnName="id")
      */
     protected $imovel;
 
     /**
-     * @var Taxa
-     *
-     * @ORM\OneToOne(targetEntity="Taxa")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Taxa
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Taxa")
+     * @ORM\JoinColumn(name="taxa_id", referencedColumnName="id")
      */
     protected $taxa;
 
     /**
-     * @var Atividade
-     *
-     * @ORM\OneToOne(targetEntity="Atividade")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Atividade
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Atividade")
+     * @ORM\JoinColumn(name="atividade_id", referencedColumnName="id")
      */
     protected $atividade;
 
     /**
-     * @var Seguradora
-     *
-     * @ORM\OneToOne(targetEntity="Seguradora")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Seguradora
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Seguradora")
+     * @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      */
     protected $seguradora;
 
     /**
-     * @var Administradora
-     *
-     * @ORM\OneToOne(targetEntity="Administradora")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Administradora
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Administradora")
+     * @ORM\JoinColumn(name="administradoras_id", referencedColumnName="id")
      */
     protected $administradora;
 
     /**
-     * @var User
-     *
-     * @ORM\OneToOne(targetEntity="User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="users_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\User
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\User")
+     * @ORM\JoinColumn(name="users_id", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @var MultiplosMinimos
-     *
-     * @ORM\OneToOne(targetEntity="MultiplosMinimos")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
-     * })
+     * @var \Livraria\Entity\MultiplosMinimos
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\MultiplosMinimos")
+     * @ORM\JoinColumn(name="multiplos_minimos_id", referencedColumnName="id_multiplos")
      */
     protected $multiplosMinimos;
 
     /**
-     * @var ComissaoEnt
-     *
-     * @ORM\OneToOne(targetEntity="Comissao")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Comissao
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Comissao")
+     * @ORM\JoinColumn(name="comissao_id", referencedColumnName="id")
      */
     protected $comissaoEnt;
 

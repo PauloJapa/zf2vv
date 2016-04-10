@@ -67,22 +67,16 @@ class LogFechados extends Filtro
     protected $ip;
 
     /**
-     * @var User
-     *
-     * @ORM\OneToOne(targetEntity="User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\User
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\User")
+     * @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
      */
     protected $user;
-
+    
     /**
-     * @var Fechados
-     *
-     * @ORM\ManyToOne(targetEntity="Fechados")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="fechados_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Fechados
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Fechados")
+     * @ORM\JoinColumn(name="fechados_id", referencedColumnName="id")
      */
     protected $fechados;
 

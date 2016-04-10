@@ -67,22 +67,16 @@ class LogRenovacao extends Filtro
     protected $ip;
 
     /**
-     * @var User
-     *
-     * @ORM\OneToOne(targetEntity="User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\User
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\User")
+     * @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @var Renovacao
-     *
-     * @ORM\OneToOne(targetEntity="Orcamento")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="renovacao_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Orcamento
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Orcamento")
+     * @ORM\JoinColumn(name="renovacao_id", referencedColumnName="id")
      */
     protected $renovacao;
 

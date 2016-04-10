@@ -99,9 +99,8 @@ class Seguradora
     protected $alteradoEm;
 
     /**
-     * @var Enderecos
-     *
-     * @ORM\OneToOne(targetEntity="Livraria\Entity\Endereco")
+     * @var \Livraria\Entity\Endereco
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Endereco")
      * @ORM\JoinColumn(name="enderecos_id", referencedColumnName="id")
      */
     protected $enderecos;

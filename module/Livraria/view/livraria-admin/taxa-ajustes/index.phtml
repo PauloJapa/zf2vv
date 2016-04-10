@@ -44,13 +44,14 @@ $coluns = array(
     'Classe',
     'Ocupação',
     'Validade',
-    'contEle'     ,       
-    'conteudo'    ,           
-    'eletrico'    ,          
-    'semContEle'  ,             
-    'comEletrico' ,           
-    'semEletrico' ,             
-    'unica' ,     
+    'Comissao',
+    'Cont/Ele'     ,       
+    'Conteudo'    ,           
+    'Eletrico'    ,          
+    'Sem/Cont/Ele'  ,             
+    'Com Eletrico' ,           
+    'Sem Eletrico' ,             
+    'Unica' ,     
     'Status',
     'Ação'
     );
@@ -61,6 +62,7 @@ echo $this->ViewIndex('table'),
 //        echo 'asçsfdfldkfj' , get_class($this->data);
 //        die;
 foreach($this->data as $entity){ 
+    /* @var $entity \Livraria\Entity\TaxaAjuste */
     $linha = array(
         $entity->getId(),
         $entity->getInicio(),
@@ -70,6 +72,7 @@ foreach($this->data as $entity){
         $entity->getClasse(),
         $entity->getOcupacao('str'),
         $entity->getValidade(),
+        $entity->floatToStr('comissao'),
         $entity->floatToStr('contEle',4),
         $entity->floatToStr('conteudo',4),
         $entity->floatToStr('eletrico',4),
