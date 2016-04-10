@@ -65,24 +65,18 @@ class LogOrcamento extends Filtro
      * @ORM\Column(name="ip", type="string", length=20, nullable=false)
      */
     protected $ip;
-
+    
     /**
-     * @var User
-     *
-     * @ORM\OneToOne(targetEntity="User")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\User
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\User")
+     * @ORM\JoinColumn(name="user_id_criado", referencedColumnName="id")
      */
     protected $user;
 
     /**
-     * @var Orcamento
-     *
-     * @ORM\OneToOne(targetEntity="Orcamento")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="orcamento_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Orcamento
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Orcamento")
+     * @ORM\JoinColumn(name="orcamento_id", referencedColumnName="id")
      */
     protected $orcamento;
 

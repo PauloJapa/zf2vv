@@ -56,7 +56,7 @@ class Taxa extends Filtro
     /**
      * @var float $incendioConteudo
      *
-     * @ORM\Column(name="incendio_conteudo", precision=20, scale=8, options={"default" = 0})
+     * @ORM\Column(name="incendio_conteudo", type="decimal", precision=20, scale=8, options={"default" = 0})
      */
     protected $incendioConteudo;
 
@@ -145,23 +145,16 @@ class Taxa extends Filtro
     protected $alteradoEm;
 
     /**
-     * @var Classe
-     *
-     * @ORM\OneToOne(targetEntity="Classe")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Classe
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Classe")
+     * @ORM\JoinColumn(name="classe_id", referencedColumnName="id")
      */
     protected $classe;
 
-
     /**
-     * @var Seguradora
-     *
-     * @ORM\OneToOne(targetEntity="Seguradora")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
-     * })
+     * @var \Livraria\Entity\Seguradora
+     * @ORM\ManyToOne(targetEntity="\Livraria\Entity\Seguradora")
+     * @ORM\JoinColumn(name="seguradora_id", referencedColumnName="id")
      */
     protected $seguradora;
 

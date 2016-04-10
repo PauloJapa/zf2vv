@@ -123,39 +123,48 @@ class TaxaAjusteRepository extends EntityRepository {
         
         if($taxaAjuste != 0){
             return $taxaAjuste;
-        }     
-        switch($this->ocupacao){
-            case '04': //apto
-                switch (TRUE) {
-                    case $txEletrico != 0:
-                        $taxaAjuste = $this->entity->getComEletrico();
-                        break;
-                    case $txEletrico == 0:
-                        $taxaAjuste = $this->entity->getSemEletrico();
-                        break;
-                }
+        }
+        // mudanças de regras de negocio caso se manter sem essa logica pode ser excluir trecho comentado
+//        switch($this->ocupacao){
+//            case '04': //apto
+//                switch (TRUE) {
+//                    case $txEletrico != 0:
+//                        $taxaAjuste = $this->entity->getComEletrico();
+//                        break;
+//                    case $txEletrico == 0:
+//                        $taxaAjuste = $this->entity->getSemEletrico();
+//                        break;
+//                }
+//                break;
+//            case '02': // casa
+//                $taxaAjuste = $this->entity->getUnica();
+//                break;
+//            case '01': // comercio
+//            case '03': // industria
+//                switch (TRUE) {
+//                    case $txConteudo != 0 and $txEletrico != 0:
+//                        $taxaAjuste = $this->entity->getContEle();
+//                        break;
+//                    case $txConteudo != 0 and $txEletrico == 0:
+//                        $taxaAjuste = $this->entity->getConteudo();
+//                        break;
+//                    case $txConteudo == 0 and $txEletrico != 0:
+//                        $taxaAjuste = $this->entity->getEletrico();
+//                        break;
+//                    case $txConteudo == 0 and $txEletrico == 0:
+//                        $taxaAjuste = $this->entity->getSemContEle();
+//                        break;
+//                }
+//                break;
+//        }         
+        switch (TRUE) {
+            case $txEletrico != 0:
+                $taxaAjuste = $this->entity->getComEletrico();
                 break;
-            case '02': // casa
-                $taxaAjuste = $this->entity->getUnica();
+            case $txEletrico == 0:
+                $taxaAjuste = $this->entity->getSemEletrico();
                 break;
-            case '01': // comercio
-            case '03': // industria
-                switch (TRUE) {
-                    case $txConteudo != 0 and $txEletrico != 0:
-                        $taxaAjuste = $this->entity->getContEle();
-                        break;
-                    case $txConteudo != 0 and $txEletrico == 0:
-                        $taxaAjuste = $this->entity->getConteudo();
-                        break;
-                    case $txConteudo == 0 and $txEletrico != 0:
-                        $taxaAjuste = $this->entity->getEletrico();
-                        break;
-                    case $txConteudo == 0 and $txEletrico == 0:
-                        $taxaAjuste = $this->entity->getSemContEle();
-                        break;
-                }
-                break;
-        }         
+        }
         return $taxaAjuste;        
     }
     
@@ -185,11 +194,15 @@ class TaxaAjusteRepository extends EntityRepository {
             $filters['administradora'] = $entity->getAdministradora()->getId(); 
         }
         $entitys = $this->findBy($filters);
-        $inputs = ['contEle'             
-                   ,'conteudo'                
-                   ,'eletrico'               
-                   ,'semContEle'                
-                   ,'unica'      ]; 
+        $inputs = [
+//                    'contEle'             
+//                   ,'conteudo'                
+//                   ,'eletrico'               
+//                   ,'semContEle'                
+                    'comEletrico'             
+                   ,'semEletrico'               
+//                   ,'unica'      
+            ]; 
         foreach ($inputs as $input) {
             $data[$input] = '';
         }

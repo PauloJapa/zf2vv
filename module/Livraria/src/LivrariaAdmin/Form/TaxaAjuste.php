@@ -65,8 +65,8 @@ class TaxaAjuste extends AbstractForm {
         $this->seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs(['status'=>'A']);
         asort($this->seguradoras);
         $this->setInputSelect('seguradora', '*Seguradora', $this->seguradoras, ['value' => '']);
-        
-//        $this->setComissao();
+             
+        $this->setComissao();
         
         $this->administradoras = $this->em->getRepository('Livraria\Entity\Administradora')->fetchPairs(['status'=>'A']);
         asort($this->administradoras);
@@ -84,20 +84,24 @@ class TaxaAjuste extends AbstractForm {
         ];
         $this->setInputRadio('ocupacao', '*Ocupação', $ocupacao);
                 
-        $this->inputs = ['contEle'             
-                   ,'conteudo'                
-                   ,'eletrico'               
-                   ,'semContEle'                
-                   ,'comEletrico'             
+        $this->inputs = [
+//                    'contEle'             
+//                   ,'conteudo'                
+//                   ,'eletrico'               
+//                   ,'semContEle'                
+                    'comEletrico'             
                    ,'semEletrico'               
-                   ,'unica'      ]; 
-        $this->inputsL = ['Taxa COM Conteudo e Dano Eletrico'         
-                   ,'Taxa COM Conteudo'                             
-                   ,'Taxa COM Dano Eletrico'                       
-                   ,'Taxa SEM Conteudo e Dano Eletrico'               
-                   ,'Taxa COM Dano Eletrico'                        
+//                   ,'unica'      
+        ]; 
+        $this->inputsL = [
+//                    'Taxa COM Conteudo e Dano Eletrico'         
+//                   ,'Taxa COM Conteudo'                             
+//                   ,'Taxa COM Dano Eletrico'                       
+//                   ,'Taxa SEM Conteudo e Dano Eletrico'               
+                    'Taxa COM Dano Eletrico'                        
                    ,'Taxa SEM Dano Eletrico'                          
-                   ,'Taxa Unica'                        ];          
+//                   ,'Taxa Unica'                        
+        ];          
         // Carrega para casa e apto
         foreach ($this->inputs as $key => $value) {
             $this->setInputText($value, $this->inputsL[$key]  , ['placeholder' => 'XXX,XX', 'id' => $value, 'onChange' => 'cleanAnother(this)' ]);
@@ -132,6 +136,12 @@ class TaxaAjuste extends AbstractForm {
             return;
         }
         $this->remove('comissao');
+        if($this->has('seguradora')){
+            $vlr = $this->get('seguradora')->getValue();
+            if(!empty($vlr)){
+                $data['seguradora'] = $vlr;
+            }
+        }
         if(isset($data['seguradora'])){
             $comissaoKey = 'comissaoParam' . str_pad($data['seguradora'], 3, '0', STR_PAD_LEFT);
         }else{
@@ -163,25 +173,18 @@ class TaxaAjuste extends AbstractForm {
         $this->get('administradora')->setAttribute('disabled', 'true'); 
         $this->get('validade')->setAttribute('disabled', 'true'); 
         $this->get('ocupacao')->setAttribute('disabled', 'true'); 
+        $this->get('comissao')->setAttribute('disabled', 'true'); 
     }
     
     public function getClasses() {
         return $this->classes;
     }
     
-    public function getInputs($opt = FALSE) {
-        if ($opt){
-            unset($this->inputs[4]);
-            unset($this->inputs[5]);
-        }
+    public function getInputs() {
         return $this->inputs;
     }
     
-    public function getLabelOfInputs($opt = FALSE) {
-        if ($opt){
-            unset($this->inputsL[4]);
-            unset($this->inputsL[5]);
-        }
+    public function getLabelOfInputs() {
         return $this->inputsL;
     }
 }

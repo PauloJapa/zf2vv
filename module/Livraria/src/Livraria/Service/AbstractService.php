@@ -66,7 +66,7 @@ abstract class AbstractService {
      */
     protected $dePara = '';
     
-    protected $debug = false;
+    protected $debug = true;
     
     /**
      * String com endereço de email padrão
@@ -516,8 +516,8 @@ abstract class AbstractService {
         $this->data['taxaAjuste'] = 1;
         // Se o tipo é Cobertura Incendo calcula com a taxa de incendio
         $txIncendio = 0.0;
-        $bkpDebug = $this->debug;
-//$this->debug = false;
+$bkpDebug = $this->debug;
+$this->debug = false;
         if ($this->data['tipoCobertura'] == '01' AND $incendio != 0.0001){
             $bkpVlr = $incendio;
             $txIncendio = round($this->calcTaxaMultMinMax($incendio, 'Incendio', 'Incendio'), 2) ;
@@ -552,7 +552,7 @@ abstract class AbstractService {
             $vendaval = $bkpVlr;
         }
         /* @var $entTaxaAjuste    \Livraria\Entity\TaxaAjuste */
-        $this->debug = $bkpDebug;
+$this->debug = $bkpDebug;
         $taxaAjuste = 1;
         if($entTaxaAjuste){
             $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste);
