@@ -50,7 +50,7 @@ class Renovacao  extends AbstractSeguro
     /**
      * @var float $valorAluguel
      *
-     * @ORM\Column(name="valor_aluguel", type="decimal", nullable=false)
+     * @ORM\Column(name="valor_aluguel", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $valorAluguel;
 
@@ -106,35 +106,35 @@ class Renovacao  extends AbstractSeguro
     /**
      * @var float $incendio
      *
-     * @ORM\Column(name="incendio", type="decimal", nullable=false)
+     * @ORM\Column(name="incendio", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $incendio;
 
     /**
      * @var float $conteudo
      *
-     * @ORM\Column(name="conteudo", type="decimal", nullable=true)
+     * @ORM\Column(name="conteudo", type="decimal", precision=20, scale=6, nullable=true)
      */
     protected $conteudo;
 
     /**
      * @var float $aluguel
      *
-     * @ORM\Column(name="aluguel", type="decimal", nullable=false)
+     * @ORM\Column(name="aluguel", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $aluguel;
 
     /**
      * @var float $eletrico
      *
-     * @ORM\Column(name="eletrico", type="decimal", nullable=false)
+     * @ORM\Column(name="eletrico", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $eletrico;
 
     /**
      * @var float $vendaval
      *
-     * @ORM\Column(name="vendaval", type="decimal", nullable=false)
+     * @ORM\Column(name="vendaval", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $vendaval;
 
@@ -148,21 +148,21 @@ class Renovacao  extends AbstractSeguro
     /**
      * @var float $premioLiquido
      *
-     * @ORM\Column(name="premio_liquido", type="decimal", nullable=false)
+     * @ORM\Column(name="premio_liquido", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $premioLiquido;
 
     /**
      * @var float $premio
      *
-     * @ORM\Column(name="premio", type="decimal", nullable=false)
+     * @ORM\Column(name="premio", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $premio;
 
     /**
      * @var float $premioTotal
      *
-     * @ORM\Column(name="premio_total", type="decimal", nullable=false)
+     * @ORM\Column(name="premio_total", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $premioTotal;
 
@@ -204,7 +204,7 @@ class Renovacao  extends AbstractSeguro
     /**
      * @var float $comissao
      *
-     * @ORM\Column(name="comissao", type="decimal", nullable=true)
+     * @ORM\Column(name="comissao", type="decimal", precision=10, scale=6, precision=10, scale=6, nullable=true)
      */
     protected $comissao;
 
@@ -253,42 +253,42 @@ class Renovacao  extends AbstractSeguro
     /**
      * @var float $taxaIof
      *
-     * @ORM\Column(name="taxa_iof", type="decimal", nullable=false)
+     * @ORM\Column(name="taxa_iof", type="decimal", precision=10, scale=6, nullable=false)
      */
     protected $taxaIof;
 
     /**
      * @var float $cobIncendio
      *
-     * @ORM\Column(name="cob_incendio", type="decimal", nullable=false)
+     * @ORM\Column(name="cob_incendio", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $cobIncendio;
 
     /**
      * @var float $cobConteudo
      *
-     * @ORM\Column(name="cob_conteudo", type="decimal", nullable=false)
+     * @ORM\Column(name="cob_conteudo", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $cobConteudo;
 
     /**
      * @var float $cobAluguel
      *
-     * @ORM\Column(name="cob_aluguel", type="decimal", nullable=false)
+     * @ORM\Column(name="cob_aluguel", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $cobAluguel;
 
     /**
      * @var float $cobEletrico
      *
-     * @ORM\Column(name="cob_eletrico", type="decimal", nullable=false)
+     * @ORM\Column(name="cob_eletrico", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $cobEletrico;
 
     /**
      * @var float $cobVendaval
      *
-     * @ORM\Column(name="cob_vendaval", type="decimal", nullable=false)
+     * @ORM\Column(name="cob_vendaval", type="decimal", precision=20, scale=6, nullable=false)
      */
     protected $cobVendaval;
 

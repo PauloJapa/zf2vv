@@ -173,6 +173,9 @@ class Log
      * @return \Livraria\Entity\Log
      */
     public function setIdDoReg($idDoReg) {
+        if (empty($idDoReg)) {
+            $idDoReg = 0;
+        } 
         $this->idDoReg = $idDoReg;
         return $this;
     }

@@ -27,14 +27,14 @@ class Comissao extends Filtro
     /**
      * @var float $comissao
      *
-     * @ORM\Column(name="Comissao", type="decimal", nullable=false)
+     * @ORM\Column(name="Comissao", type="decimal", precision=10, scale=4, precision=10, scale=4, nullable=false)
      */
     protected $comissao;
 
     /**
      * @var float $comissao
      *
-     * @ORM\Column(name="comissao_res", type="decimal", nullable=false)
+     * @ORM\Column(name="comissao_res", type="decimal", precision=10, scale=4, precision=10, scale=4, nullable=false)
      */
     protected $comissaoRes;
 
