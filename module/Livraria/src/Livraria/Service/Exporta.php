@@ -834,7 +834,14 @@ class Exporta extends AbstractService{
         //Indicador de Verbas Separadas	1
         $this->saida .= ($value['tipoCobertura'] == '04') ? '1' : '0';
         //Período Indenitário Perda/Pgto. Aluguel	2
-        //$this->saida .= str_pad(' ', 2);
+        $this->saida .= str_pad('0', 2);
+        if($value['taxaAjuste'] == 1 OR $value['taxaAjuste'] == 0){ // taxaAjuste vazio ou neutra
+            $tax = '';
+        }else{ // menor ou maior conveter em agravo ou desconto dependendo do sinal
+            $tax =  number_format(($value['taxaAjuste'] - 1) * 100, 2, ',', '.') ;
+        }
+        // Agravo tam 6
+        $this->addSaida2($tax, 6, ' ', 'STR_PAD_LEFT'); 
         // Fim da linha 03
         $this->saida .= "\r\n";
     }
@@ -926,7 +933,7 @@ class Exporta extends AbstractService{
      */
     public function cleanDocFomatacao($doc , $tam = 14, $rep = '0') {
         $clean = preg_replace("/[^0-9]/", "", $doc);
-        if(strlen($clean) > tam){
+        if(strlen($clean) > $tam){
             $clean = substr(utf8_decode($clean),0,$tam);
         }
         return str_pad($clean, $tam, $rep, STR_PAD_LEFT);              

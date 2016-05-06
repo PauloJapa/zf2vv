@@ -129,6 +129,9 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\orcamento 
      */ 
     public function setUserIdAlterado($userIdAlterado) {
+        if (empty($userIdAlterado)) {
+            $userIdAlterado = 0;
+        } 
         $this->userIdAlterado = $userIdAlterado;
         return $this;
     }
@@ -170,6 +173,9 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setCodano($codano) {
+        if (empty($codano)) {
+            $codano = 0;
+        } 
         $this->codano = $codano;
         return $this;
     }
@@ -422,6 +428,9 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setNumeroParcela($numeroParcela) {
+        if (empty($numeroParcela)) {
+            $numeroParcela = 0;
+        }
         $this->numeroParcela = $numeroParcela;
         return $this;
     }
@@ -570,6 +579,9 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
      */
     public function setMesNiver($mesNiver) {
+        if (empty($mesNiver)) {
+            $mesNiver = 0;
+        } 
         $this->mesNiver = $mesNiver;
         return $this;
     }
@@ -916,6 +928,9 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\Renovacao
      */
     public function setFechadoOrigemId($FechadoOrigemId) {
+        if (empty($FechadoOrigemId)) {
+            $FechadoOrigemId = 0;
+        } 
         $this->fechadoOrigemId = $FechadoOrigemId;
         return $this;
     }
@@ -1099,7 +1114,7 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\AbstractSeguro
      */
     public function setTaxaAjuste($taxaAjuste) {
-        $this->taxaAjuste = $taxaAjuste;
+        $this->taxaAjuste = $this->trataFloat($taxaAjuste);
         return $this;
     }
     

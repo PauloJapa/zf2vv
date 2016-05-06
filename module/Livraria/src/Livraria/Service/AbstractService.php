@@ -66,7 +66,7 @@ abstract class AbstractService {
      */
     protected $dePara = '';
     
-    protected $debug = true;
+    protected $debug = false;
     
     /**
      * String com endereço de email padrão
@@ -512,6 +512,7 @@ abstract class AbstractService {
             , $this->data['validade']
             , $this->data['atividade']
             , $this->data['ocupacao']
+            , $this->data['comissao']
         );
         $this->data['taxaAjuste'] = 1;
         // Se o tipo é Cobertura Incendo calcula com a taxa de incendio

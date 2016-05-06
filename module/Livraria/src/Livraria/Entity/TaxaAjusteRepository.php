@@ -29,13 +29,17 @@ class TaxaAjusteRepository extends EntityRepository {
      * @param type $ocupacao
      * @return boolean|Entity \Livraria\Entity\TaxaAjuste
      */
-    public function getTaxaAjusteFor($seguradora, $administradora,  \DateTime $inicio, $validade, $atividade, $ocupacao){
+    public function getTaxaAjusteFor($seguradora, $administradora,  \DateTime $inicio, $validade, $atividade, $ocupacao, $comissao){
         /* @var $atividade     \Livraria\Entity\Atividade */
         /* @var $classe        \Livraria\Entity\Classe */
         /* @var $taxaAjuste    \Livraria\Entity\TaxaAjuste */
         // trata os filtros
         $idSeg = is_object($seguradora)     ? $seguradora->getId()     : $seguradora;
+        if($idSeg != 2){
+            return false;
+        }
         $idAdm = is_object($administradora) ? $administradora->getId() : $administradora;
+        $comissao = str_replace(',', '.', $comissao);
         
         $classe = $atividade->findClasseFor($inicio);
         if(!$classe){
@@ -49,7 +53,7 @@ class TaxaAjusteRepository extends EntityRepository {
         $this->ocupacao = $ocupacao;
         $this->entity   = false;
         // Procura pelo taxa especifica da administradora.
-        $filters = ['administradora' => $idAdm, 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao];
+        $filters = ['administradora' => $idAdm, 'seguradora' => $idSeg, 'validade' => $validade, 'ocupacao' => $ocupacao, 'comissao' => $comissao];
         if('01' == $ocupacao OR '03' == $ocupacao){
             $filters['classe'] = $classe->getId();
         }
@@ -93,17 +97,17 @@ class TaxaAjusteRepository extends EntityRepository {
             }
         } 
 
-        throw new \Exception(
-            '<pre>'.
+        $msg =  '<pre>'.
             'Not found' . '<br>'.
-            'inicio '. var_dump($inicio->format('d-m-Y')). '<br>'.
-            'validade '. var_dump($validade). '<br>'.
-            'ativ '. var_dump($atividade->toArray()). '<br>'.
-            'ocup '. var_dump($ocupacao). '<br>'.
-            'SEG '. var_dump($idSeg). '<br>'.
-            'ADM '. var_dump($idAdm). '<br>'.
-            '</pre>'
-        );
+            'inicio '. ($inicio->format('d-m-Y')). '<br>'.
+            'validade '. ($validade). '<br>'.
+            'atividade '. ($atividade->getDescricao()). '<br>'.
+            'ocupação '. ($ocupacao). '<br>'.
+            'SEGURADORA '. ($idSeg). '<br>'.
+            'ADMINISTRADORA '. ($idAdm). '<br>'.
+            'COMISSAO '. ($comissao). '<br>'.
+            '</pre>' ;
+        throw new \Exception($msg);
     }
     
     /**
