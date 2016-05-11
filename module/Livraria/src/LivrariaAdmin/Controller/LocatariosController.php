@@ -41,7 +41,7 @@ class LocatariosController extends CrudController {
         $list = $this->getEm()
                     ->getRepository($this->entity)
                     ->pesquisa($filtro);
-        parent::indexAction($filtro, $orderBy, $list);
+        return parent::indexAction($filtro, $orderBy, $list);
     }
 
     public function newAction() {

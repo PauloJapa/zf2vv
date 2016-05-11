@@ -4,7 +4,7 @@
 <p><span class="add-on hand" onClick="novo();"><i class="icon-plus"></i>Nova Locatario</span></p>
 <?php
 
-    if(!isset($noFilter)){
+    if(!isset($noFilter) AND $this->form){
         $form = $this->form; 
         $form->setAttribute('action', $this->url($this->matchedRouteName,$this->params));
         $form->prepare();
