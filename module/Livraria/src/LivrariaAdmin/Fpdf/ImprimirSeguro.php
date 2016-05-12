@@ -378,7 +378,7 @@ class ImprimirSeguro extends FPDF{
      */
     public function formatarCPF_CNPJ($campo, $formatado = true){
 	//retira formato
-        $codigoLimpo = preg_replace("/[' '-./ t]/", '', $campo);
+        $codigoLimpo = preg_replace('/[^0-9]/', '', $campo);
 	// pega o tamanho da string menos os digitos verificadores
 	$tamanho = (strlen($codigoLimpo) -2);
 	//verifica se o tamanho do código informado é válido
