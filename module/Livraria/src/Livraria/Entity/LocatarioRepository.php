@@ -60,12 +60,12 @@ class LocatarioRepository extends EntityRepository {
         
         if(isset($filtros['cpf'])){
             $this->where .= ' AND u.cpf LIKE :cpf';
-            $this->parameters['cpf']  = ereg_replace("[' '-./ t]",'',$filtros['cpf']) . '%'; 
+            $this->parameters['cpf']  = preg_replace("/[' '-./ t]/",'',$filtros['cpf']) . '%'; 
         }
         
         if(isset($filtros['cnpj'])){
             $this->where .= ' AND u.cnpj LIKE :cnpj';
-            $this->parameters['cnpj']  = ereg_replace("[' '-./ t]",'',$filtros['cnpj']) . '%'; 
+            $this->parameters['cnpj']  = preg_replace("/[' '-./ t]/",'',$filtros['cnpj']) . '%'; 
         }
         
         // Retorna uma qb para ser feita a paginação 

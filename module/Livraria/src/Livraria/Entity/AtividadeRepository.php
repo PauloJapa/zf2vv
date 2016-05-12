@@ -52,6 +52,7 @@ class AtividadeRepository extends EntityRepository {
             ->from('Livraria\Entity\Atividade', 'u')
             ->where($where)
             ->setParameters($param)
+            ->andWhere('u.status LIKE :status')->setParameter('status', 'A')
             ->getQuery();
         
         return $query->getResult();

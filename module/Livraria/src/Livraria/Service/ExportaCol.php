@@ -260,15 +260,15 @@ class ExportaCol extends AbstractService{
             $this->addSaida2($value['seguradora']['apelido'], 20);
             //Locador Doc(15)
             if($value['locador']['tipo'] == 'fisica'){
-                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+                $this->addSaida2(preg_replace("/[' '-./ t]/",'',$value['locador']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
             }else{
-                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locador']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+                $this->addSaida2(preg_replace("/[' '-./ t]/",'',$value['locador']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
             }
             //Locatario Doc(15)
             if($value['locatario']['tipo'] == 'fisica'){
-                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locatario']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+                $this->addSaida2(preg_replace("/[' '-./ t]/",'',$value['locatario']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
             }else{
-                $this->addSaida2(ereg_replace("[' '-./ t]",'',$value['locatario']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+                $this->addSaida2(preg_replace("/[' '-./ t]/",'',$value['locatario']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
             }
             // Fim da linha 
             $this->saida .= PHP_EOL; 

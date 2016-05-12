@@ -694,7 +694,7 @@ class Exporta extends AbstractService{
         }
         
         // Elimina possivel mascara
-        $cpf = ereg_replace('[^0-9]', '', $cpf);
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
         $cpf = str_pad($cpf, 11, '0', STR_PAD_LEFT);        
         // Verifica se nenhuma das sequências invalidas abaixo 
         // foi digitada. Caso afirmativo, retorna falso
