@@ -49,8 +49,10 @@ class AtividadesController extends CrudController {
     public function newAction() {
         $this->verificaSeUserAdmin();
         $data = $this->getRequest()->getPost()->toArray();
-        if(!isset($data['subOpcao']))$data['subOpcao'] = '';
-        
+        if (!isset($data['subOpcao'])) {
+            $data['subOpcao'] = '';
+        }
+
         $this->formData = new $this->form(null, $this->getEm());
         $this->formData->setData($data);
         if($data['subOpcao'] == 'salvar'){
@@ -86,45 +88,46 @@ class AtividadesController extends CrudController {
         $ocupacao = trim($this->getRequest()->getPost('autoComp'));
         $repository = $this->getEm()->getRepository($this->entity);
         $resultSet = $repository->autoComp($descricao .'%',$ocupacao, $seguradora);
-        if(!$resultSet)// Caso não encontre nada ele tenta pesquisar em toda a string
-            $resultSet = $repository->autoComp('%'. $descricao .'%', $ocupacao, $seguradora);
+        if (!$resultSet) {// Caso não encontre nada ele tenta pesquisar em toda a string
+            $resultSet = $repository->autoComp('%' . $descricao . '%', $ocupacao, $seguradora);
+        }
         // instancia uma view sem o layout da tela
         $viewModel = new ViewModel(array('resultSet' => $resultSet));
         $viewModel->setTerminal(true);
         return $viewModel;
-    }
+    } 
     
-    public function importarAction(){
-        echo
-        '<html><head>',
-        '<meta http-equiv="content-language" content="pt-br" />',
-        '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
-        '</head><body>';
-        $data = $this->getRequest()->getFiles()->toArray();
-        //Verificando a existencia do arquivo
-        $content  = file($data['content']['tmp_name']);
-        if(!$content){
-            echo 'arquivo não encontrado!!';
-            return;
-        }
-        // Pegando o serviço para manipular dados
-        $serviceAtv = $this->getServiceLocator()->get($this->service);   
-        foreach ($content as $key => $value) {
-            if($key == 0){
-                if(!$this->validaColunas($this->csvToArray($value))){
-                    echo 'Erro titulos da colunas estão incorretos!!';
-                    return;
-                }
-                continue;
-            }
-            $resul = $serviceAtv->insert($this->getDataAtv($value));
-            if($resul === TRUE){
-              echo 'Importado; ', $value , '<br>';
-                continue;
-            }                
-            var_dump($resul);
-        }        
-    }
+//    public function importarAction(){
+//        echo
+//        '<html><head>',
+//        '<meta http-equiv="content-language" content="pt-br" />',
+//        '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />',
+//        '</head><body>';
+//        $data = $this->getRequest()->getFiles()->toArray();
+//        //Verificando a existencia do arquivo
+//        $content  = file($data['content']['tmp_name']);
+//        if(!$content){
+//            echo 'arquivo não encontrado!!';
+//            return;
+//        }
+//        // Pegando o serviço para manipular dados
+//        $serviceAtv = $this->getServiceLocator()->get($this->service);   
+//        foreach ($content as $key => $value) {
+//            if($key == 0){
+//                if(!$this->validaColunas($this->csvToArray($value))){
+//                    echo 'Erro titulos da colunas estão incorretos!!';
+//                    return;
+//                }
+//                continue;
+//            }
+//            $resul = $serviceAtv->insert($this->getDataAtv($value));
+//            if($resul === TRUE){
+//              echo 'Importado; ', $value , '<br>';
+//                continue;
+//            }                
+//            var_dump($resul);
+//        }        
+//    }
     
     public function getDataAtv($value){
         $d = $this->csvToArray($value);

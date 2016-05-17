@@ -106,7 +106,7 @@ class Importar extends AbstractService{
      */
     public function csvToArray($str){
         $linha = str_replace("\r\n","",trim($str));
-        return explode('|',  $linha);
+        return explode(';',  $linha);
     }
     
     public function importar(){
@@ -174,7 +174,7 @@ class Importar extends AbstractService{
                 var_dump($this->erro);
                 continue;
             }
-            $premio      = number_format($registro[19] / 100, 2, '.', '') ;
+            $premio      = number_format($registro[23] / 100, 2, '.', '') ;
             $this->preValida();
             $insertResul = $service->insert($this->data);
             // apos inserir com sucesso verificar se o valor do premio é igual ao calculado
@@ -327,10 +327,10 @@ class Importar extends AbstractService{
         
         $this->buscaLocador($array[5], $array[6]);        
         $this->buscaLocatario($array[7], $array[8]); 
-        $this->buscaImovel($array[9], $array[10], $array[4]);
+        $this->buscaImovel($array[9], $array[10], $array[4], $array[11], $array[12], $array[13], $array[14]);
         
-        $this->data['inicio'] = substr($array[14], 6, 2) . '/' . substr($array[14], 4, 2) . '/' . substr($array[14], 0, 4);
-        $this->data['fim'] = substr($array[15], 6, 2) . '/' . substr($array[15], 4, 2) . '/' . substr($array[15], 0, 4);
+        $this->data['inicio'] = substr($array[18], 0, 2) . '/' . substr($array[18], 2, 2) . '/' . substr($array[18], 4, 4);
+        $this->data['fim']    = substr($array[19], 0, 2) . '/' . substr($array[19], 2, 2) . '/' . substr($array[19], 4, 4);
         $this->dateToObject('inicio');
         $this->dateToObject('fim');
         
@@ -343,13 +343,13 @@ class Importar extends AbstractService{
             $this->data['orcaReno'] = 'orca' ;              
         }
         
-        if($array[11] == '1'){
+        if($array[15] == '1'){
             $this->data['ocupacao'] = '02';
             $this->data['atividade'] = '487' ;
             $this->data['atividadeDesc'] = 'RESIDENCIAL' ;
             $this->data['comissao'] = '80,00' ;
             $this->data['tipoCobertura'] = '02' ;
-            $this->data['conteudo'] = number_format($array[16] / 100, 2, ',', '.') ;
+            $this->data['conteudo'] = number_format($array[20] / 100, 2, ',', '.') ;
             $this->data['incendio'] = '' ;
         }else{
             $this->data['ocupacao'] = '01';
@@ -358,17 +358,17 @@ class Importar extends AbstractService{
             $this->data['comissao'] = '57,00' ;
             $this->data['tipoCobertura'] = '01' ;
             $this->data['conteudo'] = '' ;
-            $this->data['incendio'] = number_format($array[16] / 100, 2, ',', '.') ; ;
+            $this->data['incendio'] = number_format($array[20] / 100, 2, ',', '.') ; ;
         }
         $this->data['observacao'] = 'Ref Imovel ' . trim($array[4]) ;        
-        $this->data['observacao'] .=  '| Ocupação ' . trim($array[12]) ;        
-        $this->data['observacao'] .=  '| ' . trim($array[13]) ;        
-        $this->data['observacao'] .=  '| Seq. ' . trim($array[20]) ;        
+        $this->data['observacao'] .=  '| Ocupação ' . trim($array[16]) ;        
+        $this->data['observacao'] .=  '| ' . trim($array[17]) ;        
+        $this->data['observacao'] .=  '| Seq. ' . trim($array[24]) ;        
         
-        $this->data['aluguel']  = number_format($array[17] / 100, 2, ',', '.') ;
-        $this->data['eletrico'] = number_format($array[18] / 100, 2, ',', '.') ;
-        $this->data['valorAluguel'] = number_format($array[17] /100 / 6, 2, ',', '.') ;
-        if($array[18] == 0){
+        $this->data['aluguel']  = number_format($array[21] / 100, 2, ',', '.') ;
+        $this->data['eletrico'] = number_format($array[22] / 100, 2, ',', '.') ;
+        $this->data['valorAluguel'] = number_format($array[21] /100 / 6, 2, ',', '.') ;
+        if($array[22] == 0){
             $this->data['eletrico'] =  'Não Calcular';
         }
         $this->data['vendaval'] = 'Não Calcular' ;
@@ -422,7 +422,8 @@ class Importar extends AbstractService{
         return $palavra;
     }
 
-    public function buscaImovel($cep, $rua, $ref){
+//    public function buscaImovel($cep, $rua, $ref){
+    public function buscaImovel($cep, $bairro, $ref, $tipo, $logradouro, $num, $compl){
         /*
         $this->data['imovel'] = '2553' ;
         $this->data['imovelTel'] = '' ;
@@ -466,7 +467,7 @@ class Importar extends AbstractService{
             }           
         } 
         
-        $separado = $this->desmontaEnd($rua);
+        $separado = $this->desmontaEnd($bairro, $tipo, $logradouro, $num, $compl);
 
         if($entity){
             // Verificar se imovel encontrado é de fato igual ao do arquivo caso contrario atualizar
@@ -521,7 +522,7 @@ class Importar extends AbstractService{
         //    return;
         //}
         $this->data['bairro'] = '';
-        $this->data['bairroDesc'] = isset($resultado['bairro']) ? $resultado['bairro'] : '';
+        $this->data['bairroDesc'] = isset($resultado['bairro']) ? $resultado['bairro'] : $bairro;
         $this->data['cidade'] = '';
         $this->data['cidadeDesc'] = isset($resultado['cidade']) ? $resultado['cidade'] : '';
         if (isset($resultado['uf']) AND $resultado['uf'] == 'SP')
@@ -537,21 +538,12 @@ class Importar extends AbstractService{
         $this->data['pais'] = '1';
     }
     
-    public function desmontaEnd($end){
-        $r = trim($end);
-        $array = explode(' ', substr($r, strpos($r, ',') + 2, strlen($r) - 1)) ;
-        $res['compl'] = '';
-        $res['rua'] = substr($r, 0, strpos($r, ','));
-        //verificar se a string do numero tem barra separando varios numeros
-        if(strpos($array[0], '/') !== FALSE){
-            $numeros = explode('/', $array[0]);
-            $res['numero'] = $numeros[0];
-            for ($i = 1; $i < count($numeros); $i++) {
-                $res['compl'] .= ' / ' . $numeros[$i];
-            }
-        }else{
-            $res['numero'] = $array[0];
-        }        
+    public function desmontaEnd($bairro, $tipo, $logradouro, $num, $compl){
+        $r             = trim($compl);
+        $array         = explode(' ', substr($r, strpos($r, ',') + 2, strlen($r) - 1)) ;
+        $res['compl']  = '';
+        $res['rua']    = trim($tipo) . ' ' . trim($logradouro);
+        $res['numero'] = trim($num);
         for ($i = 1; $i < count($array); $i++) {
             switch ($array[$i]) {
                 case 'AP':

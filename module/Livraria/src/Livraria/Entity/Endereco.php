@@ -58,7 +58,7 @@ class Endereco {
     protected $createdAt;
 
     /**
-     * @ORM\Column(name="user_id_alterado", type="integer")
+     * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      * @var int
      */
     protected $userIdAlterado;
