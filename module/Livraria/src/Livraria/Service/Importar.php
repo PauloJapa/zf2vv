@@ -539,12 +539,11 @@ class Importar extends AbstractService{
     }
     
     public function desmontaEnd($bairro, $tipo, $logradouro, $num, $compl){
-        $r             = trim($compl);
-        $array         = explode(' ', substr($r, strpos($r, ',') + 2, strlen($r) - 1)) ;
+        $array         = explode(' ', trim($compl)) ;
         $res['compl']  = '';
         $res['rua']    = trim($tipo) . ' ' . trim($logradouro);
         $res['numero'] = trim($num);
-        for ($i = 1; $i < count($array); $i++) {
+        for ($i = 0; $i < count($array); $i++) {
             switch ($array[$i]) {
                 case 'AP':
                 case 'AP.':
