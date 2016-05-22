@@ -34,7 +34,7 @@ class Locador extends Filtro
     /**
      * @var string $tipo
      *
-     * @ORM\Column(name="tipo", type="string", length=5, nullable=false)
+     * @ORM\Column(name="tipo", type="string", length=10, nullable=false)
      */
     protected $tipo;
 

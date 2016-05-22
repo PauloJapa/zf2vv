@@ -43,10 +43,10 @@ class ComissaoRepository extends EntityRepository {
             return $query->getSingleResult();
         }
         
-        echo '<h2>Erro ao procura comissao; </h2>';
-        var_dump($administradora);
-        var_dump($date->format('d/m/Y'));
-        
+        $msg = '<h2>Erro ao procura comissao; </h2>';
+        $msg .= ' adm codigo ' . ($administradora) . '<br>';
+        $msg .= ' data de inicio ' . $date->format('d/m/Y') ;
+        throw new \Exception($msg);
     }
     
 }

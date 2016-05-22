@@ -713,7 +713,7 @@
             return false;
         }
         envia(tar,'fechar',formName,'new');
-        setTimeout("envia(" + VARS_AMBIENTE['fechar_tar'] + ",'editar','"+ formName +"','')",1000);
+        setTimeout("envia('" + VARS_AMBIENTE['fechar_tar'] + "','editar','"+ formName +"','')",1000);
         return false;
     }
 

@@ -7,7 +7,7 @@ use Zend\Session\Container as SessionContainer;
 
 use SisBase\Conexao\Mysql;
 
-require '/var/www/zf2vv/module/Livraria/src/Livraria/Service/PHPExcel.php';
+//require '/var/www/zf2vv/module/Livraria/src/Livraria/Service/PHPExcel.php';
 
 class RelatoriosController extends CrudController {
     

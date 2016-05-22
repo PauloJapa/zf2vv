@@ -54,33 +54,42 @@ class OrcamentosController extends CrudController {
      * @return boolean | redireciona para  novo orçamento | redireciona para tela de logon
      */   
     public function verificaUserAction($redirect=true){
-        $user = $this->getIdentidade();
+        $id = $this->getIdentidade()->getId();
+        if(is_null($id)){
+            throw new \Exception("Não foi encontrado um usuario valido!!");
+        }
+        $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
         $data = $this->getRequest()->getPost()->toArray();
       //  var_dump($user);
         $sessionContainer = new SessionContainer("LivrariaAdmin");
         $adm = $sessionContainer->administradora;
        
-        if(($user->getTipo() == 'admin') and (!isset($adm['id'])) and ($redirect))
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'escolheAdm'));
-        
-        if(isset($adm['id']))
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'new'));
-        
-        $id = $user->getId();
-        $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
+        if (($user->getTipo() == 'admin') and ( !isset($adm['id'])) and ( $redirect)) {
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'escolheAdm'));
+        }
+
+        if (isset($adm['id'])) {
+            if ($redirect) {
+                return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'new'));
+            }else{
+                return false;
+            }
+        }
+
         
         $sessionContainer->administradora = $user->getAdministradora()->toArray();
 //        echo '<pre>';        var_dump($sessionContainer->administradora); die;
-        if(!is_array($sessionContainer->administradora))
+        if (!is_array($sessionContainer->administradora)) {
             return $this->redirect()->toRoute($this->route, array('controller' => 'auth'));
-            
+        }
+
         $sessionContainer->user = $user;
         $sessionContainer->seguradora = $user->getAdministradora()->getSeguradora()->toArray();
         
-        if($redirect)
-            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action'=>'new'));
-        else
-            return TRUE;
+        if ($redirect) {
+            return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'new'));
+        }
+        return $sessionContainer;
     }
     
     public function escolheAdmAction(){
@@ -214,6 +223,25 @@ class OrcamentosController extends CrudController {
         $viewData['data'] = $list;
         return new ViewModel($viewData);
     }
+    
+    /**
+     * 
+     * @param Zend\Session\Container $sc
+     * @return nothing
+     * @throws \Exception usuario não encontrado
+     */
+    public function tryFindAdmIn($sc) {        
+        $id = $this->getIdentidade()->getId();
+        if(is_null($id)){
+            throw new \Exception("Não foi encontrado um usuario valido!!");
+        }
+        $user = $this->getEm()->getReference('Livraria\Entity\User', $id);
+        if ($user->getTipo() == 'admin') {
+            return;
+        }
+        $sc->administradora = $user->getAdministradora()->toArray();
+        $sc->seguradora     = $user->getAdministradora()->getSeguradora()->toArray();
+    }
 
     /**
      * Tenta incluir o registro e exibe a listagem ou erros ao incluir
@@ -222,6 +250,9 @@ class OrcamentosController extends CrudController {
     public function newAction() {
         
         $sessionContainer = new SessionContainer("LivrariaAdmin");
+        if(!is_array($sessionContainer->administradora)){
+            $this->tryFindAdmIn($sessionContainer);
+        }
         $adm = $sessionContainer->administradora;
         if(!isset($adm['id'])){
             return $this->redirect()->toRoute($this->route, array('controller' => $this->controller,'action' => 'verificaUser'));
@@ -524,7 +555,6 @@ class OrcamentosController extends CrudController {
             $resul = $servicoFechado->fechaOrcamento($data['id'], TRUE, $this->getServiceLocator());
             if($resul[0] === TRUE){
                 $this->flashMessenger()->addMessage('Registro fechado com sucesso!!!');
-                return;
             }else{
                 unset($resul[0]);
                 foreach ($resul as $value) {

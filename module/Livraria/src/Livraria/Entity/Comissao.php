@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="comissao")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity(repositoryClass="Livraria\Entity\ComissaoRepository")
+ * @ORM\Entity(repositoryClass="\Livraria\Entity\ComissaoRepository")
  */
 class Comissao extends Filtro
 {
