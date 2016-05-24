@@ -199,14 +199,15 @@ class TaxaAjuste extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Validade'              , $ent->getValidade()                    , $this->data['validade']                           );
         $this->dePara .= $this->diffAfterBefore('Ocupação'              , $ent->getOcupacao()                    , $this->data['ocupacao']                           );
         
-        $this->dePara .= $this->diffAfterBefore('contEle'               , $ent->floatToStr('contEle'    )        , $this->strToFloat($this->data['contEle'    ])     );
-        $this->dePara .= $this->diffAfterBefore('conteudo'              , $ent->floatToStr('conteudo'   )        , $this->strToFloat($this->data['conteudo'   ])     );
-        $this->dePara .= $this->diffAfterBefore('eletrico'              , $ent->floatToStr('eletrico'   )        , $this->strToFloat($this->data['eletrico'   ])     );
-        $this->dePara .= $this->diffAfterBefore('semContEle'            , $ent->floatToStr('semContEle' )        , $this->strToFloat($this->data['semContEle' ])     );
+//        $this->dePara .= $this->diffAfterBefore('contEle'               , $ent->floatToStr('contEle'    )        , $this->strToFloat($this->data['contEle'    ])     );
+//        $this->dePara .= $this->diffAfterBefore('conteudo'              , $ent->floatToStr('conteudo'   )        , $this->strToFloat($this->data['conteudo'   ])     );
+//        $this->dePara .= $this->diffAfterBefore('eletrico'              , $ent->floatToStr('eletrico'   )        , $this->strToFloat($this->data['eletrico'   ])     );
+//        $this->dePara .= $this->diffAfterBefore('semContEle'            , $ent->floatToStr('semContEle' )        , $this->strToFloat($this->data['semContEle' ])     );
         $this->dePara .= $this->diffAfterBefore('comEletrico'           , $ent->floatToStr('comEletrico')        , $this->strToFloat($this->data['comEletrico'])     );
         $this->dePara .= $this->diffAfterBefore('semEletrico'           , $ent->floatToStr('semEletrico')        , $this->strToFloat($this->data['semEletrico'])     );
-        $this->dePara .= $this->diffAfterBefore('unica'                 , $ent->floatToStr('unica'      )        , $this->strToFloat($this->data['unica'      ])     );
-        $this->dePara .= $this->diffAfterBefore('contEle'               , $ent->floatToStr('contEle'    )        , $this->strToFloat($this->data['contEle'    ])     );
+//        $this->dePara .= $this->diffAfterBefore('unica'                 , $ent->floatToStr('unica'      )        , $this->strToFloat($this->data['unica'      ])     );
+//        $this->dePara .= $this->diffAfterBefore('contEle'               , $ent->floatToStr('contEle'    )        , $this->strToFloat($this->data['contEle'    ])     );
+        $this->dePara .= $this->diffAfterBefore('comissao'              , $ent->floatToStr('comissao'   )        , $this->strToFloat($this->data['comissao'   ])     );
     }
 
     /**

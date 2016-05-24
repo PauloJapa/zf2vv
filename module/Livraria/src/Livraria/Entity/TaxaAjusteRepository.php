@@ -193,7 +193,7 @@ class TaxaAjusteRepository extends EntityRepository {
     public function allExistClassesOf($entity) {
         $data = $entity->toArray();
         
-        $filters = ['inicio' => $entity->getInicio('obj'), 'ocupacao' => $entity->getOcupacao(),'validade' => $entity->getValidade()];
+        $filters = ['inicio' => $entity->getInicio('obj'), 'ocupacao' => $entity->getOcupacao(),'validade' => $entity->getValidade(),'comissao' => $entity->getComissao()];
         if(!is_null($entity->getAdministradora())){
             $filters['administradora'] = $entity->getAdministradora()->getId(); 
         }

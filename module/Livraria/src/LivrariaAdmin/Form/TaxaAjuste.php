@@ -131,7 +131,7 @@ class TaxaAjuste extends AbstractForm {
      * @param array $data
      * @return no return
      */
-    public function setComissao($data){
+    public function setComissao($data=[]){
         if(!$this->isAdmin){
             return;
         }
