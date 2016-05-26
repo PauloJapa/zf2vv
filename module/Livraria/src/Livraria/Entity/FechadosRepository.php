@@ -467,8 +467,12 @@ class FechadosRepository extends AbstractRepository {
                         $parameters['renovacao'] = '0';
                         $parameters['status'] = 'A';
                     }
+                    if($filtro == 'T'){
+                        $where .= ' AND l.status NOT LIKE :status';
+                        $parameters['status'] = 'C';
+                    }
                     if($filtro != 'A' AND $filtro != 'R' AND $filtro != 'T'){
-                        $op = (isset($operadores[$key])) ? $operadores[$key] : '=';
+                        $op = (isset($operadores[$key])) ? $operadores[$key] : 'LIKE';
                         $where .= ' AND l.' . $key . ' ' . $op . ' :' . $key;
                         $parameters[$key] = $filtro;
                     }

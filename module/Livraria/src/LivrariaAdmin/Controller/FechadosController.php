@@ -457,6 +457,9 @@ $array[] = '1058758';
      */
     public function listarFechadosAction(array $filtro = array()){
         $data = $this->filtrosDaPaginacao();
+        if(!isset($data['dataI'])){
+            $data['dataI'] = date('01/m/Y');
+        }
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setFechadosFull();
         //usuario admin pode ver tudo os outros são filtrados
@@ -484,9 +487,17 @@ $array[] = '1058758';
         }
         $this->formData->setData((is_null($data)) ? [] : $data);
         $inputs = ['id','locador','locatario','refImovel', 'administradora', 'status', 'user','dataI','dataF'];
-        foreach ($inputs as $input) {
-            if ((isset($data[$input])) AND (!empty($data[$input]))) {
-                $filtro[$input] = $data[$input];
+        if ((isset($data['id'])) AND (!empty($data['id']))) {
+            $filtro['id'] = $data['id'];
+            isset($data['administradora']) && $filtro['administradora'] = $data['administradora'];
+        }  else {
+            foreach ($inputs as $input) {
+                if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                    $filtro[$input] = $data[$input];
+                }
+                if ((isset($data[$input])) AND (!empty($data[$input]))) {
+                    $filtro[$input] = $data[$input];
+                }
             }
         }
         $list = $this->getEm()
