@@ -16,6 +16,10 @@
             return false;
         }
         
+        if(!validaAtividade()){
+            return false;
+        }
+        
         var vali = document.getElementsByName('validade');
         var niver = document.getElementById('mesNiver');
         if('Apartamento' == document.getElementById('atividadeDesc').value){
@@ -58,6 +62,30 @@
         envia(tar,'salvar',formName,'');
         return false;
     }
+    
+    var validaAtividade = function(){
+        var dtIni = new Date(2016,5,1);
+        var dtAtu = inputToDate($('#inicio'));
+        if(dtAtu < dtIni){
+            return true;
+        }
+        if($('#atividadeDesc').val().search('FÁBRICA') != -1){
+            alert('O uso da atividade para fabrica esta suspenso por favor entrar em contato com a Vila velha.\n\n Tel. 3226 9708.');
+            return false;
+        }
+        return true;
+    };
+    
+    var inputToDate = function($input){
+        var d = $input.val().split("/");
+        try{
+            var data = new Date(d[2], (d[1] - 1), d[0]);
+            return data;
+        }catch(e){
+            console.log(e);
+            return 0;
+        }
+    };
     
     function validaLocadorLocatarioImovel(silent, fc){    
         if(!$('#locadorNome').prop('readonly')){
@@ -687,6 +715,9 @@
 
     function calcular(){
         if(!validaLocadorLocatarioImovel(false, 'calcular()')){
+            return false;
+        }        
+        if(!validaAtividade()){
             return false;
         }
         if(!userDateIsValid()){
