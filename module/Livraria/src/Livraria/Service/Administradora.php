@@ -88,6 +88,7 @@ class Administradora extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Tipo de Cobertura Res.', $ent->getTipoCoberturaRes(), $this->data['tipoCoberturaRes']);
         $this->dePara .= $this->diffAfterBefore('Seguradora', $ent->getSeguradora()->getId(), $this->data['seguradora']->getId());
         $this->dePara .= $this->diffAfterBefore('Assistencia 24', $ent->getAssist24(), $this->data['assist24']);
+        $this->dePara .= $this->diffAfterBefore('Gerar arquivos separados', $ent->getGeraExpSep(), $this->data['geraExpSep']);
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
     }

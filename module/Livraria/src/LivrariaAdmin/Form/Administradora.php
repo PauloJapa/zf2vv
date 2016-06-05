@@ -55,6 +55,9 @@ class Administradora extends AbstractEndereco {
         $this->setInputRadio('assist24', 'Assistencia 24', $assist24);
         $this->get('assist24')->setValue('N');
         
+        $geraExpSep = ['0' => 'Unico arquivo.', '1' => 'Separadamente.'];
+        $this->setInputRadio('geraExpSep', 'Gerar arquivos de exportação separados.', $geraExpSep, ['value' => '1']);
+        
         $propPag = ['N' => 'Com todas as Opções de Pag.', 'S' => 'Somente a escolhida'];
         $this->setInputSelect('propPag', 'Proposta com 1 forma de pag.', $propPag);
      

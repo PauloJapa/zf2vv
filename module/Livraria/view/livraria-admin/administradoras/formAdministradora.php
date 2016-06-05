@@ -55,6 +55,8 @@ echo
         $this->FormDefault(['validade' => 'radio']),
     "</td><td>\r",
         $this->FormDefault(['assist24' => 'radio']),
+    "</td><td>\r",
+        $this->FormDefault(['geraExpSep' => 'radio']),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),  
         

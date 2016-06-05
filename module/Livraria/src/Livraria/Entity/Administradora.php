@@ -144,7 +144,14 @@ class Administradora extends Filtro {
      */
     protected $propPag;
     
-
+    /**
+     * Marcação que indica se é para gerar os arquivos de exportação separadamente
+     * ALTER TABLE administradoras ADD gerar_exp_sep VARCHAR(1) DEFAULT NULL
+     * @var string $geraExpSep     
+     * @ORM\Column(name="gerar_exp_sep", type="string", length=1, nullable=true)
+     */
+    protected $geraExpSep;
+    
     
     public function __construct($options = null) {
         Configurator::configure($this, $options);
@@ -459,6 +466,35 @@ class Administradora extends Filtro {
         $this->propPag = $propPag;
         return $this;
     }
+        
+    /**
+     * Marcação que indica se é para gerar os arquivos de exportação separadamente
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016           
+     * @param string $geraExpSep
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setGeraExpSep($geraExpSep) {
+        $this->geraExpSep = $geraExpSep;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se é para gerar os arquivos de exportação separadamente
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016           
+     * @return string
+     */
+    public function getGeraExpSep() {
+        if(is_null($this->geraExpSep)){
+            return '0';
+        }
+        return $this->geraExpSep;
+    }
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -480,6 +516,7 @@ class Administradora extends Filtro {
         $data['seguradora']     = $this->getSeguradora()->getId(); 
         $data['assist24']       = $this->getAssist24(); 
         $data['propPag']        = $this->getPropPag(); 
+        $data['geraExpSep']     = $this->getGeraExpSep(); 
         return $data ;
     }
 
