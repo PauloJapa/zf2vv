@@ -105,7 +105,7 @@ echo $this->ViewIndex('close');
 </form>
 <script language="javascript">
     var formName = '<?php echo $this->formName ?>';
-    function toExporta(adm){
+    function toExcel(adm){
         $('#id2').val(adm);
         var tar2 = "<?php echo $this->url($this->matchedRouteName,array('controller'=> $this->params['controller'],'action'=>'geraExporta')); ?>";
         envia(tar2, adm);

@@ -51,6 +51,13 @@ class Exporta extends AbstractService{
     protected $locatarioService;
     protected $locatarioAcertoLog;
 
+    /**
+     * Repository de Administradora
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @since 05-06-2016  
+     * @var \Livraria\Entity\AdministradoraRepository
+     */
+    protected $rpAdministradora;
 
     /**
      * Contruct recebe EntityManager para manipulação de registros
@@ -268,7 +275,13 @@ class Exporta extends AbstractService{
         $this->fechadoRepository = $this->em->getRepository("Livraria\Entity\Fechados");
         $this->openZipFile($zipFile);
         if(!empty($admFiltro)){
-            $this->prepArqsForMaritima($admFiltro);
+            /* @var $entityAdm \Livraria\Entity\Administradora */
+            $entityAdm = $this->getRpAdm()->find($admFiltro);
+            if($entityAdm->getGeraExpSep()){
+                $this->prepArquivoSeparados($admFiltro);
+            }else{
+                $this->prepArqsForMaritima($admFiltro);
+            }
         }else{
             $admArray = $this->getAdmCods();
             foreach ($admArray as $admCod) {
@@ -302,9 +315,12 @@ class Exporta extends AbstractService{
      * Usa os dados da consulta armazenado em cache
      * Gera os arquivos separando em empresarial e residencial
      * Cada ocupação separando pela forma de pagamento
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.2  
+     * @since 05-06-2016 
      * @return string com caminho do arquivo zip
      */
-    public function prepArqsForMaritima($admCod){
+    public function prepArqsForMaritima($admCod, $returnArray=false){
         // Separar Adm em arquivos por tipo de pagamento e tipo de ocupacao
         $file['e0130.00'] = $this->baseWork . $admCod . '_empresarial_ato_30.KM2';
         $file['e0230.00'] = $this->baseWork . $admCod . '_empresarial_1x1_30.KM2';
@@ -330,6 +346,9 @@ class Exporta extends AbstractService{
         $file['r0269.99'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
         $file['r0369.99'] = $this->baseWork . $admCod . '_residencial_1x2_69.KM2';
         $file['r0469.99'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
+        if($returnArray){
+            return $file;
+        }
         foreach ($file as $key => $arq) {
             if(!$this->setConteudo($key, $arq, $admCod)){
                 $this->writeFile();
@@ -337,6 +356,102 @@ class Exporta extends AbstractService{
                 $this->addFileToZip($arq,$this->baseWork);
             }
         }  
+    }
+    
+    /**
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016 
+     * @param type $admCod
+     */
+    public function prepArquivoSeparados($admCod) {
+        foreach ($this->getSc()->lista as $value) {
+            $file = $this->prepArqsForMaritima($admCod, TRUE);
+            $file = str_replace('.KM2', '_' . $value['id'] . '.KM2', $file);
+            foreach ($file as $key => $arq) {
+                if($this->setConteudoOne($key, $arq, $admCod, $value)){
+                    $this->writeFile();
+                    $this->closeFile();  
+                    $this->addFileToZip($arq,$this->baseWork);
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016 
+     * @param type $filtro
+     * @param type $arq
+     * @param type $admCod
+     * @param type $value
+     * @return boolean
+     */
+    public function setConteudoOne($filtro, $arq, $admCod, $value) {        
+        $head = TRUE;
+        $ocupacao = substr($filtro, 0, 1);
+        $formaPgto = substr($filtro, 1, 2);
+        $comissao = substr($filtro, 3, 5);
+        $this->item = 0;
+        $this->saida = '';
+        // Filtrar a Administradora
+        if($admCod != $value['administradora']['id']){
+            return false;
+        }
+        // Verificar se nome do locatario esta correto provisoriamente.
+        if ($value['locatarioNome'] != $value['locatario']['nome']){
+            $this->acertaNomeLocatario($value);
+        }
+        $this->ativid = $value['atividade']['codSeguradora'];
+        $this->tipoLocatario = strtoupper(substr($value['locatario']['tipo'], 0, 1));
+        $this->tipoLocador   = strtoupper(substr($value['locador']['tipo'], 0, 1));
+        // Filtrar apenas empresarial
+        if($ocupacao == 'e'){ 
+            if($this->ativid == 911 OR $this->ativid == 919){
+                return false; // é residencial entao filtra
+            }
+        }else{ // Filtrar apenas residencial
+            if($this->ativid != 911 AND $this->ativid != 919){
+                return false; // não é residencial entao filtra
+            }                
+        }
+        // Filtra forma de pagamento
+        if($formaPgto != $value['formaPagto']){
+            return false;
+        }
+        // Filtra comissão os 2 primeiros digitos
+//echo '<pre>';            var_dump($value['comissao']); die;
+        if($comissao != substr($value['comissao'], 0, 5)){
+            return false;
+        }
+        
+        $this->openFile($arq);
+        $this->montaHead($value);
+        
+        $this->item ++;
+        $this->qtdExportado ++;
+        $this->setLine03($value);
+        $this->setLine05($value);
+        $this->setLine10($value);
+        return $head;
+    }
+    
+    /**
+     * Repository de Administradora
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016  
+     * @return \Livraria\Entity\AdministradoraRepository
+     */
+    public function getRpAdm() {
+        if(is_null($this->rpAdministradora)){
+            $this->rpAdministradora = $this->em->getRepository('\Livraria\Entity\Administradora');
+        }
+        return $this->rpAdministradora;
     }
     
     /**
