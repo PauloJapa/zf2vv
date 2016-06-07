@@ -461,9 +461,13 @@ class Exporta extends AbstractService{
      */
     public function openZipFile($zipFile){
         $this->zip = new \ZipArchive;
-        if($this->zip->open($zipFile, \ZipArchive::OVERWRITE)  !== true){
-            echo 'erro';
-            return FALSE;
+        $res = $this->zip->open($zipFile, \ZipArchive::CREATE);
+        if($res  !== true){
+            $res = $this->zip->open($zipFile, \ZipArchive::OVERWRITE);
+        }
+        if($res  !== true){
+            $msg = 'Não é possivel reescrever o diretorio ' . $zipFile . ' errocod' . $res . ' .';
+            throw new \Exception($msg);
         }
     }
 
