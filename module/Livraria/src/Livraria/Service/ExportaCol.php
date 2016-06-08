@@ -73,6 +73,14 @@ class ExportaCol extends AbstractService{
     protected $qtdExportado;
     protected $fechadoRepository;
 
+    /**
+     * Repository de Administradora
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @since 05-06-2016  
+     * @var \Livraria\Entity\AdministradoraRepository
+     */
+    protected $rpAdministradora;
+
 
     /**
      * Contruct recebe EntityManager para manipulação de registros
@@ -134,7 +142,13 @@ class ExportaCol extends AbstractService{
         
         $this->openZipFile($zipFile);
         if(!empty($adm)){
-            $this->prepArqsForCol($adm);
+            /* @var $entityAdm \Livraria\Entity\Administradora */
+            $entityAdm = $this->getRpAdm()->find($adm);
+            if($entityAdm->getGeraExpSep()){
+                $this->prepArquivoSeparadosCol($adm);
+            }else{
+                $this->prepArqsForCol($adm);
+            }
         }else{
             $admArray = $this->getAdmCods();
             foreach ($admArray as $admCod) {
@@ -152,6 +166,133 @@ class ExportaCol extends AbstractService{
             $this->logForSis('fechados', '', 'exportar', 'geraTxtForCOL', $obs);
         }   
         return $zipFile;     
+    }
+    
+    /**
+     * Repository de Administradora
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-06-2016  
+     * @return \Livraria\Entity\AdministradoraRepository
+     */
+    public function getRpAdm() {
+        if(is_null($this->rpAdministradora)){
+            $this->rpAdministradora = $this->em->getRepository('\Livraria\Entity\Administradora');
+        }
+        return $this->rpAdministradora;
+    }
+    
+    /**
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 07-06-2016 
+     * @param string $adm
+     */
+    public function prepArquivoSeparadosCol($adm) {        
+        foreach ($this->getSc()->lista as &$value) {
+            $com = number_format($value['comissao'], 2, '.', ',');
+            $arq = $this->baseWork . $adm . '_' . $com . '_Col' . $value['id'] . '.txt';
+            $this->setOneConteudo($arq, $adm, $value);
+            $this->writeFile();
+            $this->closeFile();  
+            $this->addFileToZip($arq);
+        }
+    }
+    
+    /**
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 07-06-2016 
+     * @param string $arq
+     * @param string $adm
+     * @param array $value
+     */
+    public function setOneConteudo($arq, $adm, &$value) {
+        $this->saida = '';
+        $this->openFile($arq);
+        //locador nome 50
+        $this->addSaida2($value['locadorNome'], 50);
+        //echo $value['locadorNome'], '<br>',utf8_decode($value['locadorNome']) , "<br><br>";
+        //locatario nome 50
+        $this->addSaida2($value['locatarioNome'], 50);
+        // imovel rua 50
+        $this->addSaida2($value['imovel']['rua'], 50);
+        // imovel numero 10
+        $this->addSaida2($value['imovel']['numero'], 10, '0', 'STR_PAD_LEFT');     
+        // imovel complemento 20
+        $complemento = '';
+        $sep         = '';
+        if(!empty($value['imovel']['apto'])){
+            $complemento = 'AP ' . $value['imovel']['apto'];
+            $sep         = ', BL ';
+        }
+        if(!empty($value['imovel']['bloco'])){
+            $complemento .= $sep . $value['imovel']['bloco'];
+            $sep         = ', ';
+        }
+        if(!empty($value['imovel']['endereco']['compl'])){
+            $complemento .= $sep . $value['imovel']['endereco']['compl'];
+        }
+        $this->addSaida2($complemento, 20);
+        // Bairro
+        $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
+        // Cidade
+        $this->addSaida2($value['imovel']['endereco']['cidade']['nome'], 30);
+        // Estado
+        $this->addSaida2($value['imovel']['endereco']['estado']['sigla'], 3);
+        // CEP
+        $this->addSaida2($value['imovel']['cep'], 9);
+        // Inicio Vigencia
+        $this->saida .= $value['inicio']->format('dmYhis');
+        // Fim Vigencia
+        $this->saida .= $value['fim']->format('dmYhis');
+        //Código da atividade(ocupação)	10
+        $this->addSaida2($value['atividade']['codSeguradora'], 10, '0', 'STR_PAD_LEFT'); 
+        // incendio
+        // Se escolha entre Incendio ou Incendio + Conteudo
+        if($value['tipoCobertura'] == '01' ){
+            $incendio = $value['incendio'];   
+        }else{
+            $incendio = $value['conteudo'];   
+        }
+        $this->addSaida2(number_format($incendio, 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //alu
+        $this->addSaida2(number_format($value['aluguel'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //ele
+        $this->addSaida2(number_format($value['eletrico'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //ven
+        $this->addSaida2(number_format($value['vendaval'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //n_parc numero_parcelas 10
+        $this->addSaida2($value['formaPagto'], 10, '0', 'STR_PAD_LEFT'); 
+        //premioliq
+        $this->addSaida2(number_format($value['premioLiquido'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //totpremio
+        $this->addSaida2(number_format($value['premioTotal'], 2, '', ''), 17, '0', 'STR_PAD_LEFT'); 
+        //comissao
+        $this->addSaida2(number_format($value['comissao'], 2, '', ''), 5, '0', 'STR_PAD_LEFT'); 
+        //forma de pagamento(20)
+        $this->addSaida2($this->formaPagto[$value['formaPagto']], 20);
+        //Seguradora(20)
+        $this->addSaida2($value['seguradora']['apelido'], 20);
+        //Locador Doc(15)
+        if($value['locador']['tipo'] == 'fisica'){
+            $this->addSaida2(preg_replace('/[^0-9]/','',$value['locador']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+        }else{
+            $this->addSaida2(preg_replace('/[^0-9]/','',$value['locador']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+        }
+        //Locatario Doc(15)
+        if($value['locatario']['tipo'] == 'fisica'){
+            $this->addSaida2(preg_replace('/[^0-9]/','',$value['locatario']['cpf']), 15, '0', 'STR_PAD_LEFT'); 
+        }else{
+            $this->addSaida2(preg_replace('/[^0-9]/','',$value['locatario']['cnpj']), 15, '0', 'STR_PAD_LEFT');                 
+        }
+        // Fim da linha 
+        $this->saida .= PHP_EOL; 
+
+        $this->qtdExportado ++;
     }
     
     public function prepArqsForCol($adm){
@@ -306,9 +447,13 @@ class ExportaCol extends AbstractService{
      */
     public function openZipFile($zipFile){
         $this->zip = new \ZipArchive;
-        if($this->zip->open($zipFile, \ZipArchive::OVERWRITE)  !== true){
-            echo 'erro';
-            return FALSE;
+        $res = $this->zip->open($zipFile, \ZipArchive::CREATE);
+        if($res  !== true){
+            $res = $this->zip->open($zipFile, \ZipArchive::OVERWRITE);
+        }
+        if($res  !== true){
+            $msg = 'Não é possivel reescrever o diretorio ' . $zipFile . ' errocod' . $res . ' .';
+            throw new \Exception($msg);
         }
     }
 
