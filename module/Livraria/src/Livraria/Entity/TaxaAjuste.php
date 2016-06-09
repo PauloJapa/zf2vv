@@ -122,6 +122,22 @@ class TaxaAjuste extends Filtro
      * @ORM\Column(name="sem_eletrico", type="decimal", precision=10, scale=4, options={"default" = 0})
      */
      protected $semEletrico = 0;
+	
+    /**
+     * com dano eletrico SOMENTE para renovação
+     * @var float $comEleRen
+     *
+     * @ORM\Column(name="com_ele_ren", type="decimal", precision=10, scale=4, options={"default" = 0})
+     */
+     protected $comEleRen = 0;
+	
+    /**
+     * sem dano eletrico SOMENTE para renovação
+     * @var float $semEleRen
+     *
+     * @ORM\Column(name="sem_ele_ren", type="decimal", precision=10, scale=4, options={"default" = 0})
+     */
+     protected $semEleRen = 0;
 
     /**
      * unica
@@ -443,6 +459,34 @@ class TaxaAjuste extends Filtro
         return $this;
     }
 
+    public function getComEleRen() {
+        return $this->comEleRen;
+    }
+
+    /**
+     * 
+     * @param string | float $comEleRen
+     * @return \Livraria\Entity\TaxaAjuste
+     */
+    public function setComEleRen($comEleRen) {
+        $this->comEleRen = $this->trataFloat($comEleRen);
+        return $this;
+    }
+
+    public function getSemEleRen() {
+        return $this->semEleRen;
+    }
+
+    /**
+     * 
+     * @param string | float $semEleRen
+     * @return \Livraria\Entity\TaxaAjuste
+     */
+    public function setSemEleRen($semEleRen) {
+        $this->semEleRen = $this->trataFloat($semEleRen);
+        return $this;
+    }
+
     public function getUnica() {
         return $this->unica;
     }
@@ -492,6 +536,8 @@ class TaxaAjuste extends Filtro
         $data['semContEle']     = $this->floatToStr('semContEle');
         $data['comEletrico']    = $this->floatToStr('comEletrico');
         $data['semEletrico']    = $this->floatToStr('semEletrico');
+        $data['comEleRen']      = $this->floatToStr('comEleRen');
+        $data['semEleRen']      = $this->floatToStr('semEleRen');
         $data['unica']          = $this->floatToStr('unica');
         $data['comissao']       = $this->floatToStr('comissao');
         $data['validade']       = $this->getValidade();

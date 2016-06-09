@@ -91,6 +91,8 @@ class TaxaAjuste extends AbstractForm {
 //                   ,'semContEle'                
                     'comEletrico'             
                    ,'semEletrico'               
+                   ,'comEleRen'               
+                   ,'semEleRen'               
 //                   ,'unica'      
         ]; 
         $this->inputsL = [
@@ -100,6 +102,8 @@ class TaxaAjuste extends AbstractForm {
 //                   ,'Taxa SEM Conteudo e Dano Eletrico'               
                     'Taxa COM Dano Eletrico'                        
                    ,'Taxa SEM Dano Eletrico'                          
+                   ,'Taxa COM Dano Eletrico RENOVAÇÃO MENSAL'                          
+                   ,'Taxa SEM Dano Eletrico RENOVAÇÃO MENSAL'                          
 //                   ,'Taxa Unica'                        
         ];          
         // Carrega para casa e apto
