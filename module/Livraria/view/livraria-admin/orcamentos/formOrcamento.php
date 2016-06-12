@@ -43,6 +43,7 @@ $this->FormDefault(['legend' => 'Dados sobre o seguro ADM: ' . $this->administra
     "<td>",
         $this->FormDefault(['comissaoEnt','administradora','administradoraDesc','ajaxStatus','autoComp','subOpcao','locador','imovel','imovelTel','imovelStatus','locatario','atividade','taxa','canceladoEm','codano','numeroParcela','premio','premioLiquido','fechadoId','taxaIof','user','status','multiplosMinimos','scrolX','scrolY','fechadoOrigemId','mensalSeq','orcaReno','gerado'],'hidden'),
         $this->FormDefault(['proposta' => 'text']),
+        $this->FormDefault(['referencia' => 'text']),
     "</td><td>", PHP_EOL,
         $this->FormDefault(['seguroEmNome' => 'radio']),
     "</td><td>", PHP_EOL,

@@ -237,7 +237,7 @@ class Renovacao extends AbstractService {
             ->findMultMinVigente($this->data['seguradora'],  $this->data['criadoEm']);
         
         //$this->data['administradora'] = $this->fechado->getAdministradora()->getObjeto();
-        $resul = $this->CalculaPremio();
+        $resul = $this->CalculaPremio([],TRUE);
         
         $this->data['fechadoId'] = '0';
         

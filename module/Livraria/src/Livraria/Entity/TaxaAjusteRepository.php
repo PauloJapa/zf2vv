@@ -119,7 +119,7 @@ class TaxaAjusteRepository extends EntityRepository {
      * @param \Livraria\Entity\TaxaAjuste | false $entTaxaAjuste
      * @return float | integer
      */
-    public function changeEntityForTaxaFloat($txConteudo = 0, $txEletrico = 0, $entTaxaAjuste = FALSE) {
+    public function changeEntityForTaxaFloat($txConteudo = 0, $txEletrico = 0, $entTaxaAjuste = FALSE, $mensal = FALSE) {
         if($entTaxaAjuste){
             $this->entity = $entTaxaAjuste;
         }
@@ -164,9 +164,15 @@ class TaxaAjusteRepository extends EntityRepository {
         switch (TRUE) {
             case $txEletrico != 0:
                 $taxaAjuste = $this->entity->getComEletrico();
+                if($mensal AND $this->entity->getComEleRen() != 0){
+                    $taxaAjuste = $this->entity->getComEleRen();                    
+                }
                 break;
             case $txEletrico == 0:
                 $taxaAjuste = $this->entity->getSemEletrico();
+                if($mensal AND $this->entity->getSemEleRen() != 0){
+                    $taxaAjuste = $this->entity->getSemEleRen();                    
+                }
                 break;
         }
         return $taxaAjuste;        

@@ -454,7 +454,7 @@ abstract class AbstractService {
     }
 
 
-    public function CalculaPremio($data=[]){
+    public function CalculaPremio($data=[], $mensal=FALSE){
         if(!empty($data)){
             $this->data = $data ;
         }
@@ -556,7 +556,7 @@ $this->debug = false;
 $this->debug = $bkpDebug;
         $taxaAjuste = 1;
         if($entTaxaAjuste){
-            $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste);
+            $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste, $mensal);
         }
         switch (TRUE) {
             case $taxaAjuste == 1:

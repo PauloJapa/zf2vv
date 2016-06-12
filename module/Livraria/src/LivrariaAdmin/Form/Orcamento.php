@@ -50,6 +50,8 @@ class Orcamento extends AbstractEndereco {
                        'class' => 'input-xlarge',
                        'autoComplete'=>'off'];        
         $this->setInputText('locadorNome', 'Locador', $attributes);
+        
+        $this->setInputText('referencia', 'Ref. Cliente:');
 
         $options = [''=>'','fisica'=>'Pessoa Fisica','juridica'=>'Pessoa Juridica'];
         $this->setInputSelect('tipoLoc', 'Fisica/Juridica', $options, ['onChange' => 'showTipoLoc()']);

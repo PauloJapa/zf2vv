@@ -390,6 +390,13 @@ class Fechados  extends AbstractSeguro
      * @ORM\Column(name="taxa_ajuste", type="decimal", precision=10, scale=6, nullable=false)
      */
     protected $taxaAjuste;
+
+    /**
+     * @var string 
+     * Codigo de Identificação no cliente que poder ser numero ou letras
+     * @ORM\Column(name="referencia", type="string", length=30, nullable=true)
+     */
+    protected $referencia;
  
     /** 
      * Instacia um novo objeto se passado o parametro de dados

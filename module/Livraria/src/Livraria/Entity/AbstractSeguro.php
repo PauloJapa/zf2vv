@@ -1038,6 +1038,7 @@ class AbstractSeguro  extends Filtro {
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['assist24']       = $this->getAssist24(); 
         $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
+        $data['referencia']     = $this->getReferencia(); 
         return $data ;
     }
     
@@ -1097,6 +1098,7 @@ class AbstractSeguro  extends Filtro {
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['assist24']       = $this->getAssist24(); 
         $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
+        $data['referencia']     = $this->getReferencia(); 
         return $data ;
     }
     
@@ -1115,6 +1117,25 @@ class AbstractSeguro  extends Filtro {
      */
     public function setTaxaAjuste($taxaAjuste) {
         $this->taxaAjuste = $this->trataFloat($taxaAjuste);
+        return $this;
+    }
+    
+    /**
+     * ALTER TABLE fechados ADD referencia VARCHAR(30) DEFAULT NULL;
+     * ALTER TABLE orcamento ADD referencia VARCHAR(30) DEFAULT NULL;
+     * @return \Livraria\Entity\AbstractSeguro
+     */
+    public function getReferencia() {
+        return $this->referencia;
+    }
+
+    /**
+     * 
+     * @param type $referencia
+     * @return \Livraria\Entity\AbstractSeguro
+     */
+    public function setReferencia($referencia) {
+        $this->referencia = $referencia;
         return $this;
     }
     

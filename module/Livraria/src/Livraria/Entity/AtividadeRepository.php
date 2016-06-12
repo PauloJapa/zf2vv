@@ -99,5 +99,17 @@ class AtividadeRepository extends EntityRepository {
         
         return $query;
     }
+    
+    public function findDescricao($desc) {
+        
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('u')
+                ->from('Livraria\Entity\Atividade', 'u')
+                ->where('u.descricao LIKE :desc')
+                ->setParameter('desc', '%' . $desc . '%');
+        
+        return $query->getQuery()->getOneOrNullResult();
+    }
 }
 

@@ -37,6 +37,13 @@ class Importar extends AbstractService{
     protected $assit24;
     
     /**
+     *
+     * ferramentas para Atividade
+     * @var \Livraria\Entity\AtividadeRepository 
+     */
+    protected $repAtivid;
+    
+    /**
      * Contruct recebe EntityManager para manipulação de registros
      * @param \Doctrine\ORM\EntityManager $em
      */
@@ -109,6 +116,17 @@ class Importar extends AbstractService{
         return explode(';',  $linha);
     }
     
+    /**
+     * ferramentas para Atividade
+     * @return \Livraria\Entity\AtividadeRepository
+     */
+    public function rpAti() {
+        if (is_null($var)) {
+            $this->repAtivid = $this->em->getRepository('Livraria\Entity\Atividade');
+        }
+        return $this->repAtivid;
+    }
+    
     public function importar(){
         $file = $this->getSc()->file;
         if(!$file){
@@ -150,8 +168,6 @@ class Importar extends AbstractService{
         $this->repImovel = $this->em->getRepository('Livraria\Entity\Imovel');
         $this->estados  = $this->em->getRepository('Livraria\Entity\Estado')->fetchPairs();
         
-        // ferramentas para Atividade
-        $this->repAtivid = $this->em->getRepository('Livraria\Entity\Atividade');
         // ferramentas para Atividade
         $this->repOrcamento = $this->em->getRepository('Livraria\Entity\Orcamento');
         $this->repFechado = $this->em->getRepository('Livraria\Entity\Fechados');
@@ -343,22 +359,48 @@ class Importar extends AbstractService{
             $this->data['orcaReno'] = 'orca' ;              
         }
         
-        if($array[15] == '1'){
-            $this->data['ocupacao'] = '02';
-            $this->data['atividade'] = '487' ;
-            $this->data['atividadeDesc'] = 'RESIDENCIAL' ;
-            $this->data['comissao'] = '80,00' ;
-            $this->data['tipoCobertura'] = '02' ;
-            $this->data['conteudo'] = number_format($array[20] / 100, 2, ',', '.') ;
-            $this->data['incendio'] = '' ;
+        $this->data['seguradora'] = '2' ;
+        
+        if($this->data['seguradora'] == '3'){
+            if($array[15] == '1'){
+                $this->data['ocupacao'] = '02';
+                $this->data['atividade'] = '487' ;
+                $this->data['atividadeDesc'] = 'RESIDENCIAL' ;
+                $this->data['comissao'] = '80,00' ;
+                $this->data['tipoCobertura'] = '02' ;
+                $this->data['conteudo'] = number_format($array[20] / 100, 2, ',', '.') ;
+                $this->data['incendio'] = '' ;
+            }else{
+                $this->data['ocupacao'] = '01';
+                $this->data['atividade'] = '488' ;
+                $this->data['atividadeDesc'] = 'COMERCIAL' ;            
+                $this->data['comissao'] = '57,00' ;
+                $this->data['tipoCobertura'] = '01' ;
+                $this->data['conteudo'] = '' ;
+                $this->data['incendio'] = number_format($array[20] / 100, 2, ',', '.') ; ;
+            }
         }else{
-            $this->data['ocupacao'] = '01';
-            $this->data['atividade'] = '488' ;
-            $this->data['atividadeDesc'] = 'COMERCIAL' ;            
-            $this->data['comissao'] = '57,00' ;
-            $this->data['tipoCobertura'] = '01' ;
-            $this->data['conteudo'] = '' ;
-            $this->data['incendio'] = number_format($array[20] / 100, 2, ',', '.') ; ;
+            /* @var $entAtiv \Livraria\Entity\Atividade */
+            $entAtiv = $this->rpAti()->findDescricao(trim($array[16]));
+            if($entAtiv){
+                $this->data['atividade'] = $entAtiv->getId() ;
+                $this->data['atividadeDesc'] = $entAtiv->getDescricao() ;
+                $this->data['comissao'] = '69,99' ;
+                if($array[15] == '1'){
+                    $this->data['ocupacao'] = '02';
+                    $this->data['tipoCobertura'] = '02' ;
+                    $this->data['conteudo'] = number_format($array[20] / 100, 2, ',', '.') ;
+                    $this->data['incendio'] = '' ;
+                }else{
+                    $this->data['ocupacao'] = '01';
+                    $this->data['tipoCobertura'] = '01' ;
+                    $this->data['conteudo'] = '' ;
+                    $this->data['incendio'] = number_format($array[20] / 100, 2, ',', '.') ; ;
+                }           
+                
+            }else{
+                throw new \Exception("Atividade não encontrada " . $array[16]);
+            }
         }
         $this->data['observacao'] = 'Ref Imovel ' . trim($array[4]) ;        
         $this->data['observacao'] .=  '| Ocupação ' . trim($array[16]) ;        
@@ -375,7 +417,6 @@ class Importar extends AbstractService{
         $this->data['premioTotal'] = '' ;
         
         
-        $this->data['seguradora'] = '3' ;
         $this->data['seguroEmNome'] = '02' ;
         $this->data['validade'] = 'anual' ;
         $this->data['formaPagto'] = '01' ;
