@@ -35,10 +35,16 @@ class TaxaAjusteRepository extends EntityRepository {
         /* @var $taxaAjuste    \Livraria\Entity\TaxaAjuste */
         // trata os filtros
         $idSeg = is_object($seguradora)     ? $seguradora->getId()     : $seguradora;
-        if($idSeg != 2 OR $inicio->format('Ymd') < 20160601){
+        if($idSeg != 2){
             return false;
         }
         $idAdm = is_object($administradora) ? $administradora->getId() : $administradora;
+        if($idAdm == 3234 AND $inicio->format('Ymd') < 20160401){
+            return false;
+        }
+        if($idAdm != 3234 AND $inicio->format('Ymd') < 20160601){
+            return false;
+        }
         $comissao = str_replace(',', '.', $comissao);
         
         $classe = $atividade->findClasseFor($inicio);

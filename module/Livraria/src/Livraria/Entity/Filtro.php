@@ -76,7 +76,7 @@ class  Filtro
      */    
     public function trataInt($valor){
         if(is_string($valor)){
-            $valor = preg_replace("/[^0-9]/", "", $valor);
+            $valor = preg_replace("/[^0-9,-]/", "", $valor);
             return intval($valor);
         }
         if(is_int($valor)){

@@ -168,6 +168,11 @@ class Comissao extends Filtro
      */
     protected $administradora;
 
+    /**
+     * flag que indica se o conteudo do getMult* deve ser do comercial ou residencial padrão é ser comercial
+     * @var boolean 
+     */
+    protected $isResidencial = false;
 
     /** 
      * Instacia um novo objeto se passado o parametro de dados
@@ -315,7 +320,7 @@ class Comissao extends Filtro
      * @return integer
      */
     public function getMultAluguel() {
-        return $this->multAluguel;
+        return $this->isResidencial ? $this->multAluguelRes : $this->multAluguel;
     }
 
     /**
@@ -333,7 +338,7 @@ class Comissao extends Filtro
      * @return integer
      */
     public function getMultConteudo() {
-        return $this->multConteudo;
+        return $this->isResidencial ? $this->multConteudoRes : $this->multConteudo;
     }
 
     /**
@@ -351,7 +356,7 @@ class Comissao extends Filtro
      * @return integer
      */
     public function getMultIncendio() {
-        return $this->multIncendio;
+        return $this->isResidencial ? $this->multIncendioRes : $this->multIncendio;
     }
 
     public function setMultIncendio($multIncendio) {
@@ -364,7 +369,7 @@ class Comissao extends Filtro
      * @return integer
      */
     public function getMultEletrico() {
-        return $this->multEletrico;
+        return $this->isResidencial ? $this->multEletricoRes : $this->multEletrico;
     }
 
     /**
@@ -382,7 +387,7 @@ class Comissao extends Filtro
      * @return integer
      */
     public function getMultVendaval() {
-        return $this->multVendaval;
+        return $this->isResidencial ? $this->multVendavalRes : $this->multVendaval;
     }
 
     /**
@@ -409,7 +414,7 @@ class Comissao extends Filtro
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultAluguelRes($multAluguelRes) {
-        $this->multAluguelRes = $this->trataFloat($multAluguelRes);
+        $this->multAluguelRes = $this->trataInt($multAluguelRes);
         return $this;
     }
 
@@ -427,7 +432,7 @@ class Comissao extends Filtro
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultConteudoRes($multConteudoRes) {
-        $this->multConteudoRes = $this->trataFloat($multConteudoRes);
+        $this->multConteudoRes = $this->trataInt($multConteudoRes);
         return $this;
     }
 
@@ -440,7 +445,7 @@ class Comissao extends Filtro
     }
 
     public function setMultIncendioRes($multIncendioRes) {
-        $this->multIncendioRes = $this->trataFloat($multIncendioRes);
+        $this->multIncendioRes = $this->trataInt($multIncendioRes);
         return $this;
     }
 
@@ -458,7 +463,7 @@ class Comissao extends Filtro
      * @return \Livraria\Entity\MultiplosMinimos
      */
     public function setMultEletricoRes($multEletricoRes) {
-        $this->multEletricoRes = $this->trataFloat($multEletricoRes);
+        $this->multEletricoRes = $this->trataInt($multEletricoRes);
         return $this;
     }
 
@@ -564,7 +569,7 @@ class Comissao extends Filtro
 
     /**
      * 
-     * @return \Livraria\Entity\Administradoras
+     * @return \Livraria\Entity\Administradora
      */
     public function getAdministradora() {
         return $this->administradora;
@@ -607,6 +612,13 @@ class Comissao extends Filtro
         $data['administradora']   = $this->getAdministradora()->getId(); 
         return $data ;
     }
+    
+    function getIsResidencial() {
+        return $this->isResidencial;
+    }
 
+    function setIsResidencial($isResidencial) {
+        $this->isResidencial = $isResidencial;
+    }
  
 }

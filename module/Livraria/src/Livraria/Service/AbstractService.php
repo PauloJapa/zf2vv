@@ -469,6 +469,10 @@ abstract class AbstractService {
         $eletrico = ($this->data['eletrico']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['eletrico'], 'float');
         $vendaval = ($this->data['vendaval']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['vendaval'], 'float');
 
+        // Parametriza comissão para pegar multiplos do residencial se for o caso
+        if ($this->data['ocupacao'] == '02'){
+            $this->data['comissaoEnt']->setIsResidencial(TRUE);
+        }
         //Calcula de coberturas caso estejam zeradas do form
         if($incendio == 0.0 and $this->data['tipoCobertura'] == '01')
             $incendio = $vlrAluguel * $this->data['comissaoEnt']->getMultIncendio();

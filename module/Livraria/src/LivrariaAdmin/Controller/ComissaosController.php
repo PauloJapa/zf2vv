@@ -125,4 +125,27 @@ class ComissaosController extends CrudController {
         return $view;
     }
 
+    public function acertaAction() {
+        /* @var $repository \Livraria\Entity\ComissaoRepository */        
+        $this->verificaSeUserAdmin();
+        $rp = $this->getEm()->getRepository($this->entity);
+        $all = $rp->findAll();
+        /* @var $commisao \Livraria\Entity\Comissao */
+        $int = 0;
+        foreach ($all as $commisao){
+            $commisao->setMultAluguelRes($commisao->getMultAluguel());
+            $commisao->setMultConteudoRes($commisao->getMultConteudo());
+            $commisao->setMultEletricoRes($commisao->getMultEletrico());
+            $commisao->setMultIncendioRes($commisao->getMultIncendio());
+            $commisao->setMultVendavalRes($commisao->getMultVendaval());
+            $this->getEm()->persist($commisao);
+            $int++;
+            
+            echo '<h3> ok', $commisao->getAdministradora()->getId() , '</h3>';
+            echo '<pre>', var_dump($commisao->toArray()), '</pre>';
+        }
+        $this->getEm()->flush();
+        echo '<h1> Total', $int , '</h1>';
+        die;
+    }
 }

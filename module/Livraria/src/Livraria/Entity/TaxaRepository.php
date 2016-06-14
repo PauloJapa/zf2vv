@@ -73,27 +73,33 @@ class TaxaRepository extends EntityRepository {
                     ")
                 ->setParameter('seguradora', $seguradora)
                 ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())
-                ->setParameter('inicio', ($date2 ? $date2 : $date))
+                ->setParameter('inicio', (is_object($date2))? $date2 : $date)
                 ->setParameter('ocupacao', $classeAtividade->getAtividade()->getOcupacao())
                 ->setParameter('validade', $validade)
                 ->setParameter('comissao', $comissao)
                 ->setParameter('cobertura', $cob)
                 ->setMaxResults(1)
                 ->orderBy('t.inicio', 'DESC')
-                ->getQuery()
+                
                 ;
-        $resul = $query->getResult();
-        /*
-        var_dump($seguradora);
-        var_dump($classeAtividade->getClasseTaxas()->getId());
-        var_dump($date);
-        var_dump($classeAtividade->getAtividade()->getOcupacao());
-        var_dump($validade);
-        var_dump($comissao);
-        var_dump($cob);
-        var_dump($resul);
-         */
-        return empty($resul) ? FALSE : $resul[0];
+        $resul = $query->getQuery()->getOneOrNullResult();
+        
+        if($resul){
+//            echo '<pre>'
+//            ,var_dump($seguradora)
+//            ,var_dump($classeAtividade->getClasseTaxas()->getId())
+//            ,var_dump((is_object($date2))? $date2 : $date)
+//            ,var_dump($classeAtividade->getAtividade()->getOcupacao())
+//            ,var_dump($validade)
+//            ,var_dump($comissao)
+//            ,var_dump($cob)
+//            ,var_dump($resul->toArray())
+//            ,'</pre>';
+            
+            return $resul;
+        }else{
+            return FALSE;
+        }
     }
 }
 

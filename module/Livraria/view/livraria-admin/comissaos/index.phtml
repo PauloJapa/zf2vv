@@ -20,11 +20,16 @@ $coluns = array(
     , 'Administradora'
     , 'Comercial %'
     , 'Residencial %'
-    , 'Mult. Incêncio'
-    , 'Mult. Conteúdo'
-    , 'Mult. Aluguel'
-    , 'Mult. Eletrico'
-    , 'Mult. Vendaval'
+    , 'Comerc. Mult. Incêncio'
+    , 'Comerc. Mult. Conteúdo'
+    , 'Comerc. Mult. Aluguel'
+    , 'Comerc. Mult. Eletrico'
+    , 'Comerc. Mult. Vendaval'
+    , 'Reside. Mult. Incêncio'
+    , 'Reside. Mult. Conteúdo'
+    , 'Reside. Mult. Aluguel'
+    , 'Reside. Mult. Eletrico'
+    , 'Reside. Mult. Vendaval'
     , 'Inicio'
     , 'Fim'
     , 'Status'
@@ -33,6 +38,11 @@ $coluns = array(
 $td = array(
     ''
     , ''
+    , 'class="r"'
+    , 'class="r"'
+    , 'class="r"'
+    , 'class="r"'
+    , 'class="r"'
     , 'class="r"'
     , 'class="r"'
     , 'class="r"'
@@ -59,6 +69,11 @@ foreach($this->data as $entity){
         $entity->floatToStr('multAluguel'),
         $entity->floatToStr('multEletrico'),
         $entity->floatToStr('multVendaval'),
+        $entity->floatToStr('multIncendioRes'),
+        $entity->floatToStr('multConteudoRes'),
+        $entity->floatToStr('multAluguelRes'),
+        $entity->floatToStr('multEletricoRes'),
+        $entity->floatToStr('multVendavalRes'),
         $entity->getInicio(),
         $entity->getFim(),
         $entity->getStatus(),
