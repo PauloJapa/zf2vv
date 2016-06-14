@@ -121,7 +121,7 @@ class Importar extends AbstractService{
      * @return \Livraria\Entity\AtividadeRepository
      */
     public function rpAti() {
-        if (is_null($var)) {
+        if (is_null($this->repAtivid)) {
             $this->repAtivid = $this->em->getRepository('Livraria\Entity\Atividade');
         }
         return $this->repAtivid;
@@ -340,6 +340,7 @@ class Importar extends AbstractService{
         $this->data['id'] = '' ;
         $this->data['codano'] = '' ;
         $this->data['administradora'] = '3234' ;
+        $this->data['referencia'] = $array[24] ;
         
         $this->buscaLocador($array[5], $array[6]);        
         $this->buscaLocatario($array[7], $array[8]); 

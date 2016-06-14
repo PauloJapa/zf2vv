@@ -107,7 +107,7 @@ class AtividadeRepository extends EntityRepository {
                 ->select('u')
                 ->from('Livraria\Entity\Atividade', 'u')
                 ->where('u.descricao LIKE :desc')
-                ->setParameter('desc', '%' . $desc . '%');
+                ->setParameter('desc', $desc );
         
         return $query->getQuery()->getOneOrNullResult();
     }
