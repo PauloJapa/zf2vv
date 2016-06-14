@@ -95,6 +95,42 @@ class Comissao extends Filtro
     protected $multVendaval;
 
     /**
+     * ALTER TABLE comissao ADD mult_aluguel_res INT DEFAULT 0, ADD mult_conteudo_res INT DEFAULT 0, ADD mult_incendio_res INT DEFAULT 0, ADD mult_eletrico_res INT DEFAULT 0, ADD mult_vendaval_res INT DEFAULT 0;
+     * @var integer $multAluguelRes
+     *
+     * @ORM\Column(name="mult_aluguel_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multAluguelRes;
+
+    /**
+     * @var integer $multConteudoRes
+     *
+     * @ORM\Column(name="mult_conteudo_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multConteudoRes;
+
+    /**
+     * @var integer $multIncendioRes
+     *
+     * @ORM\Column(name="mult_incendio_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multIncendioRes;
+
+    /**
+     * @var integer $multEletricoRes
+     *
+     * @ORM\Column(name="mult_eletrico_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multEletricoRes;
+
+    /**
+     * @var integer $multVendavalRes
+     *
+     * @ORM\Column(name="mult_vendaval_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multVendavalRes;
+
+    /**
      * @var integer $userIdCriado
      *
      * @ORM\Column(name="user_id_criado", type="integer", nullable=false)
@@ -358,6 +394,91 @@ class Comissao extends Filtro
         $this->multVendaval = $this->trataFloat($multVendaval);
         return $this;
     }
+    
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultAluguelRes() {
+        return ($this->multAluguelRes) ;
+    }
+
+    /**
+     * 
+     * @param integer $multAluguelRes
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultAluguelRes($multAluguelRes) {
+        $this->multAluguelRes = $this->trataFloat($multAluguelRes);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultConteudoRes() {
+        return ($this->multConteudoRes)  ;
+    }
+
+    /**
+     * 
+     * @param integer $multConteudoRes
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultConteudoRes($multConteudoRes) {
+        $this->multConteudoRes = $this->trataFloat($multConteudoRes);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultIncendioRes() {
+        return ($this->multIncendioRes)  ;
+    }
+
+    public function setMultIncendioRes($multIncendioRes) {
+        $this->multIncendioRes = $this->trataFloat($multIncendioRes);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultEletricoRes() {
+        return ($this->multEletricoRes)  ;
+    }
+
+    /**
+     * 
+     * @param integer $multEletricoRes
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultEletricoRes($multEletricoRes) {
+        $this->multEletricoRes = $this->trataFloat($multEletricoRes);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultVendavalRes() {
+        return ($this->multVendavalRes)  ;
+    }
+
+    /**
+     * 
+     * @param integer $multVendavalRes
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultVendavalRes($multVendavalRes) {
+        $this->multVendavalRes = $this->trataFloat($multVendavalRes);
+        return $this;
+    }
 
     /**
      * Id do usuario que cadastrou o registro
@@ -475,6 +596,11 @@ class Comissao extends Filtro
         $data['multConteudo']     = $this->floatToStr('multConteudo') ; 
         $data['multEletrico']     = $this->floatToStr('multEletrico') ; 
         $data['multVendaval']     = $this->floatToStr('multVendaval') ; 
+        $data['multAluguelRes']   = $this->floatToStr('multAluguelRes') ; 
+        $data['multIncendioRes']  = $this->floatToStr('multIncendioRes') ; 
+        $data['multConteudoRes']  = $this->floatToStr('multConteudoRes') ; 
+        $data['multEletricoRes']  = $this->floatToStr('multEletricoRes') ; 
+        $data['multVendavalRes']  = $this->floatToStr('multVendavalRes') ; 
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();

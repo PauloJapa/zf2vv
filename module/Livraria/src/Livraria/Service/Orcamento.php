@@ -302,7 +302,8 @@ class Orcamento extends AbstractService {
                         $this->data['inicio'],
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
-                        $this->data['tipoCobertura']
+                        $this->data['tipoCobertura'],
+                        $this->data['administradora']->getId()
         );
 
         if(!$this->data['taxa']){
@@ -566,7 +567,8 @@ class Orcamento extends AbstractService {
                         $this->data['inicio'],
                         str_replace(',', '.', $this->data['comissao']),
                         $this->data['validade'],
-                        $this->data['tipoCobertura']
+                        $this->data['tipoCobertura'],
+                        $this->data['administradora']->getId()
         );
 
         if(!$this->data['taxa'])

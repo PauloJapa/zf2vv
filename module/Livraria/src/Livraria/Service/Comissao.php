@@ -118,11 +118,19 @@ class Comissao extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Data fim', $ent->getFim(), $ent->trataData($this->data['fim']));
         $this->dePara .= $this->diffAfterBefore('Comissão', $ent->floatToStr('comissao'), $this->strToFloat($this->data['comissao']));
         $this->dePara .= $this->diffAfterBefore('Comissão Res.', $ent->floatToStr('comissaoRes'), $this->strToFloat($this->data['comissaoRes']));
+        
         $this->dePara .= $this->diffAfterBefore('M. Incendio', $ent->floatToStr('multIncendio'), $this->strToFloat($this->data['multIncendio']));
         $this->dePara .= $this->diffAfterBefore('M. Conteudo', $ent->floatToStr('multConteudo'), $this->strToFloat($this->data['multConteudo']));
         $this->dePara .= $this->diffAfterBefore('M. Aluguel', $ent->floatToStr('multAluguel'), $this->strToFloat($this->data['multAluguel']));
         $this->dePara .= $this->diffAfterBefore('M. Eletrico', $ent->floatToStr('multEletrico'), $this->strToFloat($this->data['multEletrico']));
         $this->dePara .= $this->diffAfterBefore('M. Vendaval', $ent->floatToStr('multVendaval'), $this->strToFloat($this->data['multVendaval']));
+        
+        $this->dePara .= $this->diffAfterBefore('M. Incendio Res.', $ent->floatToStr('multIncendioRes'), $this->strToFloat($this->data['multIncendioRes']));
+        $this->dePara .= $this->diffAfterBefore('M. Conteudo Res.', $ent->floatToStr('multConteudoRes'), $this->strToFloat($this->data['multConteudoRes']));
+        $this->dePara .= $this->diffAfterBefore('M. Aluguel Res.' , $ent->floatToStr('multAluguelRes') , $this->strToFloat($this->data['multAluguelRes']));
+        $this->dePara .= $this->diffAfterBefore('M. Eletrico Res.', $ent->floatToStr('multEletricoRes'), $this->strToFloat($this->data['multEletricoRes']));
+        $this->dePara .= $this->diffAfterBefore('M. Vendaval Res.', $ent->floatToStr('multVendavalRes'), $this->strToFloat($this->data['multVendavalRes']));
+        
         $this->dePara .= $this->diffAfterBefore('Status', $ent->getStatus(), $this->data['status']);
     }
 

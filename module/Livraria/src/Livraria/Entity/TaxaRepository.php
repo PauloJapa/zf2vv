@@ -28,7 +28,7 @@ class TaxaRepository extends EntityRepository {
      * @param string $validade      mensal|anual
      * @return boolean|Entity \Livraria\Entity\Taxa
      */
-    public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual', $cob='01'){
+    public function findTaxaVigente($seguradora, $atividade, $date, $comissao, $validade='anual', $cob='01', $adm=0){
 
         
         //Pegar classeAtividade correspondente vigente na data
@@ -42,6 +42,13 @@ class TaxaRepository extends EntityRepository {
         if(!is_object($date)){
             $d = explode("/", $date);
             $date = new \DateTime($d[1] . '/' . $d[0] . '/' . $d[2]);
+        }
+        // somente para lello ajustar data de inicio para mes 06 que a vigencia das taxas corretas para o calculo
+        $date2 = false;
+        if($adm == 3234 and $date->format('Y') == '2016' and $date->format('m') < '06'){
+            $date2 = clone $date;
+            $add = 6 - (int)$date->format('m');
+            $date2->add(new \DateInterval('P' . $add . 'M'));
         }
         
         //Acertar tipo de cobertura
@@ -66,7 +73,7 @@ class TaxaRepository extends EntityRepository {
                     ")
                 ->setParameter('seguradora', $seguradora)
                 ->setParameter('classe', $classeAtividade->getClasseTaxas()->getId())
-                ->setParameter('inicio', $date)
+                ->setParameter('inicio', ($date2 ? $date2 : $date))
                 ->setParameter('ocupacao', $classeAtividade->getAtividade()->getOcupacao())
                 ->setParameter('validade', $validade)
                 ->setParameter('comissao', $comissao)

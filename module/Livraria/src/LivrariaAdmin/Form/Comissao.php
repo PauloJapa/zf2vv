@@ -36,6 +36,12 @@ class Comissao extends AbstractForm {
         $this->setInputText('multEletrico', 'Multiplo para Eletrica',$attributos);
         $this->setInputText('multVendaval', 'Multiplo para Vendaval',$attributos);
         
+        $this->setInputText('multAluguelRes' , 'Multiplo para Aluguel Res.',$attributos);
+        $this->setInputText('multConteudoRes', 'Multiplo para Conteudo Res.',$attributos);
+        $this->setInputText('multIncendioRes', 'Multiplo para Incendio Res.',$attributos);
+        $this->setInputText('multEletricoRes', 'Multiplo para Eletrica Res.',$attributos);
+        $this->setInputText('multVendavalRes', 'Multiplo para Vendaval Res.',$attributos);
+        
         $atribAdmistrodora = ['onChange'=>'getLastAdmComissao(this)'];
         $this->setInputSelect('administradora', '*Administradora', $this->administradoras, $atribAdmistrodora);
 

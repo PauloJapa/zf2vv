@@ -226,7 +226,8 @@ class Renovacao extends AbstractService {
                 $this->data['inicio'], 
                 str_replace(',', '.', $this->data['comissao']), 
                 $this->data['validade'], 
-                $this->data['tipoCobertura']
+                $this->data['tipoCobertura'],
+                $this->data['administradora']
         );
 
         if (!$this->data['taxa']) {
