@@ -101,7 +101,7 @@ class AtividadeRepository extends EntityRepository {
     }
     
     public function findDescricao($desc) {
-        
+        $desc = str_replace('&minus', '–', $desc);
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
                 ->select('u')
