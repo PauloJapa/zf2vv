@@ -230,6 +230,10 @@ class Endereco {
         return $dateTime;
     }
 
+    /**
+     * 
+     * @return Bairro
+     */
     public function getBairro() {
         return $this->bairro;
     }
@@ -239,6 +243,10 @@ class Endereco {
         return $this;
     }
 
+    /**
+     * 
+     * @return Cidade
+     */
     public function getCidade() {
         return $this->cidade;
     }

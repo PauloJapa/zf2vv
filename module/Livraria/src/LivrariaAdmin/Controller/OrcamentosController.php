@@ -28,6 +28,105 @@ class OrcamentosController extends CrudController {
         
     }
     
+    public function acertaAction() {
+        $inicio = new \DateTime('2016-04-01');
+        $fim    = new \DateTime('2016-04-30 23:59:00');
+        $adm    = 3234;
+        $seguros = $this->getEm()
+            ->createQueryBuilder()
+            ->select('l,i,ld','lc')
+            ->from('Livraria\Entity\Orcamento', 'l')
+            ->join('l.imovel', 'i')
+            ->join('l.locador', 'ld')
+            ->join('l.locatario', 'lc')
+            ->where('l.inicio BETWEEN :inicio AND :fim and l.administradora = :adm')
+            ->setParameter('inicio', $inicio)
+            ->setParameter('fim', $fim)
+            ->setParameter('adm', $adm)
+            ->getQuery()
+            ->getResult()
+        ;
+        /* @var $seguros \Doctrine\Common\Collections\ArrayCollection */
+        /* @var $seguro \Livraria\Entity\Orcamento */
+//        echo var_dump($seguros->count()), '<br>';
+        echo count($seguros), '<br>';
+        $ind = 0 ;
+        $ind2 = 0 ;
+        $rpBairro = $this->getEm()->getRepository("Livraria\Entity\Bairro");
+        $rpCidade = $this->getEm()->getRepository("Livraria\Entity\Cidade");
+        $sp = $rpCidade->find(98);    
+        echo '<pre>', var_dump($sp->toArray()), '</pre>';
+        foreach ($seguros as $seguro) {
+            /* @var $end \Livraria\Entity\Endereco */
+            $end = $seguro->getImovel()->getEndereco();
+            if($end->getCidade()->getNome() == '' OR $end->getBairro()->getNome() == ''){
+                $retorno = file_get_contents('http://cep.republicavirtual.com.br/web_cep.php?cep='.urlencode($end->getCep()).'&formato=json'); 
+                if($retorno){ 
+                    $cep = json_decode($retorno, true);
+                }else{
+                    echo '<pre> Falha na busca ao CEP (' . $end->getCep() . ' id '.  $seguro->getImovel()->getId() . ')verifique os dados por favor!</pre>';
+                    continue;
+                }                
+            }else{
+                continue;
+            }
+            if($end->getBairro()->getNome() == ''){
+                $ind ++;
+                $b = $cep['bairro'];
+                if(!empty($b)){
+                    $entBairro = $rpBairro->findByNome(strtoupper($b));
+                    if(!empty($entBairro)){
+                        $end->setBairro($entBairro[0]);
+                    }else{
+                        echo '<pre> Falha na busca da entidade Bairro (' . $b . ' id '.  $seguro->getImovel()->getId() . ')verifique os dados por favor!</pre>';
+                        continue;
+                    } 
+                }else{
+                    echo '<pre> Falha na busca do Bairro (' . $b . ' id '.  $seguro->getImovel()->getId() . ')verifique os dados por favor!</pre>';
+                    continue;
+                }  
+            }
+            if($end->getCidade()->getNome() == ''){
+                $ind2 ++;
+                $c = $cep['cidade'];
+                if(!empty($c)){
+                    if($c == 'São Paulo'){
+                        $end->setCidade($sp);
+                    }else{
+                        $entCidade = $rpCidade->findByNome(strtoupper($c));
+                        if(!empty($entCidade)){
+                            $end->setCidade($entCidade[0]);
+                        }else{
+                            echo '<pre> Falha na busca da entidade cidade (' . $c . ' id '.  $seguro->getImovel()->getId() . ')verifique os dados por favor!</pre>';
+                            continue;
+                        } 
+                    }                        
+                }else{
+                    echo '<pre> Falha na busca da cidade (' . $c . ' id '.  $seguro->getImovel()->getId() . ')verifique os dados por favor!</pre>';
+                    continue;
+                } 
+            }
+            echo '<pre> consertou ' 
+                    . $end->getBairro()->getNome() 
+                    . ' ' 
+                    . $end->getCidade()->getNome() 
+                    . ' id' 
+                    . $seguro->getId()
+                    . ' locador' 
+                    . $seguro->getLocadorNome()
+                    . ' locatario' 
+                    . $seguro->getLocatarioNome()
+                    .'</pre>';
+            $this->getEm()->persist($end);
+            sleep(1);            
+        }
+        $this->getEm()->flush();
+        echo '<pre> Total de sem Bairros ' . $ind . '</pre>';
+        echo '<pre> Total de sem cidade ' . $ind2 . '</pre>';
+        
+        die;
+    }
+    
     /**
      * Altera os Registro selecionados para data(vigência inicio) ou validade(anual, mensal) comuns entre esses registro.
      * @return objeto que redireciona para listar Orçamentos.
