@@ -28,7 +28,64 @@ class OrcamentosController extends CrudController {
         
     }
     
+    public function acerta2Action() {        
+        $inicio = new \DateTime('2016-04-01');
+        $fim    = new \DateTime('2016-04-30 23:59:00');
+        $adm    = 3234;
+        $seguros = $this->getEm()
+            ->createQueryBuilder()
+            ->select('l,i,ld','lc')
+            ->from('Livraria\Entity\Orcamento', 'l')
+            ->join('l.imovel', 'i')
+            ->join('l.locador', 'ld')
+            ->join('l.locatario', 'lc')
+            ->where('l.inicio BETWEEN :inicio AND :fim and l.administradora = :adm')
+            ->setParameter('inicio', $inicio)
+            ->setParameter('fim', $fim)
+            ->setParameter('adm', $adm)
+            ->getQuery()
+            ->getResult()
+        ;
+        
+        /* @var $seguros \Doctrine\Common\Collections\ArrayCollection */
+        /* @var $seguro \Livraria\Entity\Fechados */
+//        echo var_dump($seguros->count()), '<br>';
+        echo count($seguros), '<br>';
+        $ind = 0 ;
+        $ind2 = 0 ;
+        $rpFechados = $this->getEm()->getRepository('Livraria\Entity\Fechados');
+        foreach ($seguros as $seguro) {
+            $data = $seguro->toArray();
+            if(substr($data['taxaAjuste'], -2) != '00'){
+                $ind++;
+                /* @var $entFechado \Livraria\Entity\Fechados */
+                $entFechado = $rpFechados->find($data['fechadoId']);
+                if($entFechado){
+                    if($entFechado->getLocador()->getId() != $seguro->getLocador()->getId()){
+                        echo 'erro locado diferente ', $seguro->getId() , '<br>';
+                        continue;
+                    }
+                    if($entFechado->getLocatario()->getId() != $seguro->getLocatario()->getId()){
+                        echo 'erro locatario diferente ', $seguro->getId() , '<br>';
+                        continue;
+                    }
+                    $entFechado->setTaxaAjuste($data['taxaAjuste']);
+                    $this->getEm()->persist($entFechado);
+                    echo 'corrigido taxa ', $seguro->getId() , ' taxo ok ', $entFechado->floatToStr('taxaAjuste',4) ,'<br>';
+                }else{
+                    echo 'erro não encontrado o fechado ', $seguro->getId() , '<br>';
+                }
+                
+            }
+        }
+        echo 'corrigidos total ', $ind, '<br>';
+        $this->getEm()->flush();
+        
+        
+    }
+    
     public function acertaAction() {
+        die;
         $inicio = new \DateTime('2016-04-01');
         $fim    = new \DateTime('2016-04-30 23:59:00');
         $adm    = 3234;

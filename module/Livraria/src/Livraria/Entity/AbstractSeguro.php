@@ -1019,7 +1019,7 @@ class AbstractSeguro  extends Filtro {
         $data['imovelStatus']   = $this->getImovel()->getStatus();
         $data['taxa']           = $this->getTaxa()->getId();
         $data['atividade']      = $this->getAtividade()->getId();
-        $data['atividadeDesc']  = $this->getAtividade();
+        $data['atividadeDesc']  = $this->getAtividade()->getDescricao();
         $data['seguradora']     = $this->getSeguradora()->getId();
         $data['administradora'] = $this->getAdministradora()->getId();
         $data['multiplosMinimos'] = $this->getMultiplosMinimos()->getId();
@@ -1037,7 +1037,7 @@ class AbstractSeguro  extends Filtro {
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['assist24']       = $this->getAssist24(); 
-        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
+        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste',4);
         $data['referencia']     = $this->getReferencia(); 
         return $data ;
     }
@@ -1097,7 +1097,7 @@ class AbstractSeguro  extends Filtro {
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['assist24']       = $this->getAssist24(); 
-        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste');
+        $data['taxaAjuste']     = $this->floatToStr('taxaAjuste',4);
         $data['referencia']     = $this->getReferencia(); 
         return $data ;
     }
@@ -1116,7 +1116,7 @@ class AbstractSeguro  extends Filtro {
      * @return \Livraria\Entity\AbstractSeguro
      */
     public function setTaxaAjuste($taxaAjuste) {
-        $this->taxaAjuste = $this->trataFloat($taxaAjuste);
+        $this->taxaAjuste = $this->trataFloat($taxaAjuste,4);
         return $this;
     }
     

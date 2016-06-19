@@ -495,10 +495,10 @@ class Imovel extends Filtro
         $data['refImovel'] = $this->getRefImovel();
         $data['bloco']     = $this->getBloco();
         $data['apto']      = $this->getApto();
-        $data['atividadeDesc'] = $this->getAtividade();
+        $data['atividadeDesc'] = $this->getAtividade()->getDescricao();
         $data['atividade']     = $this->getAtividade()->getId();
-        $data['locadorDesc']   = $this->getLocador();
-        $data['locatarioNome'] = $this->getLocatario();
+        $data['locadorDesc']   = $this->getLocador()->getNome();
+        $data['locatarioNome'] = $this->getLocatario()->getNome();
         $data['locador']       = $this->getLocador()->getId();
         $data['locatario']     = $this->getLocatario()->getId();
         $data['status']        = $this->getStatus();
