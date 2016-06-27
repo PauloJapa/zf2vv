@@ -527,10 +527,10 @@ class ExportaCol extends AbstractService{
         
         $this->expts = $this->getSc()->lista;
         
-        if($adm == 3234){
-            $this->exportaLello('C'); //empresarial
-            $this->exportaLello('R'); //residencial
-        }else{
+//        if($adm == 3234){
+//            $this->exportaLello('C'); //empresarial
+//            $this->exportaLello('R'); //residencial
+//        }else{
             $this->exporta('C','1');
             $this->exporta('C','2');
             $this->exporta('C','3');
@@ -539,7 +539,7 @@ class ExportaCol extends AbstractService{
             $this->exporta('R','2');
             $this->exporta('R','3');
             $this->exporta('R','mensal');
-        }
+//        }
 die;        
         if($this->qtdExportado != 0){
             $this->logExportadoCol($mes,$ano);
@@ -805,11 +805,11 @@ die;
 
     public function insertItensCobVendaval(){
         $this->pr['vVen'] = $this->expt['vendaval'];            
-        if($this->pr['vue'] == 3234){
-            $this->pr['vVenPremio'] = $this->expt['cobVendaval'];            
-        }else{
+//        if($this->pr['vue'] == 3234){
+//            $this->pr['vVenPremio'] = $this->expt['cobVendaval'];            
+//        }else{
             $this->pr['vVenPremio'] = 0;
-        }
+//        }
         $q  = $this->insertItensCobHeader();
         $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 26, 4, '4', " . $this->pr['vVen'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vVenPremio'] . "', 0, 'N', ";
         $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
@@ -820,11 +820,11 @@ die;
     
     public function insertItensCobDanosEletricos(){
         $this->pr['vEle'] = $this->expt['eletrico'];            
-        if($this->pr['vue'] == 3234){
-            $this->pr['vElePremio'] = $this->expt['cobEletrico'];            
-        }else{
+//        if($this->pr['vue'] == 3234){
+//            $this->pr['vElePremio'] = $this->expt['cobEletrico'];            
+//        }else{
             $this->pr['vElePremio'] = 0;
-        }
+//        }
         $q  = $this->insertItensCobHeader();
         $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 22, 3, '4', " . $this->pr['vEle'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vElePremio'] . "', 0, 'N', ";
         $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
@@ -835,11 +835,11 @@ die;
     
     public function insertItensCobPerdaAluguel(){
         $this->pr['vAlu'] = $this->expt['aluguel'];            
-        if($this->pr['vue'] == 3234){
-            $this->pr['vAluPremio'] = $this->expt['cobAluguel'];            
-        }else{
+//        if($this->pr['vue'] == 3234){
+//            $this->pr['vAluPremio'] = $this->expt['cobAluguel'];            
+//        }else{
             $this->pr['vAluPremio'] = 0;
-        }
+//        }
         
         $q  = $this->insertItensCobHeader();
         $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 92, 2, '4', " . $this->pr['vAlu'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vAluPremio'] . "', 0, 'N', ";
@@ -860,11 +860,11 @@ die;
             $cobIncen = $this->expt['cobConteudo'];             
         }
         $this->pr['vInc'] = $incendio;            
-        if($this->pr['vue'] == 3234){
-            $this->pr['vIncPremio'] = $cobIncen;            
-        }else{
+//        if($this->pr['vue'] == 3234){
+//            $this->pr['vIncPremio'] = $cobIncen;            
+//        }else{
             $this->pr['vIncPremio'] = 0;
-        }
+//        }
         $q  = $this->insertItensCobHeader();
         $q .= "" . $this->pr['vDocumento'] . ", " . $this->pr['vAlteracao'] . ", " . $this->pr['vItemCob'] . ", 266, 1, '4', " . $this->pr['vInc'] . ", 0, '0', 0, 0, 0, 'I', 0, 0, 0, '" . $this->pr['vIncPremio'] . "', 0, 'N', ";
         $q .= "'0', 0, 0, 0, 0, 'A', '" . $this->pr['vData_inclusao'] . "' ";
@@ -1037,11 +1037,11 @@ die;
         $this->pr['vCom_varia_cob']    = $resul['Com_varia_cob'];
         $this->pr['vBonus_varia_cob']  = $resul['Bonus_varia_cob'];
         $this->pr['vPerc_iof']         = $resul['iof'];
-        if($c == 50 AND $this->pr['vue'] == '3234'){
-            $this->pr['vPerc_com_base']         = 50;
-        }else{
+//        if($c == 50 AND $this->pr['vue'] == '3234'){
+//            $this->pr['vPerc_com_base']         = 50;
+//        }else{
             $this->pr['vPerc_com_base']         = $resul['Perc_com_base'];
-        }
+//        }
     }
     
     public function getDocumentos(){

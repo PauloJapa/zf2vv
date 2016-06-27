@@ -54,7 +54,7 @@ class Email extends AbstractService
     public function setMailTo(&$dataEmail) {
         /* @var $entity \Livraria\Entity\ParametroSis */
 //        $this->cco = 'watakabe98@hotmail.com';
-        $this->cc  = 'incendiolocacao@vilavelha.com.br' ;
+        $this->cc  = ['incendiolocacao@vilavelha.com.br','thairyneassis@vilavelha.com.br'] ;
         if(substr($dataEmail['email'], 0, 16) == 'REDIRECIONAEMAIL'){
             $entity = $this->em->getRepository('Livraria\Entity\ParametroSis')->findKey($dataEmail['email'])[0];
             $emails = explode(';', $entity->getConteudo());
@@ -97,7 +97,7 @@ class Email extends AbstractService
                     $dataEmail['email']     = 'incendiolocacao@vilavelha.com.br';                    
                 }
                 if($dataEmail['email'] == 'incendiolocacao@vilavelha.com.br' ){
-                    $this->cc = FALSE;
+                    $this->cc  = ['thairyneassis@vilavelha.com.br'] ;
                     $dataEmail['emailNome'] = 'Sis. ADM sem EMAIL';
                 }
                 if(!isset($dataEmail['emailNome'])){

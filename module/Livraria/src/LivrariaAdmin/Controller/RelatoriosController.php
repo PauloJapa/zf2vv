@@ -80,10 +80,10 @@ class RelatoriosController extends CrudController {
     public function toExcelAction(){
         //ler Dados do cacheado da ultima consulta.
         $sc = new SessionContainer("LivrariaAdmin");
-        $excel = new  \PHPExcel();
+//        $excel = new  \PHPExcel();
         
         // instancia uma view sem o layout da tela
-        $viewModel = new ViewModel(array('data' => $sc->montaquery, 'label' => $sc->label, 'excel' => $excel));
+        $viewModel = new ViewModel(array('data' => $sc->montaquery, 'label' => $sc->label));
         $viewModel->setTerminal(true);
         return $viewModel;
     }
