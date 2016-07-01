@@ -47,6 +47,9 @@ class TaxaAjusteRepository extends EntityRepository {
         }
         $comissao = str_replace(',', '.', $comissao);
         
+        if(is_int($atividade)){
+            $atividade = $this->getEntityManager()->find('\Livraria\Entity\Atividade', $atividade);
+        }
         $classe = $atividade->findClasseFor($inicio);
         if(!$classe){
             throw new \Exception('Classe não encontrada para atividade ', $atividade->getDescricao(), ' periodo ' , $inicio->format('d/m/Y'));

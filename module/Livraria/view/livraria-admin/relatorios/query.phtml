@@ -9,35 +9,40 @@ echo
                                                                                                                                                               
 <table class="table table-bordered">                                                                                                                          
     <tr>                                                                                                                                                      
-        <th colspan="3">                                                                                                                                      
+        <th colspan="4">                                                                                                                                      
             Escolha as colunas.                                                                                                                               
             <label class="checkbox" onClick="setCheckbox()"><input type="checkbox" checked id="CheckTodos" value="">Todos</label>                             
         </th>                                                                                                                                                 
     </tr>                                                                                                                                                     
     <tr>                                                                                                                                                      
-        <td style="width: 30%;">                                                                                                                              
+        <td style="width: 25%;">                                                                                                                              
             <input type="checkbox" name="campo[]" checked value="o.inicio as c1"                              />Vig&ecirc;ncia Inicial<br />                                     
             <input type="checkbox" name="campo[]" checked value="o.fim as c2"                                 />Vig&ecirc;ncia Final<br />                                       
             <input type="checkbox" name="campo[]" checked value="o.locadorNome as c3"                         />Cliente<br />                                                    
             <input type="checkbox" name="campo[]" checked value="ld.tipo as c4, ld.cpf as c5, ld.cnpj as c6"  />Cliente - CPF/CNPJ<br />                                         
             <input type="checkbox" name="campo[]" checked value="o.locatarioNome as c7"                       />Locat&aacute;rio<br />                                           
             <input type="checkbox" name="campo[]" checked value="lc.tipo as c8, lc.cpf as c9, lc.cnpj as c10" />Locat&aacute;rio - CPF/CNPJ<br />                                
-            <input type="checkbox" name="campo[]" checked value="i.rua as c11"                                />Endere&ccedil;o<br />                                            
-            <input type="checkbox" name="campo[]" checked value="i.numero as c12"                             />N&uacute;mero<br />                                              
-            <input type="checkbox" name="campo[]" checked value="b.nome as c13"                               />Bairro<br />                                                     
         </td>                                                                                                                                                 
-        <td style="width: 30%;">                                                                                                                              
+        <td style="width: 25%;">                                                                                                                              
+            <input type="checkbox" name="campo[]" checked value="i.rua as c11"                    />Endere&ccedil;o<br />                                            
+            <input type="checkbox" name="campo[]" checked value="i.numero as c12"                 />N&uacute;mero<br />                                              
+            <input type="checkbox" name="campo[]" checked value="i.apto as c31"                   />Apto<br />                                            
+            <input type="checkbox" name="campo[]" checked value="i.bloco as c32"                  />Bloco<br />                                            
+            <input type="checkbox" name="campo[]" checked value="i.compl as c30"                  />Complemento<br />                                            
+            <input type="checkbox" name="campo[]" checked value="b.nome as c13"                   />Bairro<br />                                                     
             <input type="checkbox" name="campo[]" checked value="c.nome as c14"                   />Cidade|Estado<br />                                                   
-            <input type="checkbox" name="campo[]" checked value="o.seguroEmNome as c15"           />Seguro em nome de<br />                                               
+        </td>                                                                                                                                                 
+        <td style="width: 25%;">                                                                                                                              
+            <input type="checkbox" name="campo[]" checked value="o.valorAluguel as c20"           />Valor do aluguel<br />                                                
             <input type="checkbox" name="campo[]" checked value="o.incendio as c16"               />Inc&ecirc;ndio, raio, queda Aero<br />                                
             <input type="checkbox" name="campo[]" checked value="o.aluguel as c17"                />Perda de Aluguel<br />                                                
             <input type="checkbox" name="campo[]" checked value="o.eletrico as c18"               />Danos El&eacute;tricos<br />                                          
             <input type="checkbox" name="campo[]" checked value="o.vendaval as c19"               />Vendaval, impacto veiculos<br/>                                       
-            <input type="checkbox" name="campo[]" checked value="o.valorAluguel as c20"           />Valor do aluguel<br />                                                
+            <input type="checkbox" name="campo[]" checked value="o.seguroEmNome as c15"           />Seguro em nome de<br />                                               
             <input type="checkbox" name="campo[]" checked value="at.descricao as c21"             />Ocupa&ccedil;&atilde;o<br />                                          
-            <input type="checkbox" name="campo[]" checked value="o.premioLiquido as c22"          />Pr&ecirc;mio L&iacute;quido<br />                                     
         </td>                                                                                                                                                      
-        <td style="width: 30%;">                                                                                                                                   
+        <td style="width: 25%;">                                                                                                                                   
+            <input type="checkbox" name="campo[]" checked value="o.premioLiquido as c22"          />Pr&ecirc;mio L&iacute;quido<br />                                     
             <input type="checkbox" name="campo[]" checked value="o.premioTotal as c23"            />Pr&ecirc;mio Total<br />                                              
 <!--                                                                                                                                                               
             <input type="checkbox" name="campo[]" checked value="orcamento"                       />Or&ccedil;amento<br />                                                
@@ -49,7 +54,6 @@ echo
             <input type="checkbox" name="campo[]" checked value="ad.id as c27"                   />UE<br />                                                              
             <input type="checkbox" name="campo[]" checked value="o.refImovel as c28"             />Referência do Imóvel<br />                                            
             <input type="checkbox" name="campo[]" checked value="o.mesNiver as c29"              />M&ecirc;s de Anivers&aacute;rio<br />                                 
-            <input type="checkbox" name="campo[]" checked value="i.compl as c30"                 />Endere&ccedil;o|Complemento<br />                                            
         </td>                                                                                                                                                 
     </tr>                                                                                                                                                     
 </table> 
