@@ -15,6 +15,7 @@ class ImprimirSeguro extends FPDF{
     
     private $logoSeguradora;
     private $numSeguro;
+    private $showCusInd = false;
     private $B;
     private $I;
     private $U;
@@ -92,6 +93,10 @@ class ImprimirSeguro extends FPDF{
         $this->Ln();
     }
     public function setL10(){
+        //item pode ser ocultado a pedido de dorival e marisa por email em 23/06/2016
+        if(!$this->showCusInd){
+            return;
+        }
         $this->SetFont('Times','B',12);
         $this->Cell(87, 7, 'Cobertura',1,0,'C');
         $this->Cell(63, 7, 'Importância Segurada',1,0,'C');
@@ -103,6 +108,10 @@ class ImprimirSeguro extends FPDF{
      * @param string $label 'Prédio + Conteudo'
      */
     public function setL11(array $vlr,$label=''){
+        //item pode ser ocultado a pedido de dorival e marisa por email em 23/06/2016
+        if(!$this->showCusInd){
+            return;
+        }
         $ind = [0,2,4,6];
         foreach ($ind as $value) {
             if($vlr[$value] == 'Não Calcular')
@@ -408,4 +417,15 @@ class ImprimirSeguro extends FPDF{
  
     }
 
+    /**
+     * Marcação que indica se é para gerar as propostas sem exibir o custos individuais.
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016         
+     * @param boolean $showCusInd
+     */
+    public function setShowCusInd($showCusInd) {
+        $this->showCusInd = ($showCusInd)? TRUE : FALSE;
+    }
 }

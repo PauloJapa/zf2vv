@@ -89,6 +89,9 @@ class Administradora extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Seguradora', $ent->getSeguradora()->getId(), $this->data['seguradora']->getId());
         $this->dePara .= $this->diffAfterBefore('Assistencia 24', $ent->getAssist24(), $this->data['assist24']);
         $this->dePara .= $this->diffAfterBefore('Gerar arquivos separados', $ent->getGeraExpSep(), $this->data['geraExpSep']);
+        $this->dePara .= $this->diffAfterBefore('Exibir na proposta Custo Individual', $ent->getShowCusInd(), $this->data['showCusInd']);
+        $this->dePara .= $this->diffAfterBefore('Exportar Maritima por Ref Imovel', $ent->getExptRefOrder(), $this->data['exptRefOrder']);
+        $this->dePara .= $this->diffAfterBefore('Bloquer qualquer proposta seja fechada', $ent->getBlockFechamento(), $this->data['blockFechamento']);
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
     }

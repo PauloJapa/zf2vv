@@ -856,6 +856,7 @@ class Orcamento extends AbstractService {
 
     public function conteudoDaPagina($seg){
         /*  @var $seg \Livraria\Entity\Orcamento      */
+        $this->pdf->setShowCusInd($seg->getAdministradora()->getShowCusInd());
         $this->pdf->setL1($seg->getRefImovel(), $seg->getInicio());
         $this->pdf->setL2($seg->getAdministradora()->getNome());
         $this->pdf->setL3($seg->getLocatario(), $seg->getLocatario()->getCpf() . $seg->getLocatario()->getCnpj());

@@ -58,6 +58,15 @@ class Administradora extends AbstractEndereco {
         $geraExpSep = ['0' => 'Unico arquivo.', '1' => 'Separadamente.'];
         $this->setInputRadio('geraExpSep', 'Gerar arquivos de exportação separados.', $geraExpSep, ['value' => '1']);
         
+        $geraExpSep = ['0' => 'NÃO exibir', '1' => 'Exibir'];
+        $this->setInputRadio('showCusInd', 'Exibir na proposta Custo Individual.', $geraExpSep, ['value' => '1']);
+        
+        $geraExpSep = ['0' => 'NÃO ordenar.', '1' => 'Ordenar.'];
+        $this->setInputRadio('exptRefOrder', 'Exportar Maritima por Ref Imovel.', $geraExpSep, ['value' => '0']);
+        
+        $geraExpSep = ['0' => 'NÃO Bloquear.', '1' => 'Bloquear.'];
+        $this->setInputRadio('blockFechamento', 'Bloquer qualquer proposta seja fechada.', $geraExpSep, ['value' => '0']);
+        
         $propPag = ['N' => 'Com todas as Opções de Pag.', 'S' => 'Somente a escolhida'];
         $this->setInputSelect('propPag', 'Proposta com 1 forma de pag.', $propPag);
      

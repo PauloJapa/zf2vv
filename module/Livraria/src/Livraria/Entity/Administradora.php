@@ -152,6 +152,34 @@ class Administradora extends Filtro {
      */
     protected $geraExpSep;
     
+    /**
+     * Marcação que indica se é para gerar as propostas sem exibir o custos individuais.
+     * ALTER TABLE administradoras ADD show_cus_ind VARCHAR(1) DEFAULT NULL
+     * @var string $showCusInd   Exibir o custos individuais  
+     * @ORM\Column(name="show_cus_ind", type="string", length=1, nullable=true)
+     */
+    protected $showCusInd;
+    
+    /**
+     * Marcação que indica se é exportar para maritima em colocando por ordem de referencia do imovel
+     * ALTER TABLE administradoras ADD expt_ref_order VARCHAR(1) DEFAULT '1'
+     * @var string $exptRefOrder   Exportar para maritima em colocando por ordem de referencia do imovel
+     * @ORM\Column(name="expt_ref_order", type="string", length=1, nullable=true)
+     */
+    protected $exptRefOrder;
+    
+    /**
+     * Marcação que indica se é bloquear o fechamento de proposta da ADM
+     * ALTER TABLE administradoras ADD block_fechamento VARCHAR(1) DEFAULT NULL
+     * @var string $blockFechamento   bloquear o fechamento de proposta da ADM
+     * @ORM\Column(name="block_fechamento", type="string", length=1, nullable=true)
+     */
+    protected $blockFechamento;    
+    
+    // comando para atualizar tabela 
+    // ALTER TABLE administradoras ADD show_cus_ind VARCHAR(1) DEFAULT NULL, ADD expt_ref_order VARCHAR(1) DEFAULT NULL, ADD block_fechamento VARCHAR(1) DEFAULT NULL;
+
+    
     
     public function __construct($options = null) {
         Configurator::configure($this, $options);
@@ -479,8 +507,8 @@ class Administradora extends Filtro {
     public function setGeraExpSep($geraExpSep) {
         $this->geraExpSep = $geraExpSep;
         return $this;
-    }
-        
+    } 
+    
     /**
      * Marcação que indica se é para gerar os arquivos de exportação separadamente
      * 
@@ -495,6 +523,93 @@ class Administradora extends Filtro {
         }
         return $this->geraExpSep;
     }
+
+    /**
+     * Marcação que indica se é para gerar as propostas sem exibir o custos individuais.
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @param string $showCusInd
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setShowCusInd($showCusInd) {
+        $this->showCusInd = $showCusInd;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se é para gerar as propostas sem exibir o custos individuais.
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @return string
+     */
+    public function getShowCusInd() {
+        if(is_null($this->showCusInd)){
+            return '0';
+        }
+        return $this->showCusInd;
+    } 
+    
+    /**
+     * Marcação que indica se é exportar para maritima em colocando por ordem de referencia do imovel
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @param string $exptRefOrder
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setExptRefOrder($exptRefOrder) {
+        $this->exptRefOrder = $exptRefOrder;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se é exportar para maritima em colocando por ordem de referencia do imovel
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @return string
+     */
+    public function getExptRefOrder() {
+        if(is_null($this->exptRefOrder)){
+            return '0';
+        }
+        return $this->exptRefOrder;
+    }   
+    
+    /**
+     * Marcação que indica se é bloquear o fechamento de proposta da ADM
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @param string $blockFechamento
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setBlockFechamento($blockFechamento) {
+        $this->blockFechamento = $blockFechamento;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se é bloquear o fechamento de proposta da ADM
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 05-07-2016           
+     * @return string
+     */
+    public function getBlockFechamento() {
+        if(is_null($this->blockFechamento)){
+            return '0';
+        }
+        return $this->blockFechamento;
+    }     
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -517,6 +632,10 @@ class Administradora extends Filtro {
         $data['assist24']       = $this->getAssist24(); 
         $data['propPag']        = $this->getPropPag(); 
         $data['geraExpSep']     = $this->getGeraExpSep(); 
+        $data['showCusInd']     = $this->getShowCusInd(); 
+        $data['exptRefOrder']   = $this->getExptRefOrder();
+        $data['blockFechamento']= $this->getBlockFechamento();
+        
         return $data ;
     }
 
