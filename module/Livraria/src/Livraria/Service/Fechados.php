@@ -412,6 +412,9 @@ class Fechados extends AbstractService {
             return [FALSE,'Você não tem permissão para incluir ou alterar registro'];
         }
         if ($this->getIdentidade()->getMenu() == 'imob'){
+            if($this->Orcamento->getAdministradora()->getBlockFechamento()){
+                return [FALSE,'Esta Administradora não tem permissão para fechar propostas somente pode fazer orçamentos!!!'];
+            }        
             $hoje = new \DateTime('now');            
             if($this->Orcamento->getInicio('obj')->format("Ymd") < $hoje->format("Ymd")){
                 return [FALSE,'Você não tem permissão para fechar com vigência retroativa caso precise ligar para Vila velha.'];                
