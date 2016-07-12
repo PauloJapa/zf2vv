@@ -14,7 +14,6 @@ class Administradora extends Filtro {
 
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(name="id", type="integer", nullable=false)
      * @var int
      */
@@ -106,7 +105,7 @@ class Administradora extends Filtro {
     protected $createdAt;
 
     /**
-     * @ORM\Column(name="user_id_alterado", type="integer")
+     * @ORM\Column(name="user_id_alterado", type="integer", nullable=true)
      * @var int
      */
     protected $userIdAlterado;
