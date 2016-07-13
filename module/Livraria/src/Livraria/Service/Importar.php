@@ -387,7 +387,7 @@ class Importar extends AbstractService{
                 $this->data['atividade'] = $entAtiv->getId() ;
                 $this->data['atividadeDesc'] = $entAtiv->getDescricao() ;
                 $this->data['comissao'] = '69,99' ;
-                if($array[15] == '1'){
+                if($array[15] == '1' OR $array[15] == '3'){
                     $this->data['ocupacao'] = '02';
                     $this->data['tipoCobertura'] = '02' ;
                     $this->data['conteudo'] = number_format($array[20] / 100, 2, ',', '.') ;
@@ -610,7 +610,9 @@ class Importar extends AbstractService{
                 case '/':
                     $res['compl'] .= $array[$i];
                     $i++;
-                    $res['compl'] .= ' ' . $array[$i];
+                    if(isset($array[$i])){
+                        $res['compl'] .= ' ' . $array[$i];
+                    }
                     break;
                 case '-':
                     // do nothing
