@@ -194,14 +194,15 @@ class OrcamentoRepository extends AbstractRepository {
         $this->data['fim']->add(new \DateInterval('P1M'));
         $this->data['fim']->sub(new \DateInterval('P1D'));
         
-        $this->where =  ' (f.status = :status OR f.status = :status2)';
+        $this->where =  ' (f.status IN(:status))';
         $this->where .= ' AND f.inicio BETWEEN :inicio AND :fim';
         $this->where .= ' AND f.validade = :validade';
         $this->where .= ' AND f.mesNiver <> :mesFiltro';
 //        $this->where .= ' AND f.mensalSeq <= :mensalSeq';
         
-        $this->parameters['status']   = 'A';   // SEGURO que foi fechado
-        $this->parameters['status2']   = 'AR'; // SEGURO MENSAL que foi fechado e renovado
+        $this->parameters['status'][] = 'A';   // SEGURO que foi fechado
+        $this->parameters['status'][] = 'F';   // SEGURO que foi fechado
+        $this->parameters['status'][] = 'AR';  // SEGURO MENSAL que foi fechado e renovado
         $this->parameters['inicio']   = $this->data['inicio'];
         $this->parameters['fim']      = $this->data['fim'];
         $mes = (int)$mesFiltro + 1;
