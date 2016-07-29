@@ -101,7 +101,7 @@ class Orcamento extends AbstractEndereco {
         
         
         $attributes = ['placeholder' => 'dd/mm/yyyy','onClick' => "displayCalendar(this,dateFormat,this)"];
-        $this->setInputText('inicio', 'Inicio da Vigência', array_merge($attributes, ['onChange'=>'setMesNiverOfMensal();']));
+        $this->setInputText('inicio', 'Inicio da Vigência', array_merge($attributes, ['onChange'=>'setMesNiverOfMensal();resetValores();']));
 
         $this->setInputText('fim', 'Fim da Vigência', ['readOnly' => 'true', 'placeholder' => 'Preenchimento Automatico']);
         

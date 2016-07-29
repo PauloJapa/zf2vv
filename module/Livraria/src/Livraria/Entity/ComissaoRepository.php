@@ -29,23 +29,22 @@ class ComissaoRepository extends EntityRepository {
                 ->createQueryBuilder()
                 ->select('c')
                 ->from('Livraria\Entity\Comissao', 'c')
-                ->where(" c.administradora = :administradora
-                    AND   c.inicio <= :inicio
-                    ")
+                ->where(" c.administradora = :administradora")
                 ->setParameter('administradora', $administradora)
-                ->setParameter('inicio', $date)
-                ->setMaxResults(1)
                 ->orderBy('c.inicio', 'DESC')
                 ->getQuery()
-                ;
+        ;
         $rs = $query->getResult();
-        if(!empty($rs)){
-            return $query->getSingleResult();
-        }
-        
         $msg = '<h2>Erro ao procura comissao; </h2>';
         $msg .= ' adm codigo ' . ($administradora) . '<br>';
         $msg .= ' data de inicio ' . $date->format('d/m/Y') ;
+        /* @var $ent \Livraria\Entity\Comissao */
+        foreach ($rs as $ent) {
+            if($date >= $ent->getInicio('obj')){
+                return $ent;
+            }            
+        }
+        
         throw new \Exception($msg);
     }
     

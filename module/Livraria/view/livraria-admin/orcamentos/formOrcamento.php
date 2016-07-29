@@ -310,4 +310,32 @@ echo $this->headScript()->appendFile('/js/formOrcamento.js')
     if(com != ''){
          window.setTimeout("$('#comissao').val(com)",1000);        
     }
+    
+    var resetValores = function(){
+        var $incendio = $('#incendio');
+        var $conteudo = $('#conteudo');
+        var $aluguel  = $('#aluguel');
+        var $eletrico = $('#eletrico');
+        var $vendaval = $('#vendaval');
+        if($incendio.val() != 'não calcular'){
+            $incendio.val('');
+        }
+        if($conteudo.val() != 'não calcular'){
+            $conteudo.val('');
+        }
+        if($aluguel.val() != 'não calcular'){
+            $aluguel.val('');
+        }
+        if($eletrico.val() != 'não calcular'){
+            $eletrico.val('');
+        }
+        if($vendaval.val() != 'não calcular'){
+            $vendaval.val('');
+        }
+        $('#premioTotal').val('');
+    };
+    
+    $(function(){
+        
+    });
 </script>   

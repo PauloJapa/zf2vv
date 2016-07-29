@@ -28,9 +28,10 @@ class OrcamentosController extends CrudController {
         
     }
     
-    public function acerta2Action() {        
-        $inicio = new \DateTime('2016-04-01');
-        $fim    = new \DateTime('2016-04-30 23:59:00');
+    public function acerta2Action() {  
+        die;
+        $inicio = new \DateTime('2016-05-01');
+        $fim    = new \DateTime('2016-05-30 23:59:00');
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()
@@ -86,8 +87,8 @@ class OrcamentosController extends CrudController {
     
     public function acertaAction() {
         die;
-        $inicio = new \DateTime('2016-04-01');
-        $fim    = new \DateTime('2016-04-30 23:59:00');
+        $inicio = new \DateTime('2016-05-01');
+        $fim    = new \DateTime('2016-05-30 23:59:00');
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()
