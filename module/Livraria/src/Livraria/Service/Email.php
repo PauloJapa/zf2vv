@@ -40,7 +40,7 @@ class Email extends AbstractService
                 }else{
                     $mail->getMessage()->addCc($this->cc, 'Sistema Locação'); 
                 }
-                echo '<pre>Lista copia' , var_dump($this->cc), '</pre>';
+                //echo '<pre>Lista copia' , var_dump($this->cc), '</pre>';
             }
             if($this->cco){
                 $mail->getMessage()->addBcc($this->cco, 'Testes Locação');
