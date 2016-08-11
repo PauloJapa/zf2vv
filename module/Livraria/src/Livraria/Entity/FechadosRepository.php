@@ -133,7 +133,7 @@ class FechadosRepository extends AbstractRepository {
                 $query->orderBy($orderBy);
             }else{
                 foreach ($orderBy as $value) {
-                    $query->orderBy($value);                    
+                    $query->addOrderBy($value);                    
                 }
             }
         }
@@ -360,14 +360,14 @@ class FechadosRepository extends AbstractRepository {
         $this->parameters['fim']    = $data['fim'];
         $this->parameters['status'] = 'C';
         $this->parameters['gerado'] = 'N';
-        $order = '';
+        $order = ['o.administradora'];
         if(!empty($data['administradora'])){
             $this->where .= ' AND o.administradora = :administradora';
             $this->parameters['administradora']    = $data['administradora'];  
             /* @var $adm \Livraria\Entity\Administradora */
             $adm = $this->getEntityManager()->find("Livraria\Entity\Administradora", $data['administradora']);
             if($adm->getExptRefOrder()){
-                $order = 'o.refImovel';
+                $order[] = 'o.locatarioNome';
             }
         }
         if(!empty($data['seguradora'])){
@@ -375,7 +375,7 @@ class FechadosRepository extends AbstractRepository {
             $this->parameters['seguradora']    = $data['seguradora'];            
         }
         // Retorna um array com todo os registros encontrados        
-        return $this->executaQuery3(['o.administradora','o.inicio'], $order);         
+        return $this->executaQuery3($order);         
     }
     
     /**
