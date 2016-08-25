@@ -244,7 +244,7 @@ $tar = isset($this->param['tar']) ? $this->param['tar'] : '/admin/orcamentos/esc
 $prt = isset($this->param['prt']) ? $this->param['prt'] : '/admin/orcamentos/printProposta';
 $bak = isset($this->param['bak']) ? $this->param['bak'] : 'listarOrcamentos';
 
-echo $this->headScript()->appendFile('/js/formOrcamento.js')
+echo $this->headScript()->appendFile('/js/formOrcamento.js?v=1.23')
 ?> 
 
 <script language="javascript">

@@ -174,6 +174,8 @@ class Importar extends AbstractService{
         $dataResul = [];
         $reg = 0;
         $clean = $prox = 50;
+        
+//        $service->notValidateNew();
         foreach ($arrayFile as $key => $value) {
             if($key == 0){
                 $dataResul[] = $this->csvToArray(utf8_encode($value)); 
@@ -187,7 +189,7 @@ class Importar extends AbstractService{
             $dataResul[] = $registro; 
             $this->montaData($registro);
             if(!empty($this->erro)){
-                var_dump($this->erro);
+                $dataResul[]['result'] = $this->erro;
                 continue;
             }
             $premio      = number_format($registro[23] / 100, 2, '.', '') ;
@@ -400,7 +402,8 @@ class Importar extends AbstractService{
                 }           
                 
             }else{
-                throw new \Exception("Atividade não encontrada " . $array[16]);
+                $this->erro[] = "Atividade não encontrada " . $array[16];
+                return;
             }
         }
         $this->data['observacao'] = 'Ref Imovel ' . trim($array[4]) ;        
