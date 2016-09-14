@@ -6,14 +6,15 @@ var CACHE   = false;
 //FUNCOES AJAX
 function iniciaAjax(){
     //verifica se o browser tem suporte a ajax
+    var ajax = null;
     try {
-        ajax = new ActiveXObject("Microsoft.XMLHTTP");
+        ajax = new XMLHttpRequest();
     }catch(e){
         try {
             ajax = new ActiveXObject("Msxml2.XMLHTTP");
         }catch(ex){
             try {
-                ajax = new XMLHttpRequest();
+                ajax = new ActiveXObject("Microsoft.XMLHTTP");
             }catch(exc){
                 alert("Esse browser no tem recursos para uso do Ajax");
                 ajax = false ;
@@ -27,7 +28,7 @@ function iniciaAjax(){
 function executaAjax(url,ret,param){
     if(OCUPADO)return;
     setOCUPADO(true) ;
-    mreq = iniciaAjax() ;
+    var mreq = iniciaAjax() ;
     if(!mreq) return ;
     mreq.onreadystatechange = function(){
         if(mreq.readyState === 4){

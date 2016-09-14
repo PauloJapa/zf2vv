@@ -45,7 +45,7 @@ function autoComp(txt,prog,jan,exQt,func,opc){
     }
     params += "&qtdGrupos=" + qtdGrupos ;
     //Mensagem de carregamento 
-    Saida  = "<div style='background-color: #fefefe; width: auto;overflow: auto;margin: 0 auto;border: 1px solid #00F;'>";
+    var Saida  = "<div style='background-color: #fefefe; width: auto;overflow: auto;margin: 0 auto;border: 1px solid #00F;'>";
     Saida += "<table width='100%'>";
     Saida += "<tr>";
     Saida += "<td>Carregando Aguarde!</td>";
@@ -54,7 +54,7 @@ function autoComp(txt,prog,jan,exQt,func,opc){
     Saida += "<span class='icon-remove'></span></a></td>";
     Saida += "</tr></table></div>" ;
     
-    janela = document.getElementById(tela);
+    var janela = document.getElementById(tela);
     janela.innerHTML = Saida;
     //Caso falhe ele aborta a requisição
     setTimeout("closeMsg('" + tela + "')", 10000 );
@@ -77,12 +77,12 @@ function processXMLauto2(texto){
     statu.value = 'OK' ; 
     //total de elementos contidos na tag opcoes
     if(dataArray[0] == "vazio") { //exibir mensagem de nao encontrados
-        Saida = "<div style='background-color:#fefefe; width:auto; max-height:350px; overflow:auto; margin:0; border:1px solid #00F;'>";
+        var Saida = "<div style='background-color:#fefefe; width:auto; max-height:350px; overflow:auto; margin:0; border:1px solid #00F;'>";
         Saida += "<table width='100%'>";
         Saida += "<tr class='auto1'><td class='td10'>Nenhum resultado encontrado!</td>";
         Saida += "<td align=right class='td10'><a href=\"javascript:RetEsco2('fechar','" + tela + "');\"><span class='icon-remove'></span></a></td>";
         Saida +="</tr></table></div>" ;
-        janela = document.getElementById(tela);
+        var janela = document.getElementById(tela);
         janela.innerHTML = Saida;
         setTimeout("RetEsco2('fechar','" + tela + "')",1500);
         return ;
@@ -105,8 +105,8 @@ function processXMLauto2(texto){
             var item = dataArray[i].split("|c|");
             Saida += "<tr>" ;
             //Montar funcao
-            funcao = "onClick=\"javascript:RetEsco2(" ;
-            auxseq = 0 ; 
+            var funcao = "onClick=\"javascript:RetEsco2(" ;
+            var auxseq = 0 ; 
             if(!isArray(retorno)){
                 funcao +=  "'" + item[0] + "','" ;
             }else{

@@ -45,6 +45,9 @@ class AtividadeRepository extends EntityRepository {
             $where .= ' AND u.seguradoraId = :seguradora';
             $param['seguradora'] = $seguradora;
         }
+        
+        $where .= ' AND u.status LIKE :status';
+        $param['status'] = 'A';
         $query = $this
             ->getEntityManager()
             ->createQueryBuilder()
@@ -52,10 +55,9 @@ class AtividadeRepository extends EntityRepository {
             ->from('Livraria\Entity\Atividade', 'u')
             ->where($where)
             ->setParameters($param)
-            ->andWhere('u.status LIKE :status')->setParameter('status', 'A')
-            ->getQuery();
+        ;
         
-        return $query->getResult();
+        return $query->getQuery()->getResult();
     }   
     
     /**
