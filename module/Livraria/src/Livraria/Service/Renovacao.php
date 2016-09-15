@@ -652,7 +652,15 @@ class Renovacao extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
-        $this->pdf->setL11($vlr, $label);
+        $assist24 = null;
+        if($seg->getAssist24() == 'S'){
+            /* @var $parametro \Livraria\Entity\ParametroSis */
+            $parametro = $this->getParametroSis('assist24_' . $seg->getOcupacao() . '_' . $seg->getValidade(), true)[0];
+            if($parametro){
+                $assist24 = [substr($parametro->getDescricao(), 26), number_format($parametro->getConteudo(), 2, ',', '.')];
+            }            
+        }
+        $this->pdf->setL11($vlr, $label, $assist24);
         $tot = [
             $seg->floatToStr('premio'),
             $seg->floatToStr('premioLiquido'),

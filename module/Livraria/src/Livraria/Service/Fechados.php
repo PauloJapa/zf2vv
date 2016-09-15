@@ -377,7 +377,15 @@ class Fechados extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
-        $pdf->setL11($vlr, $label);
+        $assist24 = null;
+        if($seg->getAssist24() == 'S'){
+            /* @var $parametro \Livraria\Entity\ParametroSis */
+            $parametro = $this->getParametroSis('assist24_' . $seg->getOcupacao() . '_' . $seg->getValidade(), true)[0];
+            if($parametro){
+                $assist24 = [substr($parametro->getDescricao(), 26), number_format($parametro->getConteudo(), 2, ',', '.')];
+            }            
+        }
+        $pdf->setL11($vlr, $label, $assist24);
         $tot = [
             $seg->floatToStr('premio'),
             $seg->floatToStr('premioLiquido'),
@@ -949,6 +957,7 @@ class Fechados extends AbstractService {
         $metodos[] = 'Assist24';           $param[] = '';
         $metodos[] = 'Validade';           $param[] = '';
         $metodos[] = 'Ocupacao';           $param[] = '';
+        $metodos[] = 'taxaAjuste';         $param[] = '';
         // Atualizar campos modificados        
         foreach ($metodos as $key => $metodo) {
             if(empty($param[$key])){

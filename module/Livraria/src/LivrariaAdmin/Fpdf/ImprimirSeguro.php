@@ -107,7 +107,7 @@ class ImprimirSeguro extends FPDF{
      * @param array $vlr
      * @param string $label 'Prédio + Conteudo'
      */
-    public function setL11(array $vlr,$label=''){
+    public function setL11(array $vlr,$label='', $assist24 = null){
         //item pode ser ocultado a pedido de dorival e marisa por email em 23/06/2016
         if(!$this->showCusInd){
             return;
@@ -121,6 +121,9 @@ class ImprimirSeguro extends FPDF{
         $this->set3Cell(['Danos Eletricos',$vlr[2],$vlr[3]]);
         $this->set3Cell(['Perda Aluguel',$vlr[4],$vlr[5]]);
         $this->set3Cell(['Vendaval',$vlr[6],$vlr[7]]);
+        if(is_array($assist24)){
+            $this->set3Cell(['Assistência 24 Horas Basico',$assist24[0],$assist24[1]]);
+        }        
         $this->Ln();
     }
     /**

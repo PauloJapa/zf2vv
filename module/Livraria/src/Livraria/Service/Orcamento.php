@@ -679,11 +679,11 @@ class Orcamento extends AbstractService {
                 continue;
             }
             // Caso o fim desse orçamento for menor ou igual ao inicio do existente!!
-            if(($fim <= $entity->getInicio('obj'))){
+            if(($fim->format('Ymd') <= $entity->getInicio('obj')->format('Ymd'))){
                 continue;
             }
             // Validar data do inicio deste registro para que nao conflite com algum existente!!
-            if(($inicio >= $entity->getFim('obj'))){
+            if(($inicio->format('Ymd') >= $entity->getFim('obj')->format('Ymd'))){
                 continue;
             }
             // Lello fazer cancelamento direto
@@ -901,7 +901,15 @@ class Orcamento extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
-        $this->pdf->setL11($vlr, $label);
+        $assist24 = null;
+        if($seg->getAssist24() == 'S'){
+            /* @var $parametro \Livraria\Entity\ParametroSis */
+            $parametro = $this->getParametroSis('assist24_' . $seg->getOcupacao() . '_' . $seg->getValidade(), true)[0];
+            if($parametro){
+                $assist24 = [substr($parametro->getDescricao(), 26), number_format($parametro->getConteudo(), 2, ',', '.')];
+            }            
+        }
+        $this->pdf->setL11($vlr, $label, $assist24);
         $tot = [
             $seg->floatToStr('premio'),
             $seg->floatToStr('premioLiquido'),

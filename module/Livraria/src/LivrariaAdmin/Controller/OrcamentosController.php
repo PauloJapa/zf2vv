@@ -5230,8 +5230,27 @@ $array[] = '1080967';
 $array[] = '1080969';
 $array[] = '1080970';   
  */  
-     
-        
+
+        /**
+         * LEONARDO & LIMA NEGOCIOS IMOB LTDA mes 07/2016
+$array[] = '1100667';
+$array[] = '1100668';
+$array[] = '1100669';
+$array[] = '1122568';
+$array[] = '1122569';
+$array[] = '1122570';
+$array[] = '1122571';
+$array[] = '1122572';
+$array[] = '1122573';
+$array[] = '1122574';
+$array[] = '1122575';
+$array[] = '1122576';
+$array[] = '1122577';
+$array[] = '1122578';
+$array[] = '1122579';
+$array[] = '1122580';
+         */
+
         $cont = 0 ;
         $force = 100;
         echo ' Inicio !!' , date('d/m/Y - h:i'), ' <br>';
