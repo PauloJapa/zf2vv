@@ -943,7 +943,11 @@ class Exporta extends AbstractService{
                 break;
         }
         //Indicador de Assistência	1
-        $this->saida .= '0';
+        if($value['assist24'] == 'S'){
+            $this->saida .= '1';
+        }else{
+            $this->saida .= '0';
+        }
         //Número do Orçamento	6
         $this->addSaida2($value['id'], 6, '0', 'STR_PAD_LEFT'); 
         //Data de Nascimento Inquilino	10
