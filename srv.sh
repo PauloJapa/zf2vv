@@ -9,7 +9,7 @@ fi
 if [ $2 ]; then
     IP_ATUAL=$2
 else
-    IP_ATUAL=`ifconfig eth0 | grep "inet addr" | awk -F: '{ print $2 }' | awk '{ print $1 }'`
+    IP_ATUAL='192.168.1.116'
 fi
 
 if [$IP_ATUAL = '']; then

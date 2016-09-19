@@ -36,10 +36,13 @@ class Orcamento extends AbstractService {
         $this->entity = "Livraria\Entity\Orcamento";
     }
 
-    public function delete($id, $data, $force=false) {
+    public function delete($id, $data, $force=false, $sl=null) {
+        /* @var $enty \Livraria\Entity\Orcamento */
         $enty = $this->em->find($this->entity,$id);
         if(!$force AND $enty->getStatus() == 'F'){
-            return ['Erro este orçamento já foi fechado!!'];
+            /* @var $srvFechado \Livraria\Service\Fechados */
+            $srvFechado = $sl->get('\Livraria\Service\Fechados');
+            return $srvFechado->delete($enty->getFechadoId(), $data, $sl);
         }
         if($enty->getStatus() == 'C'){
             return ['Erro este orçamento já foi cancelado anteriormente!!'];

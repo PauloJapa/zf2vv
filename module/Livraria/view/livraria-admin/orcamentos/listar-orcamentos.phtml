@@ -138,25 +138,27 @@ if($user->getTipo() == "admin"){
             case "Renovação": 
             case "Importado": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
-                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\',1)"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
                 echo '<span class="add-on hand" onClick="getLogsReno(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Ren</span>';
                 break;
             case "Orçamento": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
-                '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\',0)"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';
                 echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Orc</span>';
                 break;
             case "Fechado":
             case "Fechou Orça":
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\',2)"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
                 echo '<span class="add-on hand" onClick="getLogs(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Orc</span>';
                 break;
             case "Fechado":
             case "Fechou Reno":
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                '<span class="add-on hand" onClick="del(\'', $value, '\',3)"><i class="icon-remove"></i>Canc.</span>',
                 '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
                 echo '<span class="add-on hand" onClick="getLogsReno(\'', $value, '\')"><i class="icon-eye-open"></i>Logs Ren</span>';
                 break;
@@ -180,7 +182,15 @@ if($user->getTipo() == "admin"){
                 echo '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Imprimir</span>';
                 break;
             case "Orçamento": 
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                     '<span class="add-on hand" onClick="del(\'', $value, '\',0)"><i class="icon-remove"></i>Canc.</span>',
+                     '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';   
+                break;
             case "Renovação": 
+                echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
+                     '<span class="add-on hand" onClick="del(\'', $value, '\',1)"><i class="icon-remove"></i>Canc.</span>',
+                     '<span class="add-on hand" onClick="printPdf(\'', $value, '\')"><i class="icon-print"></i>Impr.</span>';   
+                break;
             case "Importado": 
                 echo '<span class="add-on hand" onClick="edit(\'', $value, '\')"><i class="icon-pencil"></i>Editar</span>',
                      '<span class="add-on hand" onClick="del(\'', $value, '\')"><i class="icon-remove"></i>Canc.</span>',
@@ -378,10 +388,25 @@ echo $this->FormDefault(['fecharSel'], 'submit');
         var tar = "<?php echo $this->url($this->matchedRouteName,array('controller'=> 'logs','action'=>'logRenovacao')); ?>";
         envia(tar,id,null,'');        
     }    
-    function del(id){
+    function del(id, opt){
         var motivo = document.getElementById('delobs');
         motivo.style.display = 'none';
-        var msg = "Deseja realmente cancelar este orçamento?";
+        var tipo = '';
+        switch(opt){
+            case 0:
+                tipo = 'e Orçamento ';
+                break;
+            case 1:
+                tipo = 'a Renovação ';
+                break;
+            case 2:
+                tipo = 'e Orçamento Fechado ';
+                break;
+            case 3:
+                tipo = 'a Renovação Fechada ';
+                break;
+        }
+        var msg = "Deseja realmente cancelar est" + tipo + "?";
         if(!confirm(msg))return;
         motivo.style.display = 'block';
         document.getElementById('id2').value = id ;

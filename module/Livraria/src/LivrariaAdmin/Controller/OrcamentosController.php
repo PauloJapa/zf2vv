@@ -1490,7 +1490,7 @@ class OrcamentosController extends CrudController {
         //Pegar os parametros que em de post
         $data = $this->getRequest()->getPost()->toArray();
         $service = $this->getServiceLocator()->get($this->service);
-        $result = $service->delete($data['id'], $data);
+        $result = $service->delete($data['id'], $data, false, $this->getServiceLocator());
         if($result === TRUE){
             $this->flashMessenger()->clearMessages();
         }else{
