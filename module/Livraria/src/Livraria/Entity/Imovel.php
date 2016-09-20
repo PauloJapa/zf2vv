@@ -412,6 +412,9 @@ class Imovel extends Filtro
      * @return \Livraria\Entity\Imovel
      */
     public function setFechadoId($fechadoId) {
+        if(empty($fechadoIdv)){
+            return $this;
+        }
         $this->fechadoId = $fechadoId;
         return $this;
     }

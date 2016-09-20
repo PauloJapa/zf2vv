@@ -384,7 +384,11 @@ class Importar extends AbstractService{
             }
         }else{
             /* @var $entAtiv \Livraria\Entity\Atividade */
-            $entAtiv = $this->rpAti()->findDescricao(trim($array[16]));
+            if(isset($array[30]) AND !empty($array[30])){
+                $entAtiv = $this->rpAti()->find($array[30]);
+            }else{
+                $entAtiv = $this->rpAti()->findDescricao(trim($array[16]));
+            }            
             if($entAtiv){
                 $this->data['atividade'] = $entAtiv->getId() ;
                 $this->data['atividadeDesc'] = $entAtiv->getDescricao() ;
@@ -581,6 +585,7 @@ class Importar extends AbstractService{
             }
         }
         $this->data['pais'] = '1';
+        $this->data['fechados_id'] = '0';
     }
     
     public function desmontaEnd($bairro, $tipo, $logradouro, $num, $compl){
