@@ -1117,6 +1117,9 @@ class AbstractSeguro  extends Filtro {
      */
     public function setTaxaAjuste($taxaAjuste) {
         $this->taxaAjuste = $this->trataFloat($taxaAjuste,4);
+        if(empty($this->taxaAjuste)){
+            $this->taxaAjuste = 0 ;
+        }
         return $this;
     }
     

@@ -63,10 +63,16 @@ class  Filtro
             //return number_format($valor, $dec, ',','.');
         }
         if(is_string($valor)){
+            if(empty($valor)){
+                return 0;
+            }
             $valor = str_replace(",", ".", preg_replace("/[^0-9,-]/", "", $valor));
             return floatval($valor);
         }
-        return FALSE;
+        if(is_numeric($valor)){
+            return $valor;
+        }
+        return 0;
     }
  
     /** 
