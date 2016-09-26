@@ -10,7 +10,8 @@ use Zend\Session\Container as SessionContainer;
  * Recebe requisição e direciona para a ação responsavel depois de validar.
  * @author Paulo Cordeiro Watakabe <watakabe05@gmail.com>
  */
-class OrcamentosController extends CrudController {
+class 
+OrcamentosController extends CrudController {
     
     /**
      * Endereço para instaciar serviço de fechados.
@@ -125,9 +126,8 @@ class OrcamentosController extends CrudController {
     }
     
     public function acertaAction() {
-        die;
-        $inicio = new \DateTime('2016-07-01');
-        $fim    = new \DateTime('2016-07-31 23:59:00');
+        $inicio = new \DateTime('2016-08-01');
+        $fim    = new \DateTime('2016-08-31 23:59:00');
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()
