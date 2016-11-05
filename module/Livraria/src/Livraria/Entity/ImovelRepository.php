@@ -24,8 +24,10 @@ class ImovelRepository extends EntityRepository {
                 ->join('e.cidade', 'c')
                 ->join('e.estado', 'uf')
                 ->join('e.pais', 'p')
-                ->where("i.locador = :locador")
+                ->where("i.locador = :locador AND i.status LIKE :status")
                 ->setParameter('locador', $locador)
+                ->setParameter('status', 'A')
+                ->orderBy('i.rua')
                 ->setMaxResults(100)
                 ->getQuery()
                 ;
@@ -45,9 +47,11 @@ class ImovelRepository extends EntityRepository {
                 ->join('e.cidade', 'c')
                 ->join('e.estado', 'uf')
                 ->join('e.pais', 'p')
-                ->where("i.rua LIKE :rua")
+                ->where("i.rua LIKE :rua AND i.status LIKE :status")
                 ->setParameter('rua', $rua)
-                ->setMaxResults(20)
+                ->setParameter('status', 'A')
+                ->orderBy('i.rua')
+                ->setMaxResults(100)
                 ->getQuery()
                 ;
         return $query->getResult();

@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="Livraria\Entity\EnderecoRepository")
  * @ORM\HasLifecycleCallbacks
  */
-class Endereco {
+class Endereco extends Filtro{
 
     /**
      * @ORM\Id
@@ -143,8 +143,8 @@ class Endereco {
         return $this->numero;
     }
 
-    public function setNumero($numero) {
-        $this->numero = $numero;
+    public function setNumero($numero) {        
+        $this->numero = $this->trataFloat($numero);
         return $this;
     }
 

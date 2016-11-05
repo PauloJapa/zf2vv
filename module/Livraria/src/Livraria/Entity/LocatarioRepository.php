@@ -32,11 +32,13 @@ class LocatarioRepository extends EntityRepository {
                 ->createQueryBuilder()
                 ->select('u')
                 ->from('Livraria\Entity\Locatario', 'u')
-                ->where("u.nome LIKE :locatario OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj")
+                ->where("(u.nome LIKE :locatario OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj) AND u.status LIKE :status")
                 ->setParameter('locatario', $locatario)
                 ->setParameter('cpf', $cpf)
                 ->setParameter('cnpj', $cnpj)
-                ->setMaxResults(20)
+                ->setParameter('status', 'A')
+                ->orderBy('u.nome')
+                ->setMaxResults(100)
                 ->getQuery()
                 ;
         return $query->getResult();

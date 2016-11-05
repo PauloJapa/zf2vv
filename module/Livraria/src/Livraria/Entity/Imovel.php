@@ -78,7 +78,7 @@ class Imovel extends Filtro
      *
      * @ORM\Column(name="status", type="string", length=10, nullable=true)
      */
-    protected $status;
+    protected $status='A';
     
     /**
      * @var Atividade

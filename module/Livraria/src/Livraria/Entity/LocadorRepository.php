@@ -32,23 +32,27 @@ class LocadorRepository extends EntityRepository {
                     ->createQueryBuilder()
                     ->select('u')
                     ->from('Livraria\Entity\Locador', 'u')
-                    ->where("u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj")
+                    ->where("(u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj) AND u.status LIKE :status")
                     ->setParameter('locador', $locador)
                     ->setParameter('cpf', $cpf)
                     ->setParameter('cnpj', $cnpj)
-                    ->setMaxResults(20)
+                    ->setParameter('status', 'A')
+                    ->orderBy('u.nome')
+                    ->setMaxResults(100)
                     ->getQuery();
         }else{
             $query = $this->getEntityManager()
                     ->createQueryBuilder()
                     ->select('u')
                     ->from('Livraria\Entity\Locador', 'u')
-                    ->where("(u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj) AND u.administradora = :administradora")
+                    ->where("(u.nome LIKE :locador OR u.cpf LIKE :cpf OR u.cnpj LIKE :cnpj) AND u.administradora = :administradora AND u.status LIKE :status")
                     ->setParameter('locador', $locador)
                     ->setParameter('cpf', $cpf)
                     ->setParameter('cnpj', $cnpj)
                     ->setParameter('administradora', $administradora)
-                    ->setMaxResults(20)
+                    ->setParameter('status', 'A')
+                    ->orderBy('u.nome')
+                    ->setMaxResults(100)
                     ->getQuery();
         }
         return $query->getResult();
