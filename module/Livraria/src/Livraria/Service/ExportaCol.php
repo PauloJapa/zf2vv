@@ -310,6 +310,26 @@ class ExportaCol extends AbstractService{
     }
     
     /**
+     * Pega a string e retira simbolos e caracteres deixando somente numero.
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0
+     * @since 15-11-2016
+     * @param string $str
+     * @param boolean $opt
+     * @return string
+     */
+    public function cleanNumber($str, $opt=true) {
+        // se Não for uma string tenta converter em uma string
+        if (!is_string($str)) {
+            $str = (string)$str;
+        }
+        $reg = ($opt) ? "/[^0-9]/" : "/[^0-9a-zA-Z]/";
+        $cleaned = preg_replace($reg, "", $str);
+        return $cleaned;
+    }
+    
+    /**
      * 
      * Gera o todo conteudo a gravar no arquivo a ser exportado para o COL
      * @param string $arq nome do arquivo na work
@@ -343,7 +363,8 @@ class ExportaCol extends AbstractService{
             // imovel rua 50
             $this->addSaida2($value['imovel']['rua'], 50);
             // imovel numero 10
-            $this->addSaida2($value['imovel']['numero'], 10, '0', 'STR_PAD_LEFT');     
+            $numero = $this->cleanNumber($value['imovel']['numero']);
+            $this->addSaida2($numero, 10, '0', 'STR_PAD_LEFT');     
             // imovel complemento 20
             $complemento = '';
             $sep         = '';

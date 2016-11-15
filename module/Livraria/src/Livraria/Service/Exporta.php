@@ -325,27 +325,38 @@ class Exporta extends AbstractService{
         $file['e0130.00'] = $this->baseWork . $admCod . '_empresarial_ato_30.KM2';
         $file['e0230.00'] = $this->baseWork . $admCod . '_empresarial_1x1_30.KM2';
         $file['e0330.00'] = $this->baseWork . $admCod . '_empresarial_1x2_30.KM2';
-        $file['e0430.00'] = $this->baseWork . $admCod . '_empresarial_mensal_30.KM2';
+        $file['e0430.00'] = $this->baseWork . $admCod . '_empresarial_1x3_30.KM2';
+        $file['e1230.00'] = $this->baseWork . $admCod . '_empresarial_mensal_30.KM2';
+        
         $file['e0150.00'] = $this->baseWork . $admCod . '_empresarial_ato_50.KM2';
         $file['e0250.00'] = $this->baseWork . $admCod . '_empresarial_1x1_50.KM2';
         $file['e0350.00'] = $this->baseWork . $admCod . '_empresarial_1x2_50.KM2';
-        $file['e0450.00'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
+        $file['e0450.00'] = $this->baseWork . $admCod . '_empresarial_1x3_50.KM2';
+        $file['e1250.00'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
+        
         $file['e0169.99'] = $this->baseWork . $admCod . '_empresarial_ato_69.KM2';
         $file['e0269.99'] = $this->baseWork . $admCod . '_empresarial_1x1_69.KM2';
         $file['e0369.99'] = $this->baseWork . $admCod . '_empresarial_1x2_69.KM2';
-        $file['e0469.99'] = $this->baseWork . $admCod . '_empresarial_mensal_69.KM2';        
+        $file['e0469.99'] = $this->baseWork . $admCod . '_empresarial_1x3_69.KM2';
+        $file['e1269.99'] = $this->baseWork . $admCod . '_empresarial_mensal_69.KM2';  
+        
         $file['r0130.00'] = $this->baseWork . $admCod . '_residencial_ato_30.KM2';
         $file['r0230.00'] = $this->baseWork . $admCod . '_residencial_1x1_30.KM2';
         $file['r0330.00'] = $this->baseWork . $admCod . '_residencial_1x2_30.KM2';
-        $file['r0430.00'] = $this->baseWork . $admCod . '_residencial_mensal_30.KM2';
+        $file['r0430.00'] = $this->baseWork . $admCod . '_residencial_1x3_30.KM2';
+        $file['r1230.00'] = $this->baseWork . $admCod . '_residencial_mensal_30.KM2';
+        
         $file['r0150.00'] = $this->baseWork . $admCod . '_residencial_ato_50.KM2';
         $file['r0250.00'] = $this->baseWork . $admCod . '_residencial_1x1_50.KM2';
         $file['r0350.00'] = $this->baseWork . $admCod . '_residencial_1x2_50.KM2';
-        $file['r0450.00'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
+        $file['r0450.00'] = $this->baseWork . $admCod . '_residencial_1x3_50.KM2';
+        $file['r1250.00'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
+        
         $file['r0169.99'] = $this->baseWork . $admCod . '_residencial_ato_69.KM2';
         $file['r0269.99'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
         $file['r0369.99'] = $this->baseWork . $admCod . '_residencial_1x2_69.KM2';
-        $file['r0469.99'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
+        $file['r0469.99'] = $this->baseWork . $admCod . '_residencial_1x3_69.KM2';
+        $file['r1269.99'] = $this->baseWork . $admCod . '_residencial_mensal_69.KM2';
         if($returnArray){
             return $file;
         }

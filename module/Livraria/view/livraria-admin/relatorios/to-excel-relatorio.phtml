@@ -89,6 +89,10 @@ EOT;
             $prc = $mesSel - $ent->getInicio('obj')->format('m') + 1;
             $parcela = $parc = $prc . '/3';
             break;
+        case '04':
+            $prc = $mesSel - $ent->getInicio('obj')->format('m') + 1;
+            $parcela = $parc = $prc . '/4';
+            break;
         default:
             break;
     } 
