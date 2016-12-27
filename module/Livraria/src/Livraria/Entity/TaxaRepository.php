@@ -32,6 +32,7 @@ class TaxaRepository extends EntityRepository {
 
         
         //Pegar classeAtividade correspondente vigente na data
+        /* @var $classeAtividade \Livraria\Entity\ClasseAtividade */
         $classeAtividade = $this->getEntityManager()
                 ->getRepository('Livraria\Entity\ClasseAtividade')
                 ->findClasseVigente($seguradora, $atividade, $date);

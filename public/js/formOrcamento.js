@@ -69,12 +69,18 @@
         if(dtAtu < dtIni){
             return true;
         }
-        $atividade = $('#atividadeDesc');
-        if($atividade.val().search('FÁBRICA') != -1){
+        var $atividade = $('#atividadeDesc');
+        var desc = $atividade.val();
+        desc = desc.toUpperCase();
+        if(desc.search('FÁBRICA') != -1){
             alert('O uso da atividade para fabrica esta suspenso por favor entrar em contato com a Vila velha.\n\n Tel. 3226 9708.');
             return false;
         }
-        switch($atividade.val()){
+        if(desc.search('FABRICA') != -1){
+            alert('O uso da atividade para fabrica esta suspenso por favor entrar em contato com a Vila velha.\n\n Tel. 3226 9708.');
+            return false;
+        }
+        switch(desc){
         case 'MALHARIA, CONFECÇÃO':
         case 'GRÁFICA (CONVENCIONAL)':
         case 'GRÁFICA (INFORMATIZADA)':

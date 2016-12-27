@@ -921,10 +921,11 @@ class Orcamento extends AbstractService {
         ];
         $this->pdf->setL12($tot,  $this->strToFloat($seg->getTaxaIof() * 100), $seg->getValidade());
         $par = [
-            $seg->floatToStr('premioTotal'),
-            $this->strToFloat($seg->getPremioTotal() / 2),
-            $this->strToFloat($seg->getPremioTotal() / 3),
-            $this->strToFloat($seg->getPremioTotal() / 12)
+            $seg->floatToStr('premioTotal')
+            ,$this->strToFloat($seg->getPremioTotal() / 2)
+            ,$this->strToFloat($seg->getPremioTotal() / 3)
+            ,$this->strToFloat($seg->getPremioTotal() / 4)
+            ,$this->strToFloat($seg->getPremioTotal() / 12)
         ];
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
         $this->pdf->setL14();

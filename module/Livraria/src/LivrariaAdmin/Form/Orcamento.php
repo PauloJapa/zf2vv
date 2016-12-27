@@ -14,6 +14,22 @@ class Orcamento extends AbstractEndereco {
      */
     protected $seguradoras;
     
+    public function setData($data) {
+        if(isset($data['administradora']) AND $data['administradora'] == '319'){      
+            $this->setInputFormPagto(true);
+        }
+        return parent::setData($data);
+    }
+    
+    public function setInputFormPagto($opt = false) {
+        $formaPagto = $this->getParametroSelect('formaPagto');
+        if(!$opt){
+            array_pop($formaPagto);
+        }
+        $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
+        
+    }
+    
     public function __construct($name = null, $em = null, $filtro=[]) {
         parent::__construct('orcamento');
         
@@ -120,8 +136,7 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputText('refImovel', 'Ref. do Imóvel');
         
-        $formaPagto = $this->getParametroSelect('formaPagto');
-        $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
+        $this->setInputFormPagto();
         
         $label = 'Incêndio, raio, explosão e queda de aeronaves';
         $style = ['style' => 'text-align:right;'];

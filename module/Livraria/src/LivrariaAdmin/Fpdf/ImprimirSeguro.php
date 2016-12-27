@@ -166,16 +166,20 @@ class ImprimirSeguro extends FPDF{
                 case '03':
                     $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);            
                     break;
+                case '04':
+                    $this->set5Cell(['Forma de Pagamento 4 (1-3)','Parcela(s) de',$vlr[3]], 8, 5, isset($fill['04'])?true:false);            
+                    break;
             }
         }else{
             $this->set5Cell(['Foma de Pagamento 1(ato)','Parcela(s) de',$vlr[0]], 12, 7, isset($fill['01'])?true:false);
             if(!isset($fill['01'])){
                 $this->set5Cell(['Forma de Pagamento 2 (1-1)','Parcela(s) de',$vlr[1]], 8, 5, isset($fill['02'])?true:false);
                 $this->set5Cell(['Forma de Pagamento 3 (1-2)','Parcela(s) de',$vlr[2]], 8, 5, isset($fill['03'])?true:false);                 
+//                $this->set5Cell(['Forma de Pagamento 4 (1-3)','Parcela(s) de',$vlr[3]], 8, 5, isset($fill['04'])?true:false);                 
             }
         }
         if($formaPagto == '12'){
-            $this->set5Cell(['Forma de Pagamento 12 (mensal)','Parcela(s) de',$vlr[3]], 8, 5, isset($fill['04'])?true:false);
+            $this->set5Cell(['Forma de Pagamento 12 (mensal)','Parcela(s) de',$vlr[12]], 8, 5, isset($fill['12'])?true:false);
         }
         $this->Ln();
     }
