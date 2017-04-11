@@ -50,5 +50,21 @@ class LogRepository extends AbstractRepository {
         
         return $query;
     }
+    
+    public function findLikeDePara($obs) {
+        $query = $this->getEntityManager()
+                ->createQueryBuilder()
+                ->select('e')
+                ->from('Livraria\Entity\Log', 'e')
+                ->where('e.dePara like :dePara')
+                ->setParameter('dePara', $obs . '%')
+                ;
+        
+        $resul = $query->getQuery()->getResult();
+        if(empty($resul)){
+            return false;
+        }
+        return $resul[0];
+    }
 }
 

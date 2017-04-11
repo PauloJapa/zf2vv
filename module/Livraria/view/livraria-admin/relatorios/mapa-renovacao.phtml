@@ -2,7 +2,7 @@
 $form->prepare();
 echo 
 $this->FormDefault(['legend' => 'Busca com base no mês vencimento:'],'inicio',$this, $form),
-    "<td valign='middle' align='right' width='25%'>Fechados que vencem em:(Somente para Mensal)",
+    "<td valign='middle' align='right' width='25%'>Mês do último faturamento:(Somente para Mensal)",
         $this->FormDefault(['ajaxStatus','autoComp','subOpcao','administradora'],'hidden'),
     "</td>\r<td width='15%'>",
         $this->FormDefault(['mesRefFiltro' => 'select']),

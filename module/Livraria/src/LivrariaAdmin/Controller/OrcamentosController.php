@@ -126,8 +126,8 @@ OrcamentosController extends CrudController {
     }
     
     public function acertaAction() {
-        $inicio = new \DateTime('2016-10-01');
-        $fim    = new \DateTime('2016-10-31 23:59:00');
+        $inicio = new \DateTime('2017-02-01');
+        $fim    = new \DateTime('2017-02-28 23:59:00');
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()
@@ -222,6 +222,151 @@ OrcamentosController extends CrudController {
         echo '<pre> Total de sem cidade ' . $ind2 . '</pre>';
         
         die;
+    }
+    
+    public function acerta4Action() {
+        echo 'ok';
+        $key = [1151886
+                ,1151882
+                ,1151883
+                ,1151884
+                ,1151885
+                ,1148727
+                ,1151879
+                ,1151880
+                ,1151881
+                ,1148722
+                ,1148724
+                ,1148725
+                ,1148726
+                ,1148718
+                ,1148719
+                ,1148720
+                ,1148721
+                ,1148714
+                ,1148715
+                ,1148716
+                ,1148717
+                ,1148709
+                ,1148710
+                ,1148711
+                ,1148712
+                ,1148713
+                ,1151875
+                ,1151876
+                ,1151877
+                ,1151878
+                ,1148708
+                ,1151870
+                ,1151871
+                ,1151872
+                ,1151873
+                ,1151874
+                ,1151864
+                ,1151865
+                ,1151866
+                ,1151867
+                ,1151868
+                ,1151869
+                ,1151859
+                ,1151860
+                ,1151861
+                ,1151862
+                ,1151863
+                ,1151853
+                ,1151854
+                ,1151855
+                ,1151856
+                ,1151857
+                ,1151858
+                ,1151850
+                ,1151851
+                ,1151852
+                ,1151847
+                ,1151848
+                ,1151849
+                ,1151839
+                ,1151840
+                ,1151841
+                ,1151842
+                ,1151843
+                ,1151844
+                ,1151845
+                ,1151846
+                ,1151832
+                ,1151833
+                ,1151834
+                ,1151835
+                ,1151836
+                ,1151837
+                ,1151838
+                ,1151825
+                ,1151826
+                ,1151827
+                ,1151828
+                ,1151829
+                ,1151830
+                ,1151831
+                ,1151817
+                ,1151818
+                ,1151819
+                ,1151820
+                ,1151821
+                ,1151822
+                ,1151823
+                ,1151824
+                ,1151807
+                ,1151808
+                ,1151809
+                ,1151810
+                ,1151811
+                ,1151812
+                ,1151813
+                ,1151814
+                ,1151815
+                ,1151816
+                ,1151794
+                ,1151795
+                ,1151796
+                ,1151797
+                ,1151798
+                ,1151799
+                ,1151800
+                ,1151801
+                ,1151802
+                ,1151803
+                ,1151804
+                ,1151805
+                ,1151806
+                ,1151793
+            ];
+        
+        $qb = $this->getEm()
+            ->createQueryBuilder()
+            ->select('e')
+            ->from('Livraria\Entity\Orcamento', 'e')
+            ->where('e.id IN(:key)')
+            ->setParameter('key', $key)
+        ;
+        echo $qb->getDql() . '<br>';
+        $seguros = $qb          ->getQuery()            ->getResult();
+        
+        /* @var $seguro \Livraria\Entity\Orcamento */
+        foreach ($seguros as $seguro) {
+            $idFechado = $seguro->getFechadoId();
+            if($seguro->getInicio(false)->format('Ymd') < 20161201){
+                echo 'Data inicio invalida ' . $seguro->getInicio() . ' do locador ' . $seguro->getLocadorNome() . '<br>';
+                continue;
+            }
+            if($idFechado == 0){
+                echo 'Não encontrou o fechado de ' . $seguro->getId() . ' do locador ' . $seguro->getLocadorNome() . '<br>';
+                continue;
+            }
+            echo 'Fechou orçamento ' . $seguro->getId() . ' do locador ' . $seguro->getLocadorNome() . '<br>';
+            $seguro->setStatus('F');
+            $this->getEm()->persist($seguro);
+        }
+        $this->getEm()->flush();
     }
     
     /**

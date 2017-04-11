@@ -18,7 +18,7 @@ class RenovacaosController  extends CrudController {
         $this->route = "livraria-admin";
     }
     
-    public function IndexAction() { 
+    public function indexAction(array $filtro = array(), array $orderBy = array(), $list = array()) {
         $this->verificaSeUserAdmin();
         return new ViewModel();
     }

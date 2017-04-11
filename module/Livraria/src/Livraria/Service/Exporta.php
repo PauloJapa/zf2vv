@@ -964,7 +964,7 @@ class Exporta extends AbstractService{
         //Data de Nascimento Inquilino	10
         $this->saida .= str_pad(' ', 10);
         //Observação	254
-        $this->addSaida2($value['observacao'], 254);
+        $this->addSaida2(str_replace(PHP_EOL, '', $value['observacao']), 254);
         //Indicador de Verbas Separadas	1
         $this->saida .= ($value['tipoCobertura'] == '04') ? '1' : '0';
         //Período Indenitário Perda/Pgto. Aluguel	2

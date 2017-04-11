@@ -254,7 +254,7 @@ class Relatorio extends AbstractService{
         if(!empty($data['mesRefFiltro']) AND !empty($data['anoRefFiltro'])){
             $this->data['inicioMensal'] = '01/' . $data['mesRefFiltro'] . '/' . $data['anoRefFiltro'];
             $this->dateToObject('inicioMensal');
-            $this->data['inicioMensal']->sub(new \DateInterval('P1M'));
+//            $this->data['inicioMensal']->sub(new \DateInterval('P1M')); vai ser passado o mes de faturado
         }else{
             //Trata os filtro para data mensal
             $this->data['inicioMensal'] = clone $this->data['inicio'];
@@ -289,6 +289,15 @@ class Relatorio extends AbstractService{
         $servico->setFlush(FALSE);
         $array = $sc->mapaRenovacao;
         $data = $sc->data;
+        // Gerar log
+        $obs = 'Gerou Mapa Renovação:<br>';
+        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
+        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $finded = $this->em->getRepository('Livraria\Entity\Log')->findLikeDePara($obs);
+        if($finded){
+            echo '<h1>Já existe uma renovação gerada para o mês escolhido!!!';
+            die;
+        }
         $reajuste = $this->strToFloat($data['upAluguel'], 'float');
         $mes = (int)$data['mesFiltro'];
         $ano = (int)$data['anoFiltro'];
@@ -315,10 +324,8 @@ class Relatorio extends AbstractService{
         }
         $this->em->flush();
         $sc->mapaRenovacao = $array;
-        // Gerar log
-        $obs = 'Gerou Mapa Renovação:<br>';
-        $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
-        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        
+        // finaliza log Gerar log        
         $obs .= empty($data['upAluguel']) ? '' : 'Reajustar em : ' . $data['upAluguel'] .'<br>';
         $obs .= isset($data['anual']) ? 'Gerar Anual' .'<br>' : '';
         $obs .= isset($data['mensal']) ? 'Gerar mensal' .'<br>' : '';
@@ -775,8 +782,11 @@ class Relatorio extends AbstractService{
         $this->data['inicio2'] = $this->data['inicio'];
         $this->data['fim2']    = $this->data['fim'];
         // Em 3 vezes as 1 parcelas
-        $this->data['inicio3'] = $this->data['inicio2'];
+        $this->data['inicio3'] = $this->data['inicio'];
         $this->data['fim3']    = $this->data['fim'];
+        // Em 4 vezes as 1 parcelas
+        $this->data['inicio4'] = $this->data['inicio'];
+        $this->data['fim4']    = $this->data['fim'];
         // Em 2 vezes as 2 parcelas
 //        $this->data['inicio2'] = clone $this->data['inicio'];
 //        $this->data['inicio2']->sub(new \DateInterval('P1M'));
@@ -790,8 +800,6 @@ class Relatorio extends AbstractService{
         /* @var $rpstr \Livraria\Entity\FechadosRepository */
         $rpstr = $this->em->getRepository("Livraria\Entity\Fechados");
         $lista = $rpstr->getFaturar($this->data);
-        //Armazena lista no cache para gerar outra saidas
-        $this->getSc()->lista = $lista;
         
         return $lista;
     }

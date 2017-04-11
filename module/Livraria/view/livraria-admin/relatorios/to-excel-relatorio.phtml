@@ -1,7 +1,8 @@
 <?php
 //Montar tabela para exibição xls.
 $tabela_dados = "" ;
-
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 if(empty($this->data)){
     echo '<tr><td>Nenhum resultado foi encontrado!!!!</td></tr></table>';
     exit();    
@@ -21,6 +22,7 @@ $parcelaOld = '';
 $parcela  = '';
 $parc     = '';
 $mesSel   = $this->date['mesFiltro'];
+/* @var $ent \Livraria\Entity\Fechados */
 foreach($this->data as $ent): 
     // Verifica se trocou de adm e verifica se tem necessidade de finalizar tabela da adm anterior
     $admAtual = $ent->getAdministradora()->getId();

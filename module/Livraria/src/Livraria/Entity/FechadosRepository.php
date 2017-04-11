@@ -526,6 +526,10 @@ class FechadosRepository extends AbstractRepository {
         if(isset($data['inicio3'])){
             $this->getWhereFatura($data['inicio3'], $data['fim3'], '03', $data['administradora']);
         }
+        // Busca todos a faturar em 4 vezes
+        if(isset($data['inicio4'])){
+            $this->getWhereFatura($data['inicio4'], $data['fim4'], '04', $data['administradora']);
+        }
         // Monta a dql para fazer consulta no BD
         $query = $this->getEntityManager()
                 ->createQueryBuilder()
@@ -554,7 +558,20 @@ class FechadosRepository extends AbstractRepository {
             $this->where  = '(o.inicio >= :inicio AND o.inicio <= :fim AND o.formaPagto <= :formaPagto';
             $this->colunas = ''; 
         }else{
-            $this->colunas = empty($this->colunas)? '2': '3';            
+            switch ($this->colunas) {
+                case '':
+                    $this->colunas = '2';
+                    break;
+                case '2':
+                    $this->colunas = '3';
+                    break;
+                case '3':
+                    $this->colunas = '4';
+                    break;                
+                default:
+                    $this->colunas = '';
+                    break;
+            }
             $this->where  .= ' OR (o.inicio >= :inicio'.$this->colunas.' AND o.inicio <= :fim'.$this->colunas.' AND o.formaPagto = :formaPagto'.$this->colunas;
         }
         $this->where .= ' AND o.status <> :status'.$this->colunas ;

@@ -559,6 +559,9 @@ class RelatoriosController extends CrudController {
         $data = $this->filtrosDaPaginacao();
         /* @var $svr \Livraria\Service\Relatorio */
         $srv = new $this->service($this->getEm());
+        //fazer cache do post.
+        $sc = new SessionContainer("LivrariaAdmin");
+        $sc->post = $data;
         $this->paginator = $srv->getRelatorio($data);
         /* @var $param \Livraria\Entity\ParametroSisRepository */
         $param = $this->getEm()->getRepository('Livraria\Entity\ParametroSis');
@@ -578,12 +581,14 @@ class RelatoriosController extends CrudController {
         $data = $this->getRequest()->getPost()->toArray();
         //ler Dados do cacheado da ultima consulta.
         $sc = new SessionContainer("LivrariaAdmin");
+        /* @var $svr \Livraria\Service\Relatorio */
+        $srv = new $this->service($this->getEm());
         /* @var $param \Livraria\Entity\ParametroSisRepository */
         $param = $this->getEm()->getRepository('Livraria\Entity\ParametroSis');
         $formaPagto = $param->fetchPairs('formaPagto');
         $comissaoAlias = $param->fetchPairs('comissaoApelido');
         // instancia uma view sem o layout da tela
-        $viewModel = new ViewModel(array_merge($this->getParamsForView(),['date' => $data,'data' => $sc->lista, 'formaPagto' => $formaPagto, 'comissaoAp' => $comissaoAlias]));         
+        $viewModel = new ViewModel(array_merge($this->getParamsForView(),['date' => $data,'data' => $srv->getRelatorio($sc->post), 'formaPagto' => $formaPagto, 'comissaoAp' => $comissaoAlias]));         
         $viewModel->setTerminal(true);
         return $viewModel;        
     }
