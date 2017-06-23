@@ -291,7 +291,9 @@ class Orcamento extends AbstractService {
         $this->data['comissaoEnt'] = $this->em
             ->getRepository('Livraria\Entity\Comissao')
             ->findComissaoVigente($this->data['administradora']->getId(),  $this->data['inicio']);
-        $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');
+        if(!isset($this->data['comissao']) OR empty($this->data['comissao'])){
+            $this->data['comissao'] = $this->data['comissaoEnt']->floatToStr('comissao');            
+        }
         
         /* @var $this->data['taxa'] \Livraria\Entity\Taxa */
         $this->data['taxa'] = $this->em
@@ -925,6 +927,7 @@ class Orcamento extends AbstractService {
             ,$this->strToFloat($seg->getPremioTotal() / 2)
             ,$this->strToFloat($seg->getPremioTotal() / 3)
             ,$this->strToFloat($seg->getPremioTotal() / 4)
+            ,$this->strToFloat($seg->getPremioTotal() / 5)
             ,$this->strToFloat($seg->getPremioTotal() / 12)
         ];
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());

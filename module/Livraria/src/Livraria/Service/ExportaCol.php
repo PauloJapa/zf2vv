@@ -555,10 +555,14 @@ class ExportaCol extends AbstractService{
             $this->exporta('C','1');
             $this->exporta('C','2');
             $this->exporta('C','3');
+            $this->exporta('C','4');
+            $this->exporta('C','5');
             $this->exporta('C','mensal');
             $this->exporta('R','1');
             $this->exporta('R','2');
             $this->exporta('R','3');
+            $this->exporta('R','4');
+            $this->exporta('R','5');
             $this->exporta('R','mensal');
 //        }
 die;        

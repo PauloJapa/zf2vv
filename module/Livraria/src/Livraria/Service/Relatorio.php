@@ -292,10 +292,11 @@ class Relatorio extends AbstractService{
         // Gerar log
         $obs = 'Gerou Mapa Renovação:<br>';
         $obs .= 'Mes = '. $data['mesFiltro'] . ' Ano = '. $data['anoFiltro'] .'<br>';
-        $obs .= empty($data['administradora']) ? '' : 'Administradora : ' . $data['administradoraDesc'] .'<br>';
+        $obs .= 'Administradora : ' . (empty($data['administradora']) ? 'Todas as Administradoras' : $data['administradoraDesc']) .'<br>';
         $finded = $this->em->getRepository('Livraria\Entity\Log')->findLikeDePara($obs);
         if($finded){
-            echo '<h1>Já existe uma renovação gerada para o mês escolhido!!!';
+            echo '<h1>Já existe uma renovação gerada para o mês escolhido!!!</h1>';
+            echo '<pre>', var_dump($obs), '</pre>';
             die;
         }
         $reajuste = $this->strToFloat($data['upAluguel'], 'float');
@@ -594,7 +595,10 @@ class Relatorio extends AbstractService{
             }
             //se mudar adm faz envio e reseta os valores
             if($admCod != $value['administradora']['id']){
-                if($admCod != 0){
+                if($admCod != 0) { 
+                    if($amdCod == 2884){// Não enviar email para condovel
+                        $admEmai = "incendiolocacao@vilavelha.com.br";
+                    }
                     $this->sendEmailSegFechForAdm($servEmail, $admNom, $admEmai, $data, $mes);                   
                 }
                 $admCod  = $value['administradora']['id'];
@@ -614,7 +618,8 @@ class Relatorio extends AbstractService{
                 $frmPagto = 'Pag Mensal';
             }  
             $data[$i][] = $frmPagto;
-            $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
+//            $data[$i][] = number_format($value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']), 2, ',', '.');
+            $data[$i][] = number_format($value['premioTotal'] / intval($value['formaPagto']), 2, ',', '.');
             
             $rua = trim($value['imovel']['rua']);
             $num = trim($value['imovel']['numero']);
@@ -631,7 +636,10 @@ class Relatorio extends AbstractService{
         }
         
         //Envia ultima administradora se houver
-        if($admCod != 0){   
+        if($admCod != 0) { 
+            if($amdCod == 2884){// Não enviar email para condovel
+                $admEmai = "incendiolocacao@vilavelha.com.br";
+            }
             $this->sendEmailSegFechForAdm($servEmail, $admNom, $admEmai, $data, $mes);
         }
         

@@ -15,19 +15,26 @@ class Orcamento extends AbstractEndereco {
     protected $seguradoras;
     
     public function setData($data) {
-        if(isset($data['administradora']) AND $data['administradora'] == '319'){      
-            $this->setInputFormPagto(true);
+        if(isset($data['administradora'])){      
+            $this->setInputFormPagto($data['administradora']);
         }
         return parent::setData($data);
     }
     
-    public function setInputFormPagto($opt = false) {
+    public function setInputFormPagto($adm = '') {
         $formaPagto = $this->getParametroSelect('formaPagto');
-        if(!$opt){
-            array_pop($formaPagto);
-        }
+        switch ($adm) {
+            case '319'   : // Jaime
+                array_pop($formaPagto); //tira o de 5 vezes
+                break;
+            case '14044' : // GRM servicos
+                continue; // mostra todos
+                break;
+            default:
+                array_pop($formaPagto); //tira o de 4 vezes
+                array_pop($formaPagto); //tira o de 5 vezes
+        }       
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
-        
     }
     
     public function __construct($name = null, $em = null, $filtro=[]) {

@@ -43,7 +43,8 @@ foreach($this->data as $value){
     if($value['validade'] == 'mensal'){
         $frmPagto = 'Pag Mensal';
     }  
-    $valor = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);
+//    $valor = $value['premioTotal'] / intval(($value['formaPagto'] == '04') ? '12' : $value['formaPagto']);
+    $valor = $value['premioTotal'] / intval($value['formaPagto']);
     $arrayCols = [
         $value['id'],
         $value['administradora']['id'],

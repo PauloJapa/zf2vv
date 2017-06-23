@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="taxa")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity(repositoryClass="Livraria\Entity\TaxaRepository")
+ * @ORM\Entity(repositoryClass="\Livraria\Entity\TaxaRepository")
  */
 class Taxa extends Filtro
 {

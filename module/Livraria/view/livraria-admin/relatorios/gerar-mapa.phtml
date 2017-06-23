@@ -38,7 +38,8 @@
     foreach($this->data as $array): 
         //calcula a parcela e descriçao da forma de pagamento
         $frmPagto = isset($this->formaPagto[$array['formaPagto']]) ? $this->formaPagto[$array['formaPagto']] : 'Ñ encontrado' . $array['formaPagto'];
-        $valor = $array['premioTotal'] / intval(($array['formaPagto'] == '04') ? '12' : $array['formaPagto']);
+//        $valor = $array['premioTotal'] / intval(($array['formaPagto'] == '04') ? '12' : $array['formaPagto']);
+        $valor = $array['premioTotal'] / intval($array['formaPagto']);
         $atual++;      
         if($atual == $ate){
             $ate += $itens;

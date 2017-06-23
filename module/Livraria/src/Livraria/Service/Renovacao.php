@@ -673,6 +673,7 @@ class Renovacao extends AbstractService {
             ,$this->strToFloat($seg->getPremioTotal() / 2)
             ,$this->strToFloat($seg->getPremioTotal() / 3)
             ,$this->strToFloat($seg->getPremioTotal() / 4)
+            ,$this->strToFloat($seg->getPremioTotal() / 5)
             ,$this->strToFloat($seg->getPremioTotal() / 12)
         ];
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
