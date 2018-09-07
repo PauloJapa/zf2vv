@@ -43,9 +43,11 @@ class Relatorio  extends AbstractForm {
             "o.fim"            => "Vigência Final",
             "at.descricao"     => "Ocupacão",
             "ad.id"            => "UE",
+            "o.validade"       => "anual/mensal",
             "o.status"         => "Status",
             "o.administradora" => "Administradora",
             "o.refImovel"      => "Ref. Imóvel",
+            "o.comissao"       => "Comisão",
         ];
         $this->setInputSelect('filtro[]', 'Filtrar', $campos);
         
@@ -103,6 +105,12 @@ class Relatorio  extends AbstractForm {
     public function setCOL(){        
         $this->get('gerar')->setValue('Exportar');
         $this->setMesAnoAdm();
+        $layout = ['1' => 'Versão 1.0', '2' => 'Versão 2.0'];
+        $this->setInputRadio('layout', 'Selectione o layout', $layout);
+        $this->get('layout')->setValue('1');
+        $webOrWindow = ['1' => 'Versão Windows', '2' => 'Versão Web'];
+        $this->setInputRadio('destino', 'Selectione o tipo de destino', $webOrWindow);
+        $this->get('destino')->setValue('1');
         $seguradoras = $this->em->getRepository('Livraria\Entity\Seguradora')->fetchPairs();
         $this->setInputSelect('seguradora', '*Seguradora', $seguradoras);
     }

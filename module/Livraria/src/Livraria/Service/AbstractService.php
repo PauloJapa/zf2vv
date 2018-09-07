@@ -66,7 +66,7 @@ abstract class AbstractService {
      */
     protected $dePara = '';
     
-    protected $debug = false;
+    protected $debug = true;
     
     /**
      * String com endereço de email padrão
@@ -561,6 +561,7 @@ $this->debug = $bkpDebug;
         $taxaAjuste = 1;
         if($entTaxaAjuste){
             $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste, $mensal);
+            echo '<pre>$entTaxaAjuste ok ', var_dump($taxaAjuste), '</pre>';
         }
         switch (TRUE) {
             case $taxaAjuste == 1:
@@ -574,6 +575,7 @@ $this->debug = $bkpDebug;
                 break;
         }
         $this->data['taxaAjuste'] = $taxaAjuste;
+        echo '<pre>', var_dump($taxaAjuste), '</pre>';
         
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;

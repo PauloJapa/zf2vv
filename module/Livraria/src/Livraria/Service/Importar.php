@@ -390,9 +390,9 @@ class Importar extends AbstractService{
                 $entAtiv = $this->rpAti()->findDescricao(trim($array[16]));
             }            
             if($entAtiv){
-                $this->data['atividade'] = $entAtiv->getId() ;
+                $this->data['atividade']     = $entAtiv->getId() ;
                 $this->data['atividadeDesc'] = $entAtiv->getDescricao() ;
-                $this->data['comissao'] = '69,99' ;
+                $this->data['comissao']      = '60' ;
                 if($array[15] == '1' OR $array[15] == '3'){
                     $this->data['ocupacao'] = '02';
                     $this->data['tipoCobertura'] = '02' ;

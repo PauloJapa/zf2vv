@@ -530,6 +530,10 @@ class FechadosRepository extends AbstractRepository {
         if(isset($data['inicio4'])){
             $this->getWhereFatura($data['inicio4'], $data['fim4'], '04', $data['administradora']);
         }
+        // Busca todos a faturar em 5 vezes
+        if(isset($data['inicio5'])){
+            $this->getWhereFatura($data['inicio5'], $data['fim5'], '05', $data['administradora']);
+        }
         // Monta a dql para fazer consulta no BD
         $query = $this->getEntityManager()
                 ->createQueryBuilder()

@@ -126,8 +126,8 @@ OrcamentosController extends CrudController {
     }
     
     public function acertaAction() {
-        $inicio = new \DateTime('2017-04-01');
-        $fim    = new \DateTime('2017-04-31 23:59:00');
+        $inicio = new \DateTime('2018-06-01');
+        $fim    = new \DateTime('2018-06-31 23:59:00');
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()
@@ -861,6 +861,13 @@ OrcamentosController extends CrudController {
         return $this->redirect()->toRoute($this->route, array('controller' => $this->controller, 'action' => 'listarOrcamentos'));
     }    
     
+    
+    public function updateAcertaAction() {
+        $repository = $this->getEm()->getRepository($this->entity);
+        /* @var $service \Livraria\Service\Orcamento */
+        $service = $this->getServiceLocator()->get($this->service);
+        $service->acertaCondovel($repository);
+    }
     
     /**
      * Edita o registro, Salva o registro, exibi o registro ou a listagem

@@ -795,6 +795,9 @@ class Relatorio extends AbstractService{
         // Em 4 vezes as 1 parcelas
         $this->data['inicio4'] = $this->data['inicio'];
         $this->data['fim4']    = $this->data['fim'];
+        // Em 5 vezes as 1 parcelas
+        $this->data['inicio5'] = $this->data['inicio'];
+        $this->data['fim5']    = $this->data['fim'];
         // Em 2 vezes as 2 parcelas
 //        $this->data['inicio2'] = clone $this->data['inicio'];
 //        $this->data['inicio2']->sub(new \DateInterval('P1M'));

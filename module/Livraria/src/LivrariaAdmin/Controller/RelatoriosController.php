@@ -67,6 +67,8 @@ class RelatoriosController extends CrudController {
         $label['c30'] = "Compl."; 
         $label['c31'] = "Apt."; 
         $label['c32'] = "Blc."; 
+        $label['c33'] = "Anual/Mensal"; 
+        $label['c34'] = "Comissão"; 
         $data = $this->getRequest()->getPost()->toArray();
         $service = new $this->service($this->getEm());
         $this->paginator = $service->montaQuery($data);

@@ -57,7 +57,11 @@ class EnderecosController extends CrudController {
     
     public function buscaCepAction(){
         $cep = $this->getRequest()->getPost('cep');         
-        $retorno = @file_get_contents('http://republicavirtual.com.br/web_cep.php?cep='.urlencode($cep).'&formato=json'); 
+        $retorno = @file_get_contents('https://newsis.tcmed.com.br/cep-ajax?ajax=ok&cep='.urlencode($cep).'&format=json'); 
+        if(!$retorno){
+            $retorno = @file_get_contents('http://cep.republicavirtual.com.br/web_cep.php?cep='.urlencode($cep).'&formato=json'); 
+        }
+//        $retorno = @file_get_contents('http://177.185.194.123/web_cep.php?cep='.urlencode($cep).'&formato=json'); 
         if(!$retorno){ 
             $retorno = '{"resultado":"0","resultado_txt":"erro ao buscar cep"}'; 
         }

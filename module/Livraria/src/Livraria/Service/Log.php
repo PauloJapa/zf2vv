@@ -26,7 +26,7 @@ class Log extends AbstractService {
      * @param Array $data com os campos do registro
      * @return entidade 
      */     
-    public function insert(array $data) { 
+    public function insert(array $data = array()) { 
         $this->data = $data;
         
         $this->dateToObject('data');
@@ -46,7 +46,7 @@ class Log extends AbstractService {
      * @param Array $data com os campos do registro
      * @return boolean|array 
      */    
-    public function update(array $data) {
+    public function update(array $data = array()) {
         $this->data = $data;
         
         $this->dateToObject('data');

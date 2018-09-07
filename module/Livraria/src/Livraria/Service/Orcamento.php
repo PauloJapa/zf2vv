@@ -715,7 +715,11 @@ class Orcamento extends AbstractService {
                 $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
                 $erro[] = "Já existe um orçamento com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
             }
-            if($entity->getStatus() == "F"){
+            if($entity->getStatus() == "F"){            
+                $interval = $inicio->diff($entity->getFim('obj'));
+                if($interval->format('%a') <= 31){
+                    continue;
+                }
                 $erro[] = "Alerta!" ;
                 $erro[] = 'Vigencia inicio menor que vigencia final existente ' . $inicio->format('d/m/Y') . ' < ' . $entity->getFim();
                 $erro[] = "Já existe um seguro fechado com periodo vigente conflitando ! N = " . $entity->getId() . '/' . $entity->getCodano();
@@ -1025,6 +1029,92 @@ class Orcamento extends AbstractService {
             echo '<p>Locatario não encontrado com esse nome  ' . $v['locatarioNome'] . '</p>';
             $ng ++;
         }
+    }
+    
+    public function acertaCondovel(\Livraria\Entity\OrcamentoRepository $rp) {
+
+        $inicio = new \DateTime('2018-06-01');
+        $fim    = new \DateTime('2018-06-31 23:59:00');
+        $adm    = 2884;
+        $seguros = $this->em
+            ->createQueryBuilder()
+            ->select('l,i,ld','lc')
+            ->from('Livraria\Entity\Orcamento', 'l')
+            ->join('l.imovel', 'i')
+            ->join('l.locador', 'ld')
+            ->join('l.locatario', 'lc')
+            ->where('l.inicio BETWEEN :inicio AND :fim and l.administradora = :adm')
+            ->setParameter('inicio', $inicio)
+            ->setParameter('fim', $fim)
+            ->setParameter('adm', $adm)
+            ->getQuery()
+            ->getResult()
+        ;
+        
+        echo count($seguros), '<br>';
+        
+        
+        /* @var $seguro \Livraria\Entity\Orcamento */
+        foreach ($seguros as $seguro) {
+            
+            
+            
+            
+            $this->data['ocupacao'] = $seguro->getOcupacao();
+            $this->data['validade'] = $seguro->getValidade();
+            
+            echo '<pre> consertar' 
+                    . ' id ' 
+                    . $seguro->getId()
+                    . ' st ' 
+                    . $seguro->getStatus()
+                    . ' locador ' 
+                    . $seguro->getLocadorNome()
+                    . ' locatario ' 
+                    . $seguro->getLocatarioNome()
+                    . ' total ' 
+                    . $seguro->getPremio()
+                    . ' bruto ' 
+                    . $seguro->getPremioTotal()
+                    . ' getOcupacao ' 
+                    . $seguro->getOcupacao()
+                    . ' getValidade ' 
+                    . $seguro->getValidade()
+                    .'</pre>';
+            
+            if($seguro->getAssist24() == 'S') {
+                continue;
+            }
+            $seguro->setAssist24('S');
+            
+            $total = $seguro->getPremio();
+            $total += $this->getAssist24Vlr();
+            
+            $totalBruto = round($total * (1 + $seguro->getTaxaIof()), 2) ;
+            
+            $seguro->setPremio($total)->setPremioLiquido($total)->setPremioTotal($totalBruto);
+            
+            $this->em->persist($seguro);
+            
+            echo '<pre> consertado ' 
+                    . ' id ' 
+                    . $seguro->getId()
+                    . ' locador ' 
+                    . $seguro->getLocadorNome()
+                    . ' locatario ' 
+                    . $seguro->getLocatarioNome()
+                    . ' total ' 
+                    . $seguro->getPremio()
+                    . ' bruto ' 
+                    . $seguro->getPremioTotal()
+                    . ' 24 ' 
+                    . $this->getAssist24Vlr()
+                    .'</pre>';
+            
+        }
+        
+        $this->em->flush();
+        
     }
 
 }

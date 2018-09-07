@@ -20,6 +20,16 @@ $this->FormDefault(['legend' => 'Exportação de proposta para Maritima:'],'inic
     "<td colspan='3'>",
         $this->FormDefault(['name' => 'administradoraDesc','icone' => 'icon-search','js' => 'autoCompAdministradora()','span' => "popAdministradora' style='position:absolute"],'icone'),
     "</td>\r",
+"</tr><tr>\r",
+    "</td>\r<td>",
+    "<td colspan='3'>",
+        $this->FormDefault(['layout'=>'radio']),
+    "</td>\r",
+"</tr><tr>\r",
+    "</td>\r<td>",
+    "<td colspan='3'>",
+        $this->FormDefault(['destino'=>'radio']),
+    "</td>\r",
 
 $this->FormDefault(['submit' => 'gerar'],'fim');
 

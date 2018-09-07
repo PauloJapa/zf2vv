@@ -31,6 +31,18 @@ class Exporta extends AbstractService{
     protected $parameters;
     
     /**
+     * clasula where da pesquisa
+     * @var string 
+     */
+    protected $layout = '1';
+    
+    /**
+     * parametriza a introdução do registro 09 
+     * @var string 
+     */
+    protected $destino = '1';
+
+    /**
      * Objeto com SessionContainer
      * @var object 
      */
@@ -191,7 +203,7 @@ class Exporta extends AbstractService{
                 continue;
             }
             //locatario nome
-            $this->addSaida($value['locatario']['nome'], 100);
+            $this->addSaida(preg_replace('/\t+/', '', $value['locatario']['nome']), 100);
             //locatario documento
             if($value['locatario']['tipo'] == 'fisica'){
                 $this->saida .= $this->cleanDocFomatacao($value['locatario']['cpf'], 15);                
@@ -217,13 +229,13 @@ class Exporta extends AbstractService{
             // Estado
             $this->addSaida($value['imovel']['endereco']['estado']['sigla'], 2);
             // CEP
-            $this->addSaida($value['imovel']['cep'], 8, '0', 'STR_PAD_LEFT');
+            $this->addSaida(str_replace('-', '', $value['imovel']['cep']), 8, '0', 'STR_PAD_LEFT');
             // Inicio Vigencia
             $this->saida .= $value['inicio']->format('dmY');
             // Fim Vigencia
             $this->saida .= $value['fim']->format('dmY');
             // Locador nome
-            $this->addSaida($value['locador']['nome'], 100);
+            $this->addSaida(preg_replace('/\t+/', '', $value['locador']['nome']), 100);
             // Locador documento
             if($value['locador']['tipo'] == 'fisica'){
                 $this->saida .= $this->cleanDocFomatacao($value['locador']['cpf'], 15);
@@ -231,7 +243,7 @@ class Exporta extends AbstractService{
                 $this->saida .= $this->cleanDocFomatacao($value['locador']['cnpj'], 15);
             }
             // Administradora
-            $this->addSaida($value['administradora']['nome'], 40);
+            $this->addSaida(preg_replace('/\t+/', '', $value['administradora']['nome']), 40);
             // Referencia do imovel
             $this->addSaida($value['imovel']['refImovel'], 40);
             // Fim da linha 
@@ -259,6 +271,12 @@ class Exporta extends AbstractService{
      */
     public function geraArqsForMaritima($admFiltro){
         $data = $this->getSc()->data; 
+        if(isset($data['layout']) and !empty($data['layout'])){
+            $this->layout = $data['layout'];
+        }
+        if(isset($data['destino']) and !empty($data['destino'])){
+            $this->destino = $data['destino'];
+        }
         //$this->baseWork = '\\s-1482\Imagem\Incendio_locacao\\' . $data['mesFiltro'] . $data['anoFiltro'] . '\\';
         $this->baseWorkTemp = '/var/www/zf2vv/data/work/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
         //$this->baseWork = '/mnt/share/locacaoincendio/' . $data['mesFiltro'] . $data['anoFiltro'] . '/';
@@ -334,7 +352,21 @@ class Exporta extends AbstractService{
         $file['e0350.00'] = $this->baseWork . $admCod . '_empresarial_1x2_50.KM2';
         $file['e0450.00'] = $this->baseWork . $admCod . '_empresarial_1x3_50.KM2';
         $file['e0550.00'] = $this->baseWork . $admCod . '_empresarial_1x4_50.KM2';
-        $file['e1250.00'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';
+        $file['e1250.00'] = $this->baseWork . $admCod . '_empresarial_mensal_50.KM2';        
+        
+        $file['e0155.00'] = $this->baseWork . $admCod . '_empresarial_ato_55.KM2';
+        $file['e0255.00'] = $this->baseWork . $admCod . '_empresarial_1x1_55.KM2';
+        $file['e0355.00'] = $this->baseWork . $admCod . '_empresarial_1x2_55.KM2';
+        $file['e0455.00'] = $this->baseWork . $admCod . '_empresarial_1x3_55.KM2';
+        $file['e0555.00'] = $this->baseWork . $admCod . '_empresarial_1x4_55.KM2';
+        $file['e1255.00'] = $this->baseWork . $admCod . '_empresarial_mensal_55.KM2';        
+        
+        $file['e0160.00'] = $this->baseWork . $admCod . '_empresarial_ato_60.KM2';
+        $file['e0260.00'] = $this->baseWork . $admCod . '_empresarial_1x1_60.KM2';
+        $file['e0360.00'] = $this->baseWork . $admCod . '_empresarial_1x2_60.KM2';
+        $file['e0460.00'] = $this->baseWork . $admCod . '_empresarial_1x3_60.KM2';
+        $file['e0560.00'] = $this->baseWork . $admCod . '_empresarial_1x4_60.KM2';
+        $file['e1260.00'] = $this->baseWork . $admCod . '_empresarial_mensal_60.KM2';
         
         $file['e0169.99'] = $this->baseWork . $admCod . '_empresarial_ato_69.KM2';
         $file['e0269.99'] = $this->baseWork . $admCod . '_empresarial_1x1_69.KM2';
@@ -356,6 +388,20 @@ class Exporta extends AbstractService{
         $file['r0450.00'] = $this->baseWork . $admCod . '_residencial_1x3_50.KM2';
         $file['r0550.00'] = $this->baseWork . $admCod . '_residencial_1x4_50.KM2';
         $file['r1250.00'] = $this->baseWork . $admCod . '_residencial_mensal_50.KM2';
+        
+        $file['r0155.00'] = $this->baseWork . $admCod . '_residencial_ato_55.KM2';
+        $file['r0255.00'] = $this->baseWork . $admCod . '_residencial_1x1_55.KM2';
+        $file['r0355.00'] = $this->baseWork . $admCod . '_residencial_1x2_55.KM2';
+        $file['r0455.00'] = $this->baseWork . $admCod . '_residencial_1x3_55.KM2';
+        $file['r0555.00'] = $this->baseWork . $admCod . '_residencial_1x4_55.KM2';
+        $file['r1255.00'] = $this->baseWork . $admCod . '_residencial_mensal_55.KM2';
+        
+        $file['r0160.00'] = $this->baseWork . $admCod . '_residencial_ato_60.KM2';
+        $file['r0260.00'] = $this->baseWork . $admCod . '_residencial_1x1_60.KM2';
+        $file['r0360.00'] = $this->baseWork . $admCod . '_residencial_1x2_60.KM2';
+        $file['r0460.00'] = $this->baseWork . $admCod . '_residencial_1x3_60.KM2';
+        $file['r0560.00'] = $this->baseWork . $admCod . '_residencial_1x4_60.KM2';
+        $file['r1260.00'] = $this->baseWork . $admCod . '_residencial_mensal_60.KM2';
         
         $file['r0169.99'] = $this->baseWork . $admCod . '_residencial_ato_69.KM2';
         $file['r0269.99'] = $this->baseWork . $admCod . '_residencial_1x1_69.KM2';
@@ -452,6 +498,7 @@ class Exporta extends AbstractService{
         $this->qtdExportado ++;
         $this->setLine03($value);
         $this->setLine05($value);
+        $this->setLine09($value);
         $this->setLine10($value);
         return $head;
     }
@@ -580,7 +627,8 @@ class Exporta extends AbstractService{
 //            if($this->fechadoRepository->setGerado($value['id'])){
 //                $this->logForGerado($value['id'], $value['codano']);
 //            }
-        }        
+        }     
+        $this->setLine09($value);   
         return $head;
     }
 
@@ -607,7 +655,7 @@ class Exporta extends AbstractService{
     public function montaHead(&$value){
         $this->setLine00($value);
         $this->setLine01();
-        $this->setLine02();
+        $this->setLine02($value);
     }
 
     public function setLine00(&$value){
@@ -682,7 +730,7 @@ class Exporta extends AbstractService{
         $this->saida .= "\r\n";        
     }
 
-    public function setLine02() {
+    public function setLine02(&$value) {
         //========= Linha 02 com DADOS DO CLIENTE Obrigatorio =======================
         $this->saida .= '02';
         // Cod cliente 6
@@ -744,9 +792,20 @@ class Exporta extends AbstractService{
         // Fax de cobrança 8
         $this->saida .= '32269622';
         // nome cliente 40
-        $this->saida .= str_pad('Vila Velha Corret. Seguros S/C Ltda', 40);
+        if($this->destino == '2'){
+            $this->addSaida2($value['administradora']['nome'], 40);
+        }else{
+            $this->saida .= str_pad('Vila Velha Corret. Seguros S/C Ltda', 40);
+        }
         // tipo de pessoa do cliente
         $this->saida .= 'J';
+        if($this->layout == '2'){
+            // Natureza da Atividade tamanho 4
+            $this->saida .= '0010';
+            // Codigo Clente Especial tamanho 10
+            $this->saida .= '0000000000';
+            
+        }
         // Fim da linha 02
         $this->saida .= "\r\n";
     }
@@ -881,7 +940,7 @@ class Exporta extends AbstractService{
         //Número do Item	6
         $this->saida .= str_pad($item, 6, '0', STR_PAD_LEFT);
         //Nome do Inquilino	60
-        $this->addSaida2($value['locatario']['nome'], 60);
+        $this->addSaida2(preg_replace('/\t+/', '',$value['locatario']['nome']), 60);
         //CPF / CNPJ Inquilino	14
         if ($this->tipoLocatario == 'F'){
             //Tipo de Pessoa do Inquilino	1
@@ -899,7 +958,7 @@ class Exporta extends AbstractService{
             }
         }
         //Nome do Proprietário	60
-        $this->addSaida2($value['locador']['nome'], 60);
+        $this->addSaida2(preg_replace('/\t+/', '',$value['locador']['nome']), 60);
         //Tipo de Pessoa do Proprietário	1
         $this->saida .= $this->tipoLocador;
         //CPF / CNPJ Proprietário	14
@@ -923,13 +982,13 @@ class Exporta extends AbstractService{
         $compl .= $value['imovel']['endereco']['compl'];
         $this->addSaida2($compl, 15);
         //Bairro	30
-        $this->addSaida2($value['imovel']['endereco']['bairro']['nome'], 30);
+        $this->addSaida2(preg_replace('/\t+/', '', $value['imovel']['endereco']['bairro']['nome']), 30);
         //Cidade	30
         $this->addSaida2($value['imovel']['endereco']['cidade']['nome'], 30);
         //UF	2
         $this->saida .= str_pad($value['imovel']['endereco']['estado']['sigla'], 2);
         //CEP	8
-        $this->addSaida2($value['imovel']['cep'], 8);
+        $this->addSaida2(str_replace('-', '', $value['imovel']['cep']), 8);
         //Código da Atividade	4
         $ativid = $value['atividade']['codSeguradora'];
         $this->addSaida2($ativid, 4, '0', 'STR_PAD_LEFT'); 
@@ -970,7 +1029,7 @@ class Exporta extends AbstractService{
         //Data de Nascimento Inquilino	10
         $this->saida .= str_pad(' ', 10);
         //Observação	254
-        $this->addSaida2(str_replace(PHP_EOL, '', $value['observacao']), 254);
+        $this->addSaida2(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(PHP_EOL, '', $value['observacao'])), 254);
         //Indicador de Verbas Separadas	1
         $this->saida .= ($value['tipoCobertura'] == '04') ? '1' : '0';
         //Período Indenitário Perda/Pgto. Aluguel	2
@@ -1021,6 +1080,27 @@ class Exporta extends AbstractService{
             $this->saida .= "\r\n";        
         }        
     }
+    
+    public function setLine09(&$value) {
+        if($this->destino == '1'){
+            return;
+        }
+        //========= Linha 09 dados do plano de comissões  ====================================
+        $this->saida .= '09';    
+        // situação T(itular)/A(dicional)
+        $this->saida .= 'T';   
+        // Cod da Sucursal 2
+        $this->saida .= '01';
+        // Cod do Corretor 6
+        $this->saida .= '000225';
+        // Cod do Colaborador 6
+        $this->saida .= '000000';
+        // nome do corretor 60
+        $this->saida .= str_pad('Vila Velha Corret. Seguros S/C Ltda', 60);
+        // Fator de calculo tam 5
+        $this->saida .= '08000';
+        $this->saida .= "\r\n";         
+    }
 
     public function setLine10(&$value) {
         //========= Linha 10 CLAUSULA BENEFICIARIA  ====================================
@@ -1030,7 +1110,7 @@ class Exporta extends AbstractService{
         // Número de beneficiário	3
         $this->saida .= '001';    
         // Nome	60
-        $this->addSaida2($value['locador']['nome'], 60);
+        $this->addSaida2(preg_replace('/\t+/', '', $value['locador']['nome']), 60);
         // Tipo de pessoa	1
         $this->saida .= ($this->tipoLocador == 'F')? '1' : '2';
         // CPF/CNPJ	14
