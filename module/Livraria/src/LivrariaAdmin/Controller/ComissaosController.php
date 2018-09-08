@@ -25,14 +25,14 @@ class ComissaosController extends CrudController {
         $this->formData = new \LivrariaAdmin\Form\Filtros();
         $this->formData->setForAdministradora();
         if((!isset($data['subOpcao']))or(empty($data['subOpcao']))){
-            return parent::indexAction(['status'=>'A'], ['administradora'=>'ASC', 'inicio'=>'DESC']);
+            return parent::indexAction(['status'=>'A'], ['inicio'=>'DESC']);
         }
         $filtro=[];
         if(!empty($data['administradora'])){
             $filtro['administradora'] = $data['administradora'];
         }
         
-        return parent::indexAction($filtro, ['administradora'=>'ASC', 'inicio'=>'DESC']);
+        return parent::indexAction($filtro, ['inicio'=>'DESC']);
     }
     
     public function newAction() {

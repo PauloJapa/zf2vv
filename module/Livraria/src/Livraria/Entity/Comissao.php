@@ -95,6 +95,13 @@ class Comissao extends Filtro
     protected $multVendaval;
 
     /**
+     * @var integer $multRespcivil
+     *
+     * @ORM\Column(name="mult_respcivil", type="integer", nullable=true)
+     */
+    protected $multRespcivil;
+
+    /**
      * ALTER TABLE comissao ADD mult_aluguel_res INT DEFAULT 0, ADD mult_conteudo_res INT DEFAULT 0, ADD mult_incendio_res INT DEFAULT 0, ADD mult_eletrico_res INT DEFAULT 0, ADD mult_vendaval_res INT DEFAULT 0;
      * @var integer $multAluguelRes
      *
@@ -129,6 +136,13 @@ class Comissao extends Filtro
      * @ORM\Column(name="mult_vendaval_res", type="integer", nullable=true, options={"default" = "0"})
      */
     protected $multVendavalRes;
+
+    /**
+     * @var integer $multRespcivilRes
+     *
+     * @ORM\Column(name="mult_respcivil_res", type="integer", nullable=true, options={"default" = "0"})
+     */
+    protected $multRespcivilRes;
 
     /**
      * @var integer $userIdCriado
@@ -399,6 +413,24 @@ class Comissao extends Filtro
         $this->multVendaval = $this->trataFloat($multVendaval);
         return $this;
     }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultRespcivil() {
+        return $this->isResidencial ? $this->multRespcivilRes : $this->multRespcivil;
+    }
+
+    /**
+     * 
+     * @param integer $multRespcivil
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultRespcivil($multRespcivil) {
+        $this->multRespcivil = $this->trataFloat($multRespcivil);
+        return $this;
+    }
     
     /**
      * 
@@ -482,6 +514,24 @@ class Comissao extends Filtro
      */
     public function setMultVendavalRes($multVendavalRes) {
         $this->multVendavalRes = $this->trataFloat($multVendavalRes);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return integer
+     */
+    public function getMultRespcivilRes() {
+        return ($this->multRespcivilRes)  ;
+    }
+
+    /**
+     * 
+     * @param integer $multRespcivilRes
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMultRespcivilRes($multRespcivilRes) {
+        $this->multRespcivilRes = $this->trataFloat($multRespcivilRes);
         return $this;
     }
 
