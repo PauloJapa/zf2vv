@@ -27,7 +27,7 @@ class MultiplosMinimosController extends CrudController {
      */
     public function indexAction(array $filtro = array()){
         $this->verificaSeUserAdmin();
-        return parent::indexAction($filtro,array('seguradora' => 'ASC', 'multVigenciaInicio' => 'DESC'));
+        return parent::indexAction($filtro,array('multVigenciaInicio' => 'DESC'));
     }
    
     /**

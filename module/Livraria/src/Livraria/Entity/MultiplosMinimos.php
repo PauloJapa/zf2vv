@@ -104,6 +104,13 @@ class MultiplosMinimos extends Filtro
     protected $minVendaval;
 
     /**
+     * @var float $minRespcivil
+     *
+     * @ORM\Column(name="min_respcivil", type="decimal", nullable=true)
+     */
+    protected $minRespcivil;
+
+    /**
      * @var float $maxAluguel
      *
      * @ORM\Column(name="max_aluguel", type="decimal", nullable=true)
@@ -137,6 +144,13 @@ class MultiplosMinimos extends Filtro
      * @ORM\Column(name="max_vendaval", type="decimal", nullable=true)
      */
     protected $maxVendaval;
+
+    /**
+     * @var float $maxRespcivil
+     *
+     * @ORM\Column(name="max_respcivil", type="decimal", nullable=true)
+     */
+    protected $maxRespcivil;
 
     /**
      * @var \DateTime $multVigenciaInicio
@@ -338,6 +352,24 @@ class MultiplosMinimos extends Filtro
      * 
      * @return float
      */
+    public function getMinRespcivil() {
+        return $this->minRespcivil;
+    }
+
+    /**
+     * 
+     * @param float $minRespcivil
+     * @return \Livraria\Entity\MultiplosMinimos
+     */
+    public function setMinRespcivil($minRespcivil) {
+        $this->minRespcivil = $this->trataFloat($minRespcivil);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
     public function getMaxAluguel() {
         return $this->maxAluguel;
     }
@@ -421,6 +453,24 @@ class MultiplosMinimos extends Filtro
      */
     public function setMaxVendaval($maxVendaval) {
         $this->maxVendaval = $this->trataFloat($maxVendaval);
+        return $this;
+    }
+
+    /**
+     * 
+     * @return float
+     */
+    public function getMaxRespcivil() {
+        return $this->maxRespcivil;
+    }
+
+    /**
+     * 
+     * @param float $maxRespcivil
+     * @return \Livraria\Entity\MultiplosMaximos
+     */
+    public function setRespcivil($maxRespcivil) {
+        $this->maxRespcivil = $this->trataFloat($maxRespcivil);
         return $this;
     }
 

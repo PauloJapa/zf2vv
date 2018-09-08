@@ -21,12 +21,14 @@ $coluns = array(
     'Min Incên. Conteúdo',
     'Min Eletrico',
     'Min Vendaval',
+    'Min Resp. Civil',
                 
     'Max Aluguel',
     'Max Incêndio',
     'Max Incên. Conteúdo',
     'Max Eletrico',
     'Max Vendaval',
+    'Max Resp. Civil',
     'Status',
     'Ação'
     );
@@ -34,6 +36,8 @@ $td     = array(
     ''
     ,''
     ,''
+    ,'class="r"'
+    ,'class="r"'
     ,'class="r"'
     ,'class="r"'
     ,'class="r"'
@@ -72,11 +76,13 @@ foreach($this->data as $entity){
         $entity->floatToStr('minConteudo'),
         $entity->floatToStr('minEletrico'),
         $entity->floatToStr('minVendaval'),
+        $entity->floatToStr('minRespcivil'),
         $entity->floatToStr('maxAluguel'),
         $entity->floatToStr('maxIncendio'),
         $entity->floatToStr('maxConteudo'),
         $entity->floatToStr('maxEletrico'),
         $entity->floatToStr('maxVendaval'),
+        $entity->floatToStr('maxRespcivil'),
         $entity->getMultStatus(),
         $entity->getId(),
     );
