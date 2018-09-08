@@ -51,6 +51,7 @@ $this->FormDefault(['legend'=>'Coberturas'],'fieldIni'),
         $this->FormDefault(['vendaval' => 'float8']),
     "</td><td>\r",
         $this->FormDefault(['aluguel' => 'float8']),
+        $this->FormDefault(['respcivil' => 'float8']),
     "</td>\r",
 $this->FormDefault([],'fieldFim'),
         

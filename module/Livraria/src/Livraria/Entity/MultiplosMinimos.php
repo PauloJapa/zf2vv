@@ -572,11 +572,13 @@ class MultiplosMinimos extends Filtro
         $data['minConteudo']        = $this->floatToStr('minConteudo') ; 
         $data['minEletrico']        = $this->floatToStr('minEletrico') ; 
         $data['minVendaval']        = $this->floatToStr('minVendaval') ; 
+        $data['minRespcivil']       = $this->floatToStr('minRespcivil') ; 
         $data['maxAluguel']         = $this->floatToStr('maxAluguel') ; 
         $data['maxIncendio']        = $this->floatToStr('maxIncendio') ; 
         $data['maxConteudo']        = $this->floatToStr('maxConteudo') ; 
         $data['maxEletrico']        = $this->floatToStr('maxEletrico') ; 
         $data['maxVendaval']        = $this->floatToStr('maxVendaval') ; 
+        $data['maxRespcivil']       = $this->floatToStr('maxRespcivil') ; 
         $data['multVigenciaInicio'] = $this->getMultVigenciaInicio() ; 
         $data['multVigenciaFim']    = $this->getMultVigenciaFim() ; 
         $data['multStatus']         = $this->getMultStatus() ; 

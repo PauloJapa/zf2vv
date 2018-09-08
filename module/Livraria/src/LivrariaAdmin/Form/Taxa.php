@@ -48,6 +48,8 @@ class Taxa extends AbstractForm {
         $this->setInputText('eletrico', 'Cobertura p/ eletrica', ['placeholder' => 'XXX,XX']);
         
         $this->setInputText('vendaval', 'Cobertura p/ Vendaval', ['placeholder' => 'XXX,XX']);
+        
+        $this->setInputText('respcivil', 'Cobertura p/ Resp. Civil', ['placeholder' => 'XXX,XX']);
 
         $this->classes = $this->em->getRepository('Livraria\Entity\Classe')->fetchPairs(['status'=>'A']);
         $this->setInputSelect('classe', '*Classe', $this->classes, ["onChange" => "buscaClasse()"] );

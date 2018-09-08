@@ -651,11 +651,13 @@ class Comissao extends Filtro
         $data['multConteudo']     = $this->floatToStr('multConteudo') ; 
         $data['multEletrico']     = $this->floatToStr('multEletrico') ; 
         $data['multVendaval']     = $this->floatToStr('multVendaval') ; 
+        $data['multRespcivil']    = $this->floatToStr('multRespcivil') ; 
         $data['multAluguelRes']   = $this->floatToStr('multAluguelRes') ; 
         $data['multIncendioRes']  = $this->floatToStr('multIncendioRes') ; 
         $data['multConteudoRes']  = $this->floatToStr('multConteudoRes') ; 
         $data['multEletricoRes']  = $this->floatToStr('multEletricoRes') ; 
         $data['multVendavalRes']  = $this->floatToStr('multVendavalRes') ; 
+        $data['multRespcivilRes'] = $this->floatToStr('multRespcivilRes') ; 
         $data['userIdCriado']     = $this->getUserIdCriado();
         $data['criadoEm']         = $this->getCriadoEm();
         $data['userIdAlterado']   = $this->getUserIdAlterado();

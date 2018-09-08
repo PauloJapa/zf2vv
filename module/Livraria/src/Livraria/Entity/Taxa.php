@@ -82,6 +82,13 @@ class Taxa extends Filtro
     protected $vendaval;
 
     /**
+     * @var float $respcivil
+     *
+     * @ORM\Column(name="respcivil", type="decimal", precision=20, scale=8, options={"default" = 0})
+     */
+    protected $respcivil;
+
+    /**
      * @var string $validade
      *
      * @ORM\Column(name="validade", type="string", length=10, nullable=false)
@@ -339,6 +346,20 @@ class Taxa extends Filtro
      */
     public function setVendaval($vendaval) {
         $this->vendaval = $this->trataFloat($vendaval);
+        return $this;
+    }
+
+    public function getRespcivil() {
+        return $this->respcivil;
+    }
+
+    /** 
+     * Setar a taxa cobrada para seguro de resp. civil naturais
+     * @param Float $respcivil
+     * @return \Livraria\Entity\Taxa 
+     */
+    public function setRespcivil($respcivil) {
+        $this->respcivil = $this->trataFloat($respcivil);
         return $this;
     }
 
@@ -601,6 +622,7 @@ class Taxa extends Filtro
         $data['aluguel']          = $this->floatToStr('Aluguel',6);
         $data['eletrico']         = $this->floatToStr('Eletrico',6);
         $data['vendaval']         = $this->floatToStr('Vendaval',6);
+        $data['respcivil']        = $this->floatToStr('Respcivil',6);
         $data['validade']         = $this->getValidade();
         $data['ocupacao']         = $this->getOcupacao();
         $data['comissao']         = $this->floatToStr('Comissao');

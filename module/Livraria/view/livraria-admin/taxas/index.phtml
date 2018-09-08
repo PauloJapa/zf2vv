@@ -49,10 +49,11 @@ $coluns = array(
     'Aluguel',
     'Eletrico',
     'Vendaval',
+    'Resp. Civil',
     'Status',
     'Ação'
     );
-$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
+$td     = array('','','','','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','class="r"','','');
 echo $this->ViewIndex('table'),
      $this->ViewIndex('thead', array('coluns' => $coluns, 'tdopt' => $td,'editLine' => 'last'));
      
@@ -72,6 +73,7 @@ foreach($this->data as $entity){
         $entity->floatToStr('Aluguel',6),
         $entity->floatToStr('Eletrico',8),
         $entity->floatToStr('Vendaval',8),
+        $entity->floatToStr('Respcivil',8),
         $entity->getStatus(),
         $entity->getId(),
     );

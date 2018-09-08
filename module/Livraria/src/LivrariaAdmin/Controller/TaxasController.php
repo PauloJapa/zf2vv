@@ -21,7 +21,7 @@ class TaxasController extends CrudController {
     
     public function indexAction(array $filtro = array('status' => 'A')){
         $this->verificaSeUserAdmin();
-        $orderBy = ['seguradora'=>'ASC','classe'=>'ASC','comissao'=>'ASC','ocupacao'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
+        $orderBy = ['comissao'=>'ASC','ocupacao'=>'ASC','validade'=>'ASC','inicio' => 'DESC'];
         if(!$this->render){
             return parent::indexAction($filtro,$orderBy);
         }
