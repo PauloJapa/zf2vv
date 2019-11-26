@@ -67,7 +67,7 @@ class TaxaAjusteRepository extends EntityRepository {
             $filters['classe'] = $classe->getId();
         }
         
-    echo '<pre>', var_dump($filters), '</pre>';
+//    echo '<pre>', var_dump($filters), '</pre>';
         $taxaAjustes = $this->findBy($filters);
         //procura em ativos
         foreach ($taxaAjustes as $taxaAjuste) {

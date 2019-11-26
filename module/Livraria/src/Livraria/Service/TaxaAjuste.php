@@ -70,7 +70,7 @@ class TaxaAjuste extends AbstractService {
                 die;
         } 
 
-        if($resul)
+        if(is_object($resul))
             $this->logForNew();
         
         return TRUE;
@@ -114,7 +114,7 @@ class TaxaAjuste extends AbstractService {
                 die;
         } 
 
-        if($resul)
+        if(is_object($resul))
             $this->logForEdit();
         
         return TRUE;

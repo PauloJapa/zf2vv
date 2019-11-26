@@ -66,7 +66,7 @@ abstract class AbstractService {
      */
     protected $dePara = '';
     
-    protected $debug = true;
+    protected $debug = false;
     
     /**
      * String com endereço de email padrão
@@ -463,11 +463,12 @@ abstract class AbstractService {
         $vlrAluguel = $this->strToFloat($this->data['valorAluguel'],'float');
 
         //Coberturas
-        $incendio = ($this->data['incendio']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['incendio'], 'float');
-        $conteudo = ($this->data['conteudo']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['conteudo'], 'float');
-        $aluguel  = ($this->data['aluguel'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['aluguel'],  'float');
-        $eletrico = ($this->data['eletrico']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['eletrico'], 'float');
-        $vendaval = ($this->data['vendaval']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['vendaval'], 'float');
+        $incendio  = ($this->data['incendio'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['incendio'], 'float');
+        $conteudo  = ($this->data['conteudo'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['conteudo'], 'float');
+        $aluguel   = ($this->data['aluguel']  =='Não Calcular')? 0.0001:$this->strToFloat($this->data['aluguel'],  'float');
+        $eletrico  = ($this->data['eletrico'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['eletrico'], 'float');
+        $vendaval  = ($this->data['vendaval'] =='Não Calcular')? 0.0001:$this->strToFloat($this->data['vendaval'], 'float');
+        $respcivil = ($this->data['respcivil']=='Não Calcular')? 0.0001:$this->strToFloat($this->data['respcivil'], 'float');
 
         // Parametriza comissão para pegar multiplos do residencial se for o caso
         if ($this->data['ocupacao'] == '02'){
@@ -499,6 +500,9 @@ abstract class AbstractService {
 
         if($vendaval == 0.0)
             $vendaval = $vlrAluguel * $this->data['comissaoEnt']->getMultVendaval();
+
+        if($respcivil == 0.0)
+            $respcivil = $vlrAluguel * $this->data['comissaoEnt']->getMultRespcivil();
 
         // Validar coberturas conforme contrato da Maritima
         if((is_object($this->data['seguradora']) AND $this->data['seguradora']->getId() == '2') OR $this->data['seguradora'] == '2'){
@@ -556,12 +560,19 @@ $this->debug = false;
             $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
             $vendaval = $bkpVlr;
         }
+        
+        $txRespcivil = 0.0;
+        if ($respcivil != 0.0001){
+            $bkpVlr = $respcivil;
+            $txRespcivil = round($this->calcTaxaMultMinMax($respcivil,'Respcivil'), 2) ;
+            $respcivil = $bkpVlr;
+        }
         /* @var $entTaxaAjuste    \Livraria\Entity\TaxaAjuste */
 $this->debug = $bkpDebug;
         $taxaAjuste = 1;
         if($entTaxaAjuste){
             $taxaAjuste = $repTaxaAjuste->changeEntityForTaxaFloat($txConteudo, $txEletrico, $entTaxaAjuste, $mensal);
-            echo '<pre>$entTaxaAjuste ok ', var_dump($taxaAjuste), '</pre>';
+            if ($this->debug) echo '<pre>$entTaxaAjuste ok ', var_dump($taxaAjuste), '</pre>';
         }
         switch (TRUE) {
             case $taxaAjuste == 1:
@@ -575,7 +586,7 @@ $this->debug = $bkpDebug;
                 break;
         }
         $this->data['taxaAjuste'] = $taxaAjuste;
-        echo '<pre>', var_dump($taxaAjuste), '</pre>';
+        if ($this->debug) echo '<pre>', var_dump($taxaAjuste), '</pre>';
         
         // Calcula cobertura premio = cobertura * (taxa / 100)       
         $total = 0.0 ;
@@ -604,12 +615,18 @@ $this->debug = $bkpDebug;
         if ($vendaval != 0.0001){
             $txVendaval = round($this->calcTaxaMultMinMax($vendaval,'Vendaval'), 2) ;
         }
+        
+        $txRespcivil = 0.0;
+        if ($respcivil != 0.0001){
+            $txRespcivil = round($this->calcTaxaMultMinMax($respcivil,'Respcivil'), 2) ;
+        }
 
         $total += $txIncendio ;
         $total += $txConteudo;
         $total += $txAluguel;
         $total += $txEletrico;
         $total += $txVendaval;
+        $total += $txRespcivil;
 
         //Verificar Se administradora tem total de cobertura minima e compara
         if(is_object($this->data['administradora'])){
@@ -661,8 +678,10 @@ $this->debug = $bkpDebug;
         $this->data['cobEletrico']   = $this->strToFloat($txEletrico);
         $this->data['vendaval']      = ($vendaval == 0.0001) ? 'Não Calcular' : $this->strToFloat($vendaval);
         $this->data['cobVendaval']   = $this->strToFloat($txVendaval);
+        $this->data['respcivil']      = ($respcivil == 0.0001) ? 'Não Calcular' : $this->strToFloat($respcivil);
+        $this->data['cobRespcivil']   = $this->strToFloat($txRespcivil);
 
-        return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval);
+        return array($total,$totalBruto,$incendio,$conteudo,$aluguel,$eletrico,$vendaval,$respcivil);
     }
 
     /**
@@ -708,6 +727,7 @@ $this->debug = $bkpDebug;
         if($this->data['aluguel'] ==$txt) $this->data['aluguel']  = $vlr;
         if($this->data['eletrico']==$txt) $this->data['eletrico'] = $vlr;
         if($this->data['vendaval']==$txt) $this->data['vendaval'] = $vlr;
+        if($this->data['respcivil']==$txt) $this->data['respcivil'] = $vlr;
     }
 
     /**
@@ -727,6 +747,7 @@ $this->debug = $bkpDebug;
             'aluguel'          => $this->data['aluguel'],
             'eletrico'         => $this->data['eletrico'],
             'vendaval'         => $this->data['vendaval'],
+            'respcivil'        => $this->data['respcivil'],
             'taxaIof'          => $this->data['taxaIof'],
             'taxa'             => (is_object($this->data['taxa'])) ?  $this->data['taxa']->getId() : NULL,
             'user'             => $this->data['user']->getId(),

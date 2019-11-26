@@ -121,6 +121,7 @@ class ImprimirSeguro extends FPDF{
         $this->set3Cell(['Danos Eletricos',$vlr[2],$vlr[3]]);
         $this->set3Cell(['Perda Aluguel',$vlr[4],$vlr[5]]);
         $this->set3Cell(['Vendaval',$vlr[6],$vlr[7]]);
+        $this->set3Cell(['Responsabilidade Civil',$vlr[8],$vlr[9]]);
         if(is_array($assist24)){
             $this->set3Cell(['Assistência 24 Horas Basico',$assist24[0],$assist24[1]]);
         }        
@@ -193,14 +194,19 @@ class ImprimirSeguro extends FPDF{
     /**
      * Textos da Franquia por enquanto são Fixos
      */
-    public function setL14(){
+    public function setL14($residencial = '02'){
         $this->SetFont('Times','B',12);
         $this->Write(6, 'Franquias');
         $this->Ln();
-        $this->set4Cell(['Coberturas','Limites'], ['B','B'], ['C','C'], 50);
-        $this->set4Cell(['Queda de Raio','10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 700,00'], ['',''], ['','C'], 50, 10);
-        $this->set4Cell(['Danos Elétricos e Curto Circuito','10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 700,00'], ['',''], ['','C'], 50, 10);
-        $this->set4Cell(['Vendaval / Granizo / Fumaça','10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 700,00'], ['',''], ['','C'], 50, 10);
+        if($residencial == '02'){
+            $texto = '10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 300,00';
+        }else{
+            $texto = '10% dos prejuízos indenizáveis, limitado ao mínim o de R$ 500,00';
+        }
+        $this->set4Cell(['Coberturas','Limites'], ['B','B'], ['C','C'], 70);
+        $this->set4Cell(['Queda de Raio',$texto], ['',''], ['','C'], 70, 10);
+        $this->set4Cell(['Danos Elétricos e Curto Circuito',$texto], ['',''], ['','C'], 70, 10);
+        $this->set4Cell(['Vendaval / Granizo / Impacto de veículos',$texto], ['',''], ['','C'], 70, 10);
         $this->Ln();
     }
     

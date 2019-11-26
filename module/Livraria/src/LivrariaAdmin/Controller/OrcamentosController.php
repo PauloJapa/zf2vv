@@ -126,8 +126,10 @@ OrcamentosController extends CrudController {
     }
     
     public function acertaAction() {
-        $inicio = new \DateTime('2018-06-01');
-        $fim    = new \DateTime('2018-06-31 23:59:00');
+        $inicio = new \DateTime('2019-09-01');
+        $fim    = new \DateTime('2019-09-31 23:59:00'); 
+        echo '<pre>', var_dump($inicio), '</pre>';
+        echo '<pre>', var_dump($fim), '</pre>';  
         $adm    = 3234;
         $seguros = $this->getEm()
             ->createQueryBuilder()

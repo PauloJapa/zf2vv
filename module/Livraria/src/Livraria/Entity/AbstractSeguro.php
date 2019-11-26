@@ -415,6 +415,24 @@ class AbstractSeguro  extends Filtro {
     }
 
     /**
+     * Cobertura para responsabilidade civil baseado no multiplo respcivil da seguradora vezes aluguel
+     * @return string
+     */
+    public function getRespcivil() {
+        return $this->respcivil;
+    }
+
+    /**
+     * Cobertura para responsabilidade civil no multiplo respcivil da seguradora vezes aluguel
+     * @param string $respcivil
+     * @return \Livraria\Entity\Orcamento|Renovacao|Fechados
+     */
+    public function setRespcivil($respcivil) {
+        $this->respcivil = $this->trataFloat($respcivil,8);
+        return $this;
+    }
+
+    /**
      * nao esta bem definido sua utilização
      * @return type
      */
@@ -732,6 +750,24 @@ class AbstractSeguro  extends Filtro {
         return $this;
     }
 
+    /**
+     * Valor a ser pago para cobertura de Responsabilidade civil
+     * @return string
+     */
+    public function getCobRespcivil() {
+        return $this->cobRespcivil;
+    }
+
+    /**
+     * Valor a ser pago para cobertura de Responsabilidade civil
+     * @param string $cobRespcivil
+     * @return \Livraria\Entity\AbstractSeguro
+     */
+    public function setCobRespcivil($cobRespcivil) {
+        $this->cobRespcivil = $this->trataFloat($cobRespcivil,6);
+        return $this;
+    }
+
 
     /**
      * Todos os dados da entity locador
@@ -1006,6 +1042,7 @@ class AbstractSeguro  extends Filtro {
         $data['aluguel']        = $this->floatToStr('aluguel');
         $data['eletrico']       = $this->floatToStr('eletrico');
         $data['vendaval']       = $this->floatToStr('vendaval');
+        $data['respcivil']      = $this->floatToStr('respcivil');
         $data['numeroParcela']  = $this->getNumeroparcela();
         $data['premioLiquido']  = $this->floatToStr('premioLiquido');
         $data['premio']         = $this->floatToStr('premio');
@@ -1034,6 +1071,7 @@ class AbstractSeguro  extends Filtro {
         $data['cobAluguel']     = $this->floatToStr('cobAluguel');
         $data['cobEletrico']    = $this->floatToStr('cobEletrico');
         $data['cobVendaval']    = $this->floatToStr('cobVendaval');
+        $data['cobRespcivil']    = $this->floatToStr('cobRespcivil');
         $data['fechadoOrigemId']= $this->getFechadoOrigemId();
         $data['mensalSeq']      = $this->getMensalSeq();
         $data['assist24']       = $this->getAssist24(); 

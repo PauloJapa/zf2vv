@@ -1059,6 +1059,14 @@ class Exporta extends AbstractService{
             '011117' => 'aluguel',
             '011131' => 'vendaval',
         ];
+        // comercio
+        if ($value['ocupacao'] == '01') {
+            $cobArray['011189'] = 'respcivil' ;
+        }
+        // residencial
+        if ($value['ocupacao'] == '02') {
+            $cobArray['011118'] = 'respcivil' ;
+        }
         foreach ($cobArray as $key => $cob) {
             if($value[$cob] == 0){
                 continue; // não coloca coberturas zeradas

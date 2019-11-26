@@ -157,6 +157,8 @@ class Orcamento extends AbstractEndereco {
         
         $this->setInputText('vendaval', 'Vendaval, granizo, impacto de veiculos terrestres', $style);
         
+        $this->setInputText('respcivil', 'Responsabilidade civil', $style);
+        
         $this->setInputHidden('numeroParcela');
         $this->setInputHidden('premioLiquido');
         $this->setInputHidden('premio');
@@ -285,6 +287,7 @@ class Orcamento extends AbstractEndereco {
     }
     
     public function bloqueiaCampos(){
+        return; // remover regra a pedido de ariane vv 22/01/2019
         $this->isAdmin = FALSE;
         
         $this->get('formaPagto')->setAttribute('disabled', 'true');   

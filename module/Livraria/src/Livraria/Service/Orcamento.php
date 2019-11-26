@@ -910,6 +910,8 @@ class Orcamento extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
+        $vlr[] = $seg->floatToStr('respcivil');
+        $vlr[] = $seg->floatToStr('cobRespcivil');
         $assist24 = null;
         if($seg->getAssist24() == 'S'){
             /* @var $parametro \Livraria\Entity\ParametroSis */
@@ -935,7 +937,7 @@ class Orcamento extends AbstractService {
             ,$this->strToFloat($seg->getPremioTotal() / 12)
         ];
         $this->pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
-        $this->pdf->setL14();
+        $this->pdf->setL14($seg->getOcupacao());
         $this->pdf->setObsGeral('',($seg->getAssist24() == 'S')? TRUE : FALSE);
 
     }

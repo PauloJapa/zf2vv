@@ -392,7 +392,13 @@ class Importar extends AbstractService{
             if($entAtiv){
                 $this->data['atividade']     = $entAtiv->getId() ;
                 $this->data['atividadeDesc'] = $entAtiv->getDescricao() ;
-                $this->data['comissao']      = '60' ;
+                if(isset($array[31]) AND !empty($array[31])){
+                    $this->data['comissao']      = $array[31] ;
+                }else{
+                    $this->data['comissao']      = '55' ;
+//                    $this->data['comissao']      = '60' ;
+//                    $this->data['comissao']      = '69,99' ;
+                }
                 if($array[15] == '1' OR $array[15] == '3'){
                     $this->data['ocupacao'] = '02';
                     $this->data['tipoCobertura'] = '02' ;
@@ -426,7 +432,13 @@ class Importar extends AbstractService{
         
         
         $this->data['seguroEmNome'] = '02' ;
-        $this->data['validade'] = 'anual' ;
+        
+        if(isset($array[32]) AND !empty($array[32])){
+            $this->data['validade']      = $array[32] ;
+        }else{
+            $this->data['validade']      = 'anual' ;
+        }
+        
         $this->data['formaPagto'] = '01' ;
         $this->data['criadoEm'] = $this->date ;
         

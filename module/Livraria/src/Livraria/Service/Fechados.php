@@ -377,6 +377,8 @@ class Fechados extends AbstractService {
         $vlr[] = $seg->floatToStr('cobAluguel');
         $vlr[] = $seg->floatToStr('vendaval');
         $vlr[] = $seg->floatToStr('cobVendaval');
+        $vlr[] = $seg->floatToStr('respcivil');
+        $vlr[] = $seg->floatToStr('cobRespcivil');
         $assist24 = null;
         if($seg->getAssist24() == 'S'){
             /* @var $parametro \Livraria\Entity\ParametroSis */
@@ -402,7 +404,7 @@ class Fechados extends AbstractService {
             ,$this->strToFloat($seg->getPremioTotal() / 12)
         ];
         $pdf->setL13($par, ($seg->getValidade() =='mensal')?true:false, $seg->getFormaPagto(),$seg->getAdministradora()->getPropPag());
-        $pdf->setL14();
+        $pdf->setL14($seg->getOcupacao());
         $pdf->setObsGeral('',($seg->getAssist24() == 'S')? TRUE : FALSE);
         $pdf->Output();
     }

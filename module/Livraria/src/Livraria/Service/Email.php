@@ -46,8 +46,12 @@ class Email extends AbstractService
                 $mail->getMessage()->addBcc($this->cco, 'Testes Locação');
             }
             $mail->send();
-        } catch (Exception $e) {
-            die(print_r($e, true));
+        } catch (\Exception $e) {
+            echo '<h3>Erro ao enviar email mensagem(' . $e->getMessage() . ')';
+        } catch (\Zend\Mail\Protocol\Exception\RuntimeException $run) {
+            echo '<h3>Erro ao enviar email mensagem(' . $run->getMessage() . ')';
+        } catch (\Zend\Mail\Protocol\Exception\InvalidArgumentException $inv) {
+            echo '<h3>Erro ao enviar email mensagem(' . $inv->getMessage() . ')';
         }
     }
     
