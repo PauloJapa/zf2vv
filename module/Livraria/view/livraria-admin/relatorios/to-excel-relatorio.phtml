@@ -38,14 +38,6 @@ foreach($this->data as $ent):
                 </tr> 
                 </table> 
                 <br />
-                <table class="Bt Bb"  style="width: 100% ;">
-                <tr><th class="Bl Br" align="center">Observação: </th></tr>  
-                <tr>  
-                        <td class="Bl Bb Bt Br F1" colspan="8">Caso a somatória dos prêmios de cada forma de pagamento for inferior a R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão
-                de apólice.</td>
-                </tr>  
-                </table> 
-                <br />
 EOT;
             $qtd = 0;
             $total = 0;          
@@ -114,13 +106,6 @@ EOT;
         </tr> 
         </table> 
         <br />
-        <table class="Bt Bb"  style="width: 100% ;">
-        <tr><th class="Bl Br" align="center">Observação: </th></tr>  
-        <tr>  
-                <td class="Bl Bb Bt Br F1" colspan="8">Caso a somatória dos prêmios de cada forma de pagamento for inferior a 
-                   R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão de apólice.</td>
-        </tr>  
-        </table> 
         <br />
 EOT;
             $qtd = 0;
@@ -192,14 +177,6 @@ if($qtd != 0):
             <td class="Bl Bb Bt" align="center">Total</td>
             <td class="Bl Bb Bt" align="center" colspan="3">{$qtd}</td>
             <td class="Bl Bb Bt Br" align="right">{$total_form}</td>
-    </tr> 
-    </table> 
-    <br />
-    <table class="Bt Bb"  style="width: 100% ;">
-    <tr><th class="Bl Br" align="center">Observação: </th></tr>  
-    <tr>  
-            <td class="Bl Bb Bt Br F1" colspan="8">Caso a somatória dos prêmios de cada forma de pagamento for inferior a 
-                R$ 107,38 será considerado o prêmio de R$ 107,38 por emissão de apólice.</td>
     </tr>  
 EOT;
 endif;
