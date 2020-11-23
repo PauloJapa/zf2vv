@@ -67,6 +67,9 @@ class Administradora extends AbstractEndereco {
         $geraExpSep = ['0' => 'NÃO Bloquear.', '1' => 'Bloquear.'];
         $this->setInputRadio('blockFechamento', 'Bloquer qualquer proposta seja fechada.', $geraExpSep, ['value' => '0']);
         
+        $parcela5x = ['0' => 'Não', '1' => 'Sim'];
+        $this->setInputRadio('parcela5x', 'Permitir parcelar em 5x', $parcela5x, ['value' => '0']);
+        
         $propPag = ['N' => 'Com todas as Opções de Pag.', 'S' => 'Somente a escolhida'];
         $this->setInputSelect('propPag', 'Proposta com 1 forma de pag.', $propPag);
      

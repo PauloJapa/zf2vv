@@ -27,13 +27,19 @@ class Orcamento extends AbstractEndereco {
             case '319'   : // Jaime
                 array_pop($formaPagto); //tira o de 5 vezes
                 break;
-            case '14044' : // GRM servicos
-                continue; // mostra todos
-                break;
             default:
-                array_pop($formaPagto); //tira o de 4 vezes
-                array_pop($formaPagto); //tira o de 5 vezes
+                $remove = true ;
+                /* @var $administradora \Livraria\Entity\Administradora */
+                $administradora = $this->em->find('\Livraria\Entity\Administradora', $adm);
+                if($administradora and $administradora->getParcela5x()){
+                    $remove = false ;
+                }
+                if($remove){
+                    array_pop($formaPagto); //tira o de 4 vezes
+                    array_pop($formaPagto); //tira o de 5 vezes
+                }
         }       
+        
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
     }
     

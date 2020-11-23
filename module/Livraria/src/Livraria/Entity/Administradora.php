@@ -173,7 +173,15 @@ class Administradora extends Filtro {
      * @var string $blockFechamento   bloquear o fechamento de proposta da ADM
      * @ORM\Column(name="block_fechamento", type="string", length=1, nullable=true)
      */
-    protected $blockFechamento;    
+    protected $blockFechamento;   
+    
+    /**
+     * Marcação que indica se ADM vai pode parcelar em 5x
+     * ALTER TABLE administradoras ADD parcela_5x VARCHAR(1) DEFAULT 0
+     * @var string $parcela5x   
+     * @ORM\Column(name="parcela_5x", type="string", length=1, nullable=true, options={"default" = "0"})
+     */
+    protected $parcela5x = 0 ;    
     
     // comando para atualizar tabela 
     // ALTER TABLE administradoras ADD show_cus_ind VARCHAR(1) DEFAULT NULL, ADD expt_ref_order VARCHAR(1) DEFAULT NULL, ADD block_fechamento VARCHAR(1) DEFAULT NULL;
@@ -609,6 +617,35 @@ class Administradora extends Filtro {
         }
         return $this->blockFechamento;
     }     
+    
+    /**
+     * Marcação que indica se ADM pode parcelar em 5x
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 23-11-2020           
+     * @param string $parcela5x
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setParcela5x($parcela5x) {
+        $this->parcela5x = $parcela5x;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se ADM pode parcelar em 5x
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 23-11-2020            
+     * @return string
+     */
+    public function getParcela5x() {
+        if(is_null($this->parcela5x)){
+            return '0';
+        }
+        return $this->parcela5x;
+    }     
 
     public function toArray() {
         $data = $this->getEndereco()->toArray();
@@ -634,6 +671,7 @@ class Administradora extends Filtro {
         $data['showCusInd']     = $this->getShowCusInd(); 
         $data['exptRefOrder']   = $this->getExptRefOrder();
         $data['blockFechamento']= $this->getBlockFechamento();
+        $data['parcela5x']      = $this->getParcela5x();
         
         return $data ;
     }

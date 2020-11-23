@@ -34,3 +34,24 @@ echo '<h2>ao Sistema de Incêndio / Locação.</h2>' ;
 <br />
 <br />
 <br />
+
+
+<?php   
+    if ($user):
+//        switch ($user->getMenu()) :
+//        case 'adm':
+//        case 'adm2':
+?>
+<script language="javascript">
+    var msg = "Srs. Parceiros ,<br><br>";
+    msg += "Foi constatado no dia 23/10 p.p. ( sexta feira ) um problema no sistema de dados do Imobiliário  WEB , comprometendo todos os lançamentos efetuados nesse programa nesse dia , assim para evitar problema nos fechamentos , cotações e ou cancelamentos , pedimos que todos que inseriram dados nesse dia o façam novamente, afim de que não tenhamos perda das informações , e problemas futuros <br><br>";
+    msg += "Os pedidos e solicitações feitas nessa data diretamente ao e-mail incendiolocacao@vilavelha.com.br , esses já foram inseridos no sistema .<br><br>";
+    msg += "Em caso de dúvida pedimos o contato no e-mail departamental : incendiolocacao@vilavelha.com.br <br><br>";
+    msg += "att";
+    jAlertFalse(msg); 
+</script>        
+<?php   
+//            break;
+//        endswitch;
+    endif;
+?>

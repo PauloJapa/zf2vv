@@ -65,6 +65,12 @@ echo
         $this->FormDefault(['blockFechamento' => 'radio']),
     "</td><td>\r",
         $this->FormDefault(['exptRefOrder' => 'radio']),
+    "</tr><tr>",
+    "<td>\r",
+        $this->FormDefault(['parcela5x' => 'radio']),
+    "</td><td>\r",
+    "</td><td>\r",
+    "</td><td>\r",
     "</td>\r",
 $this->FormDefault([],'fieldFim'),  
         
