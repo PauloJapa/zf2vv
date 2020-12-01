@@ -92,6 +92,8 @@ class Administradora extends AbstractService {
         $this->dePara .= $this->diffAfterBefore('Exibir na proposta Custo Individual', $ent->getShowCusInd(), $this->data['showCusInd']);
         $this->dePara .= $this->diffAfterBefore('Exportar Maritima por Ref Imovel', $ent->getExptRefOrder(), $this->data['exptRefOrder']);
         $this->dePara .= $this->diffAfterBefore('Bloquer qualquer proposta seja fechada', $ent->getBlockFechamento(), $this->data['blockFechamento']);
+        $this->dePara .= $this->diffAfterBefore('Permitir parcelar em 4x', $ent->getParcela4x(), $this->data['parcela4x']);
+        $this->dePara .= $this->diffAfterBefore('Permitir parcelar em 5x', $ent->getParcela5x(), $this->data['parcela5x']);
         //Juntar as alterações no endereço se houver
         $this->dePara .= $this->deParaEnd;
     }

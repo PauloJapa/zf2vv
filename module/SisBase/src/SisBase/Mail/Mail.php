@@ -79,7 +79,7 @@ class Mail
         $config = $this->transport->getOptions()->toArray();
         
         $this->message = new Message;
-        $this->message->addFrom($config['connection_config']['from'], $config['connection_config']['fromName'])
+        $this->message->addFrom($config['connection_config']['from'], (isset($config['connection_config']['fromName'])? $config['connection_config']['fromName'] :$config['connection_config']['from'] ))
                 ->addTo($this->to,$this->toName)
                 ->setSubject($this->subject)
                 ->setBody($this->body)
