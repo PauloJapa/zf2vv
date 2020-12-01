@@ -67,6 +67,9 @@ class Administradora extends AbstractEndereco {
         $geraExpSep = ['0' => 'NÃO Bloquear.', '1' => 'Bloquear.'];
         $this->setInputRadio('blockFechamento', 'Bloquer qualquer proposta seja fechada.', $geraExpSep, ['value' => '0']);
         
+        $parcela4x = ['0' => 'Não', '1' => 'Sim'];
+        $this->setInputRadio('parcela4x', 'Permitir parcelar em 4x', $parcela4x, ['value' => '0']);
+        
         $parcela5x = ['0' => 'Não', '1' => 'Sim'];
         $this->setInputRadio('parcela5x', 'Permitir parcelar em 5x', $parcela5x, ['value' => '0']);
         

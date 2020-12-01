@@ -23,23 +23,25 @@ class Orcamento extends AbstractEndereco {
     
     public function setInputFormPagto($adm = '') {
         $formaPagto = $this->getParametroSelect('formaPagto');
-        switch ($adm) {
-            case '319'   : // Jaime
-                array_pop($formaPagto); //tira o de 5 vezes
-                break;
-            default:
-                $remove = true ;
-                /* @var $administradora \Livraria\Entity\Administradora */
-                $administradora = $this->em->find('\Livraria\Entity\Administradora', $adm);
-                if($administradora and $administradora->getParcela5x()){
-                    $remove = false ;
-                }
-                if($remove){
-                    array_pop($formaPagto); //tira o de 4 vezes
-                    array_pop($formaPagto); //tira o de 5 vezes
-                }
-        }       
-        
+        /* @var $administradora \Livraria\Entity\Administradora */
+        $administradora = $this->em->find('\Livraria\Entity\Administradora', $adm);
+        if(!$administradora){
+            array_pop($formaPagto); //tira o de 5 vezes
+            array_pop($formaPagto); //tira o de 4 vezes
+            $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
+            return;
+        }
+        if($administradora->getParcela5x()){
+            $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
+            return;
+        }
+        if($administradora->getParcela4x()){
+            array_pop($formaPagto); //tira o de 5 vezes
+            $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
+            return;
+        }
+        array_pop($formaPagto); //tira o de 5 vezes
+        array_pop($formaPagto); //tira o de 4 vezes
         $this->setInputSelect('formaPagto', 'Forma de pagto', $formaPagto, ['onChange'=>'travaFormaPagto();']);
     }
     

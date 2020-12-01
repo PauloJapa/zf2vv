@@ -177,6 +177,14 @@ class Administradora extends Filtro {
     
     /**
      * Marcação que indica se ADM vai pode parcelar em 5x
+     * ALTER TABLE administradoras ADD parcela_4x VARCHAR(1) DEFAULT 0
+     * @var string $parcela5x   
+     * @ORM\Column(name="parcela_4x", type="string", length=1, nullable=true, options={"default" = "0"})
+     */
+    protected $parcela4x = 0 ;   
+    
+    /**
+     * Marcação que indica se ADM vai pode parcelar em 5x
      * ALTER TABLE administradoras ADD parcela_5x VARCHAR(1) DEFAULT 0
      * @var string $parcela5x   
      * @ORM\Column(name="parcela_5x", type="string", length=1, nullable=true, options={"default" = "0"})
@@ -617,6 +625,35 @@ class Administradora extends Filtro {
         }
         return $this->blockFechamento;
     }     
+    
+    /**
+     * Marcação que indica se ADM pode parcelar em 4x
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 23-11-2020           
+     * @param string $parcela4x
+     * @return \Livraria\Entity\Administradora
+     */
+    public function setParcela4x($parcela4x) {
+        $this->parcela4x = $parcela4x;
+        return $this;
+    }
+        
+    /**
+     * Marcação que indica se ADM pode parcelar em 4x
+     * 
+     * @author Paulo Watakabe <watakabe05@gmail.com>
+     * @version 1.0  
+     * @since 23-11-2020            
+     * @return string
+     */
+    public function getParcela4x() {
+        if(is_null($this->parcela4x)){
+            return '0';
+        }
+        return $this->parcela4x;
+    }   
     
     /**
      * Marcação que indica se ADM pode parcelar em 5x
