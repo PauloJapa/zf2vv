@@ -708,6 +708,7 @@ class Administradora extends Filtro {
         $data['showCusInd']     = $this->getShowCusInd(); 
         $data['exptRefOrder']   = $this->getExptRefOrder();
         $data['blockFechamento']= $this->getBlockFechamento();
+        $data['parcela4x']      = $this->getParcela4x();
         $data['parcela5x']      = $this->getParcela5x();
         
         return $data ;
